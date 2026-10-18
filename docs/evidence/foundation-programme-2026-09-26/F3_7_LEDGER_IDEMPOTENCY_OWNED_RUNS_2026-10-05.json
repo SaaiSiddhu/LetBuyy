@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "worktree": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "scope": "F3.7 ledger payload idempotency, immutable checkout item snapshots, and canonical writer privilege integrity, plus Phase 10 prepaid ad-credit RPC payload idempotency, atomic billing finalization, canonical purchase liability posting, and real Gateway-to-Postgres payment verification",
+  "negative_control": {
+    "result": "expected_failure_confirmed",
+    "runId": "5b9d76741007",
+    "assertion": "Before migration 288, changed accounting payload reused the idempotency key without raising a conflict."
+  },
+  "runs": [
+    {
+      "runId": "720f6f281d6b",
+      "runner": "executable-owned-postgresql",
+      "suites": [
+        "tests/executable/money-ledger-postgres.test.mjs",
+        "tests/executable/late-capture-after-release-postgres.test.mjs",
+        "tests/executable/money-rpc-idempotency-sweep-postgres.test.mjs",
+        "tests/executable/foundation-wave1-money-postgres.test.mjs"
+      ],
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "03870b8aa64d",
+      "runner": "gateway-worker-owned-postgresql",
+      "suite": "services/api-gateway/src/__tests__/owned-db/payment-refund-reconciliation.postgres.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "479ea2468d95",
+      "runner": "executable-owned-postgresql",
+      "suite": "tests/executable/order-postgres.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "b2c5d13c7cf8",
+      "runner": "gateway-worker-owned-postgresql",
+      "suite": "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "proxyRequests": {
+        "forwarded": 374,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "02890a208641",
+      "runner": "executable-owned-postgresql-negative-control",
+      "suite": "tests/executable/money-ledger-postgres.test.mjs",
+      "result": "expected_failure_confirmed",
+      "failedAssertion": "anon must not call the low-level ledger writer directly: has_function_privilege returned true before migration 290",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "cf7ae9039d5d",
+      "runner": "executable-owned-postgresql",
+      "suite": "tests/executable/money-ledger-postgres.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "507cf74393eb",
+      "runner": "gateway-worker-owned-postgresql",
+      "suite": "services/api-gateway/src/__tests__/owned-db/payment-refund-reconciliation.postgres.test.ts",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "634d62a84c1f",
+      "runner": "gateway-worker-owned-postgresql",
+      "suite": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "proxyRequests": {
+        "forwarded": 543,
+        "refused": 0,
+        "upstreamErrors": 1
+      },
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": null,
+      "runner": "direct-owned-postgresql-disposable-database",
+      "invocation": "node --test tests/executable/ad-credit-idempotency-conflict-postgres.test.mjs",
+      "negativeControl": "All four prior RPCs replayed changed payloads before migration 291 was applied.",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "cleanup": {
+        "database": "letbuyy_ads_idempotency",
+        "result": "dropped by test after completion"
+      }
+    },
+    {
+      "runId": null,
+      "runner": "direct-owned-postgresql-disposable-database",
+      "invocation": "node --test tests/executable/ad-credit-purchase-finalization-postgres.test.mjs",
+      "negativeControl": "Two distinct provider payment IDs were both credited for one pending billing row through the pre-finalizer RPC path.",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "coverage": [
+        "exact replay",
+        "different payment rejection",
+        "cross-site denial",
+        "globally unique provider payment reference",
+        "credit-failure transaction rollback",
+        "service-role-only ACL",
+        "rollback and reapply"
+      ],
+      "cleanup": {
+        "database": "letbuyy_ad_purchase_finalization",
+        "result": "dropped by test after completion"
+      }
+    },
+    {
+      "runId": null,
+      "runner": "API-Gateway-focused-unit",
+      "invocation": "pnpm exec tsx --test services/api-gateway/src/__tests__/ad-credit-purchase-routes.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0
+    },
+    {
+      "runId": null,
+      "runner": "direct-owned-postgresql-disposable-database",
+      "invocation": "node --test tests/executable/ad-credit-idempotency-conflict-postgres.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "coverage": [
+        "changed request negative controls for four RPCs",
+        "exact replay",
+        "legacy release-all mode replay compared with recorded releasable amount"
+      ],
+      "cleanup": {
+        "database": "letbuyy_ads_idempotency",
+        "result": "dropped by test after completion"
+      }
+    },
+    {
+      "runId": "b4b06355a749",
+      "runner": "gateway-worker-owned-postgresql",
+      "suite": "services/api-gateway/src/__tests__/owned-db/ad-credit-purchase.postgres.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "proxyRequests": {
+        "forwarded": 61,
+        "refused": 0,
+        "upstreamErrors": 1,
+        "note": "The upstream error was the expected denied second payment attempt; the Gateway returned the asserted failure and no extra credit was written."
+      },
+      "coverage": [
+        "real worker intent route",
+        "synthetic provider order adapter",
+        "valid signature",
+        "invalid signature denial",
+        "same-payment lost-response replay",
+        "second valid payment rejection",
+        "foreign-tenant denial",
+        "billing row and prepaid-credit ledger consistency"
+      ],
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "233c600c1ac3",
+      "runner": "gateway-worker-owned-postgresql-managed-runner",
+      "suite": "services/api-gateway/src/__tests__/owned-db/ad-credit-purchase.postgres.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cancelled": 0,
+      "coverage": [
+        "real worker intent and verification routes",
+        "synthetic Razorpay adapter and signed payment",
+        "canonical pa_clearing debit and ad_credit_liability credit",
+        "canonical billing-row transaction link",
+        "merchant payable separation",
+        "exact replay and duplicate-payment denial",
+        "invalid signature and cross-tenant denial"
+      ],
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    }
+  ],
+  "additional_checks": {
+    "command": "pnpm run validate:migrations && node --test tests/migrations/migration-safety.test.mjs tests/migrations/v2-migration-replayability.test.mjs && git diff --check",
+    "result": "passed",
+    "migration_safety_and_replayability_tests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "ad_credit_migration": {
+      "migrations": [
+        "291_ad_credit_idempotency_payload_conflict.sql",
+        "292_atomic_ad_credit_purchase_finalization.sql",
+        "293_ad_credit_purchase_canonical_liability.sql"
+      ],
+      "migration_validator": "passed",
+      "migration_safety_and_replayability_tests": {
+        "passed": 4,
+        "failed": 0
+      },
+      "ad_credit_gateway_route_tests": {
+        "passed": 8,
+        "failed": 0
+      },
+      "api_gateway_typecheck": "passed",
+      "javascript_syntax": "passed",
+      "git_diff_check": "passed",
+      "canonical_ledger_only_validator": "passed",
+      "ad_credit_finalization_postgres_test": {
+        "suite": "tests/executable/ad-credit-purchase-finalization-postgres.test.mjs",
+        "passed": 1,
+        "failed": 0,
+        "coverage": [
+          "balanced canonical purchase posting",
+          "legacy paid-row canonical link repair",
+          "transactional rollback across journal, billing and entitlement",
+          "rollback and migration reapply"
+        ]
+      },
+      "gateway_owned_database_journey": {
+        "runIds": ["b4b06355a749", "233c600c1ac3"],
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "limitations": [
+    "Owned disposable PostgreSQL only; no hosted database or provider sandbox was used.",
+    "No production payment, refund, or settlement was executed.",
+    "F3.7 remains open for end-to-end channel/revision/event ownership, the storefront catalog revision contract, and advertising attribution/refund reversal policy.",
+    "Provider-statement reconciliation, canonical recognition of ad-service consumption, purchased-versus-granted credit provenance and any approved reversal policy, CPC/CPM/purchase attribution, and complete campaign UI journeys remain open in Phase 10.",
+    "The Gateway owned-database journey used a deterministic synthetic Razorpay response; Razorpay sandbox reconciliation and production payment remain unverified."
+  ]
+}

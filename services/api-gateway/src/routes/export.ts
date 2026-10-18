@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { requireExportSigningSecret } from '../lib/export-signing-secret';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -171,9 +172,7 @@ function assertExportStorage(c: ExportContext): R2Bucket {
 }
 
 function exportSigningSecret(c: ExportContext): string {
-    const secret = c.env.INTERNAL_API_SECRET || c.env.CUSTOMER_SESSION_SECRET;
-    if (!secret) throw new Error('CSV export jobs require a signing secret.');
-    return secret;
+    return requireExportSigningSecret(c.env.INTERNAL_API_SECRET);
 }
 
 function toCsvRow(values: (string | number | boolean | null | undefined)[]): string {

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/store_model.dart';
 import '../services/store_service.dart';
+import '../services/api_client.dart';
 
 class StoreContext extends ChangeNotifier {
   StoreContext({required StoreService storeService, SharedPreferences? prefs})
@@ -18,6 +19,32 @@ class StoreContext extends ChangeNotifier {
   StoreModel? _selectedStore;
   bool _isLoading = false;
   String? _error;
+  int _sessionEpoch = 0;
+  Future<List<StoreModel>>? _storesLoading;
+  int? _storesLoadingEpoch;
+  int get requestContextVersion => _sessionEpoch;
+
+  /// Account and selected-store changes both invalidate captured HTTP work.
+  Object get requestContextKey => (_sessionEpoch, _actorId, _selectedStore?.id);
+  Future<void> _reset = Future<void>.value();
+  bool _actorBound = false;
+  String? _actorId;
+
+  void _checkEpoch(int epoch) {
+    if (epoch != _sessionEpoch)
+      throw const ApiException(
+        message: 'The signed-in account changed. Reload store access.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+  }
+
+  Future<void> bindActor(String? actorId) {
+    final changed = _actorBound && _actorId != actorId;
+    _actorBound = true;
+    _actorId = actorId;
+    return changed ? clearSelection() : _reset;
+  }
 
   List<StoreModel> get stores => List.unmodifiable(_stores);
   StoreModel? get selectedStore => _selectedStore;
@@ -26,29 +53,87 @@ class StoreContext extends ChangeNotifier {
   String? get error => _error;
   bool get hasStores => _stores.isNotEmpty;
 
-  Future<List<StoreModel>> loadStores({bool force = false}) async {
-    if (_stores.isNotEmpty && !force) return _stores;
+  Future<List<StoreModel>> loadStores({bool force = false}) {
+    final epoch = _sessionEpoch, pending = _storesLoading;
+    if (pending != null && _storesLoadingEpoch == epoch) return pending;
+    late final Future<List<StoreModel>> request;
+    request = _loadStores(epoch, force: force).whenComplete(() {
+      if (identical(_storesLoading, request)) {
+        _storesLoading = null;
+        _storesLoadingEpoch = null;
+      }
+    });
+    _storesLoading = request;
+    _storesLoadingEpoch = epoch;
+    return request;
+  }
+
+  Future<List<StoreModel>> _loadStores(int epoch, {required bool force}) async {
+    await _reset;
+    _checkEpoch(epoch);
+    if (_stores.isNotEmpty && !force) {
+      if (_selectedStore == null) await _selectInitialStore(_stores, epoch);
+      return _stores;
+    }
 
     _isLoading = true;
     _error = null;
 
     try {
       final stores = await _storeService.fetchStores();
+      _checkEpoch(epoch);
       _stores = stores;
-      await _selectInitialStore(stores);
+      await _selectInitialStore(stores, epoch);
       return _stores;
     } catch (error) {
+      _checkEpoch(epoch);
+      if (error is ApiException &&
+          error.statusCode >= 400 &&
+          error.statusCode < 500) {
+        await clearSelection();
+        rethrow;
+      }
       _error = error.toString();
       if (_storeService.stores.isNotEmpty) {
         _stores = _storeService.stores;
-        await _selectInitialStore(_stores);
+        await _selectInitialStore(_stores, epoch);
         return _stores;
       }
       rethrow;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (epoch == _sessionEpoch) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
+  }
+
+  /// Bind the authenticated actor and finish its reset before store discovery.
+  /// A valid empty response alone means onboarding; errors remain errors.
+  Future<StoreModel?> ensureSelectedStoreForActor(String actor) async {
+    if (actor.isEmpty)
+      throw const ApiException(
+        message: 'Sign in again to load store access.',
+        statusCode: 401,
+        code: 'MERCHANT_IDENTITY_REQUIRED',
+      );
+    await bindActor(actor);
+    final epoch = _sessionEpoch;
+    if (_actorId != actor)
+      throw const ApiException(
+        message: 'The signed-in account changed. Reload store access.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    final store = await ensureSelectedStore();
+    _checkEpoch(epoch);
+    if (_actorId != actor)
+      throw const ApiException(
+        message: 'The signed-in account changed. Reload store access.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+    return store;
   }
 
   Future<StoreModel?> ensureSelectedStore({bool force = false}) async {
@@ -81,20 +166,34 @@ class StoreContext extends ChangeNotifier {
     await selectStore(store);
   }
 
-  Future<void> clearSelection() async {
+  Future<void> clearSelection() {
+    _sessionEpoch++;
+    _storesLoading = null;
+    _storesLoadingEpoch = null;
     _selectedStore = null;
-    final prefs = await _preferences();
-    await prefs.remove(_selectedStoreIdKey);
+    _stores = const [];
+    _error = null;
+    _isLoading = false;
+    // Invalidate memory synchronously. All subsequent reads await cache reset.
+    final resetService = _storeService.clearSessionStores();
+    _reset = _reset.then((_) async {
+      await resetService;
+      final prefs = await _preferences();
+      await prefs.remove(_selectedStoreIdKey);
+    });
     notifyListeners();
+    return _reset;
   }
 
-  Future<void> _selectInitialStore(List<StoreModel> stores) async {
+  Future<void> _selectInitialStore(List<StoreModel> stores, int epoch) async {
+    _checkEpoch(epoch);
     if (stores.isEmpty) {
       _selectedStore = null;
       return;
     }
 
     final prefs = await _preferences();
+    _checkEpoch(epoch);
     final savedId = prefs.getString(_selectedStoreIdKey);
     final currentId = _selectedStore?.id ?? _storeService.currentStore?.id;
     final targetId = savedId?.isNotEmpty == true ? savedId : currentId;

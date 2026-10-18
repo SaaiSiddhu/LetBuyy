@@ -819,7 +819,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       children: [
         // Filter chips
         Container(
-          height: 44,
+          height: 52,
           margin: const EdgeInsets.only(top: 12),
           child: ListView(
             scrollDirection: Axis.horizontal,
@@ -945,13 +945,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
 
     return AccessibleTapRegion(
+      key: ValueKey('product-filter-$value'),
       label: '$label products filter',
       hint: isActive ? 'Current filter' : 'Show $label products',
       onTap: applyFilter,
       selected: isActive,
       excludeChildSemantics: true,
-      child: GestureDetector(
+      child: InkWell(
+        excludeFromSemantics: true,
         onTap: applyFilter,
+        borderRadius: BorderRadius.circular(20),
         child: Container(
           margin: const EdgeInsets.only(right: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -1081,13 +1084,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
     ].join(', ');
 
     return Semantics(
+      key: ValueKey('product-card-$productId'),
       container: true,
       label: semanticsLabel,
-      selected: isSelected,
-      button: _isSelectionMode,
-      onTap: _isSelectionMode ? handleTap : null,
-      child: GestureDetector(
+      hint: _isSelectionMode
+          ? isSelected
+                ? 'Tap to deselect product'
+                : 'Tap to select product'
+          : 'Opens product editor',
+      selected: _isSelectionMode ? isSelected : null,
+      button: true,
+      enabled: true,
+      onTap: handleTap,
+      child: InkWell(
+        excludeFromSemantics: true,
         onTap: handleTap,
+        borderRadius: BorderRadius.circular(14),
         onLongPress: () {
           if (!_isSelectionMode) {
             _toggleSelectionMode();
@@ -1281,13 +1293,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   top: 6,
                   right: 6,
                   child: AccessibleTapRegion(
+                    key: ValueKey('product-select-$productId'),
                     label: isSelected
                         ? 'Deselect product $name'
                         : 'Select product $name',
                     onTap: () => _toggleProductSelection(productId),
+                    selected: isSelected,
                     excludeChildSemantics: true,
-                    child: GestureDetector(
+                    child: InkWell(
+                      excludeFromSemantics: true,
                       onTap: () => _toggleProductSelection(productId),
+                      borderRadius: BorderRadius.circular(6),
                       child: Container(
                         width: 24,
                         height: 24,
@@ -1468,12 +1484,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
         children: [
           // Selection info
           AccessibleTapRegion(
+            key: const ValueKey('products-select-all-visible'),
             label: '${_selectedProductIds.length} products selected',
             hint: 'Select all visible products',
             onTap: _selectAll,
             excludeChildSemantics: true,
-            child: GestureDetector(
+            child: InkWell(
+              excludeFromSemantics: true,
               onTap: _selectAll,
+              borderRadius: BorderRadius.circular(8),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,

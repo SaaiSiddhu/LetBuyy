@@ -1,0 +1,41 @@
+{
+  "runId": "ef01a35be90f",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 4,
+  "passed": 4,
+  "failed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 24.7,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "hosted-checkout-buyer-ownership.postgres",
+      "kind": "gateway-db",
+      "exitCode": 0,
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "databaseOwnership": "verified before start"
+    }
+  ]
+}

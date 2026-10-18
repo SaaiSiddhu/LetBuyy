@@ -20,18 +20,22 @@ class ProductCardHorizontal extends StatelessWidget {
     final imageUrl = _extractImageUrl();
     final salePrice = _extractPrice('salePrice') ?? _extractPrice('price') ?? 0.0;
     final originalPrice = _extractPrice('originalPrice') ?? _extractPrice('mrp') ?? salePrice;
-    final hasDiscount = originalPrice > salePrice && salePrice > 0;
-    final discount = hasDiscount
-        ? ((originalPrice - salePrice) / originalPrice * 100).round()
-        : 0;
-    final inStock = _extractStock();
+    final hasPriorThirtyDayLow =
+        product['marketplaceListingId'] is String &&
+        (product['marketplaceListingId'] as String).isNotEmpty &&
+        product['priceKnown'] == true &&
+        originalPrice > salePrice &&
+        salePrice > 0;
+    final hasDiscount = hasPriorThirtyDayLow;
+    final availability = _extractAvailability();
+    final canOpenDetails = availability != false;
     final rating = _extractRating();
     final isFeatured = product['isFeatured'] == true;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: inStock ? onTap : null,
+        onTap: canOpenDetails ? onTap : null,
         borderRadius: BorderRadius.circular(16),
         child: Container(
           width: 160,
@@ -39,7 +43,7 @@ class ProductCardHorizontal extends StatelessWidget {
             color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: inStock ? AppColors.borderLight : AppColors.borderLight.withValues(alpha: 0.3),
+              color: canOpenDetails ? AppColors.borderLight : AppColors.borderLight.withValues(alpha: 0.3),
               width: 0.5,
             ),
             boxShadow: [
@@ -149,7 +153,7 @@ class ProductCardHorizontal extends StatelessWidget {
                     ),
 
                   // Discount Badge
-                  if (hasDiscount && discount > 0)
+                  if (hasDiscount)
                     Positioned(
                       top: 8,
                       right: 8,
@@ -169,7 +173,7 @@ class ProductCardHorizontal extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          '$discount% OFF',
+                          '30d low',
                           style: const TextStyle(
                             color: AppColors.white,
                             fontSize: 10,
@@ -180,7 +184,7 @@ class ProductCardHorizontal extends StatelessWidget {
                     ),
 
                   // Out of Stock Overlay
-                  if (!inStock)
+                  if (availability == false)
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -287,7 +291,7 @@ class ProductCardHorizontal extends StatelessWidget {
                       ),
 
                       // Stock indicator
-                      if (inStock) ...[
+                      if (availability == true) ...[
                         const SizedBox(height: 4),
                         Row(
                           children: [
@@ -357,7 +361,9 @@ class ProductCardHorizontal extends StatelessWidget {
     return null;
   }
 
-  bool _extractStock() {
+  bool? _extractAvailability() {
+    if (product['stockKnown'] == false) return null;
+
     final inStock = product['inStock'];
     if (inStock is bool) return inStock;
     
@@ -369,7 +375,7 @@ class ProductCardHorizontal extends StatelessWidget {
       return parsed != null && parsed > 0;
     }
     
-    return true; // Default to in stock
+    return null;
   }
 
   double _extractRating() {

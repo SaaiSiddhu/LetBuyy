@@ -8,7 +8,7 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, success } from '../../lib/supabase';
-import { requireBuyerSession } from '../../middleware/buyer-session';
+import { requireBuyerDataSession } from '../../middleware/buyer-data-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -51,9 +51,8 @@ export interface BuyerAddressInput {
 
 export interface BuyerAddressRoutesDeps {
     listAddresses: (c: AppContext, buyerAccountId: string) => Promise<{ data: BuyerAddressRow[] | null; error: unknown }>;
-    /// Both operations of the unset-then-set default switch (customer-address-routes.ts's own
-    /// established, already-accepted pattern — see migration 260's own header) live behind one
-    /// injected function so a route can never call one half without the other.
+    /// Ownership, default switch and save execute in one database transaction
+    /// (migration 266), including failure rollback and concurrent requests.
     createAddress: (
         c: AppContext,
         input: { buyerAccountId: string; address: BuyerAddressInput },
@@ -99,7 +98,7 @@ export function registerBuyerAddressRoutes(
 ): void {
     const { listAddresses, createAddress, updateAddress, deleteAddress } = deps;
 
-    router.get('/buyer/addresses', requireBuyerSession, async (c) => {
+    router.get('/buyer/addresses', requireBuyerDataSession, async (c) => {
         const session = c.get('buyerSession');
         if (!session) return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
 
@@ -108,7 +107,7 @@ export function registerBuyerAddressRoutes(
         return c.json(success({ addresses: data ?? [] }));
     });
 
-    router.post('/buyer/addresses', requireBuyerSession, async (c) => {
+    router.post('/buyer/addresses', requireBuyerDataSession, async (c) => {
         const session = c.get('buyerSession');
         if (!session) return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
 
@@ -127,7 +126,7 @@ export function registerBuyerAddressRoutes(
         return c.json(success({ address: data }), 201);
     });
 
-    router.patch('/buyer/addresses/:id', requireBuyerSession, async (c) => {
+    router.patch('/buyer/addresses/:id', requireBuyerDataSession, async (c) => {
         const session = c.get('buyerSession');
         if (!session) return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
 
@@ -151,7 +150,7 @@ export function registerBuyerAddressRoutes(
         return c.json(success({ address: data }));
     });
 
-    router.delete('/buyer/addresses/:id', requireBuyerSession, async (c) => {
+    router.delete('/buyer/addresses/:id', requireBuyerDataSession, async (c) => {
         const session = c.get('buyerSession');
         if (!session) return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
 

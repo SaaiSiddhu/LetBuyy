@@ -22,6 +22,7 @@ export const ListChannelListingsQuery = z.object({
     store_id: uuid,
     channel: ChannelListingChannelSchema.optional(),
     status: ChannelListingStatusSchema.optional(),
+    product_id: uuid.optional(),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(20),
 });
@@ -63,12 +64,21 @@ export const TransitionChannelListingSchema = z
     })
     .strict();
 
+export const ResubmitRejectedChannelListingSchema = z.object({
+    store_id: uuid,
+    reason: z.string().trim().min(8).max(500),
+    idempotency_key: z.string().trim().min(1).max(120),
+}).strict();
+
 // Public feed query. `limit` is clamped, not rejected, so a stale client never gets a 400 for asking
 // for too much; the RPC clamps again server-side (217: GREATEST(1, LEAST(COALESCE(p_limit, 20), 100))).
 export const MarketplaceFeedQuery = z
     .object({
+        // Public seller discovery; the SQL feed applies this before its limit and eligibility fence.
+        site_id: uuid.optional(),
         category: slug.optional(),
         search: z.string().trim().max(120).optional(),
+        country_of_origin: z.string().trim().min(1).max(100).optional(),
         limit: z.coerce
             .number()
             .int()
@@ -97,11 +107,29 @@ export const OperatorListingDecisionSchema = z
         // rbac.ts validateSensitiveReason enforces 8..1000 for reject / take-down; approve may omit it.
         reason: z.string().trim().max(1000).optional(),
         idempotency_key: z.string().min(1).max(200),
+        operator_user_id: z.string().uuid(),
     })
     .strict();
 
+export const OperatorListingClaimSchema = z.object({
+    reason: z.string().trim().min(8).max(1000),
+    idempotency_key: z.string().min(1).max(200),
+    expected_version: z.number().int().positive(),
+    operator_user_id: z.string().uuid(),
+}).strict();
+
+export const OperatorListingAssignmentSchema = z.object({
+    assignee_user_id: uuid,
+    reason: z.string().trim().min(8).max(1000),
+    idempotency_key: z.string().min(1).max(200),
+    expected_version: z.number().int().positive(),
+    operator_user_id: uuid,
+}).strict();
+
 export type OperatorListingListInput = z.infer<typeof OperatorListingListQuery>;
 export type OperatorListingDecisionInput = z.infer<typeof OperatorListingDecisionSchema>;
+export type OperatorListingClaimInput = z.infer<typeof OperatorListingClaimSchema>;
+export type OperatorListingAssignmentInput = z.infer<typeof OperatorListingAssignmentSchema>;
 
 // ── Operator realm (ADM-3) — marketplace_categories taxonomy ───────────────────────────────────
 // A platform-owned table (no site_id, no tenant scope): writes are a service_role-only policy
@@ -156,4 +184,5 @@ export type GetChannelListingInput = z.infer<typeof GetChannelListingQuery>;
 export type CreateChannelListingInput = z.infer<typeof CreateChannelListingSchema>;
 export type UpdateChannelListingInput = z.infer<typeof UpdateChannelListingSchema>;
 export type TransitionChannelListingInput = z.infer<typeof TransitionChannelListingSchema>;
+export type ResubmitRejectedChannelListingInput = z.infer<typeof ResubmitRejectedChannelListingSchema>;
 export type MarketplaceFeedInput = z.infer<typeof MarketplaceFeedQuery>;

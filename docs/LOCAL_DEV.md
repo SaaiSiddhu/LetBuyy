@@ -102,7 +102,21 @@ The first `pnpm dev` is the slow one, and it's a **one-time cold start**:
   calls the gateway on every request, which in turn needs Postgres/Supabase, so
   storefront pages stay thin until you point `SUPABASE_URL` /
   `STAGING_DB_CONNECTION_STRING` at a real local stack (see
-  `scripts/utilities/local-stack-up.mjs`).
+  `scripts/utilities/local-stack-up.mjs`). The generator writes
+  `SUPABASE_URL=http://localhost:54321` (the standard `supabase start` port) and
+  the standard local demo JWTs — correct only if your stack actually runs on
+  that port. A stack started another way (a custom `docker compose` project, a
+  non-default `supabase start` port mapping) needs `SUPABASE_URL` corrected by
+  hand in `services/api-gateway/.dev.vars` after first generation; the demo JWTs
+  themselves are almost always still correct (every local Supabase stack signs
+  with the same fixed demo secret unless explicitly reconfigured). This is the
+  same "edit the generated files directly" mechanism above (line 95) — the
+  script never overwrites an existing file, so the edit survives every restart
+  and every future `pnpm dev` — named here explicitly because the wrong port
+  fails in a way that looks like a backend outage (every gateway query fails,
+  e.g. a generic `DB_ERROR`, rather than an obviously-wrong-config error), so
+  it is easy to mis-diagnose as a service actually being down rather than
+  pointed at the wrong port.
 - **First run installs native deps** (`esbuild`, `workerd`, `sharp`) — give
   `pnpm install` a minute.
 

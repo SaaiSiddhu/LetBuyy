@@ -17,6 +17,8 @@ void main() {
       'is_active': true,
       'is_featured': false,
       'images': ['https://cdn.letbuyy.com/products/urban-runner.jpg'],
+      'country_of_origin': 'Japan',
+      'importer_details': 'Example Imports, Mumbai',
       'tags': ['shoes'],
       'metadata': {
         'specifications': {'material': 'mesh'},
@@ -29,6 +31,9 @@ void main() {
     expect(product.comparePrice, 1599);
     expect(product.stock, 11);
     expect(product.isActive, isTrue);
+    expect(product.countryOfOrigin, 'Japan');
+    expect(product.importerDetails, 'Example Imports, Mumbai');
+    expect(product.toJson()['importer_details'], 'Example Imports, Mumbai');
     expect(product.toJson().containsKey('salePrice'), isFalse);
   });
 }

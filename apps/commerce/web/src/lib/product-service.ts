@@ -5,6 +5,7 @@ import {
     getUrbanKicksDemoProduct as getUrbanKicksDemoProductFixture,
     getUrbanKicksDemoProducts as getUrbanKicksDemoProductsFixture,
 } from './demo/urban-kicks-demo';
+import { mapPublicProductPriceHistory } from './product-price-history';
 
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
@@ -41,7 +42,11 @@ export const ProductService = {
     },
 
     // Get products by store's selected product IDs
-    async getProductsByIds(productIds: string[], subdomain?: string): Promise<ProductModel[]> {
+    async getProductsByIds(
+        productIds: string[],
+        subdomain?: string,
+        query: { category?: string; search?: string; country_of_origin?: string; page?: number } = {},
+    ): Promise<ProductModel[]> {
         if (!productIds || productIds.length === 0) return [];
 
         if (!subdomain) return [];
@@ -52,7 +57,7 @@ export const ProductService = {
                     `storefront:${subdomain}:products`,
                     `storefront:${subdomain}:products:selected`,
                 ]),
-            ).storefront.productsByIds(subdomain, productIds);
+            ).storefront.productsByIds(subdomain, productIds, { query });
             return products.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker by-ids fetch failed:', error);
@@ -60,11 +65,14 @@ export const ProductService = {
         }
     },
 
-    async getProductsByStoreSubdomain(subdomain: string): Promise<ProductModel[]> {
+    async getProductsByStoreSubdomain(
+        subdomain: string,
+        query: { category?: string; search?: string; country_of_origin?: string; page?: number } = {},
+    ): Promise<ProductModel[]> {
         try {
             const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]),
-            ).storefront.listProducts(subdomain, { limit: 100 });
+            ).storefront.listProducts(subdomain, { limit: 100, ...query });
             return products.data.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker store fetch failed:', error);
@@ -75,13 +83,17 @@ export const ProductService = {
     // Search products for the storefront /search route. Callers should catch: a failed search
     // degrades to an empty result set with a distinct error state, not a thrown storefront error
     // boundary — a shopper mistyping a query is not the same fact as a catalogue outage.
-    async searchProducts(subdomain: string, term: string): Promise<ProductModel[]> {
-        const query = term.trim();
-        if (!query) return [];
+    async searchProducts(
+        subdomain: string,
+        term: string,
+        filters: { category?: string; country_of_origin?: string; page?: number } = {},
+    ): Promise<ProductModel[]> {
+        const searchTerm = term.trim();
+        if (!searchTerm) return [];
 
         const products = await createStorefrontApiClient(
             storefrontReadInit(30, [`storefront:${subdomain}:search`]),
-        ).storefront.listProducts(subdomain, { search: query, limit: 50 });
+        ).storefront.listProducts(subdomain, { search: searchTerm, limit: 50, ...filters });
         return products.data.map(mapWorkerProduct);
     },
 
@@ -149,19 +161,25 @@ function normalizeImages(value: unknown): string[] {
 
 function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
     const stockValue = data.stock ?? data.stock_quantity ?? data.quantity;
+    const currentPrice = Number(data.price);
+    const priceHistory = mapPublicProductPriceHistory(data);
 
     return {
         id: data.id as string,
         storeId: data.store_id as string,
         name: (data.name as string) || 'Unnamed Product',
         description: (data.description as string) || '',
-        price: Number(data.price) || 0,
-        compareAtPrice: data.compare_price ? Number(data.compare_price) : data.compare_at_price ? Number(data.compare_at_price) : undefined,
+        price: Number.isFinite(currentPrice) ? currentPrice : 0,
+        compareAtPrice: priceHistory.compareAtPrice,
+        priorLowestPrice30d: priceHistory.priorLowestPrice30d,
+        priorPriceCoverageComplete: priceHistory.priorPriceCoverageComplete,
         currency: (data.currency as string) || 'INR',
         images: normalizeImages(data.images),
         category: data.category as string,
+        countryOfOrigin: data.country_of_origin as string | undefined,
+        importerDetails: data.importer_details as string | undefined,
         tags: (data.tags as string[]) || [],
-        variants: ((data.variants as Array<{ id: string; name: string; options: Record<string, string>; price?: number; stock?: number }>) || []),
+        variants: priceHistory.variants as unknown as ProductModel['variants'],
         stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,

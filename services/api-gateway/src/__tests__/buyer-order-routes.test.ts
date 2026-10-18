@@ -53,6 +53,7 @@ function routeHarness(rows: BuyerOrderSummaryRow[] = [], hasMore = false) {
     const calls: { buyerAccountId: string; limit: number; before: unknown }[] = [];
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerOrderRoutes(router, {
+        loadBuyerOrderDetail: async () => ({ data: null, error: null }),
         listBuyerOrders: async (_c, buyerAccountId, input) => {
             calls.push({ buyerAccountId, limit: input.limit, before: input.before });
             return { data: rows, error: null, hasMore };
@@ -114,7 +115,7 @@ test('the response carries orders, next_cursor and has_more; a further page is f
     const { privateKey, jwks } = await keys();
     const tok = await buyerToken(privateKey, BUYER_A);
     const row: BuyerOrderSummaryRow = {
-        id: 'order-1', linked_at: '2026-09-24T10:00:00.000Z', site_id: 'site-a',
+        id: ORDER_A1, linked_at: '2026-09-24T10:00:00.000Z', site_id: 'site-a',
         store_name: 'Snaz', order_number: '1001', status: 'paid', total: 500, currency: 'INR',
         created_at: '2026-09-24T09:00:00.000Z',
     };

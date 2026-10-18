@@ -142,16 +142,22 @@ class LanguageService extends ChangeNotifier {
   String get wizardStoreName => _translation('wizardStoreName');
   String get wizardStoreNameSubtitle => _translation('wizardStoreNameSubtitle');
   String get wizardEnterStoreName => _translation('wizardEnterStoreName');
+  String get wizardStoreNameTooShort => _translation('wizardStoreNameTooShort');
+  String get wizardStoreNameMeetsMinimum =>
+      _translation('wizardStoreNameMeetsMinimum');
   String get wizardSubdomain => _translation('wizardSubdomain');
   String get wizardSubdomainSubtitle => _translation('wizardSubdomainSubtitle');
   String get wizardTheme => _translation('wizardTheme');
   String get wizardThemeSubtitle => _translation('wizardThemeSubtitle');
+  String get switchToLightMode => _translation('switchToLightMode');
+  String get switchToDarkMode => _translation('switchToDarkMode');
 
   // Common Wizard Buttons
   String get back => _translation('back');
   String get next => _translation('next');
   String get skipStep => _translation('skipStep');
   String get createStore => _translation('createStore');
+  String get retryPublishStore => _translation('retryPublishStore');
 
   // Sales Channels
   String get onlineStore => _translation('onlineStore');
@@ -189,6 +195,11 @@ class LanguageService extends ChangeNotifier {
   String get checkingAvailability => _translation('checkingAvailability');
   String get subdomainAvailable => _translation('subdomainAvailable');
   String get subdomainTaken => _translation('subdomainTaken');
+  String get subdomainChooseAnother => _translation('subdomainChooseAnother');
+  String get subdomainTooShort => _translation('subdomainTooShort');
+  String get subdomainInvalidCharacters =>
+      _translation('subdomainInvalidCharacters');
+  String get subdomainCheckFailed => _translation('subdomainCheckFailed');
 
   // Logout Dialog
   String get logoutTitle => _translation('logoutTitle');
@@ -396,6 +407,16 @@ class LanguageService extends ChangeNotifier {
       'ta': 'கடை பெயரை உள்ளிடவும்',
       'hi': 'स्टोर का नाम दर्ज करें',
     },
+    'wizardStoreNameTooShort': {
+      'en': 'Enter at least 4 characters.',
+      'ta': 'குறைந்தது 4 எழுத்துகளை உள்ளிடவும்.',
+      'hi': 'कम से कम 4 अक्षर दर्ज करें।',
+    },
+    'wizardStoreNameMeetsMinimum': {
+      'en': 'Store name meets the minimum length.',
+      'ta': 'கடை பெயர் குறைந்தபட்ச நீளத்தை அடைகிறது.',
+      'hi': 'स्टोर का नाम न्यूनतम लंबाई पूरी करता है।',
+    },
     'wizardSubdomain': {
       'en': 'Choose your store URL',
       'ta': 'உங்கள் கடை URL ஐ தேர்வு செய்க',
@@ -416,6 +437,16 @@ class LanguageService extends ChangeNotifier {
       'ta': 'உங்கள் பிராண்டுக்கு பொருத்தமான தோற்றத்தை தேர்வு செய்க',
       'hi': 'अपने ब्रांड से मेल खाता लुक चुनें',
     },
+    'switchToLightMode': {
+      'en': 'Switch to light mode',
+      'ta': 'ஒளி பயன்முறைக்கு மாறவும்',
+      'hi': 'लाइट मोड पर स्विच करें',
+    },
+    'switchToDarkMode': {
+      'en': 'Switch to dark mode',
+      'ta': 'இருள் பயன்முறைக்கு மாறவும்',
+      'hi': 'डार्क मोड पर स्विच करें',
+    },
 
     // Common Wizard Buttons
     'back': {'en': '← Back', 'ta': '← பின்', 'hi': '← वापस'},
@@ -429,6 +460,11 @@ class LanguageService extends ChangeNotifier {
       'en': 'Create Store',
       'ta': 'கடை உருவாக்கு',
       'hi': 'स्टोर बनाएं',
+    },
+    'retryPublishStore': {
+      'en': 'Retry publishing store',
+      'ta': 'கடை வெளியீட்டை மீண்டும் முயற்சிக்கவும்',
+      'hi': 'स्टोर प्रकाशित करने की फिर कोशिश करें',
     },
 
     // Sales Channels
@@ -569,6 +605,26 @@ class LanguageService extends ChangeNotifier {
       'en': 'This URL is already taken',
       'ta': 'இந்த URL ஏற்கனவே எடுக்கப்பட்டுள்ளது',
       'hi': 'यह URL पहले से लिया गया है',
+    },
+    'subdomainChooseAnother': {
+      'en': 'Please choose a different name.',
+      'ta': 'வேறு பெயரைத் தேர்வு செய்யவும்.',
+      'hi': 'कृपया कोई दूसरा नाम चुनें।',
+    },
+    'subdomainTooShort': {
+      'en': 'Use at least 3 characters.',
+      'ta': 'குறைந்தது 3 எழுத்துகளைப் பயன்படுத்தவும்.',
+      'hi': 'कम से कम 3 अक्षर इस्तेमाल करें।',
+    },
+    'subdomainInvalidCharacters': {
+      'en': 'Use only letters, numbers, and hyphens.',
+      'ta': 'எழுத்துகள், எண்கள், ஹைபன்கள் மட்டும் பயன்படுத்தவும்.',
+      'hi': 'केवल अक्षर, अंक और हाइफ़न इस्तेमाल करें।',
+    },
+    'subdomainCheckFailed': {
+      'en': 'Could not check this URL. Try again.',
+      'ta': 'இந்த URL ஐச் சரிபார்க்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
+      'hi': 'इस URL की जाँच नहीं हो सकी। फिर से कोशिश करें।',
     },
 
     // Logout Dialog

@@ -1,0 +1,41 @@
+# N1.3 browser and Android journey evidence — 15 October 2026
+
+The existing native N1–N9 Goal is the sole programme Goal; current status is tracked in the continuous-run state. N1.3 and N1 remain open. The owner chose seven-day legacy store-customer compatibility for V1; canonical realm lifetimes are unchanged. The marketplace uses direct canonical LetBuyy authentication, under the existing Firebase-free owner decision.
+
+## Verified scope
+
+- Browser run `ac07b61a5e7d`: one actual Chromium → Commerce Next → Identity Next → Gateway → PostgREST → PostgreSQL journey passed. Registration, explicit consent, PKCE callback, host-only secure store cookie, sibling-store denial, profile save, browser-session restoration and device-local logout were checked. The profile route was loaded with a full navigation. This result does not prove the failing client-side account navigation described below.
+- Android run `82691dbb8473`: one actual Android 35 ARM64 emulator journey passed without cancelled/skipped tests. Foreground native/system-browser controls completed buyer A registration and consent, the real app callback, profile and address creation, force-stop/restart restoration, native device logout, buyer B registration and consent, profile save/reload, and absence of buyer A's profile/address. Backend assertions independently confirmed two distinct accounts, both names, two successful authorization-code redemptions, profile writes and address ownership. No session cookie, authorization callback or token was injected.
+- Thirteen existing canonical native account tests passed after the address-sheet correction. Gateway typechecking passed after browser/device fixture changes.
+- Replay/operator run `6ce3a842fadc`: all 22 tests passed. The replay recovery check now revokes the actual service-role RPC permission in the owned PostgreSQL database while workers and PostgREST remain live. The worker denies access without consuming the JTI; recovery restores the exact ACL and permits one retry, which a second worker cannot replay. An invalid HMAC cannot consume a valid signed credential. Existing database-role and migration-264/307 rollback/reapply assertions passed in the same run. This proves the named database-permission outage, not every possible network/provider outage.
+- Both journeys used Cloudflare's official automated-test site/secret keys with application development bypass flags disabled. Actual widget and Siteverify transport ran. This is test-mode integration evidence, not production anti-bot or email-delivery proof.
+
+The Android artifact installed before the successful run's UI actions is `com.letbuyy.letbuyy`, debug version `1.0.10-debug` / `4013`, SHA256 `bc76f7ebc6c48b3f0303ec15698810b18285465f632b6eab9863efa2355dad1f`, 167465081 bytes. Its source was the isolated candidate overlay, including the canonical address editor's `useSafeArea: true` correction. The fixture's startup handoff captured the previous APK before the rebuild completed; the separate installed-artifact record and completion evidence identify the new APK explicitly. Play signing/distribution and a physical device are not verified by this artifact.
+
+The APK contains pre-existing transitive Firebase annotations/components/encoders entries. Its manifest has no FirebaseInitProvider, and the canonical sign-in journey requires no Firebase account or credentials. Absence of every Firebase-named byte is not claimed.
+
+## Reproduced and corrected
+
+The address editor initially placed its title under the Android system status bar. The canonical `LetBuyyAccountScreen` now asks the modal sheet to respect the safe area. The rebuilt APK placed the title below the system bar and completed the actual address save. No application ID, signing configuration, deep-link filter or Android cleartext policy was changed.
+
+The first device run `e166d7d7e82e` expired its 20-minute test deadline. Its UI observations and backend assertions eventually completed, but the runner correctly recorded one cancelled test and zero passes. It is retained as a failed/cancelled run. The fixture now observes the test cancellation signal before accepting completion and has a bounded 30-minute deadline. The fresh successful run replaced that missing proof. Android CDP tab/viewport click errors and early loading-frame observations were fixture errors; they were resolved by driving the observed foreground native controls and waiting for actual app state.
+
+## Current compiled browser verification
+
+Canonical normal-entry browser run `16909a19a916` passed 1/1. The actual Commerce production build and server, Identity Next, Gateway, PostgREST and final-migration PostgreSQL handled registration, consent, the normal account/orders landing, real Settings/Addresses Links, profile edit, cookie isolation, browser-context restart and logout. No full-page profile workaround or routing/auth guard relaxation was used. Chromium reported no uncaught page errors. Earlier compiled diagnostic run `875b2b236571` also passed its named narrower scope.
+
+Owned production-client lifecycle run `b6762549dcc2` passed 4/4, including refusal of invalid ports and hosted overrides before starting a build. The fixed launcher creates a distinct build directory, validates fixture ownership, builds the actual app, rechecks ownership and starts the loopback server. These are integration and local browser results, not hosted acceptance.
+
+## Development-runtime limitation and remaining requirements
+
+Historical development-server account navigation was reproduced: after the storefront PKCE callback, the account root and settings Link navigation stall although full HTTP profile loads work. RSC responses were 200; changing an already admitted store-tree rewrite to pass-through did not repair it. That experiment was reverted to the original candidate overlay. The passing full-page browser diagnostic must not close this defect.
+
+Later fresh-browser diagnostics also failed to mount the profile after a full navigation. Runs `2bd0b9523c01` and `0d764d4c038b` failed before their intended ready-page Link checks. Run `db3b27035bb6` allowed 45 seconds and captured the actual browser error `Invalid or unexpected token`; its account content still did not mount. The single earlier full-page pass is therefore retained as scoped historical evidence, not a reproducibly green current browser acceptance verdict. Run `232e711e0138` subsequently captured a truncated development `app/layout.js` asset: 2,555,904 bytes, ending inside an eval string. Both Chromium and a local syntax parser rejected it. The asset and its SHA256 are preserved under `N1.3/truncated-development-bundle`. The cause of truncation is not established; the developer-runtime caveat remains in N1.1. The current compiled normal-entry browser result above supersedes the browser-failure verdict, without claiming that the development runtime was repaired.
+
+Durable migration-307 replay claims now have current worker-concurrency, actual database-permission outage/retry, direct-role and paired rollback/reapply evidence. Complete wrong-realm/audience/origin/replay/expiry/revocation/hostile-redirect coverage and normal recovery delivery still need reconciliation against current evidence. Hosted drain/cutover, physical-device verification, production challenge and approved inbox/provider checks remain separate requirements. The device fixture is explicitly invoked with an owned receipt and remains outside the automatic database catalog; it is not an unattended CI device lane.
+
+## Resources and evidence
+
+The emulator used fresh private writable images for `letbuyy_owned_n1_api35` on `emulator-5556`. Existing AVDs and restored Docker stacks were untouched. Successful fixture cleanup reported no owned containers, networks or volumes. The exact emulator process and its CDP forward were then stopped; the shared ADB server was preserved. Source, APK hash, synthetic screenshots/XML, cancelled-run evidence and terminal results are retained in the continuous-run verification directory.
+
+Next: reconcile remaining N1.3 lifecycle and approved email-delivery evidence while implementing N1.5 canonical order reads and actual native ownership journeys. No package or phase acceptance is inferred from these scoped passes.

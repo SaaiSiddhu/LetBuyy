@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-08",
+  "scope": "Mounted buyer account surface refresh after host-only buyer-cookie change",
+  "implementation": {
+    "shared_session_state": "WishlistProvider exposes buyer email, readiness, refreshing, generation, and unavailable state",
+    "consumers": [
+      "apps/commerce/web/src/app/store/[subdomain]/account/account-chrome-client.tsx",
+      "apps/commerce/web/src/app/store/[subdomain]/account/settings/settings-client.tsx",
+      "apps/commerce/web/src/app/store/[subdomain]/account/addresses/addresses-client.tsx",
+      "apps/commerce/web/src/components/account/account-bottom-sheet.tsx",
+      "apps/commerce/web/src/components/product/product-reviews.tsx"
+    ],
+    "session_policy_changed": false
+  },
+  "local_tests": {
+    "focused_command": "pnpm --dir apps/commerce/web exec node --import tsx --test src/components/storefront/addresses-client.test.tsx src/context/wishlist-context.test.tsx",
+    "focused_result": "3/3 passed; address A to pending focus to buyer B hides and clears the prior address/form; B address loads; a 503 session check clears B data and presents an error",
+    "commerce_web_suite": "pnpm --dir apps/commerce/web test; passed, 1,165 tests across all stages, zero failures",
+    "typecheck": "pnpm --filter @letbuyy/customer-web typecheck; passed",
+    "eslint": "Scoped ESLint passed with 0 errors and 172 token/raw-color warnings",
+    "diff_check": "git diff --check; passed"
+  },
+  "owned_browser_gateway_postgres_attempt": {
+    "runner": "scripts/governance/run-executable-suites.mjs",
+    "run_id": "8b14fea1807f",
+    "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+    "status": "blocked_before_fixture_start",
+    "reason": "docker info could not find a real Docker daemon",
+    "tests_started": 0,
+    "containers_networks_volumes_created": 0,
+    "cleanup": "clear"
+  },
+  "limitations": [
+    "The mounted account-surface journey has local React evidence but no accepted Chromium/owned-Postgres browser assertion yet.",
+    "Hosted account switching, production session adoption, buyer-role RLS, and full Phase 2 or eleven-phase acceptance are not established."
+  ],
+  "next": "Rerun the owned browser/Gateway/Postgres suite when Docker is available and add a two-tab addresses/profile assertion."
+}

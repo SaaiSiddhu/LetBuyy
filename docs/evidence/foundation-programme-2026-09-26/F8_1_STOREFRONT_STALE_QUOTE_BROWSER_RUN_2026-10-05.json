@@ -1,0 +1,42 @@
+{
+  "recorded_on": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+  "owned_runner_id": "c920d01bcfa9",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts --jobs 1",
+  "result": {
+    "suite_count": 1,
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "duration_seconds": 57.8,
+    "postgres_image": "postgres:16-alpine",
+    "postgrest_image": "public.ecr.aws/supabase/postgrest:v16.2"
+  },
+  "validation": {
+    "commerce_typecheck": "passed",
+    "gateway_typecheck": "passed",
+    "git_diff_check": "passed"
+  },
+  "cleanup": {
+    "database_removed": true,
+    "postgrest_removed": true,
+    "remaining_runner_resources": 0
+  },
+  "journeys": [
+    "Chromium enters the actual synthetic storefront, follows the signed checkout handoff and reviews server-configured delivery rates before placing a COD order.",
+    "Chromium completes the hosted online payment path through the real Gateway and a synthetic Razorpay adapter; canonical order, capture, ledger and notification effects are checked against owned Postgres.",
+    "After Chromium has reviewed a ₹20 COD quote, the fixture changes the saved rate to ₹25 before Gateway delivery validation. The stale quote returns a conflict, creates no order or payment intent, refreshes the delivery options, and requires explicit selection of the ₹25 amount before exactly one COD order is created."
+  ],
+  "limits": [
+    "All identities, products, addresses and orders are synthetic and confined to runner-owned Postgres.",
+    "The hosted payment adapter is synthetic test evidence, not a Razorpay sandbox or live transaction.",
+    "This is local Chromium/worker/database acceptance, not physical-device, carrier, hosted-deployment or Phase 8 acceptance."
+  ]
+}

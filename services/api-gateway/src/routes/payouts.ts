@@ -2,7 +2,9 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success } from '../lib/supabase';
-import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
+import { stepUpErrorBody } from '../lib/security-controls';
+import { verifyMerchantStepUp } from '../lib/merchant-step-up';
+import { AppError } from '../lib/errors';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
@@ -12,8 +14,8 @@ import {
     type MerchantPayoutRail,
     type PayoutTransferMode,
 } from '@letbuyy/infrastructure/payout-transfer-adapter';
+import { isLivePASplitProviderReady } from '@letbuyy/payments';
 import {
-    planPayoutReleaseLedgerPosting,
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
 
@@ -68,6 +70,7 @@ interface PayoutStatementRow extends JsonRecord {
     failure_reason?: string | null;
     canonical_ledger_transaction_id?: string | null;
     release_ledger_transaction_id?: string | null;
+    release_idempotency_key?: string | null;
     metadata?: JsonRecord | null;
     created_at?: string | null;
     updated_at?: string | null;
@@ -121,14 +124,20 @@ function payoutRail(): MerchantPayoutRail {
     return 'razorpay_route';
 }
 
-function payoutProviderConfigured(env: Env): boolean {
+export function payoutProviderConfigured(env: Env): boolean {
     const envRecord = env as Env & Record<string, string | undefined>;
-    return Boolean(
+    const providerConfigurationReady = Boolean(
         env.RAZORPAY_KEY_ID
         && (env.RAZORPAY_ROUTE_KEY_SECRET || env.RAZORPAY_KEY_SECRET)
         && env.RAZORPAY_ROUTE_ACCOUNT_ID
         && envRecord.RAZORPAY_ROUTE_PROVIDER_ENABLED === 'true',
     );
+    if (payoutMode(env) === 'live') {
+        return isLivePASplitProviderReady('razorpay_route', {
+            razorpay_route: env.RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE,
+        }, providerConfigurationReady);
+    }
+    return providerConfigurationReady;
 }
 
 function payoutProviderClient(rail: MerchantPayoutRail) {
@@ -137,7 +146,7 @@ function payoutProviderClient(rail: MerchantPayoutRail) {
 }
 
 function statementNumber(siteId: string, now: Date): string {
-    return `PYT-${siteId.replace(/-/g, '').slice(0, 8).toUpperCase()}-${now.getTime()}`;
+    return `PYT-${siteId.replace(/-/g, '').slice(0, 8).toUpperCase()}-${now.getTime()}-${crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()}`;
 }
 
 function serializePayout(row: PayoutStatementRow) {
@@ -169,6 +178,54 @@ function serializePayout(row: PayoutStatementRow) {
         created_at: row.created_at || null,
         updated_at: row.updated_at || null,
         deleted_at: row.deleted_at || null,
+    };
+}
+
+async function serializePayoutWithSourceLineage(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    row: PayoutStatementRow,
+    siteId: string,
+) {
+    const [ordersResult, transactionsResult] = await Promise.all([
+        db.from('payout_statement_source_orders')
+            .select('order_id,source_order_gross_minor,canonical_merchant_payable_delta_minor,canonical_transaction_count,origin_transaction_count,lineage_status')
+            .eq('site_id', siteId)
+            .eq('payout_statement_id', row.id)
+            .order('order_id'),
+        db.from('payout_statement_source_ledger_transactions')
+            .select('order_id,ledger_transaction_id,source_type,merchant_payable_delta_minor,ledger_created_at')
+            .eq('site_id', siteId)
+            .eq('payout_statement_id', row.id)
+            .order('ledger_created_at'),
+    ]);
+
+    if (ordersResult.error) throw new Error(`Payout source lineage lookup failed: ${ordersResult.error.message}`);
+    if (transactionsResult.error) throw new Error(`Payout source transaction lookup failed: ${transactionsResult.error.message}`);
+
+    const transactionsByOrder = new Map<string, Array<Record<string, unknown>>>();
+    for (const transaction of transactionsResult.data || []) {
+        const orderId = String(transaction.order_id);
+        const rows = transactionsByOrder.get(orderId) || [];
+        rows.push({
+            ledger_transaction_id: transaction.ledger_transaction_id,
+            source_type: transaction.source_type,
+            merchant_payable_delta_minor: Number(transaction.merchant_payable_delta_minor || 0),
+            created_at: transaction.ledger_created_at,
+        });
+        transactionsByOrder.set(orderId, rows);
+    }
+
+    return {
+        ...serializePayout(row),
+        source_order_lineage: (ordersResult.data || []).map((sourceOrder) => ({
+            order_id: sourceOrder.order_id,
+            source_order_gross_minor: Number(sourceOrder.source_order_gross_minor || 0),
+            canonical_merchant_payable_delta_minor: Number(sourceOrder.canonical_merchant_payable_delta_minor || 0),
+            canonical_transaction_count: Number(sourceOrder.canonical_transaction_count || 0),
+            origin_transaction_count: Number(sourceOrder.origin_transaction_count || 0),
+            lineage_status: sourceOrder.lineage_status,
+            ledger_transactions: transactionsByOrder.get(String(sourceOrder.order_id)) || [],
+        })),
     };
 }
 
@@ -206,41 +263,38 @@ async function postCanonicalPayoutLedger(
     return String(data);
 }
 
-async function syncSettlementPayoutInstruction(
+class PayoutReleaseConflict extends Error {}
+
+async function finalizePayoutStatementRelease(
     db: ReturnType<typeof getSupabaseAdmin>,
     input: {
         siteId: string;
-        payoutStatementId: string;
+        statementId: string;
+        idempotencyKey: string;
         status: 'processing' | 'released' | 'failed';
+        processedAt: string;
         providerReference: string | null;
         utr: string | null;
         failureReason: string | null;
-        ledgerTransactionId: string | null;
         actorId: string | null;
-        processedAt: string;
+        stepUpMetadata?: JsonRecord;
     },
-) {
-    const instructionStatus = input.status === 'released' ? 'paid' : input.status;
-    const update: JsonRecord = {
-        status: instructionStatus,
-        provider_reference: input.providerReference,
-        utr: input.utr,
-        failure_reason: input.failureReason,
-        checker_actor_id: input.actorId,
-        checked_at: input.processedAt,
-        updated_by: input.actorId,
-        updated_at: input.processedAt,
-    };
-    if (input.ledgerTransactionId) update.ledger_transaction_id = input.ledgerTransactionId;
-
-    const { error } = await db
-        .from('payouts')
-        .update(update)
-        .eq('site_id', input.siteId)
-        .eq('payout_statement_id', input.payoutStatementId)
-        .is('deleted_at', null);
-
-    if (error) throw new Error(`Settlement payout instruction sync failed: ${error.message}`);
+): Promise<PayoutStatementRow> {
+    const { data, error } = await db.rpc('finalize_payout_statement_release_with_effects', {
+        p_site_id: input.siteId,
+        p_statement_id: input.statementId,
+        p_release_idempotency_key: input.idempotencyKey,
+        p_result_status: input.status,
+        p_processed_at: input.processedAt,
+        p_provider_reference: input.providerReference,
+        p_utr: input.utr,
+        p_failure_reason: input.failureReason,
+        p_actor_id: input.actorId,
+        p_step_up_metadata: input.stepUpMetadata || {},
+    });
+    if (error?.code === '23505' || error?.code === '23514') throw new PayoutReleaseConflict();
+    if (error || !data) throw new Error(`Payout release finalization failed: ${error?.message || 'unknown error'}`);
+    return data as unknown as PayoutStatementRow;
 }
 
 function payoutProviderUnavailableBody(error: PayoutProviderUnavailable) {
@@ -286,6 +340,115 @@ function planPayoutFeeAssessmentLedger(input: {
         });
     }
     return lines;
+}
+
+async function ensurePayoutStatementEffects(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        userId: string | null;
+        statement: PayoutStatementRow;
+        sourceOrderIds: string[];
+    },
+): Promise<string | null> {
+    const statement = input.statement;
+    const statementMetadata = asRecord(statement.metadata);
+    const isSettlementBacked = statementMetadata.source_type === 'settlement';
+    const sourceSettlementId = isSettlementBacked ? textValue(statementMetadata.source_settlement_id) : null;
+    if (isSettlementBacked && !sourceSettlementId) {
+        throw new Error('Settlement payout statement is missing its source settlement link');
+    }
+    const walletIdempotencyKey = isSettlementBacked
+        ? `settlement-payout-credit:${sourceSettlementId}`
+        : `payout-credit:${statement.id}`;
+    const { data: existingCredit, error: creditLookupError } = await db
+        .from('wallet_ledger_entries')
+        .select('id, payout_statement_id, entry_type, direction, status, currency, amount_minor, reference_type, reference_id')
+        .eq('site_id', input.siteId)
+        .eq('idempotency_key', walletIdempotencyKey)
+        .is('deleted_at', null)
+        .maybeSingle();
+    if (creditLookupError) throw new Error(`Payout wallet credit lookup failed: ${creditLookupError.message}`);
+
+    if (existingCredit) {
+        const credit = existingCredit as Record<string, unknown>;
+        if (credit.payout_statement_id !== statement.id || credit.direction !== 'credit'
+            || credit.currency !== statement.currency || Number(credit.amount_minor) !== Number(statement.net_amount_minor)
+            || credit.entry_type !== 'payout_credit' || !['pending', 'posted'].includes(String(credit.status))
+            || (isSettlementBacked && (credit.reference_type !== 'settlement' || credit.reference_id !== sourceSettlementId))) {
+            throw new Error('Payout wallet credit conflicts with its statement');
+        }
+    } else {
+        if (isSettlementBacked) {
+            throw new Error('Settlement payout wallet projection is missing from its atomic source transaction');
+        }
+        const { error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
+            site_id: input.siteId,
+            payout_statement_id: statement.id,
+            entry_type: 'payout_credit',
+            direction: 'credit',
+            status: 'pending',
+            currency: statement.currency,
+            amount_minor: statement.net_amount_minor,
+            available_on: statement.available_on || null,
+            reference_type: 'payout_statement',
+            reference_id: statement.id,
+            description: `Payout ${statement.statement_number} pending settlement`,
+            idempotency_key: walletIdempotencyKey,
+            metadata: { source_order_ids: input.sourceOrderIds },
+            created_by: input.userId,
+            updated_by: input.userId,
+        });
+        if (walletCreditError) {
+            // A concurrent replay may have won the unique idempotency key. Re-read and
+            // accept it only if it represents the exact same pending payout credit.
+            const { data: concurrentCredit, error: concurrentLookupError } = await db
+                .from('wallet_ledger_entries')
+                .select('id, payout_statement_id, entry_type, direction, status, currency, amount_minor, reference_type, reference_id')
+                .eq('site_id', input.siteId)
+                .eq('idempotency_key', walletIdempotencyKey)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (concurrentLookupError || !concurrentCredit) {
+                throw new Error(`Payout wallet credit failed: ${walletCreditError.message}`);
+            }
+            const credit = concurrentCredit as Record<string, unknown>;
+            if (credit.payout_statement_id !== statement.id || credit.direction !== 'credit'
+                || credit.currency !== statement.currency || Number(credit.amount_minor) !== Number(statement.net_amount_minor)
+                || credit.entry_type !== 'payout_credit' || !['pending', 'posted'].includes(String(credit.status))) {
+                throw new Error('Payout wallet credit conflicts with its statement');
+            }
+        }
+    }
+
+    const feeAssessmentLines = planPayoutFeeAssessmentLedger({
+        statementNumber: statement.statement_number,
+        platformFeeMinor: Number(statement.platform_fee_minor || 0),
+        taxMinor: Number(statement.tax_minor || 0),
+    });
+    if (feeAssessmentLines.length === 0) return statement.canonical_ledger_transaction_id || null;
+
+    const canonicalLedgerTransactionId = await postCanonicalPayoutLedger(db, {
+        siteId: input.siteId,
+        sourceType: 'settlement',
+        sourceId: statement.id,
+        idempotencyKey: `payout-fee-assessment:${statement.id}`,
+        lines: feeAssessmentLines,
+        metadata: {
+            compatibility_table: 'payout_statements',
+            statement_number: statement.statement_number,
+            ledger_role: 'fee_assessment',
+        },
+    });
+    if (statement.canonical_ledger_transaction_id !== canonicalLedgerTransactionId) {
+        const { error } = await db
+            .from('payout_statements')
+            .update({ canonical_ledger_transaction_id: canonicalLedgerTransactionId, updated_by: input.userId })
+            .eq('id', statement.id)
+            .eq('site_id', input.siteId);
+        if (error) throw new Error(`Payout canonical ledger link failed: ${error.message}`);
+    }
+    return canonicalLedgerTransactionId;
 }
 
 function summarize(siteId: string, rows: PayoutStatementRow[], providerMode: PayoutTransferMode) {
@@ -363,7 +526,8 @@ async function loadPaidOrders(
         .eq('store_id', input.store_id)
         .eq('payment_status', 'paid')
         .is('deleted_at', null)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
 
     if (input.period_start) query = query.gte('created_at', `${input.period_start}T00:00:00.000Z`);
     if (input.period_end) query = query.lte('created_at', `${input.period_end}T23:59:59.999Z`);
@@ -422,7 +586,30 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
         .maybeSingle();
 
     if (existingError) throw new Error(`Payout idempotency lookup failed: ${existingError.message}`);
-    if (existing) return c.json(success(serializePayout(existing as unknown as PayoutStatementRow)));
+    if (existing) {
+        const statement = existing as unknown as PayoutStatementRow;
+        if ((statement.period_start || null) !== (body.period_start || null)
+            || (statement.period_end || null) !== (body.period_end || null)) {
+            return c.json({
+                success: false,
+                error: {
+                    code: 'IDEMPOTENCY_KEY_REUSED',
+                    message: 'This idempotency key is already bound to a different payout period.',
+                },
+            }, 409);
+        }
+        const metadata = asRecord(statement.metadata);
+        const sourceOrderIds = Array.isArray(metadata.source_order_ids)
+            ? metadata.source_order_ids.filter((id): id is string => typeof id === 'string')
+            : [];
+        const canonicalLedgerTransactionId = await ensurePayoutStatementEffects(db, {
+            siteId: tenant.siteId,
+            userId: tenant.userId,
+            statement,
+            sourceOrderIds,
+        });
+        return c.json(success(serializePayout({ ...statement, canonical_ledger_transaction_id: canonicalLedgerTransactionId })));
+    }
 
     const paidOrders = await loadPaidOrders(db, body);
     const alreadyIncluded = await loadExistingSourceOrderIds(db, tenant.siteId);
@@ -448,94 +635,60 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
     const rail = payoutRail();
     const sourceOrderIds = eligibleOrders.map((order) => order.id);
 
-    const { data: inserted, error } = await db
-        .from('payout_statements')
-        .insert({
-            site_id: tenant.siteId,
-            statement_number: statementNumber(tenant.siteId, now),
-            status: 'pending',
-            provider: rail,
-            provider_mode: mode,
-            rail,
-            currency: 'INR',
-            gross_amount_minor: grossAmountMinor,
-            platform_fee_minor: platformFeeMinor,
-            tax_minor: taxMinor,
-            net_amount_minor: netAmountMinor,
-            period_start: body.period_start || null,
-            period_end: body.period_end || null,
-            available_on: addDays(now, 2),
-            idempotency_key: body.idempotency_key,
-            metadata: {
-                source_order_ids: sourceOrderIds,
-                source_order_numbers: eligibleOrders.map((order) => textValue(order.order_number)).filter(Boolean),
-                commission_bps: commissionBps,
-                gst_bps: 1800,
-            },
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        })
-        .select('*')
-        .single();
+    const metadata = {
+        source_order_ids: sourceOrderIds,
+        source_order_numbers: eligibleOrders.map((order) => textValue(order.order_number)).filter(Boolean),
+        commission_bps: commissionBps,
+        gst_bps: 1800,
+    };
+    const { data: statementId, error } = await db.rpc('create_payout_statement_with_effects', {
+        p_site_id: tenant.siteId,
+        p_statement_number: statementNumber(tenant.siteId, now),
+        p_provider: rail,
+        p_provider_mode: mode,
+        p_rail: rail,
+        p_gross_amount_minor: grossAmountMinor,
+        p_platform_fee_minor: platformFeeMinor,
+        p_tax_minor: taxMinor,
+        p_net_amount_minor: netAmountMinor,
+        p_period_start: body.period_start || null,
+        p_period_end: body.period_end || null,
+        p_available_on: addDays(now, 2),
+        p_idempotency_key: body.idempotency_key,
+        p_source_order_ids: sourceOrderIds,
+        p_source_settlement_id: null,
+        p_metadata: metadata,
+        p_actor_id: tenant.userId,
+    });
+    if (error?.code === '23505') {
+        return c.json({
+            success: false,
+            error: { code: 'CONFLICT', message: 'Payout source or idempotency key is already bound to another statement.' },
+        }, 409);
+    }
+    if (error || !statementId) throw new Error(`Payout statement transaction failed: ${error?.message || 'unknown error'}`);
 
-    if (error || !inserted) throw new Error(`Payout statement create failed: ${error?.message || 'unknown error'}`);
+    const { data: inserted, error: readError } = await db
+        .from('payout_statements')
+        .select('*')
+        .eq('id', statementId)
+        .eq('site_id', tenant.siteId)
+        .single();
+    if (readError || !inserted) throw new Error(`Payout statement readback failed: ${readError?.message || 'unknown error'}`);
     const statement = inserted as unknown as PayoutStatementRow;
 
-    const { error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
-        site_id: tenant.siteId,
-        payout_statement_id: statement.id,
-        entry_type: 'payout_credit',
-        direction: 'credit',
-        status: 'pending',
-        currency: 'INR',
-        amount_minor: netAmountMinor,
-        available_on: statement.available_on || null,
-        reference_type: 'payout_statement',
-        reference_id: statement.id,
-        description: `Payout ${statement.statement_number} pending settlement`,
-        idempotency_key: `payout-credit:${statement.id}`,
-        metadata: { source_order_ids: sourceOrderIds },
-        created_by: tenant.userId,
-        updated_by: tenant.userId,
-    }).select('id').single();
-    if (walletCreditError) throw new Error(`Payout wallet credit failed: ${walletCreditError.message}`);
-
-    let canonicalLedgerTransactionId: string | null = null;
-    const feeAssessmentLines = planPayoutFeeAssessmentLedger({
-        statementNumber: statement.statement_number,
-        platformFeeMinor,
-        taxMinor,
-    });
-    if (feeAssessmentLines.length > 0) {
-        canonicalLedgerTransactionId = await postCanonicalPayoutLedger(db, {
-            siteId: tenant.siteId,
-            sourceType: 'settlement',
-            sourceId: statement.id,
-            idempotencyKey: `payout-fee-assessment:${statement.id}`,
-            lines: feeAssessmentLines,
-            metadata: {
-                compatibility_table: 'payout_statements',
-                statement_number: statement.statement_number,
-                ledger_role: 'fee_assessment',
-            },
-        });
-        await db
-            .from('payout_statements')
-            .update({ canonical_ledger_transaction_id: canonicalLedgerTransactionId, updated_by: tenant.userId })
-            .eq('id', statement.id)
-            .eq('site_id', tenant.siteId);
-    }
-
-    return c.json(success(serializePayout({ ...statement, canonical_ledger_transaction_id: canonicalLedgerTransactionId })), 201);
+    return c.json(success(await serializePayoutWithSourceLineage(db, statement, tenant.siteId)), 201);
 });
 
 router.get('/:id', async (c) => {
     const payoutId = c.req.param('id');
+    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || c.req.header('X-Store-ID')?.trim() || '');
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('payout_statements')
         .select('*')
         .eq('id', payoutId)
+        .eq('site_id', tenant.siteId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -543,21 +696,23 @@ router.get('/:id', async (c) => {
     if (!data) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Payout not found' } }, 404);
     }
-
-    const statement = data as unknown as PayoutStatementRow;
-    await resolveTenantContextForOwnedSite(c, statement.site_id);
-
-    return c.json(success(serializePayout(statement)));
+    return c.json(success(await serializePayoutWithSourceLineage(
+        db,
+        data as unknown as PayoutStatementRow,
+        tenant.siteId,
+    )));
 });
 
 router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async (c) => {
     const payoutId = c.req.param('id');
     const body = c.get('validatedBody') as SettlePayoutStatementInput;
+    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || c.req.header('X-Store-ID')?.trim() || '');
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('payout_statements')
         .select('*')
         .eq('id', payoutId)
+        .eq('site_id', tenant.siteId)
         .is('deleted_at', null)
         .maybeSingle();
 
@@ -567,13 +722,36 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
     }
 
     const statement = data as unknown as PayoutStatementRow;
-    const tenant = await resolveTenantContextForOwnedSite(c, statement.site_id);
-    if (statement.status === 'released') return c.json(success(serializePayout(statement)));
+    if (statement.status === 'released') {
+        const releaseKey = statement.release_idempotency_key || textValue(statement.metadata?.release_idempotency_key);
+        if (!releaseKey) {
+            return c.json({ success: false, error: { code: 'PAYOUT_RELEASE_REPAIR_REQUIRED', message: 'Released payout is missing its durable release claim.' } }, 409);
+        }
+        try {
+            const repaired = await finalizePayoutStatementRelease(db, {
+                siteId: tenant.siteId,
+                statementId: statement.id,
+                idempotencyKey: releaseKey,
+                status: statement.status,
+                processedAt: statement.released_at || statement.updated_at || new Date().toISOString(),
+                providerReference: statement.provider_reference || null,
+                utr: statement.utr || null,
+                failureReason: null,
+                actorId: tenant.userId,
+            });
+            return c.json(success(serializePayout(repaired)));
+        } catch (error) {
+            if (error instanceof PayoutReleaseConflict) {
+                return c.json({ success: false, error: { code: 'CONFLICT', message: 'Stored payout release evidence conflicts with its canonical accounting state.' } }, 409);
+            }
+            throw error;
+        }
+    }
     if (statement.status !== 'pending' && statement.status !== 'processing') {
         return c.json({ success: false, error: { code: 'PAYOUT_NOT_SETTLEABLE', message: 'This payout cannot be settled.' } }, 409);
     }
 
-    const stepUp = await verifySensitiveActionStepUp({
+    const stepUp = await verifyMerchantStepUp(db, {
         action: 'payout.release',
         actorId: tenant.userId,
         siteId: tenant.siteId,
@@ -602,7 +780,8 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         provider: payoutProviderClient(statement.rail),
     });
 
-    const { data: claimed, error: claimError } = await db.rpc('claim_payout_statement_release', {
+    const { data: claimed, error: claimError } = await db.rpc('claim_owned_payout_release_v1', {
+        p_step_up: stepUp.metadata, p_request_id: c.req.header('X-Request-ID') || null,
         p_site_id: tenant.siteId,
         p_statement_id: statement.id,
         p_idempotency_key: body.idempotency_key,
@@ -618,9 +797,33 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
         }, 409);
     }
 
-    const claimedStatement = claimed as unknown as PayoutStatementRow;
+    const outcome = claimed as { accepted: boolean; status?: number; code?: string; statement?: PayoutStatementRow };
+    if (!outcome.accepted || !outcome.statement) throw new AppError('Payout approval or ownership changed. Refresh and retry.', outcome.status || 409, outcome.code || 'PAYOUT_RELEASE_REJECTED');
+    const claimedStatement = outcome.statement;
     if (claimedStatement.status === 'released') {
-        return c.json(success(serializePayout(claimedStatement)));
+        const releaseKey = claimedStatement.release_idempotency_key || textValue(claimedStatement.metadata?.release_idempotency_key);
+        if (!releaseKey) {
+            return c.json({ success: false, error: { code: 'PAYOUT_RELEASE_REPAIR_REQUIRED', message: 'Released payout is missing its durable release claim.' } }, 409);
+        }
+        try {
+            const repaired = await finalizePayoutStatementRelease(db, {
+                siteId: tenant.siteId,
+                statementId: claimedStatement.id,
+                idempotencyKey: releaseKey,
+                status: claimedStatement.status,
+                processedAt: claimedStatement.released_at || claimedStatement.updated_at || new Date().toISOString(),
+                providerReference: claimedStatement.provider_reference || null,
+                utr: claimedStatement.utr || null,
+                failureReason: null,
+                actorId: tenant.userId,
+            });
+            return c.json(success(serializePayout(repaired)));
+        } catch (error) {
+            if (error instanceof PayoutReleaseConflict) {
+                return c.json({ success: false, error: { code: 'CONFLICT', message: 'Stored payout release evidence conflicts with its canonical accounting state.' } }, 409);
+            }
+            throw error;
+        }
     }
 
     const transfer = await adapter.initiateTransfer({
@@ -633,79 +836,26 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
     });
     const now = transfer.processedAt;
     const nextStatus = transfer.status === 'released' ? 'released' : transfer.status === 'failed' ? 'failed' : 'processing';
-    const { data: updated, error: updateError } = await db
-        .from('payout_statements')
-        .update({
-            status: nextStatus,
-            released_at: nextStatus === 'released' ? now : null,
-            failed_at: nextStatus === 'failed' ? now : null,
-            provider_reference: transfer.providerReference,
-            utr: transfer.utr,
-            failure_reason: transfer.failureReason,
-            metadata: { ...(claimedStatement.metadata || {}), ...stepUp.metadata },
-            updated_by: tenant.userId,
-            updated_at: now,
-        })
-        .eq('id', claimedStatement.id)
-        .eq('site_id', tenant.siteId)
-        .select('*')
-        .single();
-
-    if (updateError || !updated) throw new Error(`Payout statement settlement update failed: ${updateError?.message || 'unknown error'}`);
-
-    let releaseLedgerTransactionId: string | null = null;
-    if (nextStatus === 'released') {
-        releaseLedgerTransactionId = await postCanonicalPayoutLedger(db, {
+    try {
+        const finalized = await finalizePayoutStatementRelease(db, {
             siteId: tenant.siteId,
-            sourceType: 'payout',
-            sourceId: claimedStatement.id,
-            idempotencyKey: `payout-release:${claimedStatement.id}`,
-            lines: planPayoutReleaseLedgerPosting({
-                payoutReference: claimedStatement.statement_number,
-                amountMinor: claimedStatement.net_amount_minor,
-            }),
-            metadata: { compatibility_table: 'payout_statements', statement_number: claimedStatement.statement_number },
+            statementId: claimedStatement.id,
+            idempotencyKey: body.idempotency_key,
+            status: nextStatus,
+            processedAt: now,
+            providerReference: transfer.providerReference,
+            utr: transfer.utr,
+            failureReason: transfer.failureReason,
+            actorId: tenant.userId,
+            stepUpMetadata: stepUp.metadata,
         });
-        await db
-            .from('payout_statements')
-            .update({ release_ledger_transaction_id: releaseLedgerTransactionId, updated_by: tenant.userId })
-            .eq('id', claimedStatement.id)
-            .eq('site_id', tenant.siteId);
-        await db.from('wallet_ledger_entries').insert({
-            site_id: tenant.siteId,
-            payout_statement_id: claimedStatement.id,
-            entry_type: 'payout_debit',
-            direction: 'debit',
-            status: 'posted',
-            currency: claimedStatement.currency || 'INR',
-            amount_minor: claimedStatement.net_amount_minor,
-            reference_type: 'payout_statement',
-            reference_id: claimedStatement.id,
-            description: `Payout ${claimedStatement.statement_number} released`,
-            idempotency_key: `payout-debit:${claimedStatement.id}`,
-            canonical_ledger_transaction_id: releaseLedgerTransactionId,
-            metadata: { provider_reference: transfer.providerReference, utr: transfer.utr },
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        });
+        return c.json(success(serializePayout(finalized)));
+    } catch (error) {
+        if (error instanceof PayoutReleaseConflict) {
+            return c.json({ success: false, error: { code: 'CONFLICT', message: 'Payout provider response conflicts with the durable release claim.' } }, 409);
+        }
+        throw error;
     }
-
-    await syncSettlementPayoutInstruction(db, {
-        siteId: tenant.siteId,
-        payoutStatementId: claimedStatement.id,
-        status: nextStatus,
-        providerReference: transfer.providerReference,
-        utr: transfer.utr,
-        failureReason: transfer.failureReason,
-        ledgerTransactionId: releaseLedgerTransactionId,
-        actorId: tenant.userId,
-        processedAt: now,
-    });
-
-    return c.json(success(serializePayout({
-        ...(updated as unknown as PayoutStatementRow),
-        release_ledger_transaction_id: releaseLedgerTransactionId || (updated as unknown as PayoutStatementRow).release_ledger_transaction_id,
-    })));
 });
 
 export default router;

@@ -23,7 +23,13 @@ test('product creation validates input, verifies store ownership, and returns 20
     assert.match(routeSource, /router\.post\('\/',\s*validate\('json',\s*CreateProductSchema\)/);
     assert.match(routeSource, /createProductExecutionAdapter\(db,\s*c\.env\)/);
     assert.match(routeSource, /isProductVariantDiffEnabled\(env\)/);
-    assert.match(routeSource, /service\.createProduct\(body,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    // D03 permission equivalence follow-up (2026-09-28): the trailing `true` is `alreadyAuthorized` --
+    // this route already calls assertStaffPermission(c, body.store_id, ..., 'products:write') above,
+    // so createProduct's own internal assertStoreOwnership (still real, still checked when this flag
+    // is absent -- see the "verifies store ownership" assertion below) is deliberately skipped here,
+    // instead of redundantly re-running a STRICTER, owner-only check that used to reject a real,
+    // permitted staff member's already-authorized request.
+    assert.match(routeSource, /service\.createProduct\(body,\s*customUser\.id,\s*auth\.user\.storeId,\s*true\)/);
     assert.match(routeSource, /c\.json\(success\(data\),\s*201\)/);
     assert.match(adapterSource, /await this\.assertStoreOwnership\(input\.store_id,\s*userId,\s*sessionStoreId/);
     assert.match(adapterSource, /\.from\('products'\)\s*[\s\S]*\.insert\(/);
@@ -35,7 +41,13 @@ test('product reads are scoped to owned sites and cross-site access is hidden', 
 
     assert.match(routeSource, /router\.get\('\/:id'/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    // Phase 2 / F2.5: owner passes via verifyStoreOwnership on the product's OWN store_id (never
+    // client-supplied); a non-owner falls through to assertStaffPermission on that same store_id --
+    // an active staff member holding products:read/products:write can read it, anyone else (a
+    // stranger, or staff at a DIFFERENT store) gets the identical NOT_FOUND, never a 500.
+    assert.match(routeSource, /const storeId = String\(product\.store_id\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /assertStaffPermission\(c,\s*storeId,\s*customUser\.id,\s*'products:read'\)/);
     assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
     assert.match(routeSource, /query\.status === 'active'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*true\)/);
     assert.match(routeSource, /query\.status === 'inactive'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*false\)/);
@@ -53,26 +65,37 @@ test('barcode lookup resolves product and variant barcodes inside owned stores o
     assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
 });
 
-test('product updates and deletes use owned-product lookup before mutation', () => {
+test('product updates and deletes resolve the real store first, then check owner-OR-staff, then mutate', () => {
     const routeSource = source('routes/products.ts');
     const adapterSource = source('execution/product-execution.adapter.ts');
 
+    // D03 permission equivalence follow-up (2026-09-28): PATCH/DELETE used to resolve the product's
+    // store through an OWNER-ONLY lookup (ownedProductStoreId, since removed) that threw before
+    // assertStaffPermission ever ran -- meaning no real, permitted staff member (only the literal
+    // owner) could ever reach a mutation, regardless of their actual products:write grant. Fixed to
+    // match GET /:id's already-correct pattern: resolve the product's real store_id from the row
+    // itself (loadProductByIdUnguarded, no ownership check), THEN check owner-OR-staff. See
+    // docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md Section D.
     assert.match(routeSource, /router\.patch\('\/:id',\s*validate\('json',\s*UpdateProductSchema\)/);
-    assert.match(routeSource, /service\.updateProduct\(productId,\s*customUser\.id,\s*body as Record<string, unknown>,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /const \{ product, error: lookupError \} = await loadProductByIdUnguarded\(c,\s*productId\)/);
+    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>,/);
     assert.match(routeSource, /router\.delete\('\/:id'/);
-    assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(adapterSource, /private async getOwnedProduct/);
-    // APPID-FIX2: getOwnedProduct used to look the row up by `.eq('id', productId)` alone, then check
-    // ownership on the row it got back -- a shape the tenant query guard refuses outright ("products
-    // requires a tenant/owner predicate before execution"), which 500'd PATCH/DELETE even after the
-    // staff check had already cleared the product's real store. Ownership is now asked in the query
-    // itself, the same scoped shape ownedProductStoreId already used.
-    assert.match(adapterSource, /resolveOwnedStoreIds\(userId,\s*sessionStoreId\)/);
-    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.in\('store_id',\s*storeIds\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
-    // The write and refresh-select that follow getOwnedProduct repeat the same id-only shape unless
-    // each one also carries the store predicate the guard requires.
-    assert.match(adapterSource, /\.update\(updatePlan\.safeUpdates\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
-    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)\s*\.single\(\)/);
+    assert.match(routeSource, /service\.softDelete\(productId,\s*productStoreId,\s*customUser\.id\)/);
+    assert.match(adapterSource, /private async loadProductScopedToStore/);
+    // APPID-FIX2 (still holds, in a tighter form): the lookup carries an EXACT store predicate
+    // (.eq('store_id', storeId), a single already-authorized store, known from the route -- not
+    // discovered by ownership) instead of fetching the row unscoped and checking ownership after --
+    // the unscoped shape is refused outright by the tenant query guard, not merely "not proven isolated".
+    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
+    // Edit effects now share one tenant transaction. Retain exact product/store fencing
+    // at the SQL owner, plus live actor checks and an under-lock version comparison.
+    const helperSource = source('execution/product-mutation.adapter.ts');
+    const migration = repositorySource('database/supabase/migrations/346_product_atomic_edits.sql');
+    assert.match(adapterSource, /executeProductMutation\(this\.options\.mutationEnv, storeId, productId, userId, updates, requestId\)/);
+    assert.match(helperSource, /withTenantTx\(env, \{ siteId: storeId, requestId \}/);
+    assert.match(migration, /id = p_product_id AND store_id = p_store_id AND deleted_at IS NULL FOR UPDATE/);
+    assert.match(migration, /assert_product_edit_actor_v1\(p_store_id, p_actor_id, 'products:write'\)/);
+    assert.match(migration, /p\.version IS DISTINCT FROM p_expected_version/);
     assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\),\s*\}\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
 });
 
@@ -96,7 +119,15 @@ test('merchant product proxies resolve the URL store to sites.id before worker c
     assert.match(listRoute, /store_id:\s*resolved\.storeId/);
     assert.match(listRoute, /createMerchantApiClient\(\)\.products\.list\(query\)/);
     assert.match(listRoute, /createMerchantApiClient\(\)\.products\.create\(\{\s*[\s\S]*\.\.\.body,\s*[\s\S]*store_id:\s*resolved\.storeId/);
-    assert.match(itemRoute, /product\.store_id !== resolved\.storeId/);
+    const securityScope = repositorySource('apps/merchant/web/src/lib/api/merchant-security-scope.ts');
+    assert.match(itemRoute, /merchantSecurityScope\(request, params, false\)/);
+    assert.match(itemRoute, /if \(scope\.error\) return scope\.error/);
+    assert.match(securityScope, /resolveOwnedStoreId\(decodeURIComponent\(store\)\)/);
+    assert.match(securityScope, /storeId: resolved\.storeId!/);
+    assert.match(securityScope, /request\.headers\.get\('X-LetBuyy-Merchant-Context'\) !== session\.user\.id/);
+    assert.match(itemRoute, /product\.store_id !== scope\.storeId/);
+    assert.match(itemRoute, /products\.get\(productId, \{ storeId: scope\.storeId \}\)/);
+    assert.match(itemRoute, /products\.update\(productId, body, \{ storeId: scope\.storeId \}\)/);
     assert.match(itemRoute, /return NextResponse\.json\(\{ error:\s*'Product not found' \},\s*\{ status:\s*404 \}\)/);
 });
 

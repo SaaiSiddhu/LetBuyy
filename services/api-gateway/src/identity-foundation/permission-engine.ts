@@ -51,6 +51,16 @@ export const PERMISSION_CATALOG = [
   'product.update',
   'order.read',
   'order.update',
+  // D03 permission equivalence (auth hardening follow-up, 2026-09-28) -- the remaining reachable
+  // merchant/staff canonical actions, matching LEGACY_PERMISSION_ALIASES (@letbuyy/permission-core)
+  // one-to-one.
+  'customer.read',
+  'customer.update',
+  'marketing.update',
+  'shipping.update',
+  'return.update',
+  'settings.update',
+  'content.update',
   'platform.manage',
   'organization.manage',
   'oauth.grant',

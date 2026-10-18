@@ -130,15 +130,22 @@ class _QuickActionItemState extends State<_QuickActionItem> {
       hint: widget.subtitle,
       onTap: widget.onTap,
       excludeChildSemantics: true,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) {
-          setState(() => _isPressed = false);
-          HapticFeedback.selectionClick();
-          widget.onTap?.call();
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: widget.onTap == null
+            ? null
+            : () {
+                HapticFeedback.selectionClick();
+                widget.onTap?.call();
+              },
+        onHighlightChanged: (highlighted) {
+          if (_isPressed != highlighted) {
+            setState(() => _isPressed = highlighted);
+          }
         },
-        onTapCancel: () => setState(() => _isPressed = false),
-        behavior: HitTestBehavior.opaque,
+        borderRadius: BorderRadius.vertical(
+          bottom: widget.isLast ? const Radius.circular(20) : Radius.zero,
+        ),
         child: AnimatedContainer(
           duration: colors.durationFast,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -228,14 +235,20 @@ class _QuickActionPillState extends State<QuickActionPill> {
       label: widget.label,
       onTap: widget.onTap,
       excludeChildSemantics: true,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) {
-          setState(() => _isPressed = false);
-          HapticFeedback.lightImpact();
-          widget.onTap?.call();
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: widget.onTap == null
+            ? null
+            : () {
+                HapticFeedback.lightImpact();
+                widget.onTap?.call();
+              },
+        onHighlightChanged: (highlighted) {
+          if (_isPressed != highlighted) {
+            setState(() => _isPressed = highlighted);
+          }
         },
-        onTapCancel: () => setState(() => _isPressed = false),
+        borderRadius: BorderRadius.circular(16),
         child: AnimatedScale(
           scale: _isPressed ? 0.95 : 1.0,
           duration: colors.durationFast,

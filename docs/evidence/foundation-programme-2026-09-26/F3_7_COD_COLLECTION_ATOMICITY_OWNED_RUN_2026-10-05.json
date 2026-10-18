@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "workingTree": "test executed against the uncommitted source changes documented in the paired evidence",
+  "suite": "services/api-gateway/src/__tests__/owned-db/cod-collection.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "a3def307f166",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "atomic tenant-bound COD collection through the real Gateway route",
+    "exact replay returns one collection entry; changed amount, notes, and order reuse are conflicts",
+    "foreign tenant actor receives 403 and cannot create a collection",
+    "concurrent different-key requests for one order produce one winner and one conflict",
+    "same-key in-flight conflict can be retried successfully after the first response",
+    "only service_role may execute the collection RPC",
+    "migration rollback and reapply preserve all collection evidence"
+  ],
+  "cleanup": "runner completed; owned disposable database resources removed",
+  "externalProviderOrLiveMoney": false
+}

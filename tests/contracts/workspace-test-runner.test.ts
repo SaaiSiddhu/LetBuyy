@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -39,29 +39,75 @@ test('deployable workspaces run real test commands instead of no-op placeholders
 
 test('root and governance runners include workspace and TypeScript contract tests', () => {
     const rootPackageJson = readPackageJson('.');
-    assert.match(rootPackageJson.scripts?.test || '', /node --test --test-concurrency=1 tests\/\*\/\*\.test\.mjs/);
-    assert.match(rootPackageJson.scripts?.test || '', /test:contracts/);
-    // SUSTAINED-J: test:behavioral no longer inlines the raw `node --test` invocation -- it
-    // delegates to scripts/governance/test-behavioral.mjs, which routes the destructive-guard
-    // suites through their own dedicated disposable Postgres container/database (each throws at
-    // module load under the bare invocation, unconditionally, regardless of code changes) and
-    // still runs every other suite with the exact same `node --test --test-concurrency=1`
-    // invocation this test used to check for directly. The next assertion checks the wrapper
-    // itself still covers the full tests/*/*.test.mjs surface, so this isn't just a narrower check.
+    // The root `test` script runs the behavioral wrapper AND the contract tests, and always both: the
+    // wrapper takes `--with-contracts` instead of the old `a && b` chain, which never ran the contract
+    // tests once the first part had failed and so hid a whole lane behind the first red.
+    assert.match(rootPackageJson.scripts?.test || '', /node scripts\/governance\/test-behavioral\.mjs --with-contracts/);
+    assert.doesNotMatch(rootPackageJson.scripts?.test || '', /&&/, 'a short-circuiting chain hides every part after the first failure');
+    // SUSTAINED-J: test:behavioral delegates to scripts/governance/test-behavioral.mjs; the next test
+    // checks that wrapper covers the full tests/*/*.test.mjs surface.
     assert.match(rootPackageJson.scripts?.['test:behavioral'] || '', /node scripts\/governance\/test-behavioral\.mjs/);
     assert.match(rootPackageJson.scripts?.['test:workspaces'] || '', /turbo test/);
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
 });
 
-test('the test:behavioral wrapper still discovers and runs the full tests/*/*.test.mjs surface', () => {
+test('the test:behavioral wrapper runs the full tests/*/*.test.mjs surface, each suite in exactly one environment', async () => {
+    const { discoverSuites } = await import('../../scripts/governance/test-suite-catalog.mjs');
+    const { all, pure, postgres, live } = discoverSuites(repoRoot) as Record<string, string[]>;
+    // The surface `tests/*/*.test.mjs` would glob, computed without the catalog.
+    const globbed = readdirSync(join(repoRoot, 'tests'), { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .flatMap((dir) => readdirSync(join(repoRoot, 'tests', dir.name)).filter((name) => name.endsWith('.test.mjs')).map((name) => `tests/${dir.name}/${name}`))
+        .sort();
+    assert.deepEqual(all, globbed);
+    assert.deepEqual([...pure, ...postgres, ...live].sort(), globbed, 'every suite runs, none twice');
+
     const wrapper = readFileSync(join(repoRoot, 'scripts/governance/test-behavioral.mjs'), 'utf8');
-    // discoverAll() walks every immediate subdirectory of tests/ for *.test.mjs files -- the same
-    // set `tests/*/*.test.mjs` would glob -- rather than a narrower, hand-picked list.
-    assert.match(wrapper, /readdirSync\(join\(repoRoot, ['"]tests['"]\)/);
-    assert.match(wrapper, /\.test\.mjs['"]\)/);
-    // Every suite not in the destructive-guard allowlist still runs through the same real runner.
-    assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.rest\]/);
+    assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.pure, \.\.\.live\]/, 'database-free suites keep the sequential node --test invocation');
+    assert.match(wrapper, /scripts\/governance\/run-executable-suites\.mjs/, 'Postgres-backed suites go through the owned-cluster runner');
+    assert.doesNotMatch(wrapper, /foundation-ephemeral-postgres/, 'the shared fixture is not part of the gate');
 });
+
+// customer-web and merchant-web list their test files by hand, and `node --test` reads every path argument as a GLOB. Two
+// failure modes follow, and both end in a green run that executed nothing: a test file that is never named in the script is
+// simply never run, and a path containing glob characters (the [subdomain] directory of a Next dynamic route is a character
+// class) matches no file, so the runner reports 0 tests and exits 0. This pins that neither can happen unnoticed.
+for (const workspace of ['apps/commerce/web', 'apps/merchant/web']) {
+    test(`${workspace} names every test file it owns, and every named test path is a literal file that exists`, () => {
+        const script = readPackageJson(workspace).scripts?.test || '';
+
+        // The script is a chain: the first segments run from the app directory, everything after `cd ../../..` from the repo root.
+        let cwd = join(repoRoot, workspace);
+        const listed = new Set<string>();
+        for (const segment of script.split('&&').map((part) => part.trim())) {
+            if (/^cd\s+\.\.\/\.\.\/\.\.$/.test(segment)) { cwd = repoRoot; continue; }
+            for (const token of segment.split(/\s+/)) {
+                const path = token.replace(/^["']|["']$/g, '');
+                if (!/\.test\.(ts|tsx|mjs)$/.test(path)) continue;
+                assert.doesNotMatch(path, /[[\]*?{}]/, `${path} contains glob characters: node --test would match nothing and report 0 tests with exit 0`);
+                assert.ok(existsSync(join(cwd, path)), `${path} is named in the test script but does not exist`);
+                listed.add(join(cwd, path));
+            }
+        }
+        assert.ok(listed.size > 0, 'the test script names at least one test');
+
+        const owned: string[] = [];
+        const walk = (dir: string) => {
+            for (const entry of readdirSync(join(repoRoot, workspace, dir), { withFileTypes: true })) {
+                const relative = `${dir}/${entry.name}`;
+                if (entry.isDirectory()) walk(relative);
+                else if (/\.test\.(ts|tsx|mjs)$/.test(entry.name)) owned.push(relative);
+            }
+        };
+        for (const dir of ['src', 'scripts', 'tests']) if (existsSync(join(repoRoot, workspace, dir))) walk(dir);
+        assert.ok(owned.length > 0, 'the workspace owns at least one test file');
+        assert.deepEqual(
+            owned.filter((file) => !listed.has(join(repoRoot, workspace, file))).sort(),
+            [],
+            'a test file under src/, scripts/ or tests/ that the test script never names is never run',
+        );
+    });
+}
 
 test('main CI runs the behavioral gate before filtered workspace tests', () => {
     const workflow = readFileSync(join(repoRoot, '.github/workflows/ci.yml'), 'utf8');

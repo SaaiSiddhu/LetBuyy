@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+  "command": "node scripts/governance/run-executable-suites.mjs --kind gateway-db --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --jobs 1 --log-dir <private-diagnostic-directory> --json-out <private-diagnostic-file>",
+  "runId": "3ac96d8fef6c",
+  "result": {
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "coverage": [
+    "real-worker enforcement of configured customer-session formats across profile, wishlist, addresses and orders",
+    "Commerce host-only shopper cookie accepted only for its signed store",
+    "active Next Commerce login and canonical Identity registration entry through the owned Gateway/Postgres stack",
+    "atomic buyer-support intake rollback when the first complaint insert fails"
+  ],
+  "ownedResources": {
+    "ownershipVerifiedBeforeStart": true,
+    "postgresImage": "postgres:16-alpine",
+    "disposableDatabaseRemoved": true,
+    "postgrestRemoved": true,
+    "remainingContainers": [],
+    "remainingNetworks": [],
+    "remainingVolumes": []
+  },
+  "temporaryWorkspaceSetup": {
+    "purpose": "The Identity package's node_modules link for tailwindcss was absent although tailwindcss@4.1.18 is declared and locked.",
+    "resolution": "A temporary symlink to the existing locked pnpm-store package was verified before test startup and removed by an exit trap after the run.",
+    "sourceOrLockfileChanged": false,
+    "linkAndTemporaryDirectoryRemoved": true
+  },
+  "diagnostics": [
+    "Two earlier attempts in this turn failed the same registration-page assertion because Next could not resolve Tailwind; the first was run without the package link and the second used a dangling relative link. Those attempts are excluded from acceptance.",
+    "The final run above used the verified link and passed all 12 tests."
+  ],
+  "limits": [
+    "Synthetic local identities and database only; no hosted session or external traffic was observed.",
+    "No cookie lifetime, issuer, verifier policy or hosted setting changed.",
+    "The seven-day versus thirty-minute legacy session lifetime choice remains pending the owner."
+  ]
+}

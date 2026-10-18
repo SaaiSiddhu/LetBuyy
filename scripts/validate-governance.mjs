@@ -191,6 +191,7 @@ const reportValidators = [
 // Shared modules with no standalone entrypoint. Declared here so dynamic
 // discovery can tell "library" apart from "unwired validator".
 const libraryModules = [
+  "app-api-route-inventory.mjs",
   "governance-common.mjs",
   "phase-b-common.mjs",
   "secret-scan-core.mjs",

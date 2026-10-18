@@ -1,7 +1,7 @@
-// F-LOY-5 — an earned point records what it was worth, and NOTHING ELSE CHANGES.
+// F-LOY-5 value snapshots plus owner16October2026 D-LOY-REVALUE policy.
 //
 // The second half of that sentence is the one under test. Redemption reads the programme's CURRENT
-// point_value_minor, and whether it should keep doing so is owner decision D-LOY-REVALUE. It would be
+// point_value_minor. D-LOY-REVALUE now blocks decreases while points remain. It would be
 // very easy for a migration that starts recording value-at-earn to drift into USING it — which would
 // answer the decision by implementation. The revaluation test below exists to prove it did not.
 
@@ -16,6 +16,7 @@ import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.m
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
 const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_loy5_value';
+const historicalDatabase = `${databaseName.slice(0,44)}_at_243`;
 const SHARED_DATABASE = 'letbuyy_executable';
 const runnable = databaseName !== SHARED_DATABASE;
 const skip = runnable
@@ -50,7 +51,7 @@ function psqlExpectingFailure(sql) {
 
 const sqlString = (v) => `'${String(v).replaceAll("'", "''")}'`;
 const stripUnsupportedPg17Guc = (sql) => sql.replace(/^SET transaction_timeout = 0;\s*$/m, '');
-const applySqlFile = (relativePath) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')));
+const applySqlFile = (relativePath, targetDatabase=databaseName) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')),targetDatabase);
 
 function listMigrations() {
     return readdirSync(join(repoRoot, 'database/supabase/migrations'))
@@ -75,13 +76,16 @@ function bootstrapDatabase() {
         const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8'));
         try {
             psql(sql);
+            if (parseInt(name,10)===243) {
+                psql(`DROP DATABASE IF EXISTS "${historicalDatabase}"; CREATE DATABASE "${historicalDatabase}" TEMPLATE "${databaseName}";`,'postgres');
+            }
         } catch (error) {
             throw new Error(`migration ${name} failed to apply: ${error.message}`);
         }
     }
 }
 
-function seedFixtures() {
+function seedFixtures(targetDatabase=databaseName, withOwnership=true) {
     psql(`
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published)
     VALUES (${sqlString(SITE_ID)}::uuid, 'Loyalty Store', 'Loyalty Store', 'store', 'loyalty-store', true);
@@ -93,20 +97,23 @@ function seedFixtures() {
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(ORDER_ID)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'LOY-0001', 'loyal-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 1000, 1000, 'paid');
-  `);
+  `,targetDatabase);
+    if(withOwnership) psql(`INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
+      VALUES (${sqlString(ORDER_ID)}::uuid,${sqlString(BUYER_ID)}::uuid,${sqlString(SITE_ID)}::uuid,'authenticated_checkout');`,targetDatabase);
 }
 
 
 
-const meta = (type, key) => psql(`SELECT metadata->>${sqlString(key)} FROM public.loyalty_ledger_entries
+const meta = (type, key, targetDatabase=databaseName) => psql(`SELECT metadata->>${sqlString(key)} FROM public.loyalty_ledger_entries
   WHERE site_id = ${sqlString(SITE_ID)}::uuid AND entry_type = ${sqlString(type)}
-  ORDER BY created_at DESC, id DESC LIMIT 1;`);
+  ORDER BY created_at DESC, id DESC LIMIT 1;`,targetDatabase);
 const balanceOf = () => psql(`SELECT public.loyalty_balance(a.id) FROM public.loyalty_accounts a
   WHERE a.site_id = ${sqlString(SITE_ID)}::uuid AND a.buyer_account_id = ${sqlString(BUYER_ID)}::uuid;`);
 
 after(() => {
     if (!runnable) return;
     try { psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`, 'postgres'); } catch { /* next run recreates */ }
+    try { psql(`DROP DATABASE IF EXISTS "${historicalDatabase}" WITH (FORCE);`, 'postgres'); } catch { /* owned cluster cleanup reports residue */ }
 });
 
 before(() => {
@@ -127,17 +134,17 @@ test('the earn entry records what a point was worth at the time', { skip }, () =
     assert.equal(meta('earned', 'earn_rate_bps'), '1000', 'and the rate that produced them');
 });
 
-test('BEHAVIOUR IS UNCHANGED: redemption still values points at the CURRENT rate', { skip }, () => {
-    // The assertion this whole phase exists to make. Halve the point value AFTER the points were
-    // earned; a redemption must still use the new rate, because whether it should grandfather is
-    // D-LOY-REVALUE and this migration must not have answered it.
-    psql(`SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_point_value_minor => 50);`);
+test('owner-approved increases use the current rate while decreases with points are refused', { skip }, () => {
+    // D-LOY-REVALUE owner decision16October2026: preserve earned value,
+    // allow audited increases, refuse a decrease while outstanding points remain.
+    assert.match(psqlExpectingFailure(`SELECT set_loyalty_program(${sqlString(SITE_ID)},p_point_value_minor=>50);`),/LOYALTY_VALUE_DECREASE_BLOCKED/);
+    psql(`SELECT set_loyalty_program(${sqlString(SITE_ID)},p_point_value_minor=>150);`);
 
     psql(`SELECT public.redeem_loyalty_points(${sqlString(SITE_ID)}::uuid, ${sqlString(BUYER_ID)}::uuid,
         ${sqlString(ORDER_ID)}::uuid, 10::bigint, 'loy5:redeem', p_max_value_minor => 100000::bigint);`);
 
-    assert.equal(meta('redeemed', 'point_value_minor'), '50', 'the CURRENT rate, not the earn-time one');
-    assert.equal(meta('redeemed', 'value_minor'), '500', '10 points at the new 50 paise — grandfathering was NOT implemented');
+    assert.equal(meta('redeemed', 'point_value_minor'), '150', 'the CURRENT rate, not the earn-time one');
+    assert.equal(meta('redeemed', 'value_minor'), '1500', '10 points at the permitted current150paise; earn-time history stays100');
     // And the earn entry still says what it always said, so the history is intact either way.
     assert.equal(meta('earned', 'point_value_minor'), '100', 'the earn-time value is preserved, not rewritten');
 });
@@ -148,19 +155,19 @@ test('the revaluation is now reconstructible from the ledger alone', { skip }, (
     const earned = Number(meta('earned', 'point_value_minor'));
     const redeemed = Number(meta('redeemed', 'point_value_minor'));
     assert.equal(earned, 100);
-    assert.equal(redeemed, 50);
+    assert.equal(redeemed, 150);
     assert.ok(earned !== redeemed, 'the two rates are visible side by side, which is the whole point');
 });
 
 test('a refund credit carries the value the ORIGINAL redemption used', { skip }, () => {
     // Not the current rate: a refund returns what was actually spent, and if the rate moved in
     // between, those are different numbers.
-    psql(`SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_point_value_minor => 25);`);
+    psql(`SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_point_value_minor => 200);`);
     psql(`SELECT public.restore_loyalty_on_refund(${sqlString(SITE_ID)}::uuid, ${sqlString(ORDER_ID)}::uuid, NULL, 'req-loy5');`);
 
-    assert.equal(meta('refund_credit', 'point_value_minor_at_redemption'), '50',
-        'the redemption happened at 50, and the credit says so even though the rate is now 25');
-    assert.equal(meta('refund_credit', 'value_minor_at_redemption'), '500');
+    assert.equal(meta('refund_credit', 'point_value_minor_at_redemption'), '150',
+        'the redemption happened at150, and the credit says so even though the rate is now200');
+    assert.equal(meta('refund_credit', 'value_minor_at_redemption'), '1500');
     assert.equal(balanceOf(), '100', 'and the buyer has their points back');
 });
 
@@ -168,8 +175,15 @@ test('235 and 241 kept everything else: award declines, refund idempotency', { s
     // The redefinition risk. Both bodies were transformed rather than retyped, and these are the
     // behaviours a careless rewrite would have dropped.
     psql(`UPDATE public.loyalty_accounts SET status = 'frozen' WHERE site_id = ${sqlString(SITE_ID)}::uuid;`);
+    // A fresh paid order exercises the account decline. An already-earned order
+    // is now correctly a receipt replay regardless of a different retry key.
+    const fresh='77777777-7777-4777-8777-7777777777b7';
+    psql(`INSERT INTO public.orders(id,store_id,site_id,order_number,customer_email,shipping_address,items,subtotal,total,payment_status)
+      VALUES('${fresh}',${sqlString(SITE_ID)},${sqlString(SITE_ID)},'LOY5-FROZEN','loyal-buyer@example.com','{}','[]',1000,1000,'paid');
+      INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
+      VALUES('${fresh}',${sqlString(BUYER_ID)},${sqlString(SITE_ID)},'authenticated_checkout');`);
     const frozen = psql(`SELECT public.award_loyalty_points(${sqlString(SITE_ID)}::uuid, ${sqlString(BUYER_ID)}::uuid,
-        ${sqlString(ORDER_ID)}::uuid, 'loy5:frozen', NULL, NULL);`);
+        '${fresh}'::uuid, 'loy5:frozen', NULL, NULL);`);
     assert.match(frozen, /"reason"\s*:\s*"account_frozen"/, `235's decline-instead-of-raise must survive: ${frozen}`);
     psql(`UPDATE public.loyalty_accounts SET status = 'active' WHERE site_id = ${sqlString(SITE_ID)}::uuid;`);
 
@@ -178,12 +192,18 @@ test('235 and 241 kept everything else: award declines, refund idempotency', { s
 });
 
 test('the rollback restores the previous definitions, and 243 re-applies', { skip }, () => {
-    applySqlFile(ROLLBACK);
+    // Historical recovery runs at its own schema point. Applying 243 rollback
+    // to current HEAD would erase subsequent ownership and once-per-order guards.
+    const currentWriter=psql("SELECT md5(pg_get_functiondef('public.award_loyalty_points(uuid,uuid,uuid,text,text,uuid)'::regprocedure));");
+    seedFixtures(historicalDatabase,false); // buyer_order_links begins at 255.
+    psql(`SELECT public.set_loyalty_program(${sqlString(SITE_ID)},p_is_active=>true,p_earn_rate_bps=>1000);`,historicalDatabase);
+    applySqlFile(ROLLBACK,historicalDatabase);
     // New earn entries stop recording the value again — which is the gap, restored.
     psql(`SELECT public.award_loyalty_points(${sqlString(SITE_ID)}::uuid, ${sqlString(BUYER_ID)}::uuid,
-        ${sqlString(ORDER_ID)}::uuid, 'loy5:after-rollback', NULL, NULL);`);
-    assert.equal(meta('earned', 'point_value_minor') || '', '', 'without 243 the value is not recorded');
+        ${sqlString(ORDER_ID)}::uuid, 'loy5:after-rollback', NULL, NULL);`,historicalDatabase);
+    assert.equal(meta('earned', 'point_value_minor',historicalDatabase) || '', '', 'without 243 the value is not recorded');
 
-    applySqlFile(MIGRATION);
-    applySqlFile(MIGRATION);
+    applySqlFile(MIGRATION,historicalDatabase);
+    applySqlFile(MIGRATION,historicalDatabase);
+    assert.equal(psql("SELECT md5(pg_get_functiondef('public.award_loyalty_points(uuid,uuid,uuid,text,text,uuid)'::regprocedure));"),currentWriter);
 });

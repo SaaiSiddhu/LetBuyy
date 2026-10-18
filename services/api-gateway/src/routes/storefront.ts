@@ -5,7 +5,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
-import { toPublicVariant } from '../lib/public-product-view';
+import { toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../lib/public-product-view';
 import {
     cachedJson,
     storefrontRequestCacheKey,
@@ -25,6 +25,7 @@ import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
 import { signQueueTenantEnvelope } from '../lib/queue-tenant-envelope';
 import {
     getCustomerSession,
+    optionalCustomerSession,
     requireCustomerSession,
 } from '../middleware/customer-session';
 import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security';
@@ -81,6 +82,7 @@ router.use('/customer/activity', csrfProtection);
 router.use('/customer/profile', csrfProtection);
 router.use('/customer/addresses', csrfProtection);
 router.use('/customer/addresses/*', csrfProtection);
+router.use('/reviews', optionalCustomerSession);
 router.use('/reviews', csrfProtection);
 router.use('/:subdomain/contact', csrfProtection);
 
@@ -352,9 +354,9 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at,seo_title,seo_description';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,importer_details,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_COMPAT: string =
-    'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at,seo_title,seo_description';
+    'id,store_id,name,slug,description,images,price,compare_price,stock,is_active,is_featured,status,category,tags,variants,country_of_origin,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
@@ -372,6 +374,7 @@ type PublicProductQueryOptions = {
     ids?: string[];
     category?: string;
     search?: string;
+    countryOfOrigin?: string;
     paginated?: boolean;
 };
 
@@ -493,8 +496,6 @@ function publicProductVariantView(row: PublicProductVariantRow): Record<string, 
 }
 
 async function hydratePublicProductVariants(c: AppContext, products: PublicProductRow[]): Promise<PublicProductRow[]> {
-    if (!productVariantRelationalReadsEnabled(c.env)) return products;
-
     const productIds = products
         .map((product) => storefrontString(product.id))
         .filter((id): id is string => Boolean(id));
@@ -502,31 +503,82 @@ async function hydratePublicProductVariants(c: AppContext, products: PublicProdu
     if (productIds.length === 0) return products;
 
     const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('product_variants')
-        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
-        .in('product_id', Array.from(new Set(productIds)))
-        .order('position', { ascending: true });
+    let hydratedProducts = products;
+    if (productVariantRelationalReadsEnabled(c.env)) {
+        const { data, error } = await db
+            .from('product_variants')
+            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+            .in('product_id', Array.from(new Set(productIds)))
+            .order('position', { ascending: true });
 
-    if (isMissingTableError(error, 'product_variants')) return products;
-    if (error) throw new Error(`Storefront product variant hydration failed: ${error.message}`);
-
-    const variantsByProduct = new Map<string, Record<string, unknown>[]>();
-    for (const row of (data || []) as PublicProductVariantRow[]) {
-        variantsByProduct.set(row.product_id, [
-            ...(variantsByProduct.get(row.product_id) || []),
-            publicProductVariantView(row),
-        ]);
+        if (!isMissingTableError(error, 'product_variants')) {
+            if (error) throw new Error(`Storefront product variant hydration failed: ${error.message}`);
+            const variantsByProduct = new Map<string, Record<string, unknown>[]>();
+            for (const row of (data || []) as PublicProductVariantRow[]) {
+                variantsByProduct.set(row.product_id, [
+                    ...(variantsByProduct.get(row.product_id) || []),
+                    publicProductVariantView(row),
+                ]);
+            }
+            hydratedProducts = products.map((product) => {
+                const productId = storefrontString(product.id);
+                if (!productId) return product;
+                const variants = variantsByProduct.get(productId) || [];
+                return { ...product, variants, product_variants: variants };
+            });
+        }
     }
 
-    return products.map((product) => {
+    const uniqueProductIds = Array.from(new Set(productIds));
+    const { data: observations, error: observationError } = await db.rpc('product_price_reference_window', {
+        p_product_ids: uniqueProductIds,
+    });
+    let referenceRows = observations || [];
+    if (observationError) {
+        // A migration rollout can briefly precede its API deploy. Keep the page readable while
+        // refusing to present a seller-entered compare price as historical evidence.
+        if (observationError.code === 'PGRST202' || observationError.code === '42883') referenceRows = [];
+        else throw new Error(`Storefront price-history hydration failed: ${observationError.message}`);
+    }
+
+    type PriceObservationView = PublicPriceObservation & {
+        product_id: string;
+        variant_id: string | null;
+        compare_price: number | string | null;
+    };
+    const observationByKey = new Map<string, PriceObservationView>();
+    for (const row of referenceRows as PriceObservationView[]) {
+        observationByKey.set(`${row.product_id}:${row.variant_id || ''}`, row);
+    }
+    return hydratedProducts.map((product) => {
         const productId = storefrontString(product.id);
         if (!productId) return product;
-        const variants = variantsByProduct.get(productId) || [];
+        const productObservation = observationByKey.get(`${productId}:`) ?? {
+            current_price: product.price as number | string | null,
+            prior_lowest_price_30d: null,
+            prior_coverage_complete: false,
+            price_observed_at: null,
+        };
+        const withProductObservation = withPublicPriceObservation(product, productObservation);
+        const variants = Array.isArray(withProductObservation.variants)
+            ? withProductObservation.variants as Record<string, unknown>[]
+            : null;
+        if (!variants) return withProductObservation;
+        const withVariantObservations = variants.map((variant) => {
+            const variantId = storefrontString(variant.id);
+            if (!variantId) return variant;
+            const observation = observationByKey.get(`${productId}:${variantId}`) ?? {
+                current_price: variant.price as number | string | null,
+                prior_lowest_price_30d: null,
+                prior_coverage_complete: false,
+                price_observed_at: null,
+            };
+            return withPublicPriceObservation(variant, observation);
+        });
         return {
-            ...product,
-            variants,
-            product_variants: variants,
+            ...withProductObservation,
+            variants: withVariantObservations,
+            product_variants: withVariantObservations,
         };
     });
 }
@@ -720,6 +772,11 @@ async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, 
     if (options.search) {
         params.push(`%${options.search}%`);
         filters.push(`name ilike $${params.length}`);
+    }
+
+    if (options.countryOfOrigin) {
+        params.push(options.countryOfOrigin.trim());
+        filters.push(`lower(btrim(country_of_origin)) = lower(btrim($${params.length}))`);
     }
 
     const offset = ((options.page || 1) - 1) * options.limit;
@@ -1056,7 +1113,7 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
     const db = getSupabaseAdmin(c);
-    if (options.search && storefrontSearchIndexReadsEnabled(c.env)) {
+    if (options.search && !options.countryOfOrigin && storefrontSearchIndexReadsEnabled(c.env)) {
         const projected = await querySearchDocumentProductIds(c, storeId, options);
         if (projected) {
             if (projected.ids.length === 0) return { data: [], count: 0, error: null };
@@ -1095,6 +1152,7 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
     let lastError: DatabaseErrorLike = null;
 
     for (const attempt of attempts) {
+        if (options.countryOfOrigin && !attempt.select.includes('country_of_origin')) continue;
         let query = options.paginated
             ? db.from('products').select(attempt.select, { count: 'exact' })
             : db.from('products').select(attempt.select);
@@ -1105,6 +1163,10 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
         if (options.ids?.length) query = query.in('id', options.ids);
         if (options.category && attempt.select.includes('category')) query = query.eq('category', options.category);
         if (options.search && attempt.select.includes('name')) query = query.ilike('name', `%${options.search}%`);
+        if (options.countryOfOrigin) {
+            const origin = options.countryOfOrigin.trim().replace(/[\\%_]/g, (match) => `\\${match}`);
+            query = query.ilike('country_of_origin', origin);
+        }
         query = query.order(attempt.orderBy, { ascending: true });
 
         const offset = ((options.page || 1) - 1) * options.limit;
@@ -1125,7 +1187,7 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
         if (!isSchemaMismatchError(result.error)) break;
     }
 
-    if (isSchemaMismatchError(lastError)) {
+    if (isSchemaMismatchError(lastError) && !options.countryOfOrigin) {
         return { data: [], count: 0, error: null };
     }
 

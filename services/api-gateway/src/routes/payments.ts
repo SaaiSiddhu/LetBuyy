@@ -1,15 +1,15 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { verifyRazorpayPayment } from '../lib/provider-payment-verification';
 import { dbErrorBody, getSupabaseAdmin } from '../lib/supabase';
-import { ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
+import { AppError, ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter, readCaptureResult } from '../execution/payment-execution.adapter';
 import { FIXED_PUBLIC_ERROR_MESSAGES } from '../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
-import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
+import { stepUpErrorBody } from '../lib/security-controls';
+import { verifyMerchantStepUp } from '../lib/merchant-step-up';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
 import { createRazorpayOrder, createRazorpayPaymentProvider, fetchRazorpayPayment } from '@letbuyy/infrastructure/razorpay-adapter';
 import {
@@ -32,13 +32,13 @@ import {
     type RecoverSubscriptionPaymentInput,
     type StoreSubscriptionQueryInput,
     type VerifySubscriptionInput,
+    applyFoundingLockToPlan,
     applyStorePlanTierDefaults,
     planBillingAmountMinor,
-    resolveMerchantPricing,
-    razorpayBillingSignaturePayload,
 } from '@letbuyy/billing-core';
 import { createMerchantSubscriptionCheckout, previewSubscriptionCoupon, recordSubscriptionCouponRedemption } from '../lib/subscription-checkout';
-import { resolveFoundingCheckoutLock, isPlanPurchasable } from '../lib/founding-pricing';
+import {readSubscriptionCheckoutSource} from '../lib/subscription-checkout-source';
+import {resolveFoundingCheckoutLock} from '../lib/founding-pricing';
 import { sendFoundingMerchantWelcomeEmail } from '../lib/founding-merchant-email';
 import {
     CreatePaymentSessionSchema,
@@ -52,7 +52,6 @@ import {
 } from '../schemas/payment.schema';
 import {
     buildPaymentCaptureLedgerPosting,
-    buildPaymentRefundLedgerPosting,
     buildSandboxPaymentSessionPlan,
     inrMoney,
     normalizeV1PaymentSessionProvider,
@@ -83,6 +82,13 @@ router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
     const query = c.get('validatedQuery') as PlanListQueryInput;
     const db = getSupabaseAdmin(c);
 
+    if(query.store_id){
+        const auth=c.get('auth');
+        if(!auth?.user)throw new ForbiddenError('Sign in to view store pricing');
+        const user=await resolveCustomUser(db,auth.user);
+        if(!user||!(await verifySiteOwnership(db,query.store_id,user.id,auth.user.storeId)))throw new ForbiddenError('Not authorized for this store');
+    }
+
     let request = db
         .from('plans')
         .select('*')
@@ -100,7 +106,14 @@ router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
         return c.json(dbErrorBody(), 500);
     }
 
-    return c.json({ data: (data || []).map((plan) => applyStorePlanTierDefaults(plan as BillingPlanCatalogRecord)) });
+    const plans=await Promise.all((data||[]).map(async raw=>{
+        const plan=applyStorePlanTierDefaults(raw as BillingPlanCatalogRecord);
+        const effective=query.store_id?applyFoundingLockToPlan(plan,await resolveFoundingCheckoutLock(db,query.store_id,plan)):plan;
+        const monthly=planBillingAmountMinor(effective,'monthly').amountMinor,yearly=planBillingAmountMinor(effective,'yearly').amountMinor;
+        if(!Number.isSafeInteger(monthly)||monthly<0||!Number.isSafeInteger(yearly)||yearly<0)throw new AppError('Subscription pricing is temporarily unavailable.',503,'SUBSCRIPTION_PRICING_UNAVAILABLE');
+        return {...effective,currency:'INR',billing_amount_monthly_minor:monthly,billing_amount_yearly_minor:yearly};
+    }));
+    return c.json({data:plans});
 });
 
 // POST /payments/sessions — V1 provider-agnostic merchant-owned payment session
@@ -463,7 +476,7 @@ router.post('/:paymentId/void', validate('json', PaymentVoidSchema), async (c) =
 });
 
 // POST /payments/:id/refund — record a provider-confirmed refund and canonical F6 ledger entry
-router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (c) => {
+router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (c): Promise<Response> => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as PaymentRefundInput;
     const db = getSupabaseAdmin(c);
@@ -473,27 +486,9 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
     if (!customUser) throw new ForbiddenError('User profile not found');
 
     const payment = await loadOwnedPaymentSession(c, c.req.param('paymentId'), customUser.id, auth.user.storeId);
-    if (payment.status !== 'captured') {
-        throw new ConflictError('Only captured payments can be refunded');
-    }
-
-    const alreadyRefundedMinor = Math.max(0, Number(payment.refunded_amount_minor || 0));
-    const refundAmountMinor = body.amount_minor || (payment.amount_minor - alreadyRefundedMinor);
-    if (refundAmountMinor <= 0) {
-        throw new ConflictError('Refund amount must be positive');
-    }
-    const cumulativeRefundMinor = alreadyRefundedMinor + refundAmountMinor;
-    if (cumulativeRefundMinor > payment.amount_minor) {
-        throw new ConflictError('Refund amount cannot exceed captured amount');
-    }
-    const fullyRefunded = cumulativeRefundMinor === payment.amount_minor;
-
     const manualProviderRefundId = body.provider_refund_id || stringOrNull(body.metadata?.provider_refund_id) || null;
-    if (!manualProviderRefundId && payment.provider !== 'razorpay') {
-        throw new ConflictError('Provider refund id is required before refund can be recorded for non-Razorpay payments');
-    }
 
-    const stepUp = await verifySensitiveActionStepUp({
+    const stepUp = await verifyMerchantStepUp(db, {
         action: 'refund.approve',
         actorId: customUser.id,
         siteId: payment.site_id,
@@ -506,16 +501,90 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
     }
 
     const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: payment.site_id,
-        key: body.idempotency_key,
-        scope: `payment.refund:${payment.id}`,
-        requestBody: body,
-        requestId,
+    // Approval credentials are transient; a fresh valid proof does not change
+    // the financial command's identity. Preserve every other metadata field.
+    const intentBody = body.metadata && ('step_up_token' in body.metadata || 'step_up_verified_at' in body.metadata)
+        ? { ...body, metadata: Object.fromEntries(Object.entries(body.metadata).filter(([key]) => !['step_up_token', 'step_up_verified_at'].includes(key))) }
+        : body;
+    const claim = await idempotency.begin({ siteId: payment.site_id, key: body.idempotency_key,
+        scope: `payment.refund:${payment.id}`, requestBody: intentBody, requestId });
+    const { data: reservationData, error: reservationError } = await db.rpc('reserve_owned_payment_refund_v1', {
+        p_site_id: payment.site_id, p_step_up: stepUp.metadata, p_payment_id: payment.id,
+        p_amount_minor: body.amount_minor ?? null, p_idempotency_key: body.idempotency_key,
+        p_request_id: requestId, p_actor_id: customUser.id,
+        p_metadata: { ...(body.reason ? { refund_reason: body.reason } : {}),
+            ...(manualProviderRefundId ? { provider_refund_id: manualProviderRefundId } : {}),
+            _requires_existing_claim: claim.kind === 'replay', ...stepUp.metadata },
     });
-
+    if (reservationError || !reservationData) {
+        if (claim.kind === 'claimed') await idempotency.fail(claim.id);
+        return c.json({ error: { code: 'REFUND_RESERVATION_FAILED', message: 'Refund could not be safely reserved. Refresh payment status and retry with the same key.' } }, 409);
+    }
+    const reserved = asRecord(reservationData);
+    if (reserved.accepted !== true) {
+        if (claim.kind === 'claimed') await idempotency.fail(claim.id);
+        const code = typeof reserved.code === 'string' ? reserved.code : 'REFUND_RESERVATION_FAILED';
+        throw new AppError('Refund approval, ownership or source changed. Refresh and retry.', Number(reserved.status) || 409, code);
+    }
+    const reservation = asRecord(reserved.reservation);
+    const completed = asRecord(reserved.completed);
+    if (completed.payment) {
+        const currentPayment = asRecord(completed.payment);
+        if (currentPayment.id !== payment.id || currentPayment.site_id !== payment.site_id) throw new AppError('The committed refund needs review.', 409, 'REFUND_REVIEW_REQUIRED');
+        const responseBody = { data: { refunded: true, fully_refunded: completed.fully_refunded === true,
+            payment: { ...currentPayment, refund_ledger_transaction_id: completed.ledger_transaction_id } } };
+        if (claim.kind === 'claimed') await idempotency.complete({ id: claim.id, responseBody: responseBody as unknown as PaymentJsonValue, statusCode: 200, resourceType: 'payment', resourceId: payment.id });
+        c.header('X-Idempotent-Replay', 'true');
+        return c.json(responseBody);
+    }
+    const refundAmountMinor = Number(reservation.amount_minor);
+    if (!Number.isSafeInteger(refundAmountMinor) || refundAmountMinor <= 0) throw new AppError('The refund reservation needs review.', 409, 'REFUND_REVIEW_REQUIRED');
+    const cumulativeRefundMinor = Number(asRecord(reserved.payment).refunded_amount_minor || 0) + refundAmountMinor;
+    const fullyRefunded = cumulativeRefundMinor === payment.amount_minor;
     if (claim.kind === 'replay') {
-        return c.json(claim.responseBody as never, claim.statusCode as never);
+        c.header('X-Idempotent-Replay', 'true');
+        if (!['pending', 'processing'].includes(String(reservation.status))) throw new ConflictError('This refund attempt is already final. Refresh payment status.');
+        const ref = stringOrNull(reservation.provider_refund_id);
+        return c.json({ data: { pending: true, provider_refund_id: ref, refund_amount_minor: refundAmountMinor,
+            payment_id: payment.id, reconciliation: ref ? 'provider_webhook_required' : 'operator_attention_required' } }, 202);
+    }
+    if (!manualProviderRefundId && payment.provider !== 'razorpay') {
+        await idempotency.fail(claim.id);
+        throw new ConflictError('Provider refund id is required before refund can be recorded for non-Razorpay payments');
+    }
+    const refundAttemptId = stringOrNull(reservation.attempt_id);
+    const attemptStatus = stringOrNull(reservation.status);
+    if (!refundAttemptId) {
+        await idempotency.fail(claim.id);
+        return c.json(dbErrorBody('Refund reservation could not be read'), 500);
+    }
+    if (reservation.created !== true) {
+        const providerRefundId = stringOrNull(reservation.provider_refund_id);
+        if (manualProviderRefundId && providerRefundId && providerRefundId !== manualProviderRefundId) {
+            await idempotency.fail(claim.id);
+            return c.json({ error: { code: 'REFUND_REFERENCE_MISMATCH', message: 'This refund attempt is already bound to a different provider refund reference.' } }, 409);
+        }
+        if (manualProviderRefundId && ['pending', 'processing', 'succeeded'].includes(attemptStatus || '')) {
+            // A previous request may have reserved the confirmed provider refund
+            // before a transient database failure. Re-enter the atomic finalizer;
+            // it safely replays if the prior transaction actually committed.
+        } else {
+            if (attemptStatus === 'pending' || attemptStatus === 'processing') {
+                const responseBody = {
+                    data: {
+                        pending: true,
+                        provider_refund_id: providerRefundId,
+                        refund_amount_minor: refundAmountMinor,
+                        payment_id: payment.id,
+                        reconciliation: providerRefundId ? 'provider_webhook_required' : 'operator_attention_required',
+                    },
+                };
+                await idempotency.complete({ id: claim.id, responseBody, statusCode: 202, resourceType: 'payment', resourceId: payment.id });
+                return c.json(responseBody, 202);
+            }
+            await idempotency.fail(claim.id);
+            return c.json({ error: { code: 'REFUND_ATTEMPT_FINAL', message: 'This idempotency key already belongs to a completed refund attempt.' } }, 409);
+        }
     }
 
     // For Razorpay payments without a manual provider_refund_id, call Razorpay API to create the refund.
@@ -527,6 +596,7 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
         // payment.provider === 'razorpay' is guaranteed here (non-razorpay without id was rejected above)
         if (!payment.provider_payment_id) {
             await idempotency.fail(claim.id);
+            await db.from('payment_attempts').update({ status: 'failed', failure_reason: 'Provider payment reference is missing' }).eq('site_id', payment.site_id).eq('id', refundAttemptId);
             return c.json({ error: { code: 'REFUND_PROVIDER_PAYMENT_ID_MISSING', message: 'Cannot initiate refund: provider payment id is not recorded for this payment.' } }, 409);
         }
         const razorpayProvider = createRazorpayPaymentProvider({
@@ -534,7 +604,7 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
             keySecret: c.env.RAZORPAY_KEY_SECRET,
         });
         const razorpayRefundKey = [
-            'payment.refund',
+            'payment_refund',
             payment.id,
             body.idempotency_key,
         ].join(':');
@@ -546,7 +616,66 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
             idempotencyKey: razorpayRefundKey,
             metadata: { reason: body.reason || null, internal_payment_ref: payment.id, site_id: payment.site_id },
         });
+        if (refundResult.status === 'pending') {
+            const providerRefundId = refundResult.references.providerRefundId;
+            const { error: attemptError } = await db.from('payment_attempts').update({
+                ...(providerRefundId ? { provider_event_id: `refund.created:${providerRefundId}` } : {}),
+                request_id: requestId,
+                metadata: {
+                    ...(body.reason ? { refund_reason: body.reason } : {}),
+                    ...stepUp.metadata,
+                    ...(providerRefundId ? { provider_refund_id: providerRefundId } : {}),
+                    refund_amount_minor: refundAmountMinor,
+                },
+            }).eq('site_id', payment.site_id).eq('id', refundAttemptId);
+            if (attemptError) {
+                // Complete the claim even if the attempt write failed: the provider already
+                // accepted the refund request, so an HTTP retry must never call it again.
+                const responseBody = {
+                    data: {
+                        pending: true,
+                        provider_refund_id: providerRefundId || null,
+                        refund_amount_minor: refundAmountMinor,
+                        payment_id: payment.id,
+                        reconciliation: 'operator_attention_required',
+                    },
+                };
+                await idempotency.complete({
+                    id: claim.id,
+                    responseBody,
+                    statusCode: 202,
+                    resourceType: 'payment',
+                    resourceId: payment.id,
+                });
+                return c.json(responseBody, 202);
+            }
+            const responseBody = {
+                data: {
+                    pending: true,
+                    provider_refund_id: providerRefundId || null,
+                    refund_amount_minor: refundAmountMinor,
+                    payment_id: payment.id,
+                    reconciliation: providerRefundId ? 'provider_webhook_required' : 'operator_attention_required',
+                },
+            };
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 202,
+                resourceType: 'payment',
+                resourceId: payment.id,
+            });
+            return c.json(responseBody, 202);
+        }
         if (refundResult.status !== 'refunded' || !refundResult.references.providerRefundId) {
+            await db.from('payment_attempts').update({
+                status: 'failed',
+                failure_reason: refundResult.failureMessage || 'Provider reported refund failure',
+                ...(refundResult.references.providerRefundId ? {
+                    provider_event_id: `refund.failed:${refundResult.references.providerRefundId}`,
+                    metadata: { provider_refund_id: refundResult.references.providerRefundId, refund_amount_minor: refundAmountMinor },
+                } : {}),
+            }).eq('site_id', payment.site_id).eq('id', refundAttemptId);
             await idempotency.fail(claim.id);
             return c.json({
                 error: {
@@ -556,118 +685,137 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
             }, 502);
         }
         providerRefundId = refundResult.references.providerRefundId;
-    }
-
-    try {
-        const ledgerTransactionId = await postPaymentLedger(
-            db,
-            buildPaymentRefundLedgerPosting({
-                siteId: payment.site_id,
-                paymentId: payment.id,
-                providerRefundId,
-                refundAmountMinor,
-                idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
-            }),
-            {
-                payment_id: payment.id,
-                provider: payment.provider,
-                provider_mode: payment.mode,
-                provider_payment_id: payment.provider_payment_id || null,
-                provider_refund_id: providerRefundId,
-                refund_amount_minor: refundAmountMinor,
-                cumulative_refund_amount_minor: cumulativeRefundMinor,
-            },
-            requestId,
-        );
-
-        const { data: updated, error } = await db
-            .from('payments')
-            .update({
-                status: fullyRefunded ? 'refunded' : 'captured',
-                refunded_at: fullyRefunded ? new Date().toISOString() : payment.refunded_at || null,
-                refunded_amount_minor: cumulativeRefundMinor,
-                refund_ledger_transaction_id: ledgerTransactionId,
-                metadata: {
-                    ...(payment.metadata || {}),
-                    ...(body.metadata || {}),
-                    ...stepUp.metadata,
-                    provider_refund_id: providerRefundId,
-                    refund_amount_minor: refundAmountMinor,
-                    cumulative_refund_amount_minor: cumulativeRefundMinor,
-                    refund_reason: body.reason || null,
-                },
-                request_id: requestId,
-                updated_by: customUser.id,
-            })
-            .eq('id', payment.id)
-            .select('*')
-            .single();
-
-        if (error || !updated) {
-            await idempotency.fail(claim.id);
-            return c.json(dbErrorBody('Failed to refund payment'), 500);
-        }
-
-        await db.from('payment_attempts').insert({
-            site_id: payment.site_id,
-            order_id: payment.order_id,
-            payment_id: payment.id,
-            provider: payment.provider,
-            attempt_type: 'refund',
-            status: 'succeeded',
-            amount: refundAmountMinor / 100,
-            currency: payment.currency,
-            provider_order_id: payment.provider_order_id,
-            provider_payment_id: payment.provider_payment_id,
-            provider_session_id: payment.provider_session_id,
-            idempotency_key: body.idempotency_key,
-            request_id: requestId,
-            failure_reason: body.reason || null,
+        const { error: referenceError } = await db.from('payment_attempts').update({
             metadata: {
-                ...(body.metadata || {}),
+                ...(body.reason ? { refund_reason: body.reason } : {}),
                 ...stepUp.metadata,
                 provider_refund_id: providerRefundId,
-                ledger_transaction_id: ledgerTransactionId,
+                refund_amount_minor: refundAmountMinor,
             },
-            created_by: customUser.id,
-            updated_by: customUser.id,
-        });
-
-        await emitPaymentEvent(db, {
-            siteId: payment.site_id,
-            paymentId: payment.id,
-            orderId: payment.order_id,
-            eventType: 'payment.refunded',
-            payload: {
-                provider: payment.provider,
-                provider_event_id: providerRefundId,
-                payment_status: fullyRefunded ? 'refunded' : 'partially_refunded',
-                mode: payment.mode,
-                amount_minor: refundAmountMinor,
-                cumulative_refund_amount_minor: cumulativeRefundMinor,
-                currency: payment.currency,
-                reason: body.reason || null,
-                ledger_transaction_id: ledgerTransactionId,
-            },
-            actorId: customUser.id,
-            requestId,
-            idempotencyKey: `payment.refund:${payment.id}:${body.idempotency_key}`,
-        });
-
-        const responseBody = { data: { refunded: true, fully_refunded: fullyRefunded, payment: updated } };
-        await idempotency.complete({
-            id: claim.id,
-            responseBody,
-            statusCode: 200,
-            resourceType: 'payment',
-            resourceId: payment.id,
-        });
-
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
+        }).eq('site_id', payment.site_id).eq('id', refundAttemptId);
+        if (referenceError) {
+            const responseBody = { data: { pending: true, provider_refund_id: providerRefundId, refund_amount_minor: refundAmountMinor, payment_id: payment.id, reconciliation: 'operator_attention_required' } };
+            await idempotency.complete({ id: claim.id, responseBody, statusCode: 202, resourceType: 'payment', resourceId: payment.id });
+            return c.json(responseBody, 202);
+        }
     }
+
+    if (payment.provider === 'razorpay') {
+        const providerEventId = `refund.processed:${providerRefundId}`;
+        try {
+            const { data: reconciliation, error } = await db.rpc('reconcile_payment_refund_attempt', {
+                p_payment_id: payment.id,
+                p_attempt_id: refundAttemptId,
+                p_provider_refund_id: providerRefundId,
+                p_provider_event_id: providerEventId,
+                p_event_type: 'refund.processed',
+                p_status: 'processed',
+                p_amount_minor: refundAmountMinor,
+                p_currency: payment.currency,
+                p_request_id: requestId,
+            });
+            if (error || !reconciliation) throw new Error(error?.message || 'Refund reconciliation returned no result');
+
+            const result = asRecord(reconciliation);
+            const rawTotalRefundedMinor = Number(result.refunded_amount_minor);
+            const totalRefundedMinor = Number.isSafeInteger(rawTotalRefundedMinor) ? rawTotalRefundedMinor : cumulativeRefundMinor;
+            const fullyRefundedNow = result.fully_refunded === true;
+            const ledgerTransactionId = stringOrNull(result.ledger_transaction_id);
+            await emitPaymentEvent(db, {
+                siteId: payment.site_id,
+                paymentId: payment.id,
+                orderId: payment.order_id,
+                eventType: 'payment.refunded',
+                payload: {
+                    provider: payment.provider,
+                    provider_event_id: providerEventId,
+                    provider_refund_id: providerRefundId,
+                    payment_status: fullyRefundedNow ? 'refunded' : 'paid',
+                    mode: payment.mode,
+                    amount_minor: refundAmountMinor,
+                    cumulative_refund_amount_minor: totalRefundedMinor,
+                    currency: payment.currency,
+                    reason: body.reason || null,
+                    ledger_transaction_id: ledgerTransactionId,
+                },
+                actorId: customUser.id,
+                requestId,
+                idempotencyKey: `payment.refund:${payment.id}:${providerRefundId}`,
+            });
+
+            const responseBody = {
+                data: {
+                    refunded: true,
+                    fully_refunded: fullyRefundedNow,
+                    payment: {
+                        ...payment,
+                        status: fullyRefundedNow ? 'refunded' : 'captured',
+                        refunded_amount_minor: totalRefundedMinor,
+                        refund_ledger_transaction_id: ledgerTransactionId,
+                        metadata: payment.metadata as unknown as PaymentJsonValue,
+                    },
+                },
+            };
+            await idempotency.complete({ id: claim.id, responseBody: responseBody as PaymentJsonValue, statusCode: 200, resourceType: 'payment', resourceId: payment.id });
+            return c.json(responseBody);
+        } catch {
+            // The provider already confirmed the refund. Freeze this request key and
+            // leave the durable pending attempt for the signed webhook to reconcile.
+            const responseBody = {
+                data: {
+                    pending: true,
+                    provider_refund_id: providerRefundId,
+                    refund_amount_minor: refundAmountMinor,
+                    payment_id: payment.id,
+                    reconciliation: 'provider_webhook_required',
+                },
+            };
+            await idempotency.complete({ id: claim.id, responseBody, statusCode: 202, resourceType: 'payment', resourceId: payment.id });
+            return c.json(responseBody, 202);
+        }
+    }
+
+    const { data: reconciliation, error: reconciliationError } = await db.rpc('finalize_manual_payment_refund_attempt', {
+        p_payment_id: payment.id,
+        p_attempt_id: refundAttemptId,
+        p_provider_refund_id: providerRefundId,
+        p_amount_minor: refundAmountMinor,
+        p_currency: payment.currency,
+        p_request_id: requestId,
+        p_actor_id: customUser.id,
+    });
+    if (reconciliationError || !reconciliation) {
+        // The external provider is already confirmed. Release this HTTP claim so
+        // the same key can reclaim the reservation and safely retry the finalizer.
+        await idempotency.fail(claim.id);
+        return c.json({
+            error: {
+                code: 'REFUND_RECONCILIATION_PENDING',
+                message: 'The provider refund reference is reserved, but local reconciliation is incomplete. Retry this request with the same idempotency key and provider refund reference.',
+            },
+        }, 503);
+    }
+
+    const result = asRecord(reconciliation);
+    const totalRefundedMinor = Number(result.refunded_amount_minor);
+    const fullyRefundedNow = result.fully_refunded === true;
+    const ledgerTransactionId = stringOrNull(result.ledger_transaction_id);
+    const responseBody = {
+        data: {
+            refunded: true,
+            fully_refunded: fullyRefundedNow,
+            payment: {
+                ...payment,
+                status: fullyRefundedNow ? 'refunded' : 'captured',
+                refunded_amount_minor: Number.isSafeInteger(totalRefundedMinor) ? totalRefundedMinor : cumulativeRefundMinor,
+                refunded_at: fullyRefundedNow ? new Date().toISOString() : payment.refunded_at || null,
+                refund_ledger_transaction_id: ledgerTransactionId,
+                metadata: payment.metadata as unknown as PaymentJsonValue,
+            },
+        },
+    };
+    await idempotency.complete({ id: claim.id, responseBody: responseBody as PaymentJsonValue, statusCode: 200, resourceType: 'payment', resourceId: payment.id });
+    return c.json(responseBody);
 });
 
 // GET /payments/subscription — Store-scoped billing state for merchant admin
@@ -691,9 +839,9 @@ router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), asy
 
     const { data: subscription, error } = await db
         .from('subscriptions')
-        .select('id, plan, status, billing_period, current_period_end, promo_ends_at, amount_paid, created_at, updated_at, external_subscription_id')
+        .select('id, plan, status, billing_period, current_period_start, current_period_end, promo_ends_at, amount_paid, currency, products_limit, payment_gateway, created_at, updated_at, external_subscription_id')
         .eq('store_id', store_id)
-        .in('status', ['active', 'past_due', 'failed'])
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -702,8 +850,14 @@ router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), asy
         return c.json(dbErrorBody(), 500);
     }
 
+    const { count: productCount, error: productError } = await db
+        .from('products').select('id', { count: 'exact', head: true })
+        .eq('store_id', store_id).is('deleted_at', null);
+    if (productError || productCount === null) return c.json(dbErrorBody(), 500);
+    const limitKnown = Boolean(subscription && ['active', 'trialing'].includes(subscription.status));
     return c.json({
         data: {
+            product_usage: { count: productCount, limit_known: limitKnown, limit: limitKnown ? subscription?.products_limit ?? null : null },
             store: {
                 id: store.id,
                 trial_status: store.trial_status || 'active',
@@ -727,9 +881,10 @@ router.get('/subscription/history', validate('query', StoreSubscriptionQuerySche
     }
 
     const { data, error } = await db
-        .from('subscriptions')
-        .select('id, amount_paid, status, billing_period, created_at')
+        .from('billing_history')
+        .select('id, subscription_id, invoice_number, description, amount, currency, tax_amount, total_amount, payment_status, billing_period, period_start, period_end, created_at')
         .eq('store_id', store_id)
+        .not('subscription_id', 'is', null)
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -737,7 +892,7 @@ router.get('/subscription/history', validate('query', StoreSubscriptionQuerySche
         return c.json(dbErrorBody(), 500);
     }
 
-    return c.json({ data: data || [] });
+    return c.json({ data: (data || []).map(row => ({ ...row, amount_paid: row.amount, status: row.payment_status })) });
 });
 
 // POST /payments/subscription/cancel — Cancel active store subscription
@@ -784,6 +939,7 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
     const checkout = await createMerchantSubscriptionCheckout({
         db,
         env: c.env,
+        idempotencyKey: c.req.header('X-Idempotency-Key') || '',
         userId: customUser.id,
         storeId: body.store_id,
         siteType: body.site_type,
@@ -851,6 +1007,7 @@ router.post('/subscription/recover', validate('json', RecoverSubscriptionPayment
     const checkout = await createMerchantSubscriptionCheckout({
         db,
         env: c.env,
+        idempotencyKey: c.req.header('X-Idempotency-Key') || '',
         userId: customUser.id,
         storeId: body.store_id,
         siteType: 'store',
@@ -900,83 +1057,24 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Payment gateway is not configured' } }, 503);
     }
 
-    const expected = await hmacSha256Hex(
-        c.env.RAZORPAY_KEY_SECRET,
-        razorpayBillingSignaturePayload({
-            orderId: body.razorpay_order_id,
-            subscriptionId: body.razorpay_subscription_id,
-            paymentId: body.razorpay_payment_id,
-        })
-    );
-
-    if (!timingSafeEqualHex(expected, body.razorpay_signature)) {
-        return c.json({ error: { code: 'PAYMENT_SIGNATURE_INVALID', message: 'Payment verification failed' } }, 400);
-    }
-
-    const { data: rawPlan } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', body.site_type)
-        .eq('slug', body.plan_slug)
-        .eq('is_active', true)
-        .single();
-
-    if (!rawPlan) {
-        throw new NotFoundError('Plan not found');
-    }
-
-    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
-
-    if (!isPlanPurchasable(plan)) {
-        return c.json({ error: { code: 'PLAN_NOT_PURCHASABLE', message: 'This plan is not available for purchase' } }, 400);
-    }
-
-    // Founding price lock: founders (and eligible founding-offer merchants while slots
-    // remain) are charged the locked/founding price. The capture check below compares
-    // the captured amount against THIS value, so a founder paying the founding price is
-    // accepted (and never the catalog price). See docs/v1/PRICE_LOCK_VERIFICATION.md.
-    const foundingLock = await resolveFoundingCheckoutLock(db, body.store_id, plan);
-    const baseAmount = resolveMerchantPricing({ plan, foundingLock, billingPeriod: body.billing_period }).amountMinor;
-    let amountPaid = baseAmount;
-
-    // If a coupon was applied at order time, the captured amount is the discounted
-    // amount — recompute the expected minimum (server-authoritative) so the capture
-    // check below matches the legitimate lower payment. An invalid code keeps the
-    // full price (it can never lower the bar on its own).
-    if (body.coupon_code && Number.isFinite(baseAmount) && baseAmount > 0) {
-        const { data: couponVerdict } = await db.rpc('validate_subscription_coupon', {
-            p_code: body.coupon_code,
-            p_plan_slug: body.plan_slug,
-            p_billing_period: body.billing_period,
-            p_amount_minor: baseAmount,
-            p_site_id: body.store_id,
-        });
-        const verdict = (couponVerdict ?? {}) as Record<string, unknown>;
-        const finalMinor = Number(verdict.final_minor);
-        if (verdict.valid === true && Number.isFinite(finalMinor) && finalMinor > 0) {
-            amountPaid = finalMinor;
-        }
-    }
-
-    // SECURITY: a valid HMAC only proves Razorpay signed (order|subscription)+payment ids
-    // — NOT that money was captured, nor how much. Without a server-side capture check a
-    // merchant can replay ANY valid signature (e.g. from a ₹1 order, or a cheaper plan's
-    // payment) to self-activate any plan for free. Confirm the payment was actually
-    // captured for at least the plan price and is bound to the submitted order.
-    if (!Number.isFinite(amountPaid) || amountPaid <= 0) {
-        return c.json({ error: { code: 'PAYMENT_VERIFICATION_FAILED', message: 'Plan price could not be determined' } }, 400);
-    }
+    const reference=body.razorpay_subscription_id||body.razorpay_order_id||'';
+    const source=await readSubscriptionCheckoutSource(db,{actor:customUser.id,site:body.store_id,reference,
+        payment:body.razorpay_payment_id,planSlug:body.plan_slug,period:body.billing_period});
+    const proof=await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET,{providerOrderId:reference,
+        storedProviderOrderId:source.subscription_checkout_reference,providerPaymentId:body.razorpay_payment_id,
+        signature:body.razorpay_signature,referenceKind:body.razorpay_subscription_id?'subscription':'order'});
+    if(!proof.ok)return c.json({error:{code:'PAYMENT_SIGNATURE_INVALID',message:'Payment verification failed'}},400);
+    const plan=source.plan,amountPaid=source.amount;
     const capturedPayment = await fetchRazorpayPayment(
         { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
         body.razorpay_payment_id,
     );
     const capturedStatus = (capturedPayment.status || '').toLowerCase();
     const capturedAmount = typeof capturedPayment.amount === 'number' ? capturedPayment.amount : null;
-    const captureOk = !capturedPayment.error && capturedStatus === 'captured';
-    const amountOk = capturedAmount !== null && capturedAmount >= amountPaid;
+    const captureOk = !capturedPayment.error && capturedStatus === 'captured' && capturedPayment.id===body.razorpay_payment_id && capturedPayment.currency===source.currency;
+    const amountOk = capturedAmount !== null && capturedAmount === amountPaid;
     // One-time order mode: the captured payment must belong to the submitted order.
     const orderBindingOk = !body.razorpay_order_id
-        || !capturedPayment.order_id
         || capturedPayment.order_id === body.razorpay_order_id;
     if (!captureOk || !amountOk || !orderBindingOk) {
         return c.json(
@@ -998,7 +1096,8 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
             razorpayOrderId: body.razorpay_order_id || null,
             razorpayPaymentId: body.razorpay_payment_id,
         });
-    } catch {
+    } catch (error) {
+        if(error instanceof AppError)throw error;
         return c.json(dbErrorBody('Failed to create subscription'), 500);
     }
 

@@ -18,11 +18,11 @@
 import type { Context, Hono } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
-import { toPublicVariant } from '../../lib/public-product-view';
+import { toPublicVariant, withPublicPriceObservation, type PublicPriceObservation } from '../../lib/public-product-view';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 
 type AppContext = Context<{ Bindings: Env }>;
-type DatabaseErrorLike = { message?: string; details?: string; hint?: string } | null | undefined;
+type DatabaseErrorLike = { code?: string; message?: string; details?: string; hint?: string } | null | undefined;
 
 export const MARKETPLACE_LISTING_DETAIL_RPC = 'marketplace_listing_detail';
 
@@ -58,7 +58,38 @@ export type MarketplaceListingDetailRow = {
     seo_description: string | null;
     category_slug: string | null;
     approved_at: string;
+    country_of_origin?: string | null;
+    importer_details?: string | null;
 };
+
+export type MarketplaceProductDisclosure = {
+    countryOfOrigin: string | null;
+    importerDetails: string | null;
+};
+
+export async function loadListingDisclosureFromDatabase(
+    c: AppContext,
+    productId: string,
+    siteId: string,
+): Promise<{ data: MarketplaceProductDisclosure | null; error: DatabaseErrorLike }> {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('products')
+        .select('country_of_origin,importer_details')
+        .eq('id', productId)
+        // productId came from marketplace_listing_detail, but products remains tenant-guarded.
+        // Carry the RPC's authoritative site id through this public read instead of weakening the guard.
+        .eq('site_id', siteId)
+        .maybeSingle();
+    const row = data as { country_of_origin?: string | null; importer_details?: string | null } | null;
+    return {
+        data: row ? {
+            countryOfOrigin: row.country_of_origin ?? null,
+            importerDetails: row.importer_details ?? null,
+        } : null,
+        error: error as DatabaseErrorLike,
+    };
+}
 
 export async function loadMarketplaceListingDetailFromDatabase(
     c: AppContext,
@@ -88,9 +119,26 @@ export async function loadListingVariantsFromDatabase(
     return { data: (data as Record<string, unknown>[] | null) ?? [], error: error as DatabaseErrorLike };
 }
 
+export async function loadListingPriceObservationsFromDatabase(
+    c: AppContext,
+    productId: string,
+): Promise<{ data: (PublicPriceObservation & { product_id: string; variant_id: string | null })[]; error: DatabaseErrorLike }> {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('product_price_reference_window', {
+        p_product_ids: [productId],
+        p_channel: 'marketplace',
+    });
+    return {
+        data: (data as (PublicPriceObservation & { product_id: string; variant_id: string | null })[] | null) ?? [],
+        error: error as DatabaseErrorLike,
+    };
+}
+
 export interface StorefrontMarketplaceDetailDependencies {
     loadMarketplaceListingDetail?: (c: AppContext, listingId: string) => Promise<{ data: MarketplaceListingDetailRow | null; error: DatabaseErrorLike }>;
     loadListingVariants?: (c: AppContext, productId: string) => Promise<{ data: Record<string, unknown>[]; error: DatabaseErrorLike }>;
+    loadPriceObservations?: typeof loadListingPriceObservationsFromDatabase;
+    loadDisclosure?: typeof loadListingDisclosureFromDatabase;
 }
 
 export function registerStorefrontMarketplaceDetailRoutes(
@@ -99,6 +147,8 @@ export function registerStorefrontMarketplaceDetailRoutes(
 ): void {
     const loadListing = dependencies.loadMarketplaceListingDetail ?? loadMarketplaceListingDetailFromDatabase;
     const loadVariants = dependencies.loadListingVariants ?? loadListingVariantsFromDatabase;
+    const loadPriceObservations = dependencies.loadPriceObservations ?? loadListingPriceObservationsFromDatabase;
+    const loadDisclosure = dependencies.loadDisclosure ?? loadListingDisclosureFromDatabase;
 
     // GET /storefront/marketplace/listings/:id — one approved listing, or 404.
     // Registered with the other /marketplace routes, before the `/:subdomain/...` family, so no
@@ -109,6 +159,8 @@ export function registerStorefrontMarketplaceDetailRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid listing identifier' } }, 400);
         }
         const key = await storefrontRequestCacheKey(c, 'marketplace:listing', listingId);
+        // A direct listing link is an eligibility-sensitive read; never serve a previously
+        // approved response after the canonical fence has changed.
         return cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const { data, error } = await loadListing(c, listingId);
             // A query failure is not an absence: reporting it as 404 would hide a schema or
@@ -122,14 +174,48 @@ export function registerStorefrontMarketplaceDetailRoutes(
             }
             // The listing exists and is publicly visible; only now are its variants read.
             const variants = await loadVariants(c, data.product_id);
+            const priceObservations = await loadPriceObservations(c, data.product_id);
+            const disclosure = await loadDisclosure(c, data.product_id, data.site_id);
+            if (disclosure.error) return { status: 500, body: dbFailureBody() };
+            if (priceObservations.error
+                && priceObservations.error.code !== 'PGRST202'
+                && priceObservations.error.code !== '42883') {
+                return { status: 500, body: dbFailureBody() };
+            }
+            const observationByVariantId = new Map<string, PublicPriceObservation>();
+            let productObservation: PublicPriceObservation | undefined;
+            for (const observation of priceObservations.data) {
+                if (observation.variant_id) observationByVariantId.set(observation.variant_id, observation);
+                else productObservation = observation;
+            }
+            const effectiveProductObservation = productObservation ?? {
+                current_price: data.price,
+                prior_lowest_price_30d: null,
+                prior_coverage_complete: false,
+                price_observed_at: null,
+            };
+            const productWithPriceEvidence = withPublicPriceObservation({
+                ...data,
+                country_of_origin: disclosure.data?.countryOfOrigin ?? null,
+                importer_details: disclosure.data?.importerDetails ?? null,
+            }, effectiveProductObservation);
             // A variant-read failure must not turn a good listing into a 500 — a product page
             // without a variant picker is degraded, not broken, and the storefront's own hydration
             // treats a missing product_variants table the same way.
-            const publicVariants = (variants.error ? [] : variants.data).map((variant) => toPublicVariant(variant));
+            const publicVariants = (variants.error ? [] : variants.data).map((variant) => {
+                const variantId = typeof variant.id === 'string' ? variant.id : '';
+                const observation = observationByVariantId.get(variantId) ?? {
+                    current_price: variant.price as number | string | null,
+                    prior_lowest_price_30d: null,
+                    prior_coverage_complete: false,
+                    price_observed_at: null,
+                };
+                return toPublicVariant(withPublicPriceObservation(variant, observation));
+            });
             return {
-                body: success({ ...data, variants: publicVariants }),
+                body: success({ ...productWithPriceEvidence, variants: publicVariants }),
                 tags: ['marketplace:feed', `marketplace:listing:${listingId}`],
             };
-        });
+        }, { bypassCache: true });
     });
 }

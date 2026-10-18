@@ -22,7 +22,8 @@ class ProductCard extends StatefulWidget {
   final VoidCallback? onTap;
   final DealModel? deal; // Optional preloaded deal
   final bool isSponsored; // Whether this card is a sponsored ad
-  final String? source; // Traffic source for analytics (organic, search, category, ads, recommendation)
+  final String?
+  source; // Traffic source for analytics (organic, search, category, ads, recommendation)
   final String? adCampaignId; // Campaign ID for ads source
 
   const ProductCard({
@@ -44,7 +45,7 @@ class _ProductCardState extends State<ProductCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  
+
   DealModel? _deal;
   bool _hasCheckedDeal = false;
 
@@ -55,10 +56,11 @@ class _ProductCardState extends State<ProductCard>
       duration: const Duration(milliseconds: 120),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
     // Use preloaded deal if available
     _deal = widget.deal;
     if (_deal == null) {
@@ -71,7 +73,7 @@ class _ProductCardState extends State<ProductCard>
   Future<void> _checkForDeal() async {
     if (_hasCheckedDeal) return;
     _hasCheckedDeal = true;
-    
+
     try {
       final dealService = DealService();
       final deal = await dealService.getActiveDealForProduct(widget.product.id);
@@ -96,11 +98,13 @@ class _ProductCardState extends State<ProductCard>
 
     // Call onTap callback if provided (for extra actions like ad click tracking)
     widget.onTap?.call();
-    
+
     // Determine source for analytics
     final source = widget.source ?? (widget.isSponsored ? 'ads' : 'organic');
-    debugPrint('🔍 ProductCard._onTap: source=$source, widget.source=${widget.source}, isSponsored=${widget.isSponsored}, campaignId=${widget.adCampaignId}');
-    
+    debugPrint(
+      '🔍 ProductCard._onTap: source=$source, widget.source=${widget.source}, isSponsored=${widget.isSponsored}, campaignId=${widget.adCampaignId}',
+    );
+
     // Always navigate with source attribution for analytics
     Navigator.pushNamed(
       context,
@@ -124,23 +128,20 @@ class _ProductCardState extends State<ProductCard>
       child: Consumer<WishlistProvider>(
         builder: (context, wishlistProvider, _) {
           final isInWishlist = wishlistProvider.isInWishlist(widget.product.id);
-          
+
           final cardWidget = widget.isGridView
               ? _buildGridCard(isDark, isInWishlist, wishlistProvider)
               : _buildListCard(isDark, isInWishlist, wishlistProvider);
-          
+
           return GestureDetector(
             onTapDown: kIsWeb ? null : _onTapDown,
             onTapUp: kIsWeb ? null : _onTapUp,
             onTapCancel: kIsWeb ? null : _onTapCancel,
             onTap: _onTap,
             // 🚀 WEB OPTIMIZATION: Skip ScaleTransition on web (causes lag)
-            child: kIsWeb 
-                ? cardWidget 
-                : ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: cardWidget,
-                  ),
+            child: kIsWeb
+                ? cardWidget
+                : ScaleTransition(scale: _scaleAnimation, child: cardWidget),
           );
         },
       ),
@@ -150,21 +151,24 @@ class _ProductCardState extends State<ProductCard>
   // ---------------------------------------------------------------------------
   // GRID VIEW (Flipkart Style) - WITH DEAL SUPPORT
   // ---------------------------------------------------------------------------
-  Widget _buildGridCard(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
+  Widget _buildGridCard(
+    bool isDark,
+    bool isInWishlist,
+    WishlistProvider wishlistProvider,
+  ) {
     final discount = widget.product.discount;
     final isSponsored = widget.isSponsored;
-    final hasDiscount = widget.product.originalPrice != null &&
-        widget.product.originalPrice! > widget.product.price;
+    final hasDiscount = widget.product.hasDisplayableReferencePrice;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
-    
+
     // Deal-specific colors (RED theme)
-    final dealBorderColor = _hasDeal 
+    final dealBorderColor = _hasDeal
         ? (isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA))
         : Colors.transparent;
     final dealBgTint = _hasDeal
         ? (isDark ? const Color(0xFF1A0A0A) : const Color(0xFFFEF2F2))
         : null;
-    
+
     // Sponsored cards: NO special border - just AD badge (removed golden theme)
     // Only deals get special border treatment
     final hasBorder = _hasDeal;
@@ -176,22 +180,30 @@ class _ProductCardState extends State<ProductCard>
         color: bgTint ?? (isDark ? const Color(0xFF1E293B) : Colors.white),
         border: Border(
           right: BorderSide(
-            color: hasBorder 
-                ? borderColor 
-                : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.15)),
+            color: hasBorder
+                ? borderColor
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.15)),
             width: hasBorder ? 2 : 0.5,
           ),
           bottom: BorderSide(
-            color: hasBorder 
-                ? borderColor 
-                : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.15)),
+            color: hasBorder
+                ? borderColor
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.15)),
             width: hasBorder ? 2 : 0.5,
           ),
-          left: hasBorder ? BorderSide(color: borderColor, width: 2) : BorderSide.none,
-          top: hasBorder ? BorderSide(color: borderColor, width: 2) : BorderSide.none,
+          left: hasBorder
+              ? BorderSide(color: borderColor, width: 2)
+              : BorderSide.none,
+          top: hasBorder
+              ? BorderSide(color: borderColor, width: 2)
+              : BorderSide.none,
         ),
       ),
-       child: Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // --- Image Section (80%) ---
@@ -203,13 +215,17 @@ class _ProductCardState extends State<ProductCard>
                 // Image
                 ClipRRect(
                   child: Container(
-                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                    color: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFFF8FAFC),
                     child: widget.product.imageUrl != null
                         ? CachedNetworkImage(
                             imageUrl: widget.product.imageUrl!,
                             fit: BoxFit.contain,
-                            placeholder: (_, __) => _buildImagePlaceholder(isDark),
-                            errorWidget: (_, __, ___) => _buildImagePlaceholder(isDark),
+                            placeholder: (_, __) =>
+                                _buildImagePlaceholder(isDark),
+                            errorWidget: (_, __, ___) =>
+                                _buildImagePlaceholder(isDark),
                           )
                         : _buildImagePlaceholder(isDark),
                   ),
@@ -219,7 +235,11 @@ class _ProductCardState extends State<ProductCard>
                 Positioned(
                   bottom: 8,
                   right: 8,
-                  child: _buildWishlistButton(isDark, isInWishlist, wishlistProvider),
+                  child: _buildWishlistButton(
+                    isDark,
+                    isInWishlist,
+                    wishlistProvider,
+                  ),
                 ),
 
                 // AD Badge (Top Right) - Premium Glassmorphic Style
@@ -228,11 +248,16 @@ class _ProductCardState extends State<ProductCard>
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.3),
@@ -244,7 +269,11 @@ class _ProductCardState extends State<ProductCard>
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.campaign_outlined, color: Colors.white, size: 10),
+                          Icon(
+                            Icons.campaign_outlined,
+                            color: Colors.white,
+                            size: 10,
+                          ),
                           SizedBox(width: 3),
                           Text(
                             'AD',
@@ -266,12 +295,17 @@ class _ProductCardState extends State<ProductCard>
                     top: 8,
                     left: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [AppColors.error, const Color(0xFFDC2626)],
                         ),
-                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+                        borderRadius: const BorderRadius.horizontal(
+                          right: Radius.circular(6),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.error.withValues(alpha: 0.4),
@@ -298,20 +332,30 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   )
                 // Regular Discount Badge (if no deal)
-                else if (discount > 0)
+                else if (discount > 0 &&
+                    widget.product.marketplaceListingId == null)
                   Positioned(
                     top: 8,
                     left: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: const BoxDecoration(
                         color: Color(0xFF10B981),
-                        borderRadius: BorderRadius.horizontal(right: Radius.circular(4)),
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(4),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.arrow_downward_rounded, color: Colors.white, size: 9),
+                          const Icon(
+                            Icons.arrow_downward_rounded,
+                            color: Colors.white,
+                            size: 9,
+                          ),
                           const SizedBox(width: 2),
                           Text(
                             '$discount%',
@@ -332,7 +376,10 @@ class _ProductCardState extends State<ProductCard>
                     top: 8,
                     right: 44,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.75),
                         borderRadius: BorderRadius.circular(4),
@@ -389,11 +436,13 @@ class _ProductCardState extends State<ProductCard>
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.9)
+                            : Colors.black87,
                       ),
                     ),
                   ),
-                  
+
                   // Price Row - Show deal price if active
                   Row(
                     children: [
@@ -402,19 +451,25 @@ class _ProductCardState extends State<ProductCard>
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: _hasDeal ? AppColors.error : (isDark ? Colors.white : Colors.black),
+                          color: _hasDeal
+                              ? AppColors.error
+                              : (isDark ? Colors.white : Colors.black),
                         ),
                       ),
                       if (_hasDeal || hasDiscount) ...[
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            '₹${_formatPrice(_hasDeal ? _deal!.originalPrice : widget.product.originalPrice!)}',
+                            _hasDeal
+                                ? '₹${_formatPrice(_deal!.originalPrice)}'
+                                : '${widget.product.hasPriorThirtyDayLow ? '30-day low' : 'M.R.P.'} ₹${_formatPrice(widget.product.originalPrice!)}',
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 10,
                               decoration: TextDecoration.lineThrough,
-                              color: isDark ? Colors.grey[500] : Colors.grey[600],
+                              color: isDark
+                                  ? Colors.grey[500]
+                                  : Colors.grey[600],
                             ),
                           ),
                         ),
@@ -422,62 +477,102 @@ class _ProductCardState extends State<ProductCard>
                       const Spacer(),
                       // Compact star rating
                       if (widget.product.rating > 0) ...[
-                        const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 11),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFFFC107),
+                          size: 11,
+                        ),
                         const SizedBox(width: 2),
                         Text(
                           widget.product.rating.toStringAsFixed(1),
-                          style: TextStyle(fontSize: 10, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
                         ),
                       ],
                     ],
                   ),
-                  
+
                   // Badges Row
                   Row(
                     children: [
                       // Deal timer badge
                       if (_hasDeal)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 1,
+                          ),
                           margin: const EdgeInsets.only(right: 4),
                           decoration: BoxDecoration(
                             color: AppColors.error.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(3),
-                            border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: AppColors.error.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.timer_rounded, size: 9, color: AppColors.error),
+                              Icon(
+                                Icons.timer_rounded,
+                                size: 9,
+                                color: AppColors.error,
+                              ),
                               const SizedBox(width: 2),
                               Text(
                                 _formatDealTime(_deal!.timeRemaining),
-                                style: TextStyle(fontSize: 7, color: AppColors.error, fontWeight: FontWeight.w700),
+                                style: TextStyle(
+                                  fontSize: 7,
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
                         )
                       else if (widget.product.isVerified)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 1,
+                          ),
                           margin: const EdgeInsets.only(right: 4),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [Color(0xFF10B981), Color(0xFF059669)]),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF10B981), Color(0xFF059669)],
+                            ),
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.verified_rounded, color: Colors.white, size: 9),
+                              Icon(
+                                Icons.verified_rounded,
+                                color: Colors.white,
+                                size: 9,
+                              ),
                               SizedBox(width: 2),
-                              Text('LetBuyy', style: TextStyle(fontSize: 7, color: Colors.white, fontWeight: FontWeight.w700)),
+                              Text(
+                                'LetBuyy',
+                                style: TextStyle(
+                                  fontSize: 7,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       if (isFreeDelivery && !_hasDeal)
                         Text(
                           'Free Delivery',
-                          style: TextStyle(fontSize: 8, color: const Color(0xFF10B981), fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 8,
+                            color: const Color(0xFF10B981),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                     ],
                   ),
@@ -493,23 +588,26 @@ class _ProductCardState extends State<ProductCard>
   // ---------------------------------------------------------------------------
   // LIST VIEW (Amazon Style) - WITH DEAL SUPPORT
   // ---------------------------------------------------------------------------
-  Widget _buildListCard(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
+  Widget _buildListCard(
+    bool isDark,
+    bool isInWishlist,
+    WishlistProvider wishlistProvider,
+  ) {
     final discount = widget.product.discount;
-    final hasDiscount = widget.product.originalPrice != null &&
-        widget.product.originalPrice! > widget.product.price;
+    final hasDiscount = widget.product.hasDisplayableReferencePrice;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
     final isSponsored = widget.isSponsored;
-    
+
     // Deal-specific colors (RED theme)
-    final dealBorderColor = _hasDeal 
+    final dealBorderColor = _hasDeal
         ? (isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA))
         : Colors.transparent;
-    
+
     // Sponsored cards: NO special border - just AD badge (removed golden theme)
     // Only deals get special border treatment
     final hasBorder = _hasDeal;
     final borderColor = dealBorderColor;
-    final bgColor = _hasDeal 
+    final bgColor = _hasDeal
         ? (isDark ? const Color(0xFF1A0505) : const Color(0xFFFEF2F2))
         : (isDark ? const Color(0xFF1E293B) : Colors.white);
 
@@ -520,13 +618,17 @@ class _ProductCardState extends State<ProductCard>
             ? Border.all(color: borderColor, width: 2)
             : Border(
                 bottom: BorderSide(
-                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.withValues(alpha: 0.12),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.12),
                   width: 1,
                 ),
               ),
         borderRadius: hasBorder ? BorderRadius.circular(12) : null,
       ),
-      margin: hasBorder ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4) : null,
+      margin: hasBorder
+          ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4)
+          : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -539,17 +641,24 @@ class _ProductCardState extends State<ProductCard>
               children: [
                 // Image
                 ClipRRect(
-                  borderRadius: _hasDeal 
-                      ? const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10))
+                  borderRadius: _hasDeal
+                      ? const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                        )
                       : BorderRadius.zero,
                   child: Container(
-                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+                    color: isDark
+                        ? const Color(0xFF0F172A)
+                        : const Color(0xFFF8FAFC),
                     child: widget.product.imageUrl != null
                         ? CachedNetworkImage(
                             imageUrl: widget.product.imageUrl!,
                             fit: BoxFit.contain,
-                            placeholder: (_, __) => _buildImagePlaceholder(isDark),
-                            errorWidget: (_, __, ___) => _buildImagePlaceholder(isDark),
+                            placeholder: (_, __) =>
+                                _buildImagePlaceholder(isDark),
+                            errorWidget: (_, __, ___) =>
+                                _buildImagePlaceholder(isDark),
                           )
                         : _buildImagePlaceholder(isDark),
                   ),
@@ -561,12 +670,17 @@ class _ProductCardState extends State<ProductCard>
                     top: 8,
                     left: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [AppColors.error, const Color(0xFFDC2626)],
                         ),
-                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+                        borderRadius: const BorderRadius.horizontal(
+                          right: Radius.circular(6),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: AppColors.error.withValues(alpha: 0.4),
@@ -597,7 +711,12 @@ class _ProductCardState extends State<ProductCard>
                 Positioned(
                   bottom: 4,
                   left: 4,
-                  child: _buildWishlistButton(isDark, isInWishlist, wishlistProvider, small: true),
+                  child: _buildWishlistButton(
+                    isDark,
+                    isInWishlist,
+                    wishlistProvider,
+                    small: true,
+                  ),
                 ),
 
                 // LetBuyy Choice Badge (if not deal)
@@ -606,14 +725,23 @@ class _ProductCardState extends State<ProductCard>
                     bottom: 0,
                     left: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
                       decoration: const BoxDecoration(
                         color: Color(0xFF1A3848),
-                        borderRadius: BorderRadius.only(topRight: Radius.circular(3)),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(3),
+                        ),
                       ),
                       child: const Text(
                         "LetBuyy's Choice",
-                        style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 7,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -624,7 +752,14 @@ class _ProductCardState extends State<ProductCard>
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.5),
                       child: const Center(
-                        child: Text('OUT OF STOCK', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          'OUT OF STOCK',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -644,16 +779,25 @@ class _ProductCardState extends State<ProductCard>
                   if (_hasDeal)
                     Container(
                       margin: const EdgeInsets.only(bottom: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.error.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.timer_rounded, size: 12, color: AppColors.error),
+                          Icon(
+                            Icons.timer_rounded,
+                            size: 12,
+                            color: AppColors.error,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Ends in ${_formatDealTime(_deal!.timeRemaining)}',
@@ -696,22 +840,46 @@ class _ProductCardState extends State<ProductCard>
                         children: [
                           Text(
                             widget.product.rating.toStringAsFixed(1),
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? Colors.white70 : AppColors.primary),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? Colors.white70
+                                  : AppColors.primary,
+                            ),
                           ),
                           const SizedBox(width: 3),
                           ...List.generate(5, (index) {
                             final starValue = index + 1;
                             if (widget.product.rating >= starValue) {
-                              return const Icon(Icons.star_rounded, color: Color(0xFFFFA41C), size: 14);
-                            } else if (widget.product.rating >= starValue - 0.5) {
-                              return const Icon(Icons.star_half_rounded, color: Color(0xFFFFA41C), size: 14);
+                              return const Icon(
+                                Icons.star_rounded,
+                                color: Color(0xFFFFA41C),
+                                size: 14,
+                              );
+                            } else if (widget.product.rating >=
+                                starValue - 0.5) {
+                              return const Icon(
+                                Icons.star_half_rounded,
+                                color: Color(0xFFFFA41C),
+                                size: 14,
+                              );
                             } else {
-                              return Icon(Icons.star_outline_rounded, color: Colors.grey[400], size: 14);
+                              return Icon(
+                                Icons.star_outline_rounded,
+                                color: Colors.grey[400],
+                                size: 14,
+                              );
                             }
                           }),
                           Text(
                             ' (${_formatCount(widget.product.reviewCount)})',
-                            style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[400] : AppColors.primary),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : AppColors.primary,
+                            ),
                           ),
                         ],
                       ),
@@ -721,7 +889,10 @@ class _ProductCardState extends State<ProductCard>
                   if (_hasDeal)
                     Container(
                       margin: const EdgeInsets.only(top: 5),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [AppColors.error, const Color(0xFFDC2626)],
@@ -730,20 +901,32 @@ class _ProductCardState extends State<ProductCard>
                       ),
                       child: Text(
                         '${_deal!.discountLabel} OFF',
-                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     )
-                  else if (discount > 15)
+                  else if (discount > 15 &&
+                      widget.product.marketplaceListingId == null)
                     Container(
                       margin: const EdgeInsets.only(top: 5),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFCC0C39),
                         borderRadius: BorderRadius.circular(3),
                       ),
                       child: const Text(
                         'Limited time deal',
-                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
 
@@ -759,26 +942,48 @@ class _ProductCardState extends State<ProductCard>
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: _hasDeal ? AppColors.error : (isDark ? Colors.white : Colors.black),
+                            color: _hasDeal
+                                ? AppColors.error
+                                : (isDark ? Colors.white : Colors.black),
                           ),
                         ),
                         Text(
-                          _formatPrice(_hasDeal ? _deal!.dealPrice : widget.product.price),
+                          _formatPrice(
+                            _hasDeal ? _deal!.dealPrice : widget.product.price,
+                          ),
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
-                            color: _hasDeal ? AppColors.error : (isDark ? Colors.white : Colors.black),
+                            color: _hasDeal
+                                ? AppColors.error
+                                : (isDark ? Colors.white : Colors.black),
                           ),
                         ),
                         if (_hasDeal || hasDiscount) ...[
                           const SizedBox(width: 6),
                           Text(
-                            'M.R.P: ₹${_formatPrice(_hasDeal ? _deal!.originalPrice : widget.product.originalPrice!)}',
-                            style: TextStyle(fontSize: 12, decoration: TextDecoration.lineThrough, color: isDark ? Colors.grey[500] : Colors.grey[600]),
+                            _hasDeal
+                                ? 'M.R.P: ₹${_formatPrice(_deal!.originalPrice)}'
+                                : '${widget.product.hasPriorThirtyDayLow ? 'Prior 30-day low' : 'M.R.P.'}: ₹${_formatPrice(widget.product.originalPrice!)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              decoration: TextDecoration.lineThrough,
+                              color: isDark
+                                  ? Colors.grey[500]
+                                  : Colors.grey[600],
+                            ),
                           ),
                           if (!_hasDeal) ...[
                             const SizedBox(width: 4),
-                            Text('($discount% off)', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFFCC0C39))),
+                            if (!widget.product.hasPriorThirtyDayLow)
+                              Text(
+                                '($discount% off)',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFCC0C39),
+                                ),
+                              ),
                           ],
                         ],
                       ],
@@ -790,10 +995,16 @@ class _ProductCardState extends State<ProductCard>
                     padding: const EdgeInsets.only(top: 4),
                     child: Text.rich(
                       TextSpan(
-                        style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black87),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
                         children: [
                           if (isFreeDelivery)
-                            const TextSpan(text: 'FREE delivery ', style: TextStyle(fontWeight: FontWeight.w700)),
+                            const TextSpan(
+                              text: 'FREE delivery ',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
                           TextSpan(
                             text: widget.product.shippingDays ?? 'Tomorrow',
                             style: const TextStyle(fontWeight: FontWeight.w700),
@@ -820,29 +1031,47 @@ class _ProductCardState extends State<ProductCard>
                         // failed (no userId ever available), this claimed success on every tap
                         // regardless. CartProvider is now a real local cart, so this awaits and
                         // checks addItem's actual result.
-                        onPressed: !widget.product.isPurchasable ? null : () async {
-                          HapticFeedback.mediumImpact();
-                          final added = await Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(added ? 'Added to cart' : 'Could not add to cart'),
-                              duration: const Duration(seconds: 1),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                          );
-                        },
+                        onPressed: !widget.product.isPurchasable
+                            ? null
+                            : () async {
+                                HapticFeedback.mediumImpact();
+                                final added = await Provider.of<CartProvider>(
+                                  context,
+                                  listen: false,
+                                ).addItem(widget.product);
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      added
+                                          ? 'Added to cart'
+                                          : 'Could not add to cart',
+                                    ),
+                                    duration: const Duration(seconds: 1),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                );
+                              },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _hasDeal ? AppColors.error : const Color(0xFF10B981),
+                          backgroundColor: _hasDeal
+                              ? AppColors.error
+                              : const Color(0xFF10B981),
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           padding: EdgeInsets.zero,
                         ),
                         child: Text(
                           _hasDeal ? '🔥 Grab Deal' : 'Add to cart',
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -860,7 +1089,12 @@ class _ProductCardState extends State<ProductCard>
   // SHARED WIDGETS
   // ---------------------------------------------------------------------------
 
-  Widget _buildWishlistButton(bool isDark, bool isInWishlist, WishlistProvider provider, {bool small = false}) {
+  Widget _buildWishlistButton(
+    bool isDark,
+    bool isInWishlist,
+    WishlistProvider provider, {
+    bool small = false,
+  }) {
     final size = small ? 28.0 : 34.0;
     final iconSize = small ? 14.0 : 18.0;
 
@@ -879,11 +1113,18 @@ class _ProductCardState extends State<ProductCard>
         decoration: BoxDecoration(
           color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.85),
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 6)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 6,
+            ),
+          ],
         ),
         child: Icon(
           isInWishlist ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-          color: isInWishlist ? AppColors.error : (isDark ? Colors.grey[400] : Colors.grey[500]),
+          color: isInWishlist
+              ? AppColors.error
+              : (isDark ? Colors.grey[400] : Colors.grey[500]),
           size: iconSize,
         ),
       ),
@@ -903,15 +1144,15 @@ class _ProductCardState extends State<ProductCard>
   String _formatPrice(double price) {
     final intPrice = price.toInt();
     if (intPrice < 1000) return intPrice.toString();
-    
+
     final str = intPrice.toString();
     final len = str.length;
-    
+
     if (len <= 3) return str;
-    
+
     final lastThree = str.substring(len - 3);
     final remaining = str.substring(0, len - 3);
-    
+
     String formatted = '';
     for (int i = remaining.length - 1; i >= 0; i--) {
       formatted = remaining[i] + formatted;
@@ -919,13 +1160,14 @@ class _ProductCardState extends State<ProductCard>
         formatted = ',$formatted';
       }
     }
-    
+
     return '$formatted,$lastThree';
   }
 
   String _formatCount(int count) {
     if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-    if (count >= 1000) return '${(count / 1000).toStringAsFixed(count >= 10000 ? 0 : 1)}K';
+    if (count >= 1000)
+      return '${(count / 1000).toStringAsFixed(count >= 10000 ? 0 : 1)}K';
     return count.toString();
   }
 

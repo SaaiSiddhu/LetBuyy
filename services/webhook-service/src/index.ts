@@ -19,6 +19,7 @@ import {
     recordGatewayOrderPaymentFailure,
 } from "./gateway-order-transitions";
 import { activateGatewayStoreSubscription } from "./gateway-billing-transitions";
+import { normalizeRazorpayRefundLifecycle, reconcileGatewayPaymentRefund } from "./gateway-refund-transitions";
 
 // ============================================================
 // WEBHOOK HANDLER — Payment Provider Signature Verification
@@ -148,7 +149,7 @@ function razorpayProviderEventId(
     const paymentId = event.payload?.payment?.entity?.id;
     const refundId = event.payload?.refund?.entity?.id;
     const orderId = event.payload?.order?.entity?.id;
-    return String(paymentId || refundId || orderId || `${event.event}:${event.created_at || "unknown"}:${signature.slice(0, 24)}`);
+    return String(refundId || paymentId || orderId || `${event.event}:${event.created_at || "unknown"}:${signature.slice(0, 24)}`);
 }
 
 // Phase M5, DOC 03 row 11 "Payments": narrowed after confirming every
@@ -160,7 +161,7 @@ function razorpayProviderEventId(
 // route, confirmed fresh via `grep -n '^app\.post('` (exactly 3 routes:
 // /app-lifecycle/dispatch, /webhook-deliveries/dispatch, /razorpay).
 type PaymentProvider = "razorpay";
-type PaymentDomainEventType = "payment.captured" | "payment.failed" | "refund.created" | "payment.subscription.activated";
+type PaymentDomainEventType = "payment.captured" | "payment.failed" | "payment.refunded" | "refund.created" | "payment.subscription.activated";
 type JsonObject = Record<string, unknown>;
 
 interface WebhookOrderRow {
@@ -340,7 +341,8 @@ function normalizePaymentDomainEventType(
     if (aggregateType === "subscription") return "payment.subscription.activated";
 
     const normalized = providerEventType.trim().toLowerCase();
-    if (normalized.includes("refund")) return "refund.created";
+    if (normalized === "refund.processed") return "payment.refunded";
+    if (normalized === "refund.created") return "refund.created";
     if (normalized.includes("fail") || normalized.includes("denied") || normalized.includes("declined")) {
         return "payment.failed";
     }
@@ -456,7 +458,7 @@ async function markOrderRefunded(
     order: WebhookOrderRow,
     providerEventId: string,
     provider: PaymentProvider = "razorpay",
-    eventType = "refund.created"
+    eventType = "refund.processed"
 ): Promise<void> {
     // G7 — only apply a refund to an order that was actually captured. A refund webhook arriving before
     // the capture webhook (out-of-order delivery) must NOT flip an unpaid order to "refunded" — that
@@ -479,7 +481,7 @@ async function markOrderRefunded(
         providerEventId,
         paymentStatus: "refunded",
         orderStatus: "refunded",
-        reason: "refund_created",
+        reason: "refund_processed",
         releaseInventory: Boolean(order.inventory_reserved_at && !order.inventory_released_at),
         idempotencyKey: `payment-webhook:${provider}:${providerEventId}:refunded`,
     });
@@ -541,19 +543,9 @@ async function activateStoreSubscription(
     }
 ): Promise<void> {
     const billingPeriod = params.billingPeriod === "yearly" ? "yearly" : "monthly";
-    // Activation is not idempotent: each call cancels the active subscription, inserts a new one and
-    // records another invoice. A payment that already carries a subscription has been applied, by the
-    // merchant's verify route or by an earlier attempt of this event, so it is not activated again.
-    // That makes a reclaimed retry (LB-PAY-008) safe to replay, and stops the webhook's half of
-    // LB-BIL-001: the verify route activating first and this branch activating the same payment again.
-    const [applied] = params.provider === "razorpay" && params.providerPaymentId
-        ? await selectRows<{ id: string; plan?: string | null }>(env, "subscriptions", {
-            razorpay_payment_id: `eq.${params.providerPaymentId}`,
-            select: "id,plan",
-            limit: "1",
-        })
-        : [];
-    const activation = applied ? {} : asObject(await activateGatewayStoreSubscription(env, {
+    // Gateway is the sole activation/replay owner. A global pre-read here could
+    // mistake another store's receipt for this charge and emit a false success.
+    const activation = asObject(await activateGatewayStoreSubscription(env, {
         storeId: params.storeId,
         planSlug: params.planSlug,
         billingPeriod,
@@ -565,8 +557,9 @@ async function activateStoreSubscription(
         amountPaid: params.amountPaid ?? null,
     }));
     const responseData = asObject(asObject(activation).data);
-    const subscription = asObject(applied ?? responseData.subscription);
+    const subscription = asObject(responseData.subscription);
     const subscriptionId = textValue(subscription.id);
+    if(!subscriptionId)throw new Error('Gateway did not return a durable subscription receipt');
     const planSlug = textValue(subscription.plan) || params.planSlug;
 
     await emitPaymentDomainEvent(env, {
@@ -869,37 +862,95 @@ app.post("/razorpay", async (c) => {
                 break;
             }
 
-            case "refund.created": {
+            case "refund.created":
+            case "refund.processed":
+            case "refund.failed": {
                 const refund = event.payload?.refund?.entity;
                 const refundRecord = asObject(refund);
+                const refundAmount = numberValue(refundRecord.amount);
+                const refundCurrency = textValue(refundRecord.currency)?.toUpperCase();
+                const refundId = textValue(refundRecord.id);
+                const refundPaymentId = textValue(refundRecord.payment_id);
+                const refundStatus = textValue(refundRecord.status);
+                const refundLifecycle = normalizeRazorpayRefundLifecycle(eventType, refundStatus);
+                if (refundId && refundPaymentId && typeof refundAmount === "number"
+                    && Number.isSafeInteger(refundAmount) && refundAmount > 0 && refundCurrency === "INR"
+                    && refundLifecycle) {
+                    const reconciliation = await reconcileGatewayPaymentRefund(c.env, {
+                        providerPaymentId: refundPaymentId,
+                        providerRefundId: refundId,
+                        providerEventId,
+                        eventType: refundLifecycle.eventType,
+                        status: refundLifecycle.status,
+                        amountMinor: refundAmount,
+                        currency: refundCurrency,
+                    });
+                    const reconciliationData = asObject(reconciliation.data);
+                    if (reconciliationData.matched === true) {
+                        if (reconciliationData.reconciliation_required === true) {
+                            console.warn(JSON.stringify({
+                                level: "warn",
+                                event: reconciliationData.ambiguous === true
+                                    ? "provider_refund_attempt_ambiguous"
+                                    : "provider_refund_attempt_unmatched",
+                                provider_event_id: providerEventId,
+                                provider_payment_id: refundPaymentId,
+                                provider_refund_id: refundId,
+                            }));
+                        }
+                        break;
+                    }
+                }
                 const order = await findOrderByPaymentCandidates(c.env, [
                     textValue(refundRecord.payment_id),
                     textValue(refundRecord.id),
                 ]);
-                console.info("[Razorpay] Refund created", {
+                console.info("[Razorpay] Refund event", {
+                    event: eventType,
                     refundId: refund?.id,
                     paymentId: refund?.payment_id,
                     amount: refund?.amount,
+                    status: refundRecord.status,
                 });
 
-                if (order) {
-                    const refundAmount = numberValue(refundRecord.amount);
-                    const orderTotalMinor = Math.round(Number(order.total || 0) * 100);
-                    if (!refundAmount || refundAmount >= orderTotalMinor) {
-                        await markOrderRefunded(c.env, order, providerEventId, "razorpay", eventType);
-                    } else {
-                        await recordGatewayOrderPaymentEvent(c.env, {
-                            orderId: order.id,
-                            provider: "razorpay",
-                            providerEventId,
-                            eventType,
-                            idempotencyKey: `payment-webhook:razorpay:${providerEventId}:partial-refund`,
-                        });
+                if (!order) break;
+
+                const orderTotalMinor = Math.round(Number(order.total || 0) * 100);
+                const validAmount = typeof refundAmount === "number" && Number.isSafeInteger(refundAmount) && refundAmount > 0;
+                const validCurrency = refundCurrency === "INR";
+                const providerRefundProcessed = eventType === "refund.processed" && refundRecord.status === "processed";
+
+                if (providerRefundProcessed && validAmount && validCurrency && refundAmount === orderTotalMinor) {
+                    await markOrderRefunded(c.env, order, providerEventId, "razorpay", eventType);
+                } else {
+                    // refund.created means the provider created a refund request, not that it
+                    // returned the money. Failed, partial, malformed, mismatched-currency, or
+                    // unexpected-status events must not post a full-order refund reversal.
+                    await recordGatewayOrderPaymentEvent(c.env, {
+                        orderId: order.id,
+                        provider: "razorpay",
+                        providerEventId,
+                        eventType,
+                        idempotencyKey: `payment-webhook:razorpay:${providerEventId}:${eventType}`,
+                    });
+                    if (eventType === "refund.processed" && providerRefundProcessed && validAmount && refundAmount !== orderTotalMinor) {
+                        console.warn(JSON.stringify({
+                            level: "warn",
+                            event: "partial_refund_reconciliation_required",
+                            order_id: order.id,
+                            provider_event_id: providerEventId,
+                            refund_id: textValue(refundRecord.id),
+                            refund_amount_minor: refundAmount,
+                            order_total_minor: orderTotalMinor,
+                        }));
                     }
                 }
-                // Founding Merchant reclaim: subscription refunds are not orders, so
-                // attempt a founder slot reclaim by the refunded payment id (≤14d → release).
-                await reclaimFoundingOnRefund(c.env, textValue(refundRecord.payment_id));
+
+                if (providerRefundProcessed && validAmount && validCurrency && refundAmount === orderTotalMinor) {
+                    // Founding Merchant reclaim: subscription refunds are not orders, so
+                    // attempt a founder slot reclaim only once the provider says it processed.
+                    await reclaimFoundingOnRefund(c.env, textValue(refundRecord.payment_id));
+                }
                 break;
             }
 

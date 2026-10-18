@@ -178,8 +178,9 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                                         ₹{product.price.toLocaleString('en-IN')}
                                                     </span>
                                                     {product.compareAtPrice && product.compareAtPrice > product.price && (
-                                                        <span className="text-[10px] text-theme-muted line-through">
-                                                            ₹{product.compareAtPrice.toLocaleString('en-IN')}
+                                                        <span className="flex flex-col text-[10px] text-theme-muted">
+                                                            <span>Lowest in last 30 days</span>
+                                                            <span className="line-through">₹{product.compareAtPrice.toLocaleString('en-IN')}</span>
                                                         </span>
                                                     )}
                                                 </div>

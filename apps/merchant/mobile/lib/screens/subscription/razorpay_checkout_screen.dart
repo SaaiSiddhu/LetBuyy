@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -14,12 +13,14 @@ class RazorpayCheckoutScreen extends StatefulWidget {
   const RazorpayCheckoutScreen({
     super.key,
     required this.storeId,
-    required this.plan,
+    required this.planSlug,
+    this.billingPeriod = 'monthly',
     required this.checkout,
   });
 
   final String storeId;
-  final SubscriptionPlan plan;
+  final String planSlug;
+  final String billingPeriod;
   final Map<String, dynamic> checkout;
 
   @override
@@ -60,6 +61,14 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
         },
       );
 
+    final source = widget.checkout['plan'];
+    if (source is! Map ||
+        source['slug'] != widget.planSlug ||
+        widget.checkout['billing_period'] != widget.billingPeriod) {
+      _error =
+          'Checkout does not match the selected plan. Return to plans and retry.';
+      return;
+    }
     final checkoutUrl = _checkoutUrlFrom(widget.checkout);
     final inlineHtml = _inlineCheckoutHtml();
     if (inlineHtml != null) {
@@ -73,7 +82,7 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
   }
 
   Future<void> _verifyPayload(String rawPayload) async {
-    if (_isVerifying) return;
+    if (!mounted || _isVerifying) return;
     setState(() {
       _isVerifying = true;
       _error = null;
@@ -81,20 +90,21 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
 
     try {
       final payload = Map<String, dynamic>.from(jsonDecode(rawPayload) as Map);
-      await context.read<SubscriptionService>().verifySubscriptionPayment(
-        storeId: widget.storeId,
-        plan: widget.plan,
-        razorpayPaymentId: _stringValue(payload['razorpay_payment_id']),
-        razorpaySignature: _stringValue(payload['razorpay_signature']),
-        razorpayOrderId:
-            _nullableString(payload['razorpay_order_id']) ??
-            _nullableString(widget.checkout['razorpay_order_id']),
-        razorpaySubscriptionId:
-            _nullableString(payload['razorpay_subscription_id']) ??
-            _nullableString(widget.checkout['razorpay_subscription_id']),
-        billingPeriod:
-            _nullableString(widget.checkout['billing_period']) ?? 'monthly',
-      );
+      await context
+          .read<SubscriptionService>()
+          .verifyCatalogSubscriptionPayment(
+            storeId: widget.storeId,
+            planSlug: widget.planSlug,
+            razorpayPaymentId: _stringValue(payload['razorpay_payment_id']),
+            razorpaySignature: _stringValue(payload['razorpay_signature']),
+            razorpayOrderId:
+                _nullableString(payload['razorpay_order_id']) ??
+                _nullableString(widget.checkout['razorpay_order_id']),
+            razorpaySubscriptionId:
+                _nullableString(payload['razorpay_subscription_id']) ??
+                _nullableString(widget.checkout['razorpay_subscription_id']),
+            billingPeriod: widget.billingPeriod,
+          );
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (error) {
@@ -182,8 +192,7 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
   String? _inlineCheckoutHtml() {
     final keyId =
         _nullableString(widget.checkout['key_id']) ??
-        _nullableString(widget.checkout['razorpay_key_id']) ??
-        _nullableString(AppConfig.razorpayKeyId);
+        _nullableString(widget.checkout['razorpay_key_id']);
     final orderId = _nullableString(widget.checkout['razorpay_order_id']);
     final subscriptionId = _nullableString(
       widget.checkout['razorpay_subscription_id'],
@@ -202,14 +211,14 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
       'key': keyId,
       'name': 'LetBuyy',
       'description':
-          '${_nullableString(plan['name']) ?? widget.plan.name} subscription',
+          '${_nullableString(plan['name']) ?? widget.planSlug} subscription',
       'currency': _nullableString(widget.checkout['currency']) ?? 'INR',
       'amount': widget.checkout['amount'],
       if (orderId != null) 'order_id': orderId,
       if (subscriptionId != null) 'subscription_id': subscriptionId,
       'theme': {'color': '#8B5CF6'},
     };
-    final optionsJson = jsonEncode(options);
+    final optionsJson = jsonEncode(options).replaceAll('<', r'\u003c');
 
     return '''
 <!doctype html>

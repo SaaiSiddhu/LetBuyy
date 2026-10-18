@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payment-refund-reconciliation.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "be3479b699ba",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "exact COD reconciliation replay preserves one canonical ledger posting and compatibility wallet row",
+    "changed deposited amount with the same key is denied",
+    "same key reused for another reconciliation entry is denied",
+    "failed retries do not change the original deposited amount or post a second ledger row",
+    "only the service role can execute the checked COD reconciliation boundary",
+    "API roles cannot directly execute either COD writer",
+    "rollbacks 297 and 298 keep the strict service-only boundary",
+    "migration 298 reapplies cleanly after both rollback scripts",
+    "existing payment/refund Gateway lifecycle regressions remain passing"
+  ],
+  "cleanup": "runner completed without cleanup warnings; disposable database resources removed",
+  "externalProviderOrLiveMoney": false
+}

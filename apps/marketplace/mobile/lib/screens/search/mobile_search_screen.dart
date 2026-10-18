@@ -5,6 +5,8 @@
 // - Trending searches (admin-managed from Firestore)
 // - Keyword autocomplete while typing (limited to 10)
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +53,8 @@ class _MobileSearchScreenState extends State<MobileSearchScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       // Check for initial query from voice search
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args is Map<String, dynamic> && args['query'] != null) {
@@ -62,6 +66,18 @@ class _MobileSearchScreenState extends State<MobileSearchScreen> {
         }
       }
       
+      // Product-name autocomplete reads ProductProvider's in-memory feed. Revalidate it
+      // when Search opens so a prior home/shop snapshot is not treated as current.
+      final feedRefresh = Provider.of<ProductProvider>(context, listen: false)
+          .loadProducts(forceReload: true);
+      unawaited(feedRefresh.then((_) {
+        // Refresh suggestions for what the buyer is currently typing; the query
+        // may have changed while the feed request was pending.
+        if (!mounted || _hasSubmittedSearch) return;
+        final query = _searchController.text.trim();
+        if (query.isNotEmpty) _fetchKeywordSuggestions(query);
+      }));
+
       // Request focus for the search bar
       _searchFocusNode.requestFocus();
       // Pre-load categories for the "Popular Categories" section

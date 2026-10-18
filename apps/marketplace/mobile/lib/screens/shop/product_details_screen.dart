@@ -1,6 +1,7 @@
 // lib/screens/user/shop/product_details_screen.dart
 // Premium Amazon/Flipkart-style Product Details Screen - REVISED
 
+import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,8 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import '../../data/marketplace_repository.dart';
+import '../profile/buyer_rewards_screen.dart';
 
 // Widget imports
 import 'widgets/premium_image_gallery.dart';
@@ -20,6 +23,7 @@ import 'widgets/product_share_widget.dart';
 import 'widgets/reviews_section.dart';
 import 'widgets/specification_list.dart';
 import 'widgets/sponsored_products_banner.dart';
+import 'widgets/product_origin_disclosure.dart';
 import '../../widgets/premium_scaffold.dart';
 import '../../widgets/unified_search_header.dart';
 
@@ -28,7 +32,7 @@ class ProductDetailsScreen extends StatefulWidget {
 
   const ProductDetailsScreen({
     super.key,
-    required this.productId,
+    required this.productId
   });
 
   @override
@@ -38,15 +42,14 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   final ScrollController _scrollController = ScrollController();
   int _quantity = 1;
-  bool _isInWishlist = false;
   bool _isAddingToCart = false;
   bool _showFloatingHeader = false;
+  String? _canonicalCountryOfOrigin;
 
   @override
   void initState() {
     super.initState();
     _loadProduct();
-    _checkWishlistStatus();
     _scrollController.addListener(_onScroll);
   }
 
@@ -61,10 +64,37 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final provider = Provider.of<ProductProvider>(context, listen: false);
+      provider.clearError();
       // Recently-viewed tracking already happens inside loadProductById (local, canonical) --
       // see ProductProvider.addToRecentlyViewed's own call site there.
-      provider.loadProductById(widget.productId);
+      unawaited(_loadProductAndRevalidateFeed(provider));
+      _loadCanonicalProductDisclosure();
     });
+  }
+
+  Future<void> _loadProductAndRevalidateFeed(ProductProvider provider) async {
+    await provider.loadProductById(widget.productId);
+    if (!mounted || provider.selectedProduct == null) return;
+
+    // Similar-product cards are derived from the shared feed, so refresh it after the
+    // directly linked listing has been confirmed by the canonical detail endpoint.
+    await provider.loadProducts(forceReload: true);
+  }
+
+  Future<void> _loadCanonicalProductDisclosure() async {
+    try {
+      final listing = await context.read<MarketplaceRepository>().listing(
+        widget.productId
+      );
+      if (!mounted) return;
+      setState(() => _canonicalCountryOfOrigin = listing?.countryOfOrigin);
+    } catch (error) {
+      // The product provider owns the existing detail-load error state. Keep its importer field
+      // visible if available and omit origin when this supplemental canonical read is unavailable.
+      debugPrint(
+        'Could not load marketplace product-origin disclosure: $error'
+      );
+    }
   }
 
   // C3 (Firebase SDK removal, 27 September 2026 review continuation): _saveRecentlyViewed()
@@ -76,18 +106,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   // seller_analytics_service.dart's own deletion, same pass: it was the sole caller-reachable
   // consumer of AnalyticsEvent, now also deleted).
 
-  Future<void> _checkWishlistStatus() async {
-    try {
-      final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-      final isInWishlist = wishlistProvider.isInWishlist(widget.productId);
-      if (mounted) {
-        setState(() => _isInWishlist = isInWishlist);
-      }
-    } catch (e) {
-      debugPrint('Error checking wishlist: $e');
-    }
-  }
-
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
@@ -96,20 +114,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Future<void> _toggleWishlist(ProductModel product) async {
+    final provider = context.read<WishlistProvider>();
+    if (provider.isLoading) return;
+    final revision = provider.identityRevision;
     HapticFeedback.lightImpact();
-    try {
-      final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-      if (_isInWishlist) {
-        await wishlistProvider.removeFromWishlist(product.id);
-      } else {
-        await wishlistProvider.addToWishlist(product);
-      }
-      if (mounted) {
-        setState(() => _isInWishlist = !_isInWishlist);
-      }
-    } catch (e) {
-      debugPrint('Error toggling wishlist: $e');
-    }
+    final saved = await provider.toggleItem(product);
+    if (!mounted || revision != provider.identityRevision) return;
+    if (!saved) _showSnackBar('Could not save your wishlist', isError: true);
   }
 
   Future<void> _addToCart(ProductModel product, {bool buyNow = false}) async {
@@ -119,8 +130,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     setState(() => _isAddingToCart = true);
 
     try {
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      final productProvider = Provider.of<ProductProvider>(context, listen: false,);
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      final identityRevision = cartProvider.identityRevision;
 
       String? variantString;
       if (product.variantOptions.isNotEmpty) {
@@ -128,12 +140,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         
         // Validate that all variant options have been selected
         final missingOptions = product.variantOptions
-            .where((opt) => !selectedOptions.containsKey(opt.name) || selectedOptions[opt.name]!.isEmpty)
+            .where((opt) => !selectedOptions.containsKey(opt.name) || selectedOptions[opt.name]!.isEmpty,)
             .map((opt) => opt.name)
             .toList();
         
         if (missingOptions.isNotEmpty) {
-          _showSnackBar('Please select: ${missingOptions.join(", ")}', isError: true);
+          _showSnackBar('Please select: ${missingOptions.join(", ")}', isError: true,);
           setState(() => _isAddingToCart = false);
           return;
         }
@@ -144,10 +156,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             .join(', ');
       }
 
-      // ✅ FIXED: For Buy Now, clear cart first to avoid item accumulation
-      if (buyNow) {
-        await cartProvider.clearCart();
-      }
+      // Buy Now replaces the cart in the same captured-identity write. A
+      // clear-then-add pair could switch buyers between its two awaits.
 
       // C3 (Firebase SDK removal, 27 September 2026 review finding 5): was
       // `await cartProvider.addToCart(...)` with the result discarded, then an unconditional
@@ -155,7 +165,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       // available), this showed "Added to cart!" and, for Buy Now, opened checkout on an empty
       // cart every single time. CartProvider is now a real local cart, so this checks addItem's
       // actual result rather than assuming it.
-      final added = await cartProvider.addItem(product, quantity: _quantity, variant: variantString);
+      final added = await cartProvider.addItem(product, quantity: _quantity, variant: variantString,
+        variantId: productProvider.selectedVariant?.id, replaceExisting: buyNow,);
+      if (!mounted || identityRevision != cartProvider.identityRevision) return;
       if (!added) {
         _showSnackBar('Could not add to cart', isError: true);
         return;
@@ -184,7 +196,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       SnackBar(
         content: Row(
           children: [
-            Icon(isError ? Icons.error_outline : Icons.check_circle_outline, color: Colors.white),
+            Icon(isError ? Icons.error_outline : Icons.check_circle_outline, color: Colors.white,),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
@@ -208,7 +220,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   void _navigateToProduct(ProductModel product) {
-    Navigator.pushNamed(context, AppRoutes.productDetails, arguments: product.id);
+    Navigator.pushNamed(context, AppRoutes.productDetails, arguments: product.id,);
   }
   @override
   Widget build(BuildContext context) {
@@ -221,8 +233,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         builder: (context, productProvider, child) {
           final product = productProvider.selectedProduct;
 
-          if (product == null || productProvider.isLoading) {
+          if (product == null && productProvider.isLoading) {
             return _buildLoadingState(isDark);
+          }
+          if (product == null) {
+            return _buildUnavailableState(
+              isDark,
+              loadFailed: productProvider.error != null,
+            );
           }
 
           // Calculate total price based on quantity
@@ -248,7 +266,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 250),
                       opacity: _showFloatingHeader ? 1.0 : 0.0,
-                      child: SponsoredProductsBanner(excludeProductId: product.id),
+                      child: SponsoredProductsBanner(excludeProductId: product.id,),
                     ),
                   ),
                   
@@ -264,16 +282,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // 1. TOP SPONSORED ADS BANNER (Premium)
-                              SponsoredProductsBanner(excludeProductId: product.id),
+                              SponsoredProductsBanner(excludeProductId: product.id,),
 
                               // 2. PREMIUM PRODUCT HEADER (Hero Section)
-                              _buildPremiumProductHeader(product, isDark, totalPrice, totalOriginalPrice),
+                              _buildPremiumProductHeader(product, isDark, totalPrice, totalOriginalPrice,),
 
                               const SizedBox(height: 12),
 
                               // Trust Badges
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(horizontal: 16,),
                                 child: TrustBadgesWidget(
                                   isDark: isDark,
                                   isFreeDelivery: product.isFreeDelivery ?? false,
@@ -287,7 +305,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               // Variant Selector
                               if (product.variantOptions.isNotEmpty)
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16,),
                                   child: VariantSelector(),
                                 ),
 
@@ -320,7 +338,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 icon: Icons.store_outlined,
                                 iconColor: const Color(0xFFFF9800),
                                 isDark: isDark,
-                                child: _buildSellerSection(product.sellerId, product.storeName, isDark),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    _buildSellerSection(product.sellerId, product.storeName, isDark),
+                                    TextButton.icon(
+                                      icon: const Icon(Icons.stars_outlined),
+                                      label: const Text('Seller rewards'),
+                                      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                                        builder: (_) => BuyerRewardsScreen(
+                                          siteId: product.sellerId,
+                                          storeName: product.storeName ?? 'This seller',
+                                        ),
+                                      )),
+                                    ),
+                                  ],
+                                ),
                               ),
 
                               const SizedBox(height: 12),
@@ -339,7 +372,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       height: 1.6,
                                       color: isDark ? Colors.grey[300] : Colors.grey[700],
                                     ),
-                                  ),
+                                  )
+                                ),
+
+                              ProductOriginDisclosure(
+                                countryOfOrigin:
+                                    _canonicalCountryOfOrigin ??
+                                    product.countryOfOrigin,
+                                importerDetails: product.importerDetails,
                                 ),
 
                               const SizedBox(height: 12),
@@ -400,7 +440,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: _buildBottomBar(product, isDark, totalPrice, totalOriginalPrice),
+                child: _buildBottomBar(product, isDark, totalPrice, totalOriginalPrice,),
               ),
             ],
           );
@@ -409,7 +449,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildFloatingHeader(ProductModel product, bool isDark, double totalPrice) {
+  Widget _buildFloatingHeader(ProductModel product, bool isDark, double totalPrice,) {
     return Positioned(
       top: 0,
       left: 0,
@@ -482,7 +522,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   // ============ PREMIUM PRODUCT HEADER ============
-  Widget _buildPremiumProductHeader(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice) {
+  Widget _buildPremiumProductHeader(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice,) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -493,7 +533,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               images: product.images,
               isDark: isDark,
               productName: product.name,
-              discountPercent: product.discount,
+              discountPercent: product.marketplaceListingId == null
+                  ? product.discount
+                  : null,
               isNew: product.isNew,
               isTrending: product.isTrending,
             ),
@@ -507,9 +549,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: BackdropFilter(
                   filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6,),
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.2),
+                      color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.2,),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
                         color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
@@ -518,12 +560,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildCircleAction(
-                          icon: _isInWishlist ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                          color: _isInWishlist ? const Color(0xFFFF4B4B) : (isDark ? Colors.white : Colors.black87),
-                          onTap: () => _toggleWishlist(product),
-                          isDark: isDark,
-                        ),
+                        Consumer<WishlistProvider>(builder: (context, wishlist, _) {
+                          final saved = wishlist.isInWishlist(product.id);
+                          return Tooltip(
+                            message: saved ? 'Remove from wishlist' : 'Save to wishlist',
+                            child: _buildCircleAction(
+                              icon: saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              color: saved ? const Color(0xFFFF4B4B) : (isDark ? Colors.white : Colors.black87),
+                              onTap: () => _toggleWishlist(product),
+                              isDark: isDark,
+                            ),
+                          );
+                        }),
                         const SizedBox(width: 8),
                         _buildCircleAction(
                           icon: Icons.share_rounded,
@@ -543,7 +591,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Container(
           decoration: BoxDecoration(
             color: isDark ? AppColors.surfaceDark : Colors.white,
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24),),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -553,7 +601,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
                   children: [
-                    _buildStoreVisitLink(product.sellerId, product.storeName, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!),
+                    _buildStoreVisitLink(product.sellerId, product.storeName, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!,),
                     const Spacer(),
                     // Rating Badge -- C2 (canonical rewire): rating has no canonical successor yet
                     // and stays at ProductModel's honest default of 0.0 (see ProductProvider's doc
@@ -561,15 +609,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     // product_card.dart's existing `if (product.rating > 0)` guard.
                     if (product.rating > 0)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6,),
                         decoration: BoxDecoration(
-                          color: _getRatingColor(product.rating).withValues(alpha: 0.1),
+                          color: _getRatingColor(product.rating,).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating)),
+                            Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating),),
                             const SizedBox(width: 4),
                             Text(
                               product.rating.toStringAsFixed(1),
@@ -633,12 +681,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             letterSpacing: -1,
                           ),
                         ),
-                        if (product.originalPrice != null && product.originalPrice! > product.salePrice) ...[
+                        if (product.hasDisplayableReferencePrice) ...[
                           const SizedBox(width: 12),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Text(
-                              '₹${_formatPrice(totalOriginalPrice)}',
+                              '${product.hasPriorThirtyDayLow ? '30-day low ' : ''}₹${_formatPrice(totalOriginalPrice)}',
                               style: TextStyle(
                                 fontSize: 18,
                                 decoration: TextDecoration.lineThrough,
@@ -649,15 +697,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
+                          if (product.marketplaceListingId == null)
                           Container(
                             margin: const EdgeInsets.only(bottom: 6),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4,),
                             decoration: BoxDecoration(
                               color: const Color(0xFFEF4444), // Modern red
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              '-${product.discount}%',
+                                product.discountLabel,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 13,
@@ -675,7 +724,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFDC2626), // Subtler red for credibility
+                          color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFDC2626,), // Subtler red for credibility
                         ),
                       ),
                     
@@ -745,13 +794,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   // C2 (canonical rewire): the same raw, unguarded FirebaseFirestore.instance().get() as
   // _buildSellerSection above, at a second call site -- see that method's doc comment for why this
   // was a live, unconditional crash risk. Replaced the same way, with product.storeName.
-  Widget _buildStoreVisitLink(String sellerId, String? storeName, bool isDark, Color accentColor) {
+  Widget _buildStoreVisitLink(String sellerId, String? storeName, bool isDark, Color accentColor,) {
     if (storeName == null || storeName.isEmpty) return const SizedBox.shrink();
 
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId,);
       },
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -762,7 +811,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 text: 'Visit the ',
                 style: TextStyle(
                   fontSize: 13,
-                  color: accentColor,
+                  color: accentColor
                 ),
               ),
               TextSpan(
@@ -779,7 +828,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 text: ' Store',
                 style: TextStyle(
                   fontSize: 13,
-                  color: accentColor,
+                  color: accentColor
                 ),
               ),
             ],
@@ -793,16 +842,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final tags = <Widget>[];
     
     if (product.isTrending) {
-      tags.add(_buildTag('Trending', const Color(0xFFFF6B35), Icons.trending_up));
+      tags.add(_buildTag('Trending', const Color(0xFFFF6B35), Icons.trending_up),);
     }
     if (product.isNew) {
-      tags.add(_buildTag('New Arrival', const Color(0xFF2196F3), Icons.new_releases));
+      tags.add(_buildTag('New Arrival', const Color(0xFF2196F3), Icons.new_releases),);
     }
     if (product.isFreeDelivery ?? false) {
-      tags.add(_buildTag('Free Delivery', const Color(0xFF4CAF50), Icons.local_shipping));
+      tags.add(_buildTag('Free Delivery', const Color(0xFF4CAF50), Icons.local_shipping,),);
     }
-    if (product.discount >= 20) {
-      tags.add(_buildTag('Limited Time Deal', const Color(0xFFCC0C39), Icons.timer));
+    if (product.discount >= 20 && product.marketplaceListingId == null) {
+      tags.add(_buildTag('Limited Time Deal', const Color(0xFFCC0C39), Icons.timer),);
     }
     
     if (tags.isEmpty) return const SizedBox.shrink();
@@ -812,7 +861,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Wrap(
         spacing: 8,
         runSpacing: 6,
-        children: tags,
+        children: tags
       ),
     );
   }
@@ -872,12 +921,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     }
     
     // Regex to insert commas every 2 digits for Indian format
-    var res = otherNumbers.replaceAllMapped(RegExp(r"\B(?=(\d{2})+(?!\d))"), (match) => ",");
+    var res = otherNumbers.replaceAllMapped(RegExp(r"\B(?=(\d{2})+(?!\d))"), (match) => ",",);
     
     return res + lastThree;
   }
 
-  Widget _buildProductInfoCard(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice) {
+  Widget _buildProductInfoCard(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice,) {
     final accentColor = isDark ? AppColors.primaryLight : AppColors.primary;
 
     return Container(
@@ -922,7 +971,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   color: isDark ? AppColors.textLight : AppColors.textPrimary,
                 ),
               ),
-              if (product.originalPrice != null && product.originalPrice! > product.salePrice) ...[
+              if (product.hasDisplayableReferencePrice) ...[
                 const SizedBox(width: 12),
                 Text(
                   '₹${totalOriginalPrice.toStringAsFixed(0)}',
@@ -933,19 +982,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
+                if (product.marketplaceListingId == null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5,),
                   decoration: BoxDecoration(
                     color: const Color(0xFF4CAF50),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    '${product.discount}% OFF',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      product.discountLabel,
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold,),
                   ),
                 ),
               ],
-            ],
+            ]
+          ),
+
+          if (product.hasPriorThirtyDayLow)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                '${product.referencePriceLabel}: ₹${totalOriginalPrice.toStringAsFixed(0)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? AppColors.textLightHint : AppColors.textHint
+                )
+              ),
           ),
 
           // Per unit price when quantity > 1
@@ -970,7 +1032,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             children: [
               if (product.rating > 0) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6,),
                   decoration: BoxDecoration(
                     color: _getRatingColor(product.rating),
                     borderRadius: BorderRadius.circular(6),
@@ -979,26 +1041,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       Text(
                         product.rating.toStringAsFixed(1),
-                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold,),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.star_rounded, color: Colors.white, size: 14),
+                      const Icon(Icons.star_rounded, color: Colors.white, size: 14,),
                     ],
                   ),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   '${product.reviewCount} Reviews',
-                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint),
+                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint,),
                 ),
               ],
               const Spacer(),
               if (product.inStock)
                 Row(
                   children: [
-                    Icon(Icons.check_circle, size: 16, color: AppColors.successLight),
+                    Icon(Icons.check_circle, size: 16, color: AppColors.successLight,),
                     const SizedBox(width: 4),
-                    Text('In Stock', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.successLight)),
+                    Text('In Stock', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.successLight,),),
                   ],
                 )
               else
@@ -1006,7 +1068,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   children: [
                     Icon(Icons.cancel, size: 16, color: AppColors.errorLight),
                     const SizedBox(width: 4),
-                    Text('Out of Stock', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.errorLight)),
+                    Text('Out of Stock', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.errorLight,),),
                   ],
                 ),
             ],
@@ -1033,7 +1095,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border),
+        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border,),
       ),
       child: Row(
         children: [
@@ -1041,7 +1103,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           const SizedBox(width: 12),
           Text(
             'Quantity',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? AppColors.textLight : AppColors.textPrimary),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? AppColors.textLight : AppColors.textPrimary,),
           ),
           const Spacer(),
           Container(
@@ -1051,13 +1113,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             child: Row(
               children: [
-                _buildQtyButton(icon: Icons.remove, onTap: _quantity > 1 ? () => setState(() => _quantity--) : null, isDark: isDark, accentColor: accentColor),
+                _buildQtyButton(icon: Icons.remove, onTap: _quantity > 1 ? () => setState(() => _quantity--) : null, isDark: isDark, accentColor: accentColor,),
                 Container(
                   width: 50,
                   alignment: Alignment.center,
-                  child: Text('$_quantity', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+                  child: Text('$_quantity', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87,),),
                 ),
-                _buildQtyButton(icon: Icons.add, onTap: _quantity < maxQty ? () => setState(() => _quantity++) : null, isDark: isDark, accentColor: accentColor),
+                _buildQtyButton(icon: Icons.add, onTap: _quantity < maxQty ? () => setState(() => _quantity++) : null, isDark: isDark, accentColor: accentColor,),
               ],
             ),
           ),
@@ -1066,7 +1128,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildQtyButton({required IconData icon, required VoidCallback? onTap, required bool isDark, required Color accentColor}) {
+  Widget _buildQtyButton({required IconData icon, required VoidCallback? onTap, required bool isDark, required Color accentColor,}) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1074,7 +1136,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.all(10),
-          child: Icon(icon, size: 20, color: onTap != null ? accentColor : (isDark ? Colors.grey[600] : Colors.grey[400])),
+          child: Icon(icon, size: 20, color: onTap != null ? accentColor : (isDark ? Colors.grey[600] : Colors.grey[400]),),
         ),
       ),
     );
@@ -1095,7 +1157,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceVariant.withValues(alpha: 0.1) : AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border, style: BorderStyle.solid),
+        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border, style: BorderStyle.solid,),
       ),
       child: Row(
         children: [
@@ -1104,7 +1166,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), style: BorderStyle.solid),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), style: BorderStyle.solid,),
             ),
             child: Text(
               coupon.code,
@@ -1134,7 +1196,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 if (coupon.minOrderAmount > 0)
                   Text(
                     'Min. order ₹${coupon.minOrderAmount.toInt()}',
-                    style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[500] : Colors.grey[600]),
+                    style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[500] : Colors.grey[600],),
                   ),
               ],
             ),
@@ -1144,7 +1206,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Clipboard.setData(ClipboardData(text: coupon.code));
               _showSnackBar('Coupon code copied!', isError: false);
             },
-            child: const Text('COPY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            child: const Text('COPY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),),
           ),
         ],
       ),
@@ -1191,10 +1253,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                color: isDark ? Colors.transparent : Colors.transparent, 
                borderRadius: BorderRadius.circular(16),
              ),
-             child: child
+             child: child,
           ),
           const SizedBox(height: 24),
-          Divider(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05), height: 1),
+          Divider(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05,), height: 1,),
         ],
       ),
     );
@@ -1203,7 +1265,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget _buildDeliveryContent(ProductModel product, bool isDark) {
     return Column(
       children: [
-        _buildDeliveryRow(Icons.local_shipping_outlined, 'Delivery', product.shippingDays ?? '3-5 days', isDark),
+        _buildDeliveryRow(Icons.local_shipping_outlined, 'Delivery', product.shippingDays ?? '3-5 days', isDark,),
         const SizedBox(height: 12),
         _buildDeliveryRow(
           Icons.attach_money_rounded,
@@ -1213,21 +1275,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           highlight: product.isFreeDelivery == true,
         ),
         const SizedBox(height: 12),
-        _buildDeliveryRow(Icons.replay_rounded, 'Returns', '7 days easy return', isDark),
+        _buildDeliveryRow(Icons.replay_rounded, 'Returns', '7 days easy return', isDark,),
         if (product.expressDelivery == true) ...[
           const SizedBox(height: 12),
-          _buildDeliveryRow(Icons.flash_on_rounded, 'Express', 'Available (${product.expressDeliveryDays ?? '1-2 days'})', isDark, highlight: true),
+          _buildDeliveryRow(Icons.flash_on_rounded, 'Express', 'Available (${product.expressDeliveryDays ?? '1-2 days'})', isDark, highlight: true,),
         ],
       ],
     );
   }
 
-  Widget _buildDeliveryRow(IconData icon, String label, String value, bool isDark, {bool highlight = false}) {
+  Widget _buildDeliveryRow(IconData icon, String label, String value, bool isDark, {bool highlight = false,}) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: highlight ? AppColors.success : (isDark ? Colors.grey[500] : Colors.grey[600])),
+        Icon(icon, size: 18, color: highlight ? AppColors.success : (isDark ? Colors.grey[500] : Colors.grey[600]),),
         const SizedBox(width: 12),
-        Text(label, style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 14)),
+        Text(label, style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], fontSize: 14,),),
         const Spacer(),
         Text(
           value,
@@ -1257,7 +1319,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId,);
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -1295,12 +1357,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Tap to view store',
-                    style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600],),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400]),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400],),
           ],
         ),
       ),
@@ -1311,7 +1373,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, _) {
         final similarProducts = productProvider.products
-            .where((p) => p.categoryId == product.categoryId && p.id != product.id && p.isActive)
+            .where((p) => p.categoryId == product.categoryId && p.id != product.id && p.isActive,)
             .take(8)
             .toList();
 
@@ -1331,14 +1393,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   Expanded(
                     child: Text(
                       'Similar Products',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87,),
                     ),
                   ),
                   TextButton(
                     onPressed: () {
                       // Navigate to category page
                     },
-                    child: Text('View All', style: TextStyle(color: accentColor, fontWeight: FontWeight.w600)),
+                    child: Text('View All', style: TextStyle(color: accentColor, fontWeight: FontWeight.w600,),),
                   ),
                 ],
               ),
@@ -1373,7 +1435,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2),),
           ],
         ),
         child: Column(
@@ -1382,24 +1444,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12),),
                   child: CachedNetworkImage(
                     imageUrl: product.primaryImage,
                     height: 120,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(height: 120, color: isDark ? Colors.grey[800] : Colors.grey[200]),
-                    errorWidget: (_, __, ___) => Container(height: 120, color: isDark ? Colors.grey[800] : Colors.grey[200], child: const Icon(Icons.image_not_supported)),
+                    placeholder: (_, __) => Container(height: 120, color: isDark ? Colors.grey[800] : Colors.grey[200],),
+                    errorWidget: (_, __, ___) => Container(height: 120, color: isDark ? Colors.grey[800] : Colors.grey[200], child: const Icon(Icons.image_not_supported),),
                   ),
                 ),
-                if (product.discount > 0)
+                if (product.discount > 0 &&
+                    product.marketplaceListingId == null)
                   Positioned(
                     top: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(4)),
-                      child: Text('${product.discount}% OFF', style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3,),
+                      decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(4),),
+                      child: Text(
+                        product.discountLabel, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold,),),
                     ),
                   ),
               ],
@@ -1414,15 +1478,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       product.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black87),
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black87,),
                     ),
                     const Spacer(),
                     Row(
                       children: [
-                        Text('₹${product.salePrice.toStringAsFixed(0)}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
-                        if (product.originalPrice != null) ...[
+                        Text('₹${product.salePrice.toStringAsFixed(0)}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87,),),
+                        if (product.hasDisplayableReferencePrice) ...[
                           const SizedBox(width: 4),
-                          Text('₹${product.originalPrice!.toStringAsFixed(0)}', style: TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: Colors.grey[500])),
+                          Text(
+                            '${product.hasPriorThirtyDayLow ? '30d low ' : 'M.R.P. '}₹${product.originalPrice!.toStringAsFixed(0)}', style: TextStyle(fontSize: 10, decoration: TextDecoration.lineThrough, color: Colors.grey[500],),),
                         ],
                       ],
                     ),
@@ -1432,9 +1497,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12),
+                          const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12,),
                           const SizedBox(width: 4),
-                          Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600])),
+                          Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600],),),
                         ],
                       ),
                     ],
@@ -1448,7 +1513,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildBottomBar(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice) {
+  Widget _buildBottomBar(ProductModel product, bool isDark, double totalPrice, double totalOriginalPrice,) {
     final accentColor = isDark ? AppColors.primaryLight : AppColors.primary;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
@@ -1497,16 +1562,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
-                      if (product.discount > 0) ...[
+                      if (product.discount > 0 &&
+                          product.marketplaceListingId == null) ...[
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2,),
                           decoration: BoxDecoration(
                             color: Colors.green.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            '${product.discount}% OFF',
+                            product.discountLabel,
                             style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -1517,11 +1583,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ],
                     ],
                   ),
-                  if (product.originalPrice != null && product.originalPrice! > product.salePrice)
+                  if (product.hasDisplayableReferencePrice)
                     Row(
                       children: [
                         Text(
-                          '₹${totalOriginalPrice.toStringAsFixed(0)}',
+                          '${product.hasPriorThirtyDayLow ? '30d low ' : 'M.R.P. '}₹${totalOriginalPrice.toStringAsFixed(0)}',
                           style: TextStyle(
                             fontSize: 12,
                             decoration: TextDecoration.lineThrough,
@@ -1609,7 +1675,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     decoration: BoxDecoration(
                       gradient: product.inStock
                           ? LinearGradient(
-                              colors: [accentColor, accentColor.withValues(alpha: 0.85)],
+                              colors: [accentColor, accentColor.withValues(alpha: 0.85),],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             )
@@ -1640,7 +1706,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
-                              Icon(Icons.flash_on_rounded, color: Colors.white, size: 18),
+                              Icon(Icons.flash_on_rounded, color: Colors.white, size: 18,),
                               SizedBox(width: 6),
                               Text(
                                 'Buy Now',
@@ -1671,7 +1737,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.arrow_back_rounded, color: isDark ? Colors.white : Colors.black87)),
+                IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.arrow_back_rounded, color: isDark ? Colors.white : Colors.black87,),),
               ],
             ),
           ),
@@ -1691,4 +1757,82 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
     );
   }
+
+  Widget _buildUnavailableState(bool isDark, {required bool loadFailed}) {
+    final foreground = isDark ? Colors.white : Colors.black87;
+    return SafeArea(
+      child: Column(
+        children: [
+          Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.maybePop(context),
+                  icon: Icon(Icons.arrow_back_rounded, color: foreground),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      loadFailed
+                          ? Icons.cloud_off_outlined
+                          : Icons.inventory_2_outlined,
+                      size: 52,
+                      color: foreground.withValues(alpha: 0.55),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      loadFailed
+                          ? 'Could not load this product'
+                          : 'This product is no longer available',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: foreground,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      loadFailed
+                          ? 'Check your connection and try again.'
+                          : 'This marketplace listing may have been removed or is no longer public.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: foreground.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (loadFailed)
+                      OutlinedButton.icon(
+                        onPressed: _loadProduct,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Try again'),
+                      )
+                    else
+                      FilledButton.icon(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, AppRoutes.shop),
+                        icon: const Icon(Icons.storefront_outlined),
+                        label: const Text('Browse products'),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

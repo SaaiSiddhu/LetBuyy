@@ -83,15 +83,24 @@ test('Staff: the products:read permission has a human label in the catalog', () 
 // ---- Phase 4.5 — staff RBAC enforcement (security) ----
 
 const STAFF_MW = 'services/api-gateway/src/middleware/staff-permission.ts';
+// D03 auth-hardening mandate, Section 7 (circular-import fix, commit 95467608): evaluateStaffPermission
+// -- the pure (isOwner, granted, requiredKey) -> {allowed, reason} decision -- was relocated out of
+// staff-permission.ts into this dependency-free module so both the real enforcement path and every
+// shadow comparator could import it without a cycle. staff-permission.ts now only re-exports it
+// (`export { evaluateStaffPermission, ... }`); the function body, and the 'owner' bypass reason
+// string, live here. See lib/staff-permission-decision.ts's own header comment for the full rationale.
+const STAFF_DECISION = 'services/api-gateway/src/lib/staff-permission-decision.ts';
 
 // APPID-P5b made this guard fail closed; the behaviour is tested in
 // services/api-gateway/src/__tests__/staff-paths-fail-closed.test.ts, and this pins its shape.
 test('Staff RBAC: the guard fails closed: owner bypass, grants at this store, enforce by default, errors refuse', () => {
   const mw = read(STAFF_MW);
-  assert.match(mw, /export function evaluateStaffPermission/);
+  const decision = read(STAFF_DECISION);
+  assert.match(mw, /export \{ evaluateStaffPermission, /);                         // re-exported, not shadowed or dropped
+  assert.match(decision, /export function evaluateStaffPermission/);
   assert.match(mw, /export async function assertStaffPermission/);
   assert.match(mw, /async function ownsStore/);                                   // owner check that reports its own errors
-  assert.match(mw, /reason: 'owner'/);                                            // owners always pass
+  assert.match(decision, /reason: 'owner'/);                                       // owners always pass
   assert.match(mw, /raw === 'dryrun' && !production \? 'dryrun' : 'enforce'/);   // enforce unless a dry run outside production
   assert.match(mw, /\.eq\('store_id', siteId\)/);                                // grants at THIS store, by the column that exists
   assert.doesNotMatch(mw, /\.eq\('site_id'/);                                     // employees has no site_id

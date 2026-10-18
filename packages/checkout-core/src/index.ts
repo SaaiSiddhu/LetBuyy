@@ -40,6 +40,7 @@ export const OrderItemInput = z.object({
 export const StorefrontCartLineInputSchema = z.object({
   product_id: UuidSchema,
   variant_id: UuidSchema.optional().nullable(),
+  marketplace_listing_id: UuidSchema.optional().nullable(),
   quantity: z.number().int().min(1).max(99),
   properties: z.record(z.string(), z.unknown()).default({}),
 }).strict();
@@ -101,6 +102,8 @@ export const StorefrontCreateOrderSchema = z.object({
   // standard-express logic. Declaring the field here is what actually connects the client to the
   // resolver this repo's own shipping-rate-resolver.ts already implements correctly.
   shippingRateId: UuidSchema.optional().nullable(),
+  // Comparison token for the amount the buyer reviewed; never use it as the charged amount.
+  shippingAmountMinor: z.number().int().min(0).optional().nullable(),
   idempotencyKey: z.string().min(8).max(200),
 });
 
@@ -152,8 +155,9 @@ export const CheckoutPaymentIntentSchema = z.object({
 export const CheckoutConfirmSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   payment_intent_id: z.string().min(1).max(200).optional(),
-  provider_payment_id: z.string().min(1).max(200).optional(),
-  simulate_order_failure: z.boolean().default(false),
+  razorpay_order_id: z.string().min(1).max(200).optional(),
+  razorpay_payment_id: z.string().min(1).max(200).optional(),
+  razorpay_signature: z.string().min(1).max(512).optional(),
 }).strict();
 
 // T8/W2 — a font-family value that will ever reach a CSS context (today: a React `style` prop,
@@ -479,6 +483,7 @@ export const CompleteRefundSchema = z.object({
 export interface CheckoutOrderItemCommand {
   product_id: string;
   variant_id?: string | null;
+  marketplace_listing_id?: string | null;
   quantity: number;
 }
 
@@ -494,6 +499,7 @@ export interface CreateCheckoutOrderCommand {
   notes?: string;
   coupon_code?: string;
   gift_card_code?: string;
+  sales_origin?: 'storefront' | 'marketplace';
   idempotency_key: string;
 }
 
@@ -502,6 +508,7 @@ export interface CheckoutCartBindingLine {
   productId?: string | null;
   variant_id?: string | null;
   variantId?: string | null;
+  marketplace_listing_id?: string | null;
   quantity?: number | string | null;
   unit_price?: number | string | null;
   price?: number | string | null;
@@ -514,6 +521,7 @@ export interface CheckoutCartBindingInput {
   cartId: string;
   cartToken: string;
   channel: string;
+  salesOrigin?: 'storefront' | 'marketplace' | 'instant';
   expiresAt: string;
   couponCodes?: Array<string | null | undefined>;
   lines: CheckoutCartBindingLine[];
@@ -541,6 +549,7 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
     .map((line) => {
       const productId = checkoutString(line.product_id ?? line.productId);
       const variantId = checkoutString(line.variant_id ?? line.variantId);
+      const marketplaceListingId = checkoutString(line.marketplace_listing_id);
       const quantity = Math.max(1, Math.trunc(checkoutNumber(line.quantity)));
       const unitPriceMinor = checkoutMoneyMinor(line.unit_price ?? line.price);
       const lineTotalMinor = checkoutMoneyMinor(line.line_total ?? line.total);
@@ -548,6 +557,7 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
       return {
         product_id: productId,
         variant_id: variantId || null,
+        ...(marketplaceListingId ? { marketplace_listing_id: marketplaceListingId } : {}),
         quantity,
         unit_price_minor: unitPriceMinor,
         line_total_minor: lineTotalMinor || unitPriceMinor * quantity,
@@ -557,6 +567,7 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
     .sort((left, right) => (
       left.product_id.localeCompare(right.product_id)
       || String(left.variant_id || '').localeCompare(String(right.variant_id || ''))
+      || String(left.marketplace_listing_id || '').localeCompare(String(right.marketplace_listing_id || ''))
       || left.quantity - right.quantity
     ));
 
@@ -566,6 +577,9 @@ export function canonicalCheckoutCartBinding(input: CheckoutCartBindingInput): s
     cart_id: input.cartId,
     cart_token: input.cartToken,
     channel: normalizeCheckoutChannel(input.channel),
+    ...(input.salesOrigin === 'marketplace' || input.salesOrigin === 'instant'
+      ? { sales_origin: input.salesOrigin }
+      : {}),
     expires_at: input.expiresAt,
     coupon_codes: [...new Set((input.couponCodes || [])
       .map((code) => checkoutString(code).toUpperCase())
@@ -1908,6 +1922,7 @@ export function planShippingZoneCreate(input: CreateShippingZoneInput): Shipping
   return {
     zoneInsert: {
       store_id: input.store_id,
+      site_id: input.store_id,
       name: input.name,
       countries: input.countries,
       states: input.states || [],

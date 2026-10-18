@@ -1287,34 +1287,13 @@ router.post('/:email/addresses', validate('json', CreateCustomerAddressSchema), 
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    // If is_default, unset other defaults first
-    if (body.is_default) {
-        await db
-            .from('customer_addresses')
-            .update({ is_default: false })
-            .eq('store_id', body.store_id)
-            .eq('customer_email', email);
-    }
-
-    const { data, error } = await db
-        .from('customer_addresses')
-        .insert({
-            store_id: body.store_id,
-            customer_email: email,
-            customer_phone: body.customer_phone || null,
-            label: body.label || 'home',
-            full_name: body.full_name,
-            address_line1: body.address_line1,
-            address_line2: body.address_line2 || null,
-            city: body.city,
-            state: body.state,
-            postal_code: body.postal_code,
-            country: body.country || 'IN',
-            landmark: body.landmark || null,
-            is_default: body.is_default ?? false,
-        })
-        .select()
-        .single();
+    const { data, error } = await db.rpc('mutate_store_customer_address', {
+        p_store_id: body.store_id,
+        p_customer_id: null,
+        p_customer_email: normalizeCustomerEmail(email),
+        p_address_id: null,
+        p_address: body,
+    });
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -1353,24 +1332,18 @@ router.patch('/:email/addresses/:id', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'No valid fields to update' } }, 400);
     }
 
-    if (updates.is_default === true) {
-        await db
-            .from('customer_addresses')
-            .update({ is_default: false })
-            .eq('store_id', ownedAddress.store_id)
-            .eq('customer_email', email);
-    }
-
-    const { data, error } = await db
-        .from('customer_addresses')
-        .update(updates)
-        .eq('id', addressId)
-        .select()
-        .single();
+    const { data, error } = await db.rpc('mutate_store_customer_address', {
+        p_store_id: ownedAddress.store_id,
+        p_customer_id: null,
+        p_customer_email: normalizeCustomerEmail(email),
+        p_address_id: addressId,
+        p_address: updates,
+    });
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
+    if (!data) return c.json({ error: { code: 'NOT_FOUND', message: 'Address not found' } }, 404);
 
     return c.json(success(data));
 });

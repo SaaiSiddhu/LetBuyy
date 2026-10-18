@@ -65,3 +65,29 @@ test('create-store uses the shared api client facade with a required session', (
     assert.match(apiClientSource, /resolveLetbuyyApiBaseUrl/)
     assert.match(apiClientSource, /LETBUYY_PRODUCTION_API_BASE_URL/)
 })
+
+test('web onboarding draft BFF reads and saves only through the authenticated Gateway session', () => {
+    const source = routeSource('app/api/auth/create-store/route.ts')
+    const page = routeSource('app/onboarding/page.tsx')
+
+    assert.match(source, /identityApiRequest\('\/onboarding\/web-draft'/)
+    assert.match(source, /requireSession:\s*true/)
+    assert.match(source, /validateCsrf\(request\)/)
+    assert.match(page, /fetch\('\/api\/auth\/create-store',\s*\{\s*cache:\s*'no-store'\s*\}\)/)
+    assert.match(page, /persistOnboardingDraft\(/)
+    assert.match(page, /attemptId:\s*savedAttemptId\s*\|\|\s*draftAttemptId/)
+    assert.match(source, /identityApiRequest\('\/onboarding\/web-draft\/complete'/)
+    assert.match(source, /attempt_id:\s*attemptId/)
+    assert.match(source, /'X-Idempotency-Key': `onboarding-complete:\$\{attemptId\}`/)
+})
+
+test('web onboarding restores and persists the shared sales-channel intent choices', () => {
+    const page = routeSource('app/onboarding/page.tsx')
+
+    assert.match(page, /const ONBOARDING_CHANNELS[\s\S]*?id: 'online'[\s\S]*?id: 'marketplace'[\s\S]*?id: 'events'/)
+    assert.match(page, /channels:\s*SalesChannel\[\]/)
+    assert.match(page, /setChannels\(attempt\.channels \?\? \['online'\]\)/)
+    assert.match(page, /channels,\s*\}\)\.catch/)
+    assert.match(page, /name="sales-channels"/)
+    assert.match(page, /These choices guide setup only/)
+})

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LETBUYY_STOREFRONT_CLIENT_ID } from '@letbuyy/auth-core';
+import {
+    LETBUYY_CUSTOMER_SESSION_COOKIE,
+    LETBUYY_STOREFRONT_CLIENT_ID,
+    LETBUYY_STOREFRONT_SESSION_HEADER,
+} from '@letbuyy/auth-core';
 import { resolveStorefrontAccessContext } from '@/lib/storefront-access';
+import { storefrontApiFetch } from '@/lib/api/client';
 import {
     STOREFRONT_BUYER_FLOW_COOKIE,
     STOREFRONT_BUYER_SESSION_COOKIE,
@@ -10,6 +15,12 @@ import {
     statesMatch,
     storefrontCallbackUrl,
 } from '@/lib/buyer-auth/flow';
+
+function linkStatusUrl(flow: { returnTo: string; redirectUri: string }, status: string): URL {
+    const url = new URL(flow.returnTo, flow.redirectUri);
+    url.searchParams.set('buyer_link', status);
+    return url;
+}
 
 /**
  * GET /api/buyer-auth/callback — finish signing a buyer in (APPID-P4c).
@@ -85,7 +96,36 @@ export async function GET(request: NextRequest) {
         return failure('We could not confirm your LetBuyy sign-in for this store. Choose sign in again.');
     }
 
-    const response = NextResponse.redirect(new URL(flow.returnTo, flow.redirectUri), 303);
+    let redirectTo = new URL(flow.returnTo, flow.redirectUri);
+    if (flow.linkStoreCustomer) {
+        let linkStatus = 'unavailable';
+        try {
+            const linked = await storefrontApiFetch(`/storefront/buyer/link-store-customer?store_id=${encodeURIComponent(siteId)}`, {
+                method: 'POST',
+                headers: { [LETBUYY_STOREFRONT_SESSION_HEADER]: token },
+                body: JSON.stringify({ store_id: siteId }),
+                cache: 'no-store',
+                signal: AbortSignal.timeout(10_000),
+            });
+            if (linked.ok) {
+                linkStatus = 'linked';
+            } else if (linked.status === 403) {
+                const payload = await linked.json().catch(() => null) as { error?: { code?: unknown } } | null;
+                linkStatus = payload?.error?.code === 'EMAIL_UNVERIFIED' ? 'unverified' : 'failed';
+            } else if (linked.status === 409) {
+                linkStatus = 'conflict';
+            } else if (linked.status === 404) {
+                linkStatus = 'unavailable';
+            } else {
+                linkStatus = 'failed';
+            }
+        } catch {
+            linkStatus = 'unavailable';
+        }
+        redirectTo = linkStatusUrl(flow, linkStatus);
+    }
+
+    const response = NextResponse.redirect(redirectTo, 303);
     response.cookies.set(STOREFRONT_BUYER_FLOW_COOKIE, '', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 0 });
     response.cookies.set(STOREFRONT_BUYER_SESSION_COOKIE, encodeSession(siteId, token), {
         httpOnly: true,
@@ -94,6 +134,18 @@ export async function GET(request: NextRequest) {
         path: '/',
         maxAge: expiresIn,
     });
+    // Once the gateway confirms the explicit same-email store link, keep this browser on
+    // the canonical buyer session rather than carrying both identities into later requests.
+    // Failed/conflicting links and ordinary buyer sign-ins retain the existing store session.
+    if (flow.linkStoreCustomer && redirectTo.searchParams.get('buyer_link') === 'linked') {
+        response.cookies.set(LETBUYY_CUSTOMER_SESSION_COOKIE, '', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 0,
+        });
+    }
     response.headers.set('Cache-Control', 'no-store');
     return response;
 }

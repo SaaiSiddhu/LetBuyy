@@ -1,4 +1,7 @@
 import { createLetbuyyGraphQLSdk } from './graphql';
+import { createReelReviewSdk } from './reels';
+export { createReelReviewSdk } from './reels';
+export type { ReelMerchantCommand, ReelReviewerCommand, ReelReadback, ReelReviewPage, ReelDraftSelection, ReelSummary } from './reels';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
   AICreditBalance,
@@ -150,6 +153,7 @@ import type {
   SupportTicketMessageAuthor,
   SupportTicketMessageVisibility,
   SupportTicketPriority,
+  SupportTicketQueueTopic,
   SupportTicketStatus,
   SupportTicketTopic,
   TrustSafetyAppealStatus,
@@ -247,6 +251,47 @@ export interface LetbuyyRequestOptions {
   idempotencyKey?: string | null;
   signal?: AbortSignal;
   versioned?: boolean;
+  /** Preserve UTF-8 export bytes while retaining normal HTTP/error validation. */
+  responseType?: 'json' | 'text';
+}
+
+/** Allocate once per logical support action and retain across retry attempts. Sign identity afresh. */
+export interface SupportMutationOptions extends LetbuyyRequestOptions {
+  idempotencyKey: string;
+}
+
+export interface MerchantLoyaltyProgram {
+  site_id: string;
+  is_active: boolean;
+  earn_rate_bps: number;
+  redeem_cap_bps: number;
+  point_value_minor: string;
+  /** Preserve this exact version, including microseconds, when saving. */
+  updated_at: string;
+  created_at?: string;
+}
+export interface MerchantLoyaltySnapshot {
+  store_id: string;
+  enrolled: boolean;
+  program: MerchantLoyaltyProgram | null;
+  outstanding_points: string;
+  valuation_policy: 'block_decrease_while_outstanding';
+  value_decrease_allowed: boolean;
+}
+export interface SetMerchantLoyaltyInput {
+  store_id: string;
+  expected_updated_at: string | null;
+  is_active?: boolean;
+  earn_rate_bps?: number;
+  redeem_cap_bps?: number;
+  point_value_minor?: string;
+}
+export interface MerchantLoyaltySaveResult extends MerchantLoyaltyProgram {
+  created: boolean;
+  outstanding_points: string;
+  liability_delta_minor: string | null;
+  valuation_policy: 'block_decrease_while_outstanding';
+  value_decrease_allowed: boolean;
 }
 
 export const LETBUYY_DEFAULT_API_VERSION_PATH = '/v1';
@@ -1489,6 +1534,8 @@ export interface InternalTrustSafetyDecisionInput extends JsonRecord {
 export interface InternalTrustSafetyEnforcementInput extends JsonRecord {
   action: Exclude<TrustSafetyEnforcementAction, 'none'>;
   reason: string;
+  /** Required by the protected site-enforcement workflow; retain for retries. */
+  idempotency_key?: string;
   notify_subject?: boolean;
   metadata?: JsonRecord;
 }
@@ -1508,7 +1555,10 @@ export interface InternalTrustSafetyAppealDecisionInput extends JsonRecord {
 
 export interface InternalTrustSafetyReinstateInput extends JsonRecord {
   reason: string;
-  secondary_approver_id: string;
+  /** A session-bound independently approved request, required for execution. */
+  approval_id?: string;
+  /** Legacy transport only; never grants approval authority. */
+  secondary_approver_id?: string;
   metadata?: JsonRecord;
 }
 
@@ -1542,7 +1592,8 @@ export interface InternalSupportTicket extends JsonRecord {
   requester_user_id?: string | null;
   subject: string;
   channel: SupportTicketChannel;
-  topic: SupportTicketTopic;
+  // A ticket in the queue may be a buyer's privacy request; an operator still creates tickets with SupportTicketTopic.
+  topic: SupportTicketQueueTopic;
   priority: SupportTicketPriority;
   status: SupportTicketStatus;
   assignee_id?: string | null;
@@ -1626,7 +1677,7 @@ export interface InternalSupportTicketQuery extends QueryParams {
   limit?: number;
   status?: SupportTicketStatus;
   priority?: SupportTicketPriority;
-  topic?: SupportTicketTopic;
+  topic?: SupportTicketQueueTopic;
   assignee_id?: string;
   site_id?: string;
   q?: string;
@@ -1699,9 +1750,26 @@ export interface InternalSupportTicketDetail extends JsonRecord {
   merchant_context: JsonRecord | null;
 }
 
+// What happened to a Trust & Safety escalation: the automatic one a reply or a new ticket gets when it mentions fraud and the
+// like, or the case an explicit escalation to trust_safety opens. 'linked' only when the ticket really points at the case.
+export type InternalSupportTrustSafetyEscalation =
+  | { status: 'not_triggered' }
+  | { status: 'already_escalated' }
+  | { status: 'refused'; reason: 'privacy_request_conflict' }
+  | { status: 'linked'; ts_case_id: string }
+  | { status: 'failed'; stage: 'claim' | 'case' | 'link' };
+
 export interface InternalSupportTicketResult extends JsonRecord {
   ticket: InternalSupportTicket;
   linked_ts_case_id?: string | null;
+  trust_safety_escalation?: InternalSupportTrustSafetyEscalation;
+}
+
+export interface InternalSupportReplyResult extends JsonRecord {
+  message: InternalSupportTicketMessage;
+  ticket: InternalSupportTicket;
+  linked_ts_case_id: string | null;
+  trust_safety_escalation: InternalSupportTrustSafetyEscalation;
 }
 
 export type InternalIncidentSeverity = 'sev1' | 'sev2' | 'sev3' | 'sev4';
@@ -2022,7 +2090,9 @@ export interface InternalMerchantImpersonationResult extends JsonRecord {
 
 export interface InternalMerchantModerationInput extends InternalMerchantActorInput {
   action: 'suspend' | 'restore';
-  secondary_approver_id: string;
+  approval_id: string;
+  /** Compatibility field only; a typed ID is never consent. */
+  secondary_approver_id?: string;
 }
 
 export interface InternalMerchantModerationResult extends JsonRecord {
@@ -2078,6 +2148,7 @@ export interface AICreditPurchaseInput extends Pick<StoreScopedQuery, 'store_id'
 }
 
 export interface PlanListQuery extends QueryParams {
+  store_id?: string;
   site_type: string;
   slug?: string;
 }
@@ -2792,6 +2863,7 @@ export interface StorefrontProductQuery extends ListQuery {
   category?: string;
   collection?: string;
   tag?: string;
+  country_of_origin?: string;
 }
 
 export type StorefrontStorePayload = Store & JsonRecord & {
@@ -2902,19 +2974,15 @@ export interface StorefrontCustomerLookupQuery extends QueryParams {
   email: string;
 }
 
-export type StorefrontCustomerFindOrCreateInput = StorefrontCustomerLookupQuery & {
-  full_name?: string | null;
-  phone?: string | null;
+export type StorefrontCustomerFromOrderInput = {
+  store_id: string;
+  order_id: string;
 };
 
 export type StorefrontCustomerPasswordInput = StorefrontCustomerLookupQuery & {
   password: string;
   turnstile_token?: string | null;
   turnstileToken?: string | null;
-};
-
-export type StorefrontCustomerRegisterInput = StorefrontCustomerPasswordInput & {
-  full_name?: string | null;
 };
 
 export type StorefrontCustomerPasswordResetRequestInput = StorefrontCustomerLookupQuery & {
@@ -2928,12 +2996,6 @@ export type StorefrontCustomerPasswordResetConfirmInput = StorefrontCustomerPass
 export type StorefrontCustomerStatsInput = StorefrontCustomerLookupQuery & {
   order_total: number;
   order_id: string;
-};
-
-export type StorefrontCustomerStatusResult = {
-  exists: boolean;
-  hasPassword: boolean;
-  status: string;
 };
 
 export type StorefrontCustomerResult = {
@@ -3096,8 +3158,18 @@ export type UpsertStoreMetafieldValueInput = Pick<StoreMetafieldValue, 'store_id
   metadata?: StoreMetafieldValue['metadata'];
 };
 export type EmployeeListQuery = Pick<StoreScopedQuery, 'store_id'>;
+export interface StaffInvitationSummary {
+  id: string; store_id: string; expires_at: string; delivery_status: string; status: string; wakeup: string; accept_url: string;
+}
+export type StaffInvitationResult = Employee & { invitation: StaffInvitationSummary };
+export type CreateStaffInvitationInput = Pick<Employee, 'store_id' | 'email'> & Partial<Employee> & { employee_id?: string; expected_updated_at?: string };
+export interface StaffInvitationPreview {
+  id: string; store_id: string; store_name: string; role: string; permissions: Record<string, unknown>; expires_at: string; status: 'pending' | 'accepted';
+}
+export interface StaffInvitationAcceptance { employee: Employee; store_handle: string; accepted: true }
+
 export type CreateEmployeeInput = Pick<Employee, 'store_id' | 'email'> & Partial<Employee>;
-export type UpdateEmployeeInput = Partial<Pick<Employee, 'role' | 'permissions' | 'status' | 'is_active'>>;
+export type UpdateEmployeeInput = Partial<Pick<Employee, 'role' | 'permissions' | 'status' | 'is_active'>> & { expected_updated_at?: string; store_id?: string };
 // Plan-driven staff seat usage (how many staff the store's plan allows vs uses).
 // staff_limit === null means unlimited (e.g. Enterprise).
 export type EmployeeStaffLimit = {
@@ -3113,7 +3185,10 @@ export interface MediaListQuery extends StoreScopedQuery {
 export type CreateMediaInput = Pick<MediaAsset, 'store_id' | 'filename' | 'url' | 'mime_type'> & Partial<MediaAsset>;
 export type UpdateMediaInput = Partial<Pick<MediaAsset, 'alt_text' | 'caption' | 'folder' | 'tags' | 'filename'>>;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
-export type UpdateProductInput = NewRecord<Product>;
+export type UpdateProductInput = NewRecord<Product> & Pick<Product, 'version'> & {
+  /** Retain one UUID for this exact edit through transport retries. */
+  idempotency_key: string;
+};
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
 export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'description' | 'image_url'>> & {
   is_active?: boolean;
@@ -3349,14 +3424,17 @@ export type SaveThemeDraftInput = {
   store_id: string;
   template_key?: string;
   template_config: JsonRecord;
-  base_version?: number;
+  base_version: number;
+  idempotency_key: string;
   client?: 'admin-web' | 'flutter-builder' | 'api';
 };
+export type ReorderThemeDraftInput = Omit<SaveThemeDraftInput, 'template_config'> & { section_order: string[] };
 export type PublishThemeInput = {
   store_id: string;
   template_key?: string;
   template_config?: JsonRecord;
-  base_version?: number;
+  base_version: number;
+  idempotency_key: string;
   make_store_live?: boolean;
   publish_message?: string;
 };
@@ -3394,6 +3472,8 @@ export type StorefrontCreateOrderInput = {
   couponCode?: string;
   giftCardCode?: string;
   shippingRateId?: string | null;
+  /** Buyer-reviewed shipping amount in INR paise, used only to reject a stale quote. */
+  shippingAmountMinor?: number | null;
   idempotencyKey: string;
 };
 export type StorefrontOrderSummary = {
@@ -3831,6 +3911,7 @@ export class LetbuyyApiClient {
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
+  readonly reels = createReelReviewSdk(this);
 
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>
@@ -4561,39 +4642,39 @@ export class LetbuyyApiClient {
         `/operations/support/tickets/${encodePathSegment(id)}`,
         options,
       ),
-    createSupportTicket: (input: InternalSupportCreateTicketInput, options?: LetbuyyRequestOptions) =>
+    createSupportTicket: (input: InternalSupportCreateTicketInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         '/operations/support/tickets',
         { ...options, method: 'POST', body: input },
       ),
-    replySupportTicket: (id: string, input: InternalSupportMessageInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ message: InternalSupportTicketMessage; linked_ts_case_id?: string | null }>(
+    replySupportTicket: (id: string, input: InternalSupportMessageInput, options: SupportMutationOptions) =>
+      this.requestData<InternalSupportReplyResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/messages`,
         { ...options, method: 'POST', body: input },
       ),
-    assignSupportTicket: (id: string, input: InternalSupportAssignInput, options?: LetbuyyRequestOptions) =>
+    assignSupportTicket: (id: string, input: InternalSupportAssignInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/assign`,
         { ...options, method: 'PATCH', body: input },
       ),
-    escalateSupportTicket: (id: string, input: InternalSupportEscalateInput, options?: LetbuyyRequestOptions) =>
+    escalateSupportTicket: (id: string, input: InternalSupportEscalateInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/escalate`,
         { ...options, method: 'POST', body: input },
       ),
-    resolveSupportTicket: (id: string, input: InternalSupportResolveInput, options?: LetbuyyRequestOptions) =>
+    resolveSupportTicket: (id: string, input: InternalSupportResolveInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult & { csat_survey_token: string }>(
         `/operations/support/tickets/${encodePathSegment(id)}/resolve`,
         { ...options, method: 'POST', body: input },
       ),
-    recordSupportCsat: (id: string, input: InternalSupportCsatInput, options?: LetbuyyRequestOptions) =>
+    recordSupportCsat: (id: string, input: InternalSupportCsatInput, options: SupportMutationOptions) =>
       this.requestData<{ csat: InternalSupportCsat }>(
         `/operations/support/tickets/${encodePathSegment(id)}/csat`,
         { ...options, method: 'POST', body: input },
       ),
     supportMacros: (options?: LetbuyyRequestOptions) =>
       this.requestData<InternalSupportMacro[]>('/operations/support/macros', options),
-    createSupportMacro: (input: InternalSupportMacroInput, options?: LetbuyyRequestOptions) =>
+    createSupportMacro: (input: InternalSupportMacroInput, options: SupportMutationOptions) =>
       this.requestData<{ macro: InternalSupportMacro }>(
         '/operations/support/macros',
         { ...options, method: 'POST', body: input },
@@ -4701,6 +4782,12 @@ export class LetbuyyApiClient {
       this.requestData<EmployeeStaffLimit>('/employees/limits', { ...options, query }),
     create: (input: CreateEmployeeInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Employee>('/employees', { ...options, method: 'POST', body: input }),
+    invite: (input: CreateStaffInvitationInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StaffInvitationResult>('/employees/invite', { ...options, method: 'POST', body: input }),
+    previewInvite: (input: { token: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<StaffInvitationPreview>('/employees/invitations/preview', { ...options, method: 'POST', body: input }),
+    acceptInvite: (input: { token: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<StaffInvitationAcceptance>('/employees/auth/accept-invite', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateEmployeeInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Employee>(`/employees/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
@@ -4786,7 +4873,7 @@ export class LetbuyyApiClient {
     sample: (input: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>('/products/sample', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateProductInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, idempotencyKey: input.idempotency_key }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ id: string }>(`/products/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     bulk: (input: { store_id: string; action: string; product_ids: string[] }, options?: LetbuyyRequestOptions) =>
@@ -5093,6 +5180,13 @@ export class LetbuyyApiClient {
     },
   };
 
+  readonly loyalty = {
+    program: (storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<MerchantLoyaltySnapshot>('/loyalty/program', { ...options, query: { store_id: storeId } }),
+    setProgram: (input: SetMerchantLoyaltyInput, options: LetbuyyRequestOptions & { idempotencyKey: string }) =>
+      this.requestData<MerchantLoyaltySaveResult>('/loyalty/program', { ...options, method: 'PUT', body: input }),
+  };
+
   readonly coupons = {
     list: (query?: CouponListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Coupon>('/coupons', { ...options, query }),
@@ -5290,6 +5384,8 @@ export class LetbuyyApiClient {
       this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { ...(options?.query || {}), store_id: storeId } }),
     saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeDraftSaveResult>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'PUT', body: input }),
+    reorderDraft: (slug: string, input: ReorderThemeDraftInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeDraftSaveResult & { section_order: string[] }>(`/themes/${encodePathSegment(slug)}/editor/reorder`, { ...options, method: 'PUT', body: input }),
     deleteDraft: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     publish: (slug: string, input: PublishThemeInput, options?: LetbuyyRequestOptions) =>
@@ -5424,7 +5520,7 @@ export class LetbuyyApiClient {
     productsByIds: (subdomain: string, productIds: string[], options?: LetbuyyRequestOptions) =>
       this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/products/by-ids`, {
         ...options,
-        query: { ids: productIds },
+        query: { ...options?.query, ids: productIds },
       }),
     createOrder: (subdomain: string, input: StorefrontCreateOrderInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCreateOrderResult>(`/storefront/${encodePathSegment(subdomain)}/orders`, { ...options, method: 'POST', body: input }),
@@ -5452,12 +5548,10 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontOrderCredentialSaveResult>('/storefront/customer/order-credential', { ...options, method: 'POST', body: input }),
     verifyOrderCredential: (input: StorefrontOrderCredentialInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontOrderCredentialLoginResult>('/storefront/customer/order-credential/login', { ...options, method: 'POST', body: input }),
-    findOrCreateCustomer: (input: StorefrontCustomerFindOrCreateInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontCustomerResult>('/storefront/customer/find-or-create', { ...options, method: 'POST', body: input }),
+    createCustomerFromOrder: (input: StorefrontCustomerFromOrderInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ created: boolean }>('/storefront/customer/from-order', { ...options, method: 'POST', body: input }),
     customerByEmail: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerResult>('/storefront/customer/by-email', { ...options, query }),
-    customerStatus: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontCustomerStatusResult>('/storefront/customer/status', { ...options, query }),
     setCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password', { ...options, method: 'POST', body: input }),
     requestCustomerPasswordReset: (input: StorefrontCustomerPasswordResetRequestInput, options?: LetbuyyRequestOptions) =>
@@ -5466,8 +5560,6 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password/confirm-reset', { ...options, method: 'POST', body: input }),
     verifyCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerResult>('/storefront/customer/login', { ...options, method: 'POST', body: input }),
-    registerCustomer: (input: StorefrontCustomerRegisterInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontCustomerResult>('/storefront/customer/register', { ...options, method: 'POST', body: input }),
     updateCustomerStats: (input: StorefrontCustomerStatsInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerStatsResult>('/storefront/customer/order-stats', { ...options, method: 'POST', body: input }),
     customerWishlist: (query: StorefrontWishlistQuery, options?: LetbuyyRequestOptions) =>
@@ -5555,7 +5647,8 @@ export class LetbuyyApiClient {
 
     const response = await this.fetchImpl(url, init);
     const requestId = response.headers.get('X-Request-ID');
-    const body = await parseResponseBody(response);
+    const rawResponse = requestOptions.responseType === 'text' ? response.clone() : null;
+    const [body, rawText] = await Promise.all([parseResponseBody(response), rawResponse?.text()]);
 
     if (!response.ok) {
       throw errorFromBody(body, response.status, requestId);
@@ -5565,7 +5658,7 @@ export class LetbuyyApiClient {
       throw errorFromBody(body, response.status, requestId);
     }
 
-    return body as T;
+    return (rawText === undefined ? body : rawText) as T;
   }
 
   private buildHeaders(options: LetbuyyRequestOptions): Headers {

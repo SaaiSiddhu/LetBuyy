@@ -23,9 +23,9 @@ Shopify exposes the logged-in shopper as the Liquid `customer` object, populated
 ### Backend (EXISTS — full CRUD via gateway)
 | Capability | Gateway method | Source |
 |---|---|---|
-| Find/create (guest) | `findOrCreateCustomer` | `customer-service.ts:46` |
+| Post-checkout guest CRM profile | `createCustomerFromOrder` → signed `/customer/from-order`; stored contact fields come from the same-store order | Commerce `/api/customer/auto-create`, Gateway `customer-engagement-routes.ts` |
 | Login (+ Turnstile) | `verifyCustomerPassword` | `customer-service.ts:148` |
-| Status / by-email | `customerStatus`, `customerByEmail` | `:72-93` |
+| Status / by-email | `customerByEmail`; public customer-status lookup retired | `:72-93` |
 | Password reset | `requestCustomerPasswordReset`, `confirmCustomerPasswordReset` | `:99-129` |
 | Profile update | `updateCustomerProfile` | client surface |
 | Addresses CRUD | `customerAddresses`, `create/update/removeCustomerAddress` | `:` + client surface |
@@ -110,7 +110,7 @@ address = {
 ## 5. Auth surface design (security-preserving)
 
 Mirror Shopify: keep auth as a **controlled island**, not raw Liquid forms, to preserve Turnstile + rate-limit + the two-issuer HS256 customer session.
-- `lb-customer-auth` island wrapping login/register/reset, posting to the existing gateway endpoints (`verifyCustomerPassword` with `turnstile_token`, `findOrCreateCustomer`, `request/confirmCustomerPasswordReset`).
+- `lb-customer-auth` island keeps login/reset on their existing gateway endpoints; registration now enters canonical buyer PKCE. Post-checkout CRM creation uses the order-bound `/customer/from-order` route, while the generic caller-supplied `/customer/find-or-create` route is retired.
 - Session stays the HS256 customer cookie (`LETBUYY_CUSTOMER_SESSION_COOKIE`) set server-side; Liquid never sees the token, only the resolved `customer` drop.
 - Account pages (`/account`, `/account/addresses`, `/account/orders`, `/account/wishlist`) become Liquid templates wired through the composition engine with `customer` populated server-side.
 

@@ -15,6 +15,7 @@ import '../../app/routes.dart';
 import '../../app/store_context.dart';
 import '../../config/app_config.dart';
 import '../../services/store_auth_service.dart';
+import '../../services/staff_service.dart';
 import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
 
@@ -139,6 +140,10 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
       await prefs.setString('store_user_email', widget.email);
 
       if (!mounted) return;
+      if (context.read<StaffService>().pendingInvitation != null) {
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.auth, (_) => false);
+        return;
+      }
       final store = await context.read<StoreContext>().ensureSelectedStore();
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(

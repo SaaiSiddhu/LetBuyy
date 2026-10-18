@@ -5,10 +5,12 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 import { useCart, type CartVariantContext } from '@/context/cart-context';
+import { useWishlist } from '@/context/wishlist-context';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ProductOriginDisclosure } from '@/components/product/product-origin-disclosure';
 import { Button,
     ArrowLeft, Minus, Plus, ShoppingBag, Heart, Share2,
     Zap, Truck, ShieldCheck, RefreshCcw, Package, ChevronDown, ChevronUp, Check, Star, Flame
@@ -26,6 +28,17 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     const colors = theme || DEFAULT_THEME_SETTINGS;
     const router = useRouter();
     const { addToCart } = useCart();
+    const {
+        isInWishlist,
+        isToggling: isWishlistToggling,
+        toggleWishlist,
+        buyerSession,
+        buyerStoreLinked,
+        storeAccountUnavailable,
+        unavailable: wishlistUnavailable,
+        mutationError: wishlistMutationError,
+        isLoading: wishlistLoading,
+    } = useWishlist();
     const basePath = `/store/${subdomain}`;
     const productImages = product.images.length > 0 ? product.images : [productImageFallback];
 
@@ -33,7 +46,10 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     const [quantity, setQuantity] = useState(1);
     const [specsOpen, setSpecsOpen] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
-    const [isWishlisted, setIsWishlisted] = useState(false);
+    const isWishlisted = isInWishlist(product.id);
+    const wishlistToggling = isWishlistToggling(product.id);
+    const wishlistNeedsStoreLink = buyerSession && !buyerStoreLinked && !storeAccountUnavailable && !wishlistUnavailable;
+    const wishlistActionDisabled = wishlistLoading || wishlistToggling || wishlistUnavailable || storeAccountUnavailable || wishlistNeedsStoreLink;
 
     // discount is recomputed after variant resolution using displayPrice/displayComparePrice
     // (defined below after resolvedVariant)
@@ -65,8 +81,25 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         groups[key].push(value as string);
                     }
                 });
-            } else if (v.name && !v.options) {
-                // Simple variant format
+                return;
+            }
+
+            // The public Gateway projection exposes relational variants as option1/2/3.
+            // Build selectable groups from that canonical shape when no named option map
+            // accompanies the product, so selected prices resolve to the selected variant.
+            const raw = v as unknown as Record<string, unknown>;
+            const optionValues = [raw.option1, raw.option2, raw.option3];
+            let foundOptionValue = false;
+            optionValues.forEach((value, index) => {
+                if (typeof value !== 'string' || value.length === 0) return;
+                foundOptionValue = true;
+                const group = `Option ${index + 1}`;
+                if (!groups[group]) groups[group] = [];
+                if (!groups[group].includes(value)) groups[group].push(value);
+            });
+
+            if (!foundOptionValue && v.name) {
+                // Simple legacy variant format.
                 if (!groups['Option']) groups['Option'] = [];
                 if (!groups['Option'].includes(v.name)) {
                     groups['Option'].push(v.name);
@@ -132,7 +165,11 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
             variantId: matchedVariant.id,
             variantTitle,
             price: (typeof raw.price === 'number' ? raw.price : Number(raw.price)) || product.price,
-            comparePrice: raw.compare_price != null ? Number(raw.compare_price) : null,
+            comparePrice: raw.prior_price_coverage_complete === true
+                && raw.prior_lowest_price_30d != null
+                && Number(raw.prior_lowest_price_30d) > ((Number(raw.price) || product.price))
+                ? Number(raw.prior_lowest_price_30d)
+                : null,
         };
     };
 
@@ -272,8 +309,14 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     type="button"
                                     aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                                     aria-pressed={isWishlisted}
-                                    onClick={() => setIsWishlisted(!isWishlisted)}
-                                    className={`flex h-11 w-11 items-center justify-center rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
+                                    disabled={wishlistActionDisabled}
+                                    onClick={() => toggleWishlist(product.id)}
+                                    title={wishlistNeedsStoreLink
+                                        ? 'Connect this store account to save items to your buyer wishlist.'
+                                        : storeAccountUnavailable || wishlistUnavailable
+                                            ? 'Wishlist unavailable. Try again later.'
+                                            : undefined}
+                                    className={`flex h-11 w-11 items-center justify-center rounded-full shadow transition-all disabled:cursor-not-allowed disabled:opacity-60 ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
                                 >
                                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                                 </Button>
@@ -310,6 +353,17 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     </Button>
                                 ))}
                             </div>
+                        )}
+                        {wishlistNeedsStoreLink && (
+                            <p role="status" className="text-sm text-theme-secondary">
+                                Connect this store account in <Link href={`${basePath}/account/settings`} className="underline">Account Settings</Link> to sync saved items.
+                            </p>
+                        )}
+                        {(storeAccountUnavailable || wishlistUnavailable) && (
+                            <p role="status" className="text-sm text-theme-secondary">Wishlist is unavailable right now. Your item was not saved.</p>
+                        )}
+                        {wishlistMutationError && !wishlistUnavailable && !storeAccountUnavailable && (
+                            <p role="status" className="text-sm text-theme-secondary">Could not save that wishlist change. Try again.</p>
                         )}
                     </div>
 
@@ -355,6 +409,11 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 </>
                             )}
                         </div>
+                        {displayComparePrice && displayComparePrice > displayPrice && (
+                            <p className="mt-1 text-xs text-theme-muted">
+                                Lowest price in the last 30 days
+                            </p>
+                        )}
 
                         {/* Description */}
                         {product.description && (
@@ -362,6 +421,10 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 {product.description}
                             </p>
                         )}
+                        <ProductOriginDisclosure
+                            countryOfOrigin={product.countryOfOrigin}
+                            importerDetails={product.importerDetails}
+                        />
 
                         {/* Stock Status */}
                         <div className="flex items-center gap-2 text-sm">

@@ -1,5 +1,10 @@
 <section class="lb-settings" data-section-id="{{ section.id }}">
-  {% if customer %}
+  {% if buyer %}
+  <h1>{{ section.settings.heading }}</h1>
+  <div class="lb-settings__current"><p class="lb-settings__email">{{ buyer.email }}</p>{% if buyer.full_name %}<p class="lb-settings__name">{{ buyer.full_name }}</p>{% endif %}{% if buyer.phone %}<p class="lb-settings__phone">{{ buyer.phone }}</p>{% endif %}</div>
+  <lb-customer-settings data-lb-island="customer-settings" data-account-type="buyer" data-base-path="/store/{{ shop.subdomain }}" data-authenticated="true"></lb-customer-settings>
+  {% elsif buyer_unavailable %}<p class="lb-settings__unavailable" role="status">We could not load your LetBuyy profile right now. Please refresh and try again.</p>
+  {% elsif customer %}
   <h1>{{ section.settings.heading }}</h1>
   <div class="lb-settings__current">
     <p class="lb-settings__email">{{ customer.email }}</p>

@@ -14,8 +14,9 @@ import { buildStoreMetadata } from '@/lib/seo';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
+import { ReactCustomerLogin } from './react-customer-login';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 type Props = {
     params: Promise<{ subdomain: string }>;
@@ -56,6 +57,20 @@ export default async function CustomerLoginPage({ params, searchParams }: Props)
         templateKey: 'customers/login',
         searchParams: query,
     });
+
+    // React theme bundles do not define a customer-login section renderer. Keep the
+    // storefront password journey and the explicit canonical-account linking entry
+    // reachable for stores on either render engine.
+    if (renderPlan.rendererEngine !== 'liquid') {
+        return (
+            <ReactCustomerLogin
+                storeId={store.id}
+                storeName={store.name}
+                subdomain={subdomain}
+                error={query.error || ''}
+            />
+        );
+    }
 
     const sectionData = new Map<string, SectionRenderData>();
 

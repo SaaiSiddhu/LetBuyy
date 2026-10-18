@@ -20,6 +20,14 @@
 //      earlier suite left behind, so this cluster's `service_role` existed WITHOUT BYPASSRLS and
 //      "what can this role see" depended on which suite ran first. (CAP-C64)
 //
+//   4. An `auth.uid()` that always answers NULL. A policy written against the caller's identity (the
+//      site-owner read on public.themes, 196) can then NEVER match: an isolation suite passes its
+//      denials for the wrong reason and cannot show its positive control. The bootstrap now derives the
+//      identity from the request claims the way Supabase does (below), so a suite states who is calling
+//      with SET LOCAL request.jwt.claims and the answer holds for exactly that transaction. It is
+//      verified on its own in supabase-faithful-auth-uid-postgres.test.mjs. Every suite that shares
+//      this bootstrap and sets no claims still gets NULL, as before.
+//
 // HOW THE SEARCH_PATH IS SET WITHOUT TOUCHING EACH SUITE
 // Supabase puts `extensions` on the DATABASE-level search_path, so ordinary top-level DDL resolves
 // pgcrypto while a function with its own narrow `SET search_path` does not — that asymmetry IS the
@@ -61,7 +69,20 @@ CREATE TABLE auth.users (
     raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
     created_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
+-- The same expression Supabase ships for auth.uid(): the legacy per-claim setting first, then the sub of the
+-- claims document PostgREST sets for each request. Neither set (or empty) means no identity: NULL. A sub or a
+-- claims document that does not parse RAISES rather than reading as anybody, and SET LOCAL confines an identity
+-- to one transaction. Plain CREATE FUNCTION, never OR REPLACE: pointed at a database that already has a real
+-- auth.uid() (the local Supabase stack), this bootstrap stops at the first schema that exists, and past that
+-- CREATE FUNCTION would still refuse rather than overwrite it.
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claim.sub', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
+  )::uuid
+$$;
+-- auth.jwt() and auth.role() stay stubs: nothing under test reads them, and a half-faithful claim reader would
+-- be worse than an honest NULL.
 CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{}'::jsonb $$;
 CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$;
 

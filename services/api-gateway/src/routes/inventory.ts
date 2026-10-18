@@ -4,6 +4,7 @@
 
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -147,12 +148,14 @@ async function listProductStockInventoryRows(
 async function loadOwnedProductForInventory(
     db: ReturnType<typeof getSupabaseAdmin>,
     productId: string,
+    storeId: string,
 ) {
     const buildProductQuery = (includeDeletedAtFilter: boolean) => {
         let query = db
             .from('products')
             .select('id, store_id, stock')
-            .eq('id', productId);
+            .eq('id', productId)
+            .eq('store_id', storeId);
 
         if (includeDeletedAtFilter) query = query.is('deleted_at', null);
         return query.single();
@@ -770,8 +773,10 @@ router.get('/levels', async (c) => {
         ? [storeId]
         : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
 
-    if (storeId && !(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    if (storeId) {
+        if (auth.user.storeId && auth.user.storeId !== storeId) return c.json(failureBody('FORBIDDEN', 'Not authorized'), 403);
+        const staffBlock = await assertStaffPermission(c, storeId, customUser.id, 'products:read');
+        if (staffBlock) return staffBlock;
     }
 
     if (ownedStoreIds.length === 0) {
@@ -839,59 +844,39 @@ router.get('/levels', async (c) => {
     return c.json(paginated(rows, count || 0, page, limit));
 });
 
-// POST /inventory/adjust — Single product inventory adjustment
+// POST /inventory/adjust — One actor-bound atomic receipt around the canonical stock writer.
 router.post('/adjust', validate('json', AdjustInventorySchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as InventoryAdjustmentInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
-
-    const { data: product, error: productError } = await loadOwnedProductForInventory(db, body.product_id);
-
-    const ownedProduct = product as ProductOwnerRow | null;
-    if (
-        productError ||
-        !customUser ||
-        !ownedProduct?.store_id ||
-        !(await verifySiteOwnership(db, ownedProduct.store_id, customUser.id, auth.user.storeId))
-    ) {
+    const requestedStoreId = auth.user.storeId || c.req.header('X-Store-ID') || '';
+    const selectedStore = c.req.header('X-Store-ID');
+    if (!customUser || !requestedStoreId || (selectedStore && selectedStore !== requestedStoreId)) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
-    const staffBlock = await assertStaffPermission(c, ownedProduct.store_id, customUser.id, 'products:write');
-    if (staffBlock) return staffBlock;
-
-    const { data, error } = await db.rpc('adjust_inventory_level', {
-        p_product_id: body.product_id,
-        p_variant_id: body.variant_id || null,
-        p_location_id: body.location_id || null,
-        p_adjustment: body.adjustment,
-        p_actor_id: customUser.id,
-        p_reason: mapInventoryAdjustmentReason(body.reason),
-        p_notes: body.notes || null,
-        p_request_id: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-    });
-
-    if (isInventorySchemaMissingError(error)) {
-        return c.json({
-            success: false,
-            error: {
-                code: 'INVENTORY_LEDGER_REQUIRED',
-                message: 'Inventory adjustments require the inventory ledger migrations and adjust_inventory_level RPC.',
-            },
-        }, 503);
+    const staffBlock = await assertStaffPermission(c, requestedStoreId, customUser.id, 'products:write');
+    if (staffBlock) {
+        if (staffBlock.status === 403) {
+            // The canonical guard has already refused ownership/write authority.
+            // Classify only a proven nonmember for the existing outsider 404.
+            // Any staff relationship retains the guard's exact denial response.
+            const relationship = await db.from('employees').select('id')
+                .eq('store_id', requestedStoreId).eq('user_id', customUser.id).limit(1).maybeSingle();
+            if (!relationship.error && !relationship.data) {
+                return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+            }
+        }
+        return staffBlock;
     }
-
-    if (error) {
-        return c.json({
-            success: false,
-            error: {
-                code: 'INVENTORY_ADJUSTMENT_FAILED',
-                message: 'Inventory adjustment failed',
-            },
-        }, 400);
-    }
-
-    return c.json(success(data));
+    const raw = await c.req.json<Record<string, unknown>>();
+    const key = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key')
+        || (typeof raw.idempotency_key === 'string' ? raw.idempotency_key : '')
+        || (typeof raw.idempotencyKey === 'string' ? raw.idempotencyKey : '');
+    const result = await executeInventoryAdjustment(c.env, requestedStoreId, customUser.id, key, body,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
+    if (result.replayed) c.header('X-Idempotent-Replay', 'true');
+    return c.json(success(result.level));
 });
 
 // POST /inventory/bulk-adjust — Bulk inventory adjustments
@@ -1217,7 +1202,7 @@ router.get('/history', async (c) => {
     let query = db
         .from('inventory_adjustments')
         .select('*, products!inner(name, store_id)', { count: 'exact' })
-        .in('products.store_id', ownedStoreIds);
+        .in('store_id', ownedStoreIds);
 
     if (productId) query = query.eq('product_id', productId);
 

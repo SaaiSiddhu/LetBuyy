@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "workingTree": "test executed against the uncommitted source changes documented in the paired evidence",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payout-statement-replay.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "576a0b9e5198",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "payout statement, pending wallet credit, and canonical fee journal roll back together on injected faults",
+    "settlement payout item insertion fault rolls back statement, wallet, payout, item, and scheduled outbox effects",
+    "settlement payout scheduled-event insertion fault rolls back statement, wallet, payout, item, and scheduled outbox effects",
+    "exact retry after either failure creates one complete settlement payout set",
+    "existing settlement replay preserves one payout statement, instruction, item, wallet credit, and typed payout event",
+    "Cashfree sandbox settlement recording does not create a mismatched Route payout statement, instruction, item, or scheduled event",
+    "changed settlement payload conflicts and different-key statement concurrency has one winner",
+    "only service_role can execute the transaction function",
+    "migration rollback/reapply preserves previously committed payout evidence"
+  ],
+  "cleanup": "runner completed; owned disposable database resources removed",
+  "providerSandboxOrLiveMoney": false
+}

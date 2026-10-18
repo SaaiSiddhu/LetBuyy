@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
 
-import '../../app/role_gate.dart';
+import '../../app/routes.dart';
 import '../../services/staff_service.dart';
 import '../../theme/app_theme_colors.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
 class StaffScreen extends StatefulWidget {
@@ -16,9 +19,10 @@ class StaffScreen extends StatefulWidget {
 
 class _StaffScreenState extends State<StaffScreen> {
   static const _roles = [
-    'admin',
     'manager',
     'editor',
+    'fulfillment',
+    'viewer',
     'support',
     'marketing',
     'staff',
@@ -129,6 +133,8 @@ class _StaffScreenState extends State<StaffScreen> {
               ],
             ),
           ),
+          IconButton(tooltip: 'Review staff invitation', icon: const Icon(Icons.mail_outline),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.acceptStaffInvitation)),
           IconButton(
             tooltip: 'Refresh staff',
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
@@ -197,7 +203,7 @@ class _StaffScreenState extends State<StaffScreen> {
   }
 
   Widget _memberCard(StaffMemberContract member) {
-    final labels = StaffRoleGate.labelsFor(member.role);
+    final labels = member.granted.map(staffPermissionLabel);
     final statusTone = member.isActive && member.status != 'removed'
         ? colors.success
         : colors.error;
@@ -265,8 +271,10 @@ class _StaffScreenState extends State<StaffScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              if (member.status == 'invited') TextButton(
+                onPressed: () => _renewInvitation(member), child: const Text('Renew invitation')),
               OutlinedButton.icon(
-                onPressed: () => _changeRole(member),
+                onPressed: member.status == 'active' ? () => _changeRole(member) : null,
                 icon: const Icon(Icons.admin_panel_settings_outlined, size: 18),
                 label: const Text('Role'),
                 style: OutlinedButton.styleFrom(
@@ -345,19 +353,38 @@ class _StaffScreenState extends State<StaffScreen> {
     if (input == null) return;
 
     try {
-      // Phase N4: staff self-service email invites never had a working
-      // completion path (see EXECUTION_LEDGER.md's PHASE-N3/PHASE-N4 rows)
-      // and the endpoint this used to call is gone. Staff are added
-      // directly instead -- the same capability the merchant web UI
-      // already uses, and the account is immediately active, no email
-      // step required.
-      await context.read<StaffService>().createStaff(input);
+      final invitation = await context.read<StaffService>().inviteStaff(input);
       if (mounted) {
-        _showSnackBar('${input.email} added as staff');
-        _load();
+        await _showInvitation(invitation);
+        if (mounted) _load();
       }
     } catch (error) {
       if (mounted) _showSnackBar(error.toString(), isError: true);
+    }
+  }
+
+  Future<void> _showInvitation(StaffInvitationResult invitation) async {
+    await showDialog<void>(context: context, builder: (dialog) => AlertDialog(
+      title: const Text('Staff invitation created'),
+      content: Text('Acceptance is required before access starts. Delivery is queued. Expires: ${invitation.expiresAt}'),
+      actions: [
+        TextButton(onPressed: () async {
+          await Clipboard.setData(ClipboardData(text: invitation.url));
+          if (dialog.mounted) Navigator.pop(dialog);
+        }, child: const Text('Copy invitation link')),
+        TextButton(onPressed: () => Navigator.pop(dialog), child: const Text('Done')),
+      ],
+    ));
+  }
+  Future<void> _renewInvitation(StaffMemberContract member) async {
+    try {
+      final result = await context.read<StaffService>().inviteStaff(
+        StaffInviteInput(storeId: member.storeId, email: member.email, role: member.role), renew: member);
+      if (!mounted) return;
+      await _showInvitation(result);
+      if (mounted) _load();
+    } catch (_) {
+      if (mounted) _showSnackBar('Unable to renew invitation. Reload the current member and retry.', isError: true);
     }
   }
 
@@ -593,7 +620,7 @@ class _InviteStaffFormState extends State<_InviteStaffForm> {
               );
             },
             icon: const Icon(Icons.person_add_alt_1_outlined),
-            label: const Text('Add staff'),
+            label: const Text('Send staff invitation'),
           ),
         ],
       ),

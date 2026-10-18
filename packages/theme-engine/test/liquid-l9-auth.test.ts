@@ -1,12 +1,11 @@
-// L9 — Customer Registration (engine templates only). Liquid customers/login + customers/register render.
-// D10: LB-12 is CLOSED (2026-06-19). POST /api/customer/register proxy route now exists in customer-web.
-// Login posts to /api/customer/login; register posts to /api/customer/register (both same-origin proxies).
+// L9 — Liquid login remains a transitional store-customer form; new buyer registration uses identity-platform.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   LiquidRenderer,
+  createLetbuyyCoreLiquidThemeBundleFixture,
   createUrbanKicksLiquidThemeBundleFixture,
   DEFAULT_THEME_SETTINGS,
 } from '../src/index.ts';
@@ -38,12 +37,13 @@ test('L9: login template renders a form posting to the existing /api/customer/lo
   assert.match(html, /type="password"/);
 });
 
-test('L9: register template renders a form posting to the register endpoint', async () => {
+test('L9: register template creates accounts through canonical buyer sign-in only', async () => {
   const result = await renderAuth('customers/register');
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /<form[^>]+action="\/api\/customer\/register"/);
-  assert.match(html, /name="email"/);
-  assert.match(html, /name="password"/);
+  assert.match(html, /href="\/api\/buyer-auth\/start\?return_to=/);
+  assert.match(html, /Create or sign in with LetBuyy/);
+  assert.doesNotMatch(html, /action="\/api\/customer\/register"/);
+  assert.doesNotMatch(html, /name="password"/);
 });
 
 test('L9: auth pages are sanitized (no active content) — auth surface, highest care', async () => {
@@ -56,9 +56,7 @@ test('L9: auth pages are sanitized (no active content) — auth surface, highest
 // D10 — Registration wiring verification (static contract tests)
 // ============================================================================
 
-test('D10 /api/customer/register proxy route exists and exports POST handler', () => {
-  // Verify the customer-web route file exists and wires to the gateway correctly.
-  // This is a static contract test — read-only source inspection, no network calls.
+test('legacy registration API remains as a fail-closed compatibility endpoint', () => {
   const routePath = resolve(
     import.meta.dirname ?? __dirname,
     '../../../apps/commerce/web/src/app/api/customer/register/route.ts',
@@ -70,7 +68,8 @@ test('D10 /api/customer/register proxy route exists and exports POST handler', (
     assert.fail(`Route file not found at expected path: ${routePath}. LB-12 wiring verification failed.`);
   }
   assert.match(routeSource, /export\s+async\s+function\s+POST/, 'route must export an async POST handler');
-  assert.match(routeSource, /registerCustomer/, 'route must call registerCustomer (proxy to gateway)');
+  assert.match(routeSource, /CANONICAL_BUYER_ACCOUNT_REQUIRED/);
+  assert.doesNotMatch(routeSource, /\.registerCustomer\(/, 'legacy register endpoint must not mint a per-store login');
 });
 
 // ============================================================================
@@ -99,8 +98,7 @@ test('E8 login section storeId field uses shop.id value', () => {
   );
 });
 
-test('D10 register Liquid template action matches the existing proxy route path', () => {
-  // Verify the Liquid register template posts to /api/customer/register which is served by the route above.
+test('register Liquid template offers canonical creation and a path for legacy account linking', () => {
   const bundle = createUrbanKicksLiquidThemeBundleFixture();
   const registerTemplate = bundle.templates['customers/register'];
   assert.ok(registerTemplate, 'customers/register template must exist in bundle');
@@ -109,13 +107,30 @@ test('D10 register Liquid template action matches the existing proxy route path'
   const sectionTypes = Object.values(registerTemplate.sections).map((s) => s.type);
   assert.ok(sectionTypes.length > 0, 'register template must have at least one section');
 
-  // Check the section source in the bundle for the form action
+  // Check the section source in the bundle for canonical sign-in and legacy-account recovery.
   const registerSectionType = sectionTypes[0];
   const registerSection = bundle.sections[registerSectionType!];
   assert.ok(registerSection, `register section type "${registerSectionType}" must exist in bundle sections`);
-  assert.match(
-    registerSection.source,
-    /action="\/api\/customer\/register"/,
-    'register section source must contain action="/api/customer/register"',
-  );
+  assert.match(registerSection.source, /\/api\/buyer-auth\/start\?return_to={{ routes\.account_url }}/);
+  assert.match(registerSection.source, /routes\.customer_login_url/);
+  assert.doesNotMatch(registerSection.source, /action="\/api\/customer\/register"/);
+});
+
+test('APPID-P4c canonical buyer sign-up is offered from both login and registration entry points', async () => {
+  for (const bundle of [createUrbanKicksLiquidThemeBundleFixture(), createLetbuyyCoreLiquidThemeBundleFixture()]) {
+    const login = bundle.sections['customer-login'];
+    const register = bundle.sections['customer-register'];
+    assert.ok(login, 'customer-login section must exist');
+    assert.ok(register, 'customer-register section must exist');
+    assert.match(login.source, /href="\/api\/buyer-auth\/start\?return_to={{ routes\.account_url }}"[^>]*>Continue with LetBuyy/);
+    assert.match(register.source, /href="\/api\/buyer-auth\/start\?return_to={{ routes\.account_url }}"[^>]*>Create or sign in with LetBuyy/);
+    assert.doesNotMatch(register.source, /action="\/api\/customer\/register"/, 'new buyer registration must not create a per-store login');
+    assert.match(register.source, /routes\.customer_login_url/, 'legacy customers retain a route to sign in and link their account');
+  }
+  const loginHtml = (await renderAuth('customers/login')).liquid?.layoutHtml ?? '';
+  const registerHtml = (await renderAuth('customers/register')).liquid?.layoutHtml ?? '';
+  assert.match(loginHtml, /href="\/api\/buyer-auth\/start\?return_to=/);
+  assert.match(registerHtml, /href="\/api\/buyer-auth\/start\?return_to=/);
+  assert.match(registerHtml, /Create or sign in with LetBuyy/);
+  assert.doesNotMatch(registerHtml, /action="\/api\/customer\/register"/);
 });

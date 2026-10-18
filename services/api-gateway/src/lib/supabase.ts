@@ -14,6 +14,32 @@ export function getSupabaseAdminFromEnv(env: Env): SupabaseClient {
     return createTenantGuardedSupabaseClient(createSupabaseServiceClient(env));
 }
 
+/**
+ * Claim a single-use signed internal credential in the shared database.
+ *
+ * The RPC is atomic across gateway isolates. `null` means the claim service could
+ * not be reached or did not return its strict boolean contract; callers must fail
+ * closed in that case. The JTI is a random replay identifier, not the credential.
+ */
+export async function claimInternalAuthReplayJti(
+    env: Env,
+    input: { kind: string; jti: string; ttlSeconds?: number },
+): Promise<'claimed' | 'replayed' | 'unavailable'> {
+    try {
+        const { data, error } = await getSupabaseAdminFromEnv(env).rpc('consume_internal_auth_replay_jti', {
+            p_auth_kind: input.kind,
+            p_jti: input.jti,
+            p_ttl_seconds: input.ttlSeconds ?? 300,
+        });
+        if (error) return 'unavailable';
+        if (data === true) return 'claimed';
+        if (data === false) return 'replayed';
+        return 'unavailable';
+    } catch {
+        return 'unavailable';
+    }
+}
+
 export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {
     return getSupabaseAdminFromEnv(c.env);
 }
@@ -42,6 +68,41 @@ export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient 
  * Anything that does not meet all four uses `getSupabaseAdmin`.
  */
 export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return createSupabaseServiceClient(c.env);
+}
+
+/**
+ * The service-role client WITHOUT the tenant query guard, for a route that already verified a
+ * specific operator permission via `requirePermission`, or an inherited super-admin-only router
+ * gate, before this function is ever called (F2.6, D-ONE-IDENTITY's delegation of "how an operator reads across tenants" to
+ * technical design under ART-08/SEC-R9: no blanket service_role, audited, narrow).
+ *
+ * This is a DIFFERENT shape of exception from `getSupabaseAdminUnguarded` above, not a relaxation
+ * of it: that one bounds a read to a single row because the caller does not yet know which tenant
+ * it wants. An operator moderation QUEUE is the opposite case — the tenant is deliberately unknown
+ * because the operator's job is to see pending items from every site, and narrowing to one site_id
+ * would not be a safety fix, it would silently hide every other site's queue from review. The
+ * boundary here is not row count; it is that only a route holding a verified, table-appropriate
+ * operator scope may ever construct this client, and every call site is enumerated by
+ * `services/api-gateway/src/__tests__/operator-scoped-admin-client-contract.test.ts`, which also
+ * asserts the named permission scope is required on the exact route, or the reviewed router-level
+ * super-admin gate precedes it, before this function runs.
+ *
+ * Conditions every call site must meet:
+ *   1. mounted behind `requirePermission(<scope>)` for the specific route handler, or a reviewed
+ *      router-level ops + super-admin gate for routes with no narrower operator tier; the allowlist
+ *      test checks the exact route and its gate;
+ *   2. reads only — every state transition for the same resource goes through its own
+ *      `SECURITY DEFINER` RPC (e.g. `transition_channel_listing`), which takes an explicit
+ *      `p_site_id` and is where mutation-level tenant enforcement actually happens;
+ *   3. the query's own request schema caps page size (no unbounded `SELECT *` across a table with
+ *      no ceiling) — the allowlist test reads the validated schema's `limit` bound;
+ *   4. never used to decide authorization by itself — the permission or super-admin check already happened.
+ *
+ * Anything that does not meet all four uses `getSupabaseAdmin` (single tenant) or
+ * `getSupabaseAdminUnguarded` (single-row bootstrap lookup) instead.
+ */
+export function getSupabaseAdminForOperatorRead(c: Context<{ Bindings: Env }>): SupabaseClient {
     return createSupabaseServiceClient(c.env);
 }
 
@@ -174,9 +235,26 @@ export function dbFailureBody(message = DATABASE_ERROR_MESSAGE) {
     return failureBody('DB_ERROR', message);
 }
 
+// D03 permission equivalence (auth hardening follow-up, Section 13, 2026-09-28): the previous
+// substring check (`url.includes('localhost')`) matched ANYWHERE in the raw URL string, so a hostname
+// like "evil-localhost-lookalike.attacker.example" would false-positive as local -- a misleading
+// hostname containing a local-looking substring is exactly the case this must not be fooled by. Now
+// parses the URL and checks the ACTUAL hostname against an exact allowlist (localhost / 127.0.0.1 /
+// ::1) or a genuine `.localhost` subdomain suffix (the reserved local TLD, RFC 6761) -- a strict
+// refinement, never a weakening: every URL this previously called local is still local; the only
+// behavior change is no longer being fooled by a lookalike. A malformed URL fails closed (false),
+// never treated as local. This is the one canonical "is this genuinely local" helper in the
+// repository (used here and by middleware/auth.ts, lib/buyer-email-code.ts, routes/auth.ts,
+// middleware/staff-permission.ts) -- fixed in place rather than duplicated.
 export function isLocalSupabaseEnvironment(env: Env): boolean {
     const url = env.SUPABASE_URL || '';
-    return url.includes('localhost') || url.includes('127.0.0.1');
+    let hostname: string;
+    try {
+        hostname = new URL(url).hostname.toLowerCase();
+    } catch {
+        return false;
+    }
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname.endsWith('.localhost');
 }
 
 export function isMissingSchemaError(error: unknown): boolean {

@@ -47,7 +47,22 @@ test('app billing approval does not fabricate provider success references', () =
   assert.match(APP_STORE_ROUTE_SOURCE, /getRazorpayOrderNotes/);
   assert.match(APP_STORE_ROUTE_SOURCE, /hmacSha256Hex/);
   assert.match(APP_STORE_ROUTE_SOURCE, /status: 'approved'[\s\S]*provider_status: 'payment_required'/);
-  assert.match(APP_STORE_ROUTE_SOURCE, /status: 'active'[\s\S]*provider_status: 'verified'/);
+  // Activation is coupled to verification. A charge leaves `approved` only in the update that records
+  // provider_status 'verified', and only after the provider signature (timingSafeEqual) and the order's
+  // own link to THIS charge (getRazorpayOrderNotes, REFERENCE_MISMATCH) have both passed. The status
+  // written there is planAppBillingTrialWindow's -- 'active', or 'trialing' when the charge has trial
+  // days (proved in packages/billing-core/test/billing-core.test.ts) -- rather than a literal 'active',
+  // which is why the old `status: 'active' ... provider_status: 'verified'` pin stopped matching when
+  // trials arrived.
+  assert.match(
+    APP_STORE_ROUTE_SOURCE,
+    /APP_BILLING_PROVIDER_SIGNATURE_INVALID[\s\S]*getRazorpayOrderNotes\([\s\S]*APP_BILLING_PROVIDER_REFERENCE_MISMATCH[\s\S]*planAppBillingTrialWindow\([\s\S]*status: trialWindow\.status,[\s\S]*provider_status: 'verified'/,
+  );
+  assert.equal(
+    (APP_STORE_ROUTE_SOURCE.match(/provider_status: 'verified'/g) || []).length,
+    1,
+    "exactly one path can mark an app charge's provider status verified",
+  );
   assert.match(APP_STORE_ROUTE_SOURCE, /ledger_event: null/);
 });
 

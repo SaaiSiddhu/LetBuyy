@@ -1,0 +1,86 @@
+{
+  "runId": "f1e7ee364c62",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-2690-mv6qk54o-1050ab"
+  ],
+  "reaped": [
+    "letbuyy-exec-8427b55f5587-rest-1",
+    "letbuyy-exec-16177-mv2ptlgh-41ec31"
+  ],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 12,
+  "assertionsPassed": 11,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 120.2,
+  "suiteSeconds": 118.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-customer-profile.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-2690-mv6qk54o-1050ab",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 12,
+      "pass": 11,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 118.1,
+      "firstFailure": "not ok 11 - real Next Commerce login cookie completes a session and profile read through the rea",
+      "failures": [
+        "not ok 11 - real Next Commerce login cookie completes a session and profile read through the real Gateway worker"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_customer_profile_postgres",
+      "templateSeconds": 18.6,
+      "provisionSeconds": 1.1,
+      "rest": {
+        "container": "letbuyy-exec-f1e7ee364c62-rest-1",
+        "upstreamPort": 49473,
+        "proxyPort": 49474
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 2318,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

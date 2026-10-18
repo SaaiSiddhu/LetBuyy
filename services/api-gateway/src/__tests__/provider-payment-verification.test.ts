@@ -105,3 +105,12 @@ test('the signed payload is Razorpay\'s, and is built in exactly one place', () 
     // caller cannot present them transposed.
     assert.notEqual(razorpaySignaturePayload(ORDER, PAYMENT), razorpaySignaturePayload(PAYMENT, ORDER));
 });
+
+
+test('native subscription signatures use the same verifier and require the saved subscription reference',async()=>{
+ const reference='sub_SYNTHETIC',signature=await hmacSha256Hex(SECRET,`${PAYMENT}|${reference}`);
+ const input={providerOrderId:reference,providerPaymentId:PAYMENT,signature,storedProviderOrderId:reference,referenceKind:'subscription' as const};
+ assert.deepEqual(await verifyRazorpayPayment(SECRET,input),{ok:true});
+ assert.deepEqual(await verifyRazorpayPayment(SECRET,{...input,storedProviderOrderId:'sub_OTHER'}),{ok:false,reason:'reference_mismatch'});
+ assert.deepEqual(await verifyRazorpayPayment(SECRET,{...input,referenceKind:'order'}),{ok:false,reason:'invalid_signature'});
+});

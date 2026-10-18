@@ -18,15 +18,22 @@ const ONBOARDING = 'apps/platform/identity/src/app/onboarding/page.tsx';
 const STORES = 'services/api-gateway/src/routes/stores.ts';
 
 // ── Stream A: Experience Picker ───────────────────────────────────────────────
-test('A: the Experience Picker exists and renders experiences from the engine', () => {
+// S4-FIX/Defect 2 changed where the list comes from, not what the picker shows: the picker no longer
+// reads the Experience registry itself. The editor resolves the presets a theme actually carries
+// (settings_data.presets, the single source of which presets a theme has) with
+// resolveExperiencePresetItems and hands them in as a prop, so a theme is never offered a preset its
+// bundle does not define. The pins follow that: the picker renders ExperiencePresetItem entries from its
+// prop and must not go back to the registry.
+test('A: the Experience Picker exists and renders the theme\'s preset items from the engine\'s type', () => {
   assert.ok(existsSync(resolve(ROOT, PICKER)), 'ExperiencePicker.tsx must exist');
   const picker = read(PICKER);
-  assert.match(picker, /from '@letbuyy\/theme-engine'/);
-  assert.match(picker, /listExperiences\(\)/);
-  assert.match(picker, /exp\.name/);
-  assert.match(picker, /exp\.preview\.swatches/);
-  assert.match(picker, /exp\.industry/);
-  assert.match(picker, /onApply\(exp\.id\)/);
+  assert.match(picker, /import type \{ ExperiencePresetItem \} from '@letbuyy\/theme-engine'/);
+  assert.match(picker, /presets: ExperiencePresetItem\[\]/);
+  assert.doesNotMatch(picker, /listExperiences\(/, 'the picker must not read the Experience registry directly');
+  assert.match(picker, /preset\.name/);
+  assert.match(picker, /preset\.swatches/);
+  assert.match(picker, /preset\.industry/);
+  assert.match(picker, /onApply\(preset\.id\)/);
 });
 
 test('A: the picker speaks "Experience" — never Urban Kicks, never "Theme Preset"', () => {
@@ -41,18 +48,20 @@ test('B: the editor wires the picker behind an Experiences panel and an apply ha
   const editor = read(EDITOR);
   assert.match(editor, /type PanelMode = [^\n]*'experiences'/);
   assert.match(editor, /import ExperiencePicker from '@\/components\/theme-editor\/ExperiencePicker'/);
-  assert.match(editor, /buildExperienceSettingsOverlay/);
-  assert.match(editor, /getExperience/);
+  assert.match(editor, /resolveExperiencePresetItems\(presetsFromBaseConfig\(baseConfig\)\)/);
   assert.match(editor, /const applyExperience = useCallback/);
   assert.match(editor, /<ExperiencePicker/);
+  assert.match(editor, /presets=\{presetItems\}/);
   assert.match(editor, /onApply=\{applyExperience\}/);
 });
 
-test('B: applying an experience merges the token overlay into themeSettings (draft path)', () => {
+test('B: applying an experience merges the preset\'s own values into themeSettings (draft path)', () => {
   const editor = read(EDITOR);
   const fn = editor.slice(editor.indexOf('const applyExperience = useCallback'), editor.indexOf('const loadReleases'));
-  assert.match(fn, /buildExperienceSettingsOverlay\(experience\)/);
-  assert.match(fn, /themeSettings: \{ \.\.\.current\.themeSettings, \.\.\.overlay, experienceId \}/);
+  assert.match(fn, /presetItems\.find\(\(item\) => item\.id === presetId\)/);
+  assert.match(fn, /themeSettings: \{ \.\.\.current\.themeSettings, \.\.\.preset\.values, experienceId: preset\.id \}/);
+  // The values are read from the bundle preset, never recomputed from the registry (ExperiencePresetItem.values).
+  assert.doesNotMatch(fn, /buildExperienceSettingsOverlay|getExperience\(/);
 });
 
 test('B: the editor no longer defaults the theme name to Urban Kicks', () => {

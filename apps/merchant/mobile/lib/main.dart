@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:letbuyy_models/merchant_contracts.dart';
 import 'package:provider/provider.dart';
+
 import 'config/app_config.dart';
 import 'app/app.dart';
 import 'app/store_context.dart';
@@ -45,6 +46,7 @@ import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
 import 'services/subscription_service.dart';
+import 'services/loyalty_service.dart';
 import 'services/telemetry_service.dart';
 
 void main() {
@@ -54,15 +56,19 @@ void main() {
       WidgetsFlutterBinding.ensureInitialized();
 
       GoogleFonts.config.allowRuntimeFetching = true;
-      final cacheService = await CacheService.open();
+      late final StoreAuthService authService;
+      final cacheService = await CacheService.open(
+        actorIdProvider: () => authService.currentUser?.id,
+      );
 
       // Shared API gateway client injected into all services.
-      late final StoreAuthService authService;
       late final StoreContext storeContext;
       final apiClient = ApiClient(
         baseUrl: AppConfig.apiBaseUrl,
         tokenProvider: () => authService.accessToken,
         storeIdProvider: () => storeContext.selectedStoreId,
+        contextVersionProvider: () =>
+            (authService.currentUser?.id, storeContext.requestContextKey),
         unauthorizedHandler: (exception) =>
             authService.handleUnauthorized(exception),
         attachSessionCookie: true,
@@ -113,6 +119,9 @@ void main() {
         );
       });
       authService.authStateChanges.listen((state) {
+        // This listener survives named routes replacing AuthWrapper. Never
+        // reuse another account's store picker or private store snapshots.
+        unawaited(storeContext.bindActor(state.session?.user.id));
         if (state.event == AuthChangeEvent.signedIn ||
             state.event == AuthChangeEvent.initialSession ||
             state.event == AuthChangeEvent.tokenRefreshed) {
@@ -142,6 +151,8 @@ void main() {
           ),
         );
       });
+      final staffService = StaffService(api: apiClient);
+      await staffService.restorePendingInvitation();
       await authService.restoreSession();
       unawaited(
         telemetryService.track(
@@ -208,7 +219,11 @@ void main() {
               create: (_) => KycService(api: apiClient),
             ),
             ChangeNotifierProvider<TwoFactorService>(
-              create: (_) => TwoFactorService(api: apiClient),
+              create: (_) => TwoFactorService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
             ),
             ChangeNotifierProvider<InventoryService>(
               create: (_) => InventoryService(api: apiClient),
@@ -231,9 +246,7 @@ void main() {
             ChangeNotifierProvider<ShippingTaxService>(
               create: (_) => ShippingTaxService(api: apiClient),
             ),
-            ChangeNotifierProvider<StaffService>(
-              create: (_) => StaffService(api: apiClient),
-            ),
+            ChangeNotifierProvider<StaffService>.value(value: staffService),
             ChangeNotifierProvider<ReviewService>(
               create: (_) => ReviewService(api: apiClient),
             ),
@@ -263,8 +276,18 @@ void main() {
             ChangeNotifierProvider<ThemeService>(
               create: (_) => ThemeService(api: apiClient),
             ),
+            Provider<LoyaltyService>(
+              create: (_) => LoyaltyService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+                storeIdProvider: () => storeContext.selectedStoreId,
+              ),
+            ),
             Provider<SubscriptionService>(
-              create: (_) => SubscriptionService(api: apiClient),
+              create: (_) => SubscriptionService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+              ),
             ),
 
             // Storage

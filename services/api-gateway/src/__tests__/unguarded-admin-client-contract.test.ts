@@ -27,6 +27,14 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
 // unguarded client to a helper (internal-store-access does), so asserting boundedness inline would
 // be false for the delegating shape and would quietly pass for the wrong reason.
 const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; symbol: string } }> = {
+    'lib/return-scope.ts': {
+        why: 'globally unique return ID bootstrap without a known tenant: minimal id/site_id/order_id, one bounded row, then live ownership; supplied signed/selection hints remain on the guarded client',
+        boundedIn: { file: 'lib/return-scope.ts', symbol: 'resolveReturnScope' },
+    },
+    'lib/tenant-context.ts': {
+        why: 'id-only order bootstrap without a session/selection hint: globally unique order.id resolves only id/store_id, bounded to one row, then live ownership is verified; supplied hints use the guarded client after ownership verification',
+        boundedIn: { file: 'lib/tenant-context.ts', symbol: 'resolveTenantContextForOrder' },
+    },
     'lib/payment-route-support.ts': {
         why: 'cross-tenant payment-replay detection: a provider payment id is unique across the provider, and scoping it to one site would delete the cross-tenant protection',
         boundedIn: { file: 'lib/payment-route-support.ts', symbol: 'assertProviderPaymentNotReplayed' },
@@ -41,6 +49,43 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
     'lib/storefront-callback-site.ts': {
         why: 'callback host -> site bootstrap for buyer sign-in: the store is not known until the callback host resolves',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
+    },
+    'lib/customer-reset-store-by-host.ts': {
+        why: 'password-reset destination host -> site bootstrap: no tenant is known until the globally unique storefront host resolves, and the result is checked against the reset customer store before trust',
+        boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
+    },
+    // F2.6 (Phase 2): the operator moderation route's GET /:id and decide() actions look a listing up
+    // by its globally-unique id before its site is known -- the same bootstrap shape as the other
+    // three entries, just for a different resource.
+    'routes/operations/marketplace-listings.ts': {
+        why: 'operator listing-by-id lookup: a channel_listings.id is unique across every site, and the site is not known until the row returns',
+        boundedIn: { file: 'routes/operations/marketplace-listings.ts', symbol: 'loadChannelListingById' },
+    },
+    // Phase 2 / F2.5: PATCH and DELETE /employees/:id look an employees row up by its globally-unique
+    // id before its store_id -- and therefore any tenant scope predicate -- is known. Same bootstrap
+    // shape as the other entries. The result is re-verified via verifySiteOwnership before either
+    // caller trusts it, and the actual mutation is separately scoped with .eq('store_id', ...).
+    'routes/employee.ts': {
+        why: 'employee-by-id lookup: an employees.id is unique across every store, and the store is not known until the row returns',
+        boundedIn: { file: 'routes/employee.ts', symbol: 'verifyEmployeeOwnership' },
+    },
+    // Phase 2 / F2.5: GET /products/:id looks a product up by its globally-unique id before its
+    // store_id is known. Same bootstrap shape. The result is re-verified via verifyStoreOwnership
+    // or assertStaffPermission before the route trusts it for anything.
+    'routes/products.ts': {
+        why: 'product-by-id lookup: a products.id is unique across every store, and the store is not known until the row returns',
+        boundedIn: { file: 'routes/products.ts', symbol: 'loadProductByIdUnguarded' },
+    },
+    // D03 permission equivalence (auth hardening follow-up, Section 10, 2026-09-28): the real
+    // HTTP-to-database rehearsal must call ensureOwnerRole (owner-role-backfill.ts) with the genuinely
+    // unguarded client, exactly as production code must -- see that file's own "CLIENT CONTRACT" note
+    // for why site_roles' site_id-IS-NULL lookup cannot satisfy the tenant guard. This is the one
+    // caller not itself in routes/ or lib/, because it is the one caller proving the real, non-test
+    // construction path this allowlist exists to review. (P2-HERMETIC-GATEWAY-DB, 2026-09-29: the file moved to
+    // __tests__/owned-db/ with the gateway's other real-database suites; the entry follows it, unchanged in purpose.)
+    '__tests__/owned-db/real-http-shadow-rehearsal.postgres.test.ts': {
+        why: 'exercises the real ensureOwnerRole bootstrap path (global owner role lookup) exactly as production callers must, against a real Postgres the executable-suite runner owns for that suite',
+        boundedIn: { file: 'identity-foundation/owner-role-backfill.ts', symbol: 'findOrCreateOwnerRoleId' },
     },
 };
 
@@ -150,7 +195,12 @@ test('every read reachable from an allowlisted bypass is bounded to a single row
         queries.forEach((query, index) => {
             assert.match(
                 query,
-                /\.(limit\s*\(\s*1\s*\)|maybeSingle\s*\(\s*\)|single\s*\(\s*\))/,
+                // .limit(2), not just .limit(1)/.maybeSingle()/.single(): ensureOwnerRole's own job is
+                // to DETECT ambiguity (more than one global owner role sharing the slug) -- .limit(1)
+                // would silently defeat that check by making ">1 rows exist" indistinguishable from
+                // "exactly 1 exists". .limit(2) is the tightest bound that still lets the check see the
+                // difference while still capping the network read on this unguarded client.
+                /\.(limit\s*\(\s*1\s*\)|limit\s*\(\s*2\s*\)|maybeSingle\s*\(\s*\)|single\s*\(\s*\))/,
                 `${entry.boundedIn.file}:${entry.boundedIn.symbol} query #${index + 1} is unbounded while running on the unguarded client (reached from ${rel})`,
             );
         });
@@ -176,4 +226,16 @@ test('the unguarded client is genuinely unguarded and the default one is genuine
         /createTenantGuardedSupabaseClient\s*\(/,
         'the DEFAULT admin client must still apply the tenant guard',
     );
+});
+
+// The new order-by-id bootstrap is not an exemption for ordinary scoped work.
+test('order bootstrap uses a guarded owned hint and re-verifies every id-only result before authority',()=>{
+ const source=files.find(f=>f.rel==='lib/tenant-context.ts')!.body;
+ const body=functionBody(source,'resolveTenantContextForOrder');
+ assert.match(body,/hint \? getSupabaseAdmin\(c\) : getSupabaseAdminUnguarded\(c\)/);
+ assert.match(body,/query\.eq\('store_id', hint\)/);
+ assert.match(body,/\.eq\('id', orderId\)/);
+ assert.match(body,/\.select\('id, store_id'\)/);
+ assert.match(body,/resolveTenantContextForOwnedSite\(c, order\.store_id as string\)/);
+ assert.match(body,/if \(error\) throw/);
 });

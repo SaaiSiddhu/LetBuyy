@@ -14,7 +14,8 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, success } from '../../lib/supabase';
-import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { getBuyerSession } from '../../middleware/buyer-session';
+import { requireBuyerDataSession } from '../../middleware/buyer-data-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -46,7 +47,7 @@ export interface BuyerSupportRoutesDeps {
     /// PUBLIC messages only. The internal filter is the dependency's job so it cannot be skipped by a
     /// caller, and a source contract asserts the real query carries it.
     listPublicMessages: (c: AppContext, ticketId: string, limit: number) => Promise<{ data: BuyerTicketMessageRow[] | null; error: unknown }>;
-    openTicket: (c: AppContext, buyerAccountId: string, input: { subject: string; body: string; siteId: string | null }) => Promise<{ data: BuyerTicketRow | null; error: unknown }>;
+    openTicket: (c: AppContext, buyerAccountId: string, input: { subject: string; body: string; siteId: string | null }) => Promise<{ data: BuyerTicketRow | null; complaintCopy: BuyerTicketMessageRow | null; error: unknown }>;
     addRequesterMessage: (c: AppContext, ticketId: string, body: string) => Promise<{ data: BuyerTicketMessageRow | null; error: unknown }>;
 }
 
@@ -66,7 +67,7 @@ export function registerBuyerSupportRoutes(
     const { listTickets, getTicket, listPublicMessages, openTicket, addRequesterMessage } = deps;
 
     // GET /storefront/buyer/support/tickets
-    router.get('/buyer/support/tickets', requireBuyerSession, async (c) => {
+    router.get('/buyer/support/tickets', requireBuyerDataSession, async (c) => {
         const session = getBuyerSession(c);
         if (!session) return unauthorized(c);
         const requested = Number.parseInt(c.req.query('limit') || '', 10);
@@ -77,7 +78,7 @@ export function registerBuyerSupportRoutes(
     });
 
     // POST /storefront/buyer/support/tickets { subject, body, site_id? }
-    router.post('/buyer/support/tickets', requireBuyerSession, async (c) => {
+    router.post('/buyer/support/tickets', requireBuyerDataSession, async (c) => {
         const session = getBuyerSession(c);
         if (!session) return unauthorized(c);
 
@@ -101,14 +102,24 @@ export function registerBuyerSupportRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'site_id must be a UUID.' } }, 400);
         }
 
-        const { data, error } = await openTicket(c, session.buyerAccountId, { subject, body, siteId: rawSite || null });
+        const { data, complaintCopy, error } = await openTicket(c, session.buyerAccountId, { subject, body, siteId: rawSite || null });
         if (error) return c.json(dbFailureBody(), 500);
-        if (!data) return c.json(dbFailureBody(), 500);
-        return c.json(success(data), 201);
+        if (!data || !complaintCopy) return c.json(dbFailureBody(), 500);
+        // Keep existing ticket fields at the response root for callers, while returning an explicit
+        // server-confirmed copy of the complaint content actually recorded as the first public message.
+        return c.json(success({
+            ...data,
+            complaint_copy: {
+                subject: data.subject,
+                body: complaintCopy.body,
+                recorded_at: complaintCopy.created_at,
+            },
+            receipt_confirmed_at: complaintCopy.created_at,
+        }), 201);
     });
 
     // GET /storefront/buyer/support/tickets/:ticketId/messages — PUBLIC messages only.
-    router.get('/buyer/support/tickets/:ticketId/messages', requireBuyerSession, async (c) => {
+    router.get('/buyer/support/tickets/:ticketId/messages', requireBuyerDataSession, async (c) => {
         const session = getBuyerSession(c);
         if (!session) return unauthorized(c);
         const ticketId = ticketIdParam(c);
@@ -126,7 +137,7 @@ export function registerBuyerSupportRoutes(
     });
 
     // POST /storefront/buyer/support/tickets/:ticketId/messages { body }
-    router.post('/buyer/support/tickets/:ticketId/messages', requireBuyerSession, async (c) => {
+    router.post('/buyer/support/tickets/:ticketId/messages', requireBuyerDataSession, async (c) => {
         const session = getBuyerSession(c);
         if (!session) return unauthorized(c);
         const ticketId = ticketIdParam(c);

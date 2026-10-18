@@ -139,6 +139,21 @@ function call(
     );
 }
 
+async function withInternalReplayClaimStub<T>(run: () => Promise<T>): Promise<T> {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+        const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
+        assert.equal(url.pathname, '/rest/v1/rpc/consume_internal_auth_replay_jti', 'only the signed-auth replay claim is stubbed');
+        assert.equal(init?.method, 'POST');
+        return Response.json(true);
+    };
+    try {
+        return await run();
+    } finally {
+        globalThis.fetch = originalFetch;
+    }
+}
+
 const codeRequest = (over: Record<string, unknown> = {}) => ({
     client_id: 'letbuyy-storefront', redirect_uri: CALLBACK, code_challenge: CHALLENGE, code_challenge_method: 'S256', ...over,
 });
@@ -399,12 +414,13 @@ test('the realms do not mix: a platform buyer session is not a storefront sessio
 // ---------------------------------------------------------------------------------------------------
 
 test('identity-platform may check and redeem; the storefront may only read its session', async () => {
+    await withInternalReplayClaimStub(async () => {
     const secret = 'test-internal-secret';
     const router = new Hono<{ Bindings: Env }>();
-    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase() });
+    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false, requireValidTurnstile: async () => null });
     const app = new Hono<{ Bindings: Env }>();
     app.route('/storefront', router);
-    const env = { INTERNAL_API_SECRET: secret } as unknown as Env;
+    const env = { INTERNAL_API_SECRET: secret, SUPABASE_URL: 'https://identity-auth.fake.test', SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key' } as unknown as Env;
     const signedAs = async (name: string) => {
         const plan = await createLetbuyyInternalAppHeaders({ app: name, secret });
         assert.ok(plan.ok && plan.headers);
@@ -434,4 +450,5 @@ test('identity-platform may check and redeem; the storefront may only read its s
         'Invalid internal storefront signature',
         'identity-platform is not the storefront',
     );
+    });
 });

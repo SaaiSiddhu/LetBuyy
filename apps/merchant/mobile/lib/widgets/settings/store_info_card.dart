@@ -98,12 +98,15 @@ class StoreInfoCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 AccessibleTapRegion(
+                  key: const ValueKey('store-info-copy-url'),
                   label: 'Copy store URL $storeUrl',
                   hint: 'Copies the store URL to the clipboard',
                   onTap: copyStoreUrl,
                   excludeChildSemantics: true,
-                  child: GestureDetector(
+                  child: InkWell(
+                    excludeFromSemantics: true,
                     onTap: copyStoreUrl,
+                    borderRadius: BorderRadius.circular(4),
                     child: Text(
                       storeUrl,
                       style: TextStyle(

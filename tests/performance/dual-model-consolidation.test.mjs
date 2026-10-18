@@ -60,21 +60,43 @@ test('gateway readers hydrate orders and products from relational tables behind 
   assert.match(storefront, /hydrateStorefrontOrderItems/);
 });
 
+// F-ORDERDETAIL-1 (CAP-C51) widened the customer orders column list so the order-detail page stops
+// rendering a zero subtotal and an always-COD payment method; that list is pinned by
+// services/api-gateway/src/__tests__/customer-order-detail-fields.test.ts and is not this test's concern.
+// What THIS test owns is the flag contract: relational flag on -> the select must not read the JSONB
+// `items` column (items come from order_items via hydrateStorefrontOrderItems); flag off -> the same
+// columns plus `items`. So the two column lists are compared to each other, not to a literal.
+function routeBlock(source, marker) {
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `${marker} exists`);
+  const next = source.indexOf('router.get(', start + marker.length);
+  return source.slice(start, next === -1 ? undefined : next);
+}
+
 test('storefront product and order routes avoid JSONB reads when relational flags are on', () => {
   const storefront = readStorefrontRouteSource();
-  const productDetailBlock = storefront.slice(
-    storefront.indexOf("router.get('/:subdomain/products/:slug'"),
-    storefront.indexOf("// GET /storefront/:subdomain/coupons/validate"),
-  );
-  const customerOrdersBlock = storefront.slice(
-    storefront.indexOf("router.get('/customer/orders'"),
-    storefront.indexOf("// GET /storefront/:subdomain/orders/contact"),
-  );
+  const productDetailBlock = routeBlock(storefront, "router.get('/:subdomain/products/:slug'");
+  const customerOrdersBlock = routeBlock(storefront, "router.get('/customer/orders'");
 
   assert.doesNotMatch(productDetailBlock, /product_variants\(\*\)/);
   assert.match(productDetailBlock, /hydratePublicProductVariants/);
-  assert.match(customerOrdersBlock, /orderItemsRelationalReadsEnabled\(c\.env\) \? 'id, order_number, status, total, created_at' : 'id, order_number, status, total, created_at, items'/);
+
+  const select = /orderItemsRelationalReadsEnabled\(c\.env\)\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/.exec(customerOrdersBlock);
+  assert.ok(select, 'customer orders must choose its column list by orderItemsRelationalReadsEnabled(c.env)');
+  const columns = (list) => list.split(',').map((column) => column.trim());
+  const relational = columns(select[1]);
+  const legacy = columns(select[2]);
+  assert.equal(relational.includes('items'), false, 'relational reads must not select the JSONB items column');
+  assert.equal(legacy.includes('items'), true, 'the rollback path still reads the JSONB items column');
+  // The relational path swaps `items` for `store_id`, which the order_items hydration guard needs, and the
+  // handler drops it again before responding; nothing else differs between the two column lists.
+  assert.deepEqual(
+    [...relational].sort(),
+    [...legacy.filter((column) => column !== 'items'), 'store_id'].sort(),
+    'the two paths differ only by items (legacy) and store_id (relational, for the hydration guard)',
+  );
   assert.match(customerOrdersBlock, /hydrateStorefrontOrderItems/);
+  assert.match(customerOrdersBlock, /store_id: _storeId, \.\.\.rest/, 'store_id is selected for the hydration guard only and is not sent to the customer');
 });
 
 test('dual-model migrations are additive and keep rollback columns', () => {

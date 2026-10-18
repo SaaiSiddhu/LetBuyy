@@ -82,12 +82,15 @@ class _MobileHomeScreenState extends State<MobileHomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       
-      // 🚀 PERFORMANCE: Load from cache first for instant UI
+      // Marketplace approval can be revoked while this app is closed. A persisted feed has no
+      // current eligibility proof, so never publish cached listing cards as discoverable content.
+      // Start from the canonical feed; category taxonomy may still be hydrated independently.
       final productProvider = Provider.of<ProductProvider>(context, listen: false);
       final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
       
-      // Load from cache (instant) → then refresh from Firestore in background
-      productProvider.initializeFromCache();
+      // A force reload is required because this provider may already hold in-memory results after
+      // a tab switch. The API read is authoritative for the current marketplace approval state.
+      productProvider.loadProducts(forceReload: true);
       categoryProvider.initializeFromCache();
     });
   }

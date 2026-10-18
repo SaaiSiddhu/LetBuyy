@@ -31,12 +31,17 @@ export type ConsoleDataResponse<T> = {
 type ConsoleApiResult<T> = {
     data?: T;
     error?: string;
+    status?: number;
+    code?: string;
 };
 
 type ConsoleApiRequest = {
     query?: Record<string, QueryValue>;
     method?: HttpMethod;
     body?: unknown;
+    /** Server-only forwarding of the real cookie, never a typed actor/MFA flag. */
+    sessionToken?: string;
+    previousSessionToken?: string;
 };
 
 export function consoleApiBaseUrl(): string {
@@ -60,16 +65,27 @@ export async function fetchConsoleApi<T>(
     }
 
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    const request = 'query' in input || 'method' in input || 'body' in input
+    const request = 'query' in input || 'method' in input || 'body' in input || 'sessionToken' in input
         ? input as ConsoleApiRequest
         : { query: input as Record<string, QueryValue> };
+    let sessionToken = request.sessionToken;
+    if (sessionToken === undefined) {
+        // This module also exports formatting/types. Resolve Next's request-only
+        // API inside the server call, not while a shared export is imported.
+        const { cookies } = await import('next/headers');
+        const { CONSOLE_SESSION_COOKIE } = await import('./console-session');
+        sessionToken = (await cookies()).get(CONSOLE_SESSION_COOKIE)?.value;
+    }
     const api = createLetbuyyApiClient({
         baseUrl: consoleApiBaseUrl(),
         token,
         headers: {
             'X-Request-ID': `admin-web-${Date.now()}`,
+            ...(sessionToken ? { 'X-Platform-Console-Session': sessionToken } : {}),
+            ...(request.previousSessionToken ? { 'X-Platform-Console-Previous-Session': request.previousSessionToken } : {}),
         },
-        fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }),
+        fetch: (url, init) => fetch(url, { ...init, cache: 'no-store',
+            signal: init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000) }),
     });
 
     try {
@@ -82,7 +98,7 @@ export async function fetchConsoleApi<T>(
         return { data: payload };
     } catch (error) {
         if (error instanceof LetbuyyApiError) {
-            return { error: error.message || `Console API returned HTTP ${error.status}.` };
+            return { error: error.message || `Console API returned HTTP ${error.status}.`, status: error.status, code: error.code };
         }
 
         return {

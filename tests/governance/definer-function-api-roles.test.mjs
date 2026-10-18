@@ -20,39 +20,8 @@ const migrationsDir = join(repoRoot, 'database/supabase/migrations');
 const RATCHET_FROM_EXCLUSIVE = 256;
 
 const number = (name) => parseInt(name, 10);
-const stripSqlComments = (sql) => sql.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/--[^\n]*/g, ' ');
-
-// Names of functions created with SECURITY DEFINER. The header runs from CREATE to the body's opening
-// dollar quote, which is where SECURITY DEFINER has to appear.
-export function definerFunctions(sql) {
-    const source = stripSqlComments(sql);
-    const names = [];
-    const pattern = /CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+public\.([a-z0-9_]+)\s*\(([\s\S]*?)\bAS\s+\$[a-z_]*\$/gi;
-    let match;
-    while ((match = pattern.exec(source))) {
-        if (/\bSECURITY\s+DEFINER\b/i.test(match[0])) names.push(match[1]);
-    }
-    return [...new Set(names)];
-}
-
-// The roles a migration revokes EXECUTE (or ALL) from, for one function, across every REVOKE naming it.
-export function revokedRoles(sql, name) {
-    const source = stripSqlComments(sql);
-    const pattern = new RegExp(`REVOKE\\s+(?:ALL(?:\\s+PRIVILEGES)?|EXECUTE)\\s+ON\\s+FUNCTION\\s+public\\.${name}\\b[^;]*?\\bFROM\\s+([^;]+);`, 'gi');
-    const roles = new Set();
-    let match;
-    while ((match = pattern.exec(source))) {
-        for (const role of match[1].split(',')) roles.add(role.trim().toLowerCase());
-    }
-    return roles;
-}
-
-export function offenders(sql) {
-    return definerFunctions(sql).filter((name) => {
-        const roles = revokedRoles(sql, name);
-        return !['public', 'anon', 'authenticated'].every((role) => roles.has(role));
-    });
-}
+import { definerFunctions, revokedRoles, offenders, currentDefinerClosureOffenders } from '../../scripts/governance/definer-role-closure.mjs';
+export { definerFunctions, revokedRoles, offenders };
 
 test('the check sees definer functions, and 255 (which revokes by name) passes it', () => {
     const sql255 = readFileSync(join(migrationsDir, '255_buyer_verified_ownership_links.sql'), 'utf8');
@@ -74,13 +43,119 @@ test('a definer function closed only to PUBLIC is an offender', () => {
     assert.deepEqual(offenders(`${synthetic}\nREVOKE ALL ON FUNCTION public.mint_things(uuid) FROM anon, authenticated;`), []);
 });
 
-test('every migration after 256 closes its definer functions to PUBLIC, anon and authenticated by name', () => {
-    // Stated plainly: with the ratchet at 256 nothing follows it yet, so this passes vacuously today.
-    // The two tests above are what keep the check from being decoration.
-    const found = [];
-    for (const name of readdirSync(migrationsDir).filter((n) => n.endsWith('.sql'))) {
-        if (number(name) <= RATCHET_FROM_EXCLUSIVE) continue;
-        for (const fn of offenders(readFileSync(join(migrationsDir, name), 'utf8'))) found.push(`${name}: public.${fn}`);
-    }
-    assert.deepEqual(found, [], 'Add `REVOKE ALL ON FUNCTION public.<name>(<args>) FROM PUBLIC, anon, authenticated;` and grant only the backend roles that call it.');
+test('every current post-256 definer is closed by name after its latest definition', () => {
+    const migrations=readdirSync(migrationsDir).filter(n=>n.endsWith('.sql'))
+        .map(name=>({name,number:number(name),sql:readFileSync(join(migrationsDir,name),'utf8')}));
+    assert.deepEqual(currentDefinerClosureOffenders(migrations),[],
+        'A forward correction may close immutable history, but every current definer needs named closure after its latest definition; a later grant reopens the failure. Actual signatures/roles are also proved in the full-chain owned lane.');
+});
+
+const mint=`CREATE OR REPLACE FUNCTION public.mint_things(p_site uuid) RETURNS void
+ LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN NULL; END; $$;`;
+const close='REVOKE ALL ON FUNCTION public.mint_things(uuid) FROM PUBLIC, anon, authenticated;';
+const migration=(number,sql)=>({number,name:`${number}_synthetic.sql`,sql});
+
+test('ordered closure accepts a later forward repair without rewriting the original definition',()=>{
+    const original=migration(257,mint+' REVOKE ALL ON FUNCTION public.mint_things(uuid) FROM PUBLIC;');
+    assert.deepEqual(currentDefinerClosureOffenders([original]),['257_synthetic.sql: public.mint_things']);
+    assert.deepEqual(currentDefinerClosureOffenders([original,migration(258,close)]),[]);
+});
+
+test('a later replacement cannot borrow a closure that preceded its definition',()=>{
+    assert.deepEqual(currentDefinerClosureOffenders([migration(257,mint+close),migration(258,mint)]),
+        ['258_synthetic.sql: public.mint_things']);
+});
+
+test('direct or dynamic late grants reopen closure; backend-only grants do not',()=>{
+    const closed=migration(257,mint+close);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon;')]),
+        ['257_synthetic.sql: public.mint_things']);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,'GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO service_role;')]),[]);
+    const dynamic="DO $$ BEGIN EXECUTE format('GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO %I', v_role); END $$;";
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,dynamic)]),['257_synthetic.sql: public.mint_things']);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,dynamic),migration(259,close)]),[]);
+});
+
+test('a commented closure is not evidence and the original ratchet still starts at 256',()=>{
+    assert.deepEqual(currentDefinerClosureOffenders([migration(257,mint+' -- '+close)]),['257_synthetic.sql: public.mint_things']);
+    assert.deepEqual(currentDefinerClosureOffenders([migration(256,mint)]),[]);
+});
+
+test('grouped function privileges close every named function and a grouped late grant reopens each',()=>{
+    const second=mint.replace('mint_things','mint_other');
+    const grouped='REVOKE ALL ON FUNCTION public.mint_other(uuid),public.mint_things(uuid) FROM PUBLIC,anon,authenticated;';
+    const closed=migration(257,mint+second+grouped);
+    assert.deepEqual(offenders(closed.sql),[]);
+    assert.deepEqual(currentDefinerClosureOffenders([closed]),[]);
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,
+        'GRANT EXECUTE ON FUNCTION public.mint_other(uuid),public.mint_things(uuid) TO authenticated;')]),
+        ['257_synthetic.sql: public.mint_other','257_synthetic.sql: public.mint_things']);
+    assert.deepEqual(currentDefinerClosureOffenders([migration(257,mint+second+grouped.replace('public.mint_things(uuid)','public.unrelated(uuid)'))]),
+        ['257_synthetic.sql: public.mint_things']);
+});
+
+const loopSql=readFileSync(join(migrationsDir,'335_durable_loyalty_refund_recovery.sql'),'utf8');
+const loopBlock=loopSql.match(/DO \$acl\$[\s\S]*?END \$acl\$;/)[0];
+const loopResult=sql=>currentDefinerClosureOffenders([migration(335,sql)]);
+
+test('finite literal signature loops earn closure from executable structure, independent of labels and spacing',()=>{
+    assert.deepEqual(loopResult(loopSql),[]);
+    assert.deepEqual(loopResult(loopSql.replaceAll('$acl$','$renamed_acl$')),[]);
+    assert.deepEqual(loopResult(loopSql.replaceAll('||',' || ')),[]);
+});
+
+test('a finite closure must include the exact required signature and every ordinary API role',()=>{
+    const required="'public.restore_loyalty_on_refund(uuid,uuid,uuid,text)',";
+    const mutations=[
+        loopSql.replace(required,''),
+        loopSql.replace(required,"'public.unrelated(uuid,uuid,uuid,text)',"),
+        loopSql.replace(required,"'public.restore_loyalty_on_refund(uuid,uuid,uuid,uuid)',"),
+        loopSql.replace('FROM PUBLIC,anon,authenticated,app_tenant','FROM PUBLIC,authenticated,app_tenant'),
+        loopSql.replace('FROM PUBLIC,anon,authenticated,app_tenant','FROM PUBLIC,anon,app_tenant'),
+        loopSql.replace('FROM PUBLIC,anon,authenticated,app_tenant','FROM anon,authenticated,app_tenant'),
+    ];
+    for(const sql of mutations){assert.notEqual(sql,loopSql);assert.ok(loopResult(sql).some(n=>n.endsWith('public.restore_loyalty_on_refund')));}
+});
+
+test('conditional, reassigned, nonliteral or incomplete loops cannot supply closure',()=>{
+    const mutations=[
+        loopSql.replace("  EXECUTE 'REVOKE", "  IF false THEN EXECUTE 'REVOKE").replace("app_tenant';", "app_tenant'; END IF;"),
+        loopSql.replace(" LOOP\n  EXECUTE", " LOOP\n  s := 'public.unrelated(uuid)';\n  EXECUTE"),
+        loopSql.replace(/FOREACH s IN ARRAY ARRAY\[[\s\S]*?\] LOOP/,'FOREACH s IN ARRAY unknown_signatures LOOP'),
+        loopSql.replace("EXECUTE 'REVOKE ALL ON FUNCTION '||s||' FROM PUBLIC,anon,authenticated,app_tenant';", "PERFORM 'REVOKE ALL ON FUNCTION public.restore_loyalty_on_refund(uuid,uuid,uuid,text) FROM PUBLIC,anon,authenticated';"),
+        loopSql.replace("||s||' FROM", "||other_signature||' FROM"),
+    ];
+    for(const sql of mutations){assert.notEqual(sql,loopSql);assert.notDeepEqual(loopResult(sql),[]);}
+});
+
+test('loop closure is ordered after definitions, covers overloads and is invalidated by later dynamic grants',()=>{
+    const beforeDefinition=loopBlock+'\n'+loopSql.replace(loopBlock,'');
+    assert.notDeepEqual(loopResult(beforeDefinition),[]);
+    const closed=migration(257,mint+close);
+    const overload=mint.replace('p_site uuid','p_site text');
+    assert.deepEqual(currentDefinerClosureOffenders([migration(257,mint+overload+close)]),['257_synthetic.sql: public.mint_things']);
+    const loopGrant="DO $$ DECLARE s text; BEGIN FOREACH s IN ARRAY ARRAY['public.mint_things(uuid)'] LOOP EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO anon'; END LOOP; END $$;";
+    assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,loopGrant)]),[]);
+    const unbound="DO $$ DECLARE s text; BEGIN FOREACH s IN ARRAY unknown_signatures LOOP EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO service_role'; END LOOP; END $$;";
+    assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,unbound)]),[]);
+});
+
+test('strings, comments and an unrelated function cannot impersonate closure or an executable definition',()=>{
+    assert.deepEqual(definerFunctions(`SELECT '${mint.replaceAll("'","''")}';`),[]);
+    assert.notDeepEqual(loopResult(loopSql.replace(loopBlock,loopBlock.split('\n').map(line=>'-- '+line).join('\n'))),[]);
+    assert.deepEqual(currentDefinerClosureOffenders([migration(257,mint+"SELECT '"+close+"';")]),['257_synthetic.sql: public.mint_things']);
+    const falseBinding="DO $$ DECLARE s text; BEGIN PERFORM 's text := ''public.other(uuid)'';'; EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO service_role'; END $$;";
+    assert.notDeepEqual(currentDefinerClosureOffenders([migration(257,mint+close),migration(258,falseBinding)]),[]);
+});
+
+test('uncertain dynamic targets cannot borrow a literal binding after reassignment or a different loop',()=>{
+    const closed=migration(257,mint+close);
+    const dynamicBodies=[
+        "DECLARE s text := 'public.other(uuid)'; BEGIN FOREACH s IN ARRAY unknown_signatures LOOP EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO service_role'; END LOOP; END",
+        "DECLARE s text := 'public.other(uuid)'; v_other text; BEGIN SELECT 'x','public.mint_things(uuid)' INTO v_other,s; EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO service_role'; END",
+        "DECLARE s text := 'public.other(uuid)'; BEGIN s='public.mint_things(uuid)'; EXECUTE 'GRANT EXECUTE ON FUNCTION '||s||' TO service_role'; END",
+    ];
+    for(const body of dynamicBodies)assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,`DO $$${body}$$;`)]),[]);
+    const quoted=mint.replace('public.mint_things','public."Mint_things"');
+    assert.notDeepEqual(currentDefinerClosureOffenders([migration(257,quoted+close)]),[]);
 });

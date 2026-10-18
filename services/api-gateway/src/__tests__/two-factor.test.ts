@@ -7,6 +7,7 @@ import { generateTotpSecret, otpauthUri, verifyTotpCode } from '../lib/totp';
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const twoFactorSource = readFileSync(new URL('../routes/two-factor.ts', import.meta.url), 'utf8');
 const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
+const commandMigration = readFileSync(new URL('../../../../database/supabase/migrations/338_merchant_totp_authority.sql', import.meta.url), 'utf8');
 const migrationSource = readFileSync(new URL('../../../../database/supabase/migrations/121_mobile_merchant_2fa_factors.sql', import.meta.url), 'utf8');
 
 test('merchant 2FA route is mounted and mobile allowlisted', () => {
@@ -22,19 +23,21 @@ test('2FA route stores encrypted TOTP factors without platform-blocked leaks', (
     assert.match(twoFactorSource, /router\.post\('\/totp\/verify'/);
     assert.match(twoFactorSource, /router\.post\('\/disable'/);
     assert.match(twoFactorSource, /requireCustomUser\(c\)/);
-    assert.match(twoFactorSource, /\.from\('merchant_2fa_factors'\)[\s\S]*\.insert/);
-    assert.match(twoFactorSource, /\.from\('merchant_2fa_factors'\)[\s\S]*\.update/);
+    assert.match(twoFactorSource, /db\.rpc\('execute_merchant_totp_command_v1'/);
+    assert.doesNotMatch(twoFactorSource, /\.from\('merchant_2fa_factors'\)[\s\S]*\.(?:insert|update)\(/);
     assert.match(twoFactorSource, /encryptTextAesGcm/);
     assert.match(twoFactorSource, /decryptTextAesGcm/);
     assert.doesNotMatch(twoFactorSource, /S-023|backend contract|SKIP-NEEDS-BACKEND/);
 });
 
-test('2FA migration declares owner RLS and approved updated_at trigger', () => {
+test('2FA migrations preserve canonical storage and constrain factor mutations to the private command', () => {
     assert.match(migrationSource, /CREATE TABLE IF NOT EXISTS public\.merchant_2fa_factors/);
     assert.match(migrationSource, /custom_user_id uuid NOT NULL REFERENCES public\.users_custom\(id\)/);
     assert.match(migrationSource, /ALTER TABLE public\.merchant_2fa_factors ENABLE ROW LEVEL SECURITY/);
     assert.match(migrationSource, /CREATE POLICY merchant_2fa_factors_service_all ON public\.merchant_2fa_factors[\s\S]*FOR ALL TO service_role/);
     assert.match(migrationSource, /CREATE POLICY merchant_2fa_factors_owner_all ON public\.merchant_2fa_factors[\s\S]*FOR ALL TO authenticated/);
+    assert.match(commandMigration, /REVOKE ALL ON public\.merchant_2fa_factors FROM PUBLIC,anon,authenticated,app_tenant,service_role/);
+    assert.match(commandMigration, /ALTER TABLE public\.merchant_totp_commands_v1 FORCE ROW LEVEL SECURITY/);
     assert.match(migrationSource, /update_merchant_2fa_factors_updated_at[\s\S]*EXECUTE FUNCTION public\.update_updated_at\(\)/);
 });
 

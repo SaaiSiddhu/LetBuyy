@@ -89,7 +89,9 @@ class CartModel {
     final existingItemIndex = items.indexWhere(
       (cartItem) => 
         cartItem.productId == item.productId && 
-        cartItem.variant == item.variant, // ✅ Check variant too
+        ((cartItem.variantId != null || item.variantId != null)
+            ? cartItem.variantId == item.variantId
+            : cartItem.variant == item.variant),
     );
 
     List<CartItemModel> newItems;
@@ -157,12 +159,20 @@ class CartModel {
   CartModel subtractSnapshot(List<CartItemModel> snapshot) {
     var result = this;
     for (final snapshotItem in snapshot) {
-      final current = result.getItemByProductId(snapshotItem.productId, variant: snapshotItem.variant);
-      if (current == null) continue;
-      final remaining = current.quantity - snapshotItem.quantity;
-      result = remaining > 0
-          ? result.updateItemQuantity(snapshotItem.productId, remaining, variant: snapshotItem.variant)
-          : result.removeItem(snapshotItem.productId, variant: snapshotItem.variant);
+      final index = result.items.indexWhere((item) =>
+          item.productId == snapshotItem.productId &&
+          (snapshotItem.variantId != null
+              ? item.variantId == snapshotItem.variantId
+              : item.variantId == null && item.variant == snapshotItem.variant));
+      if (index < 0) continue;
+      final remaining = result.items[index].quantity - snapshotItem.quantity;
+      final nextItems = [...result.items];
+      if (remaining > 0) {
+        nextItems[index] = nextItems[index].copyWith(quantity: remaining);
+      } else {
+        nextItems.removeAt(index);
+      }
+      result = result.copyWith(items: nextItems, updatedAt: DateTime.now());
     }
     return result;
   }

@@ -13,6 +13,7 @@ import '../../app/store_context.dart';
 import '../../models/store_model.dart';
 import '../../services/store_auth_service.dart';
 import '../../theme/app_theme_colors.dart';
+import '../shared/accessible_tap_region.dart';
 
 // ─── Brand colors (match identity-platform globals.css) ───────────────────────
 const _kPrimary = Color(0xFF8B5CF6);
@@ -124,43 +125,51 @@ class _ProfileAvatarState extends State<_ProfileAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        _openAccountSheet();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.90 : 1.0,
-        duration: const Duration(milliseconds: 130),
-        curve: Curves.easeOut,
-        child: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: _kPrimary.withValues(alpha: 0.35),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+    return AccessibleTapRegion(
+      label: 'Account',
+      hint: 'Open account menu',
+      onTap: _openAccountSheet,
+      excludeChildSemantics: true,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: _openAccountSheet,
+        onHighlightChanged: (highlighted) {
+          if (_pressed != highlighted) {
+            setState(() => _pressed = highlighted);
+          }
+        },
+        customBorder: const CircleBorder(),
+        child: AnimatedScale(
+          scale: _pressed ? 0.90 : 1.0,
+          duration: const Duration(milliseconds: 130),
+          curve: Curves.easeOut,
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              _initials,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: _kPrimary.withValues(alpha: 0.35),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                _initials,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
           ),
@@ -227,77 +236,85 @@ class _StorePillState extends State<_StorePill> {
     final name  = store?.name ?? 'Select Store';
     final color = store != null ? _storeColor(name) : _kPrimary;
 
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        _openStorePicker();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 130),
-        curve: Curves.easeOut,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: widget.isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : Colors.black.withValues(alpha: 0.04),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
+    return AccessibleTapRegion(
+      label: store == null ? 'Select store' : 'Active store: $name',
+      hint: 'Choose active store',
+      onTap: _openStorePicker,
+      excludeChildSemantics: true,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: _openStorePicker,
+        onHighlightChanged: (highlighted) {
+          if (_pressed != highlighted) {
+            setState(() => _pressed = highlighted);
+          }
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedScale(
+          scale: _pressed ? 0.95 : 1.0,
+          duration: const Duration(milliseconds: 130),
+          curve: Curves.easeOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
               color: widget.isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : Colors.black.withValues(alpha: 0.08),
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.black.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: widget.isDark
+                    ? Colors.white.withValues(alpha: 0.10)
+                    : Colors.black.withValues(alpha: 0.08),
+              ),
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Store logo square
-              Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Center(
-                  child: Text(
-                    store != null ? _storeInitials(name) : '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.2,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Store logo square
+                Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Center(
+                    child: Text(
+                      store != null ? _storeInitials(name) : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.2,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              // Store name
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 120),
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: widget.colors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
+                const SizedBox(width: 8),
+                // Store name
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: widget.colors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 16,
-                color: widget.colors.textSecondary,
-              ),
-            ],
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 16,
+                  color: widget.colors.textSecondary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -328,39 +345,50 @@ class _NotificationBellState extends State<_NotificationBell> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        if (widget.onTap != null) {
-          widget.onTap!();
-        } else {
-          Navigator.pushNamed(context, AppRoutes.notifications);
-        }
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.88 : 1.0,
-        duration: const Duration(milliseconds: 130),
-        curve: Curves.easeOut,
-        child: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: widget.isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : Colors.black.withValues(alpha: 0.04),
-            shape: BoxShape.circle,
-            border: Border.all(
+    void openNotifications() {
+      if (widget.onTap != null) {
+        widget.onTap!();
+      } else {
+        Navigator.pushNamed(context, AppRoutes.notifications);
+      }
+    }
+
+    return AccessibleTapRegion(
+      label: 'Notifications',
+      hint: 'Open notifications',
+      onTap: openNotifications,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: openNotifications,
+        onHighlightChanged: (highlighted) {
+          if (_pressed != highlighted) {
+            setState(() => _pressed = highlighted);
+          }
+        },
+        customBorder: const CircleBorder(),
+        child: AnimatedScale(
+          scale: _pressed ? 0.88 : 1.0,
+          duration: const Duration(milliseconds: 130),
+          curve: Curves.easeOut,
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
               color: widget.isDark
-                  ? Colors.white.withValues(alpha: 0.10)
-                  : Colors.black.withValues(alpha: 0.08),
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.black.withValues(alpha: 0.04),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.isDark
+                    ? Colors.white.withValues(alpha: 0.10)
+                    : Colors.black.withValues(alpha: 0.08),
+              ),
             ),
-          ),
-          child: Icon(
-            Icons.notifications_outlined,
-            size: 19,
-            color: widget.colors.textSecondary,
+            child: Icon(
+              Icons.notifications_outlined,
+              size: 19,
+              color: widget.colors.textSecondary,
+            ),
           ),
         ),
       ),
@@ -694,95 +722,107 @@ class _StoreRowState extends State<_StoreRow> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: _pressed
-              ? (widget.isDark
-                  ? Colors.white.withValues(alpha: 0.07)
-                  : Colors.black.withValues(alpha: 0.04))
-              : (widget.isActive
-                  ? (widget.isDark
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.black.withValues(alpha: 0.03))
-                  : Colors.transparent),
-          borderRadius: BorderRadius.circular(14),
-          border: widget.isActive
-              ? Border.all(
-                  color: widget.isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.06),
-                )
-              : null,
-        ),
-        child: Row(
-          children: [
-            // Store logo
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: widget.storeColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  widget.initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Name + url
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.store.name,
-                    style: TextStyle(
-                      color: widget.colors.textPrimary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${widget.store.subdomain}.letbuyy.com',
-                    style: TextStyle(
-                      color: widget.colors.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (widget.isActive)
+    return AccessibleTapRegion(
+      label: widget.store.name,
+      hint: widget.isActive ? 'Current store' : 'Switch to ${widget.store.name}',
+      onTap: widget.onTap,
+      selected: widget.isActive,
+      excludeChildSemantics: true,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: widget.onTap,
+        onHighlightChanged: (highlighted) {
+          if (_pressed != highlighted) {
+            setState(() => _pressed = highlighted);
+          }
+        },
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: _pressed
+                ? (widget.isDark
+                    ? Colors.white.withValues(alpha: 0.07)
+                    : Colors.black.withValues(alpha: 0.04))
+                : (widget.isActive
+                    ? (widget.isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.03))
+                    : Colors.transparent),
+            borderRadius: BorderRadius.circular(14),
+            border: widget.isActive
+                ? Border.all(
+                    color: widget.isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06),
+                  )
+                : null,
+          ),
+          child: Row(
+            children: [
+              // Store logo
               Container(
-                width: 20,
-                height: 20,
-                decoration: const BoxDecoration(
-                  color: _kPrimary,
-                  shape: BoxShape.circle,
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: widget.storeColor,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  color: Colors.white,
-                  size: 13,
+                child: Center(
+                  child: Text(
+                    widget.initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
                 ),
               ),
-          ],
+              const SizedBox(width: 12),
+              // Name + url
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.store.name,
+                      style: TextStyle(
+                        color: widget.colors.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${widget.store.subdomain}.letbuyy.com',
+                      style: TextStyle(
+                        color: widget.colors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (widget.isActive)
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: const BoxDecoration(
+                    color: _kPrimary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 13,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -816,39 +856,50 @@ class _SheetActionState extends State<_SheetAction> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 130),
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        decoration: BoxDecoration(
-          color: _pressed
-              ? (widget.isDark
-                  ? Colors.white.withValues(alpha: 0.06)
-                  : Colors.black.withValues(alpha: 0.04))
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              widget.icon,
-              size: 22,
-              color: widget.colors.textPrimary,
-            ),
-            const SizedBox(width: 14),
-            Text(
-              widget.label,
-              style: TextStyle(
+    return AccessibleTapRegion(
+      label: widget.label,
+      hint: 'Open ${widget.label}',
+      onTap: widget.onTap,
+      excludeChildSemantics: true,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: widget.onTap,
+        onHighlightChanged: (highlighted) {
+          if (_pressed != highlighted) {
+            setState(() => _pressed = highlighted);
+          }
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 130),
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          decoration: BoxDecoration(
+            color: _pressed
+                ? (widget.isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.04))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                widget.icon,
+                size: 22,
                 color: widget.colors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
               ),
-            ),
-          ],
+              const SizedBox(width: 14),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  color: widget.colors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

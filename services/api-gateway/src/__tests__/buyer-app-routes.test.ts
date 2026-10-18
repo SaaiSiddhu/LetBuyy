@@ -193,7 +193,7 @@ test("every refusal the database makes is reported as a refusal, never as a link
 test('the production wiring mounts both routes behind the buyer session', async () => {
     const { privateKey, jwks } = await keys();
     const router = new Hono<{ Bindings: Env }>();
-    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase() });
+    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false, requireValidTurnstile: async () => null });
     const app = new Hono<{ Bindings: Env }>();
     installBuyerSessionState(app, {});
     app.route('/storefront', router);

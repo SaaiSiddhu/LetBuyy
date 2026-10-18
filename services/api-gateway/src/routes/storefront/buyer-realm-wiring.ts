@@ -34,21 +34,29 @@ import {
     type AuthorizationCodeRedemption,
 } from './buyer-authorization-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
-import { registerBuyerOrderRoutes, listBuyerOrdersFromDatabase } from './buyer-order-routes';
+import { registerBuyerOrderRoutes, listBuyerOrdersFromDatabase, loadBuyerOrderDetailFromDatabase } from './buyer-order-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
+import { registerBuyerPrivacyRoutes, type PrivacyRequestRow, type PrivacyRequestType } from './buyer-privacy-routes';
+import {registerBuyerPrivacyExportRoutes} from './buyer-privacy-export-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
+import { registerBuyerWishlistRoutes } from './buyer-wishlist-routes';
+import { registerBuyerReviewRoutes } from './buyer-review-routes';
+import { BuyerReviewExecutionAdapter } from '../../execution/buyer-review-execution.adapter';
 import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
 import { addBusinessDays, generateTicketRef } from '../operations/support';
 import { SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS } from '@letbuyy/shared-types';
-import type { AppContext } from './customer-engagement-routes';
+import type { AppContext, StorefrontCustomerEngagementDependencies } from './customer-engagement-routes';
 
-export interface BuyerRealmRoutesDeps {
+/** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
+const UNIQUE_VIOLATION = '23505';
+
+export interface BuyerRealmRoutesDeps extends Pick<StorefrontCustomerEngagementDependencies, 'hydrateStorefrontOrderItems' | 'orderItemsRelationalReadsEnabled' | 'requireValidTurnstile'> {
     normalizeEmail: (email: string) => string;
 }
 
@@ -146,11 +154,9 @@ export function registerBuyerRealmRoutes(
         },
     });
 
-    // D2 (SUSTAINED-J, migration 260). Raw admin-client calls, not RPCs — matching
-    // customer-address-routes.ts's own established, unRPC'd pattern for the same shape of table
-    // (application-layer ownership predicate on every query, no complex outcome/audit logic an RPC
-    // would centralize). Every query below carries .eq('buyer_account_id', ...); nothing here ever
-    // trusts an address id alone.
+    // D2: canonical own addresses. Migration 266 makes the ownership check,
+    // default switch and save atomic, serialized per buyer. Reads/deletes carry
+    // the same verified buyer predicate. Never trust an address id alone.
     registerBuyerAddressRoutes(router, {
         listAddresses: async (c, buyerAccountId) => getSupabaseAdmin(c)
             .from('buyer_addresses')
@@ -159,28 +165,14 @@ export function registerBuyerRealmRoutes(
             .order('is_default', { ascending: false })
             .order('created_at', { ascending: false }),
         createAddress: async (c, { buyerAccountId, address }) => {
-            const db = getSupabaseAdmin(c);
-            if (address.is_default) {
-                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
-            }
-            return db
-                .from('buyer_addresses')
-                .insert({ ...address, buyer_account_id: buyerAccountId })
-                .select('*')
-                .single();
+            return getSupabaseAdmin(c).rpc('mutate_buyer_address', {
+                p_buyer_account_id: buyerAccountId, p_address_id: null, p_address: address,
+            });
         },
         updateAddress: async (c, { buyerAccountId, addressId, address }) => {
-            const db = getSupabaseAdmin(c);
-            if (address.is_default) {
-                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
-            }
-            const { data, error } = await db
-                .from('buyer_addresses')
-                .update(address)
-                .eq('id', addressId)
-                .eq('buyer_account_id', buyerAccountId)
-                .select('*')
-                .maybeSingle();
+            const { data, error } = await getSupabaseAdmin(c).rpc('mutate_buyer_address', {
+                p_buyer_account_id: buyerAccountId, p_address_id: addressId, p_address: address,
+            });
             return { data: (data ?? null) as BuyerAddressRow | null, error, notFound: !error && !data };
         },
         deleteAddress: async (c, { buyerAccountId, addressId }) => {
@@ -338,6 +330,22 @@ export function registerBuyerRealmRoutes(
     // in both, never re-approximated by a test double.
     registerBuyerOrderRoutes(router, {
         listBuyerOrders: (c, buyerAccountId, input) => listBuyerOrdersFromDatabase(getSupabaseAdmin(c), buyerAccountId, input),
+        loadBuyerOrderDetail: async (c, buyerAccountId, siteId, orderId) => {
+            const result = await loadBuyerOrderDetailFromDatabase(getSupabaseAdmin(c), buyerAccountId, siteId, orderId, deps.orderItemsRelationalReadsEnabled(c.env));
+            if (result.error || !result.data) return result;
+            try {
+                const [hydrated] = await deps.hydrateStorefrontOrderItems(c, [result.data]);
+                if (!Array.isArray(hydrated?.items)) return { data: null, error: new Error('Order items are unavailable') };
+                const { store_id: _storeId, order_items: _rawItems, ...order } = hydrated;
+                // The common hydrator also serves internal readers. The buyer view
+                // gets its display fields, never arbitrary product snapshot data.
+                const fields = ['id','product_id','variant_id','name','title','sku','quantity',
+                    'price','unit_price','total','variant_title','image','image_url','variant'];
+                order.items = hydrated.items.map((item: Record<string, unknown>) =>
+                    Object.fromEntries(fields.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]])));
+                return { data: order, error: null };
+            } catch (error) { return { data: null, error }; }
+        },
     });
 
     // CAP-FB-APPUPDATE (D-9): the mobile release gate. Public and unauthenticated — it must answer
@@ -392,11 +400,13 @@ export function registerBuyerRealmRoutes(
                 .maybeSingle();
             if (account.error) return { data: null, error: account.error };
 
-            let balance = 0;
+            let balance: number | string = 0;
             if (account.data) {
                 const projected = await db.rpc('loyalty_balance', { p_loyalty_account_id: (account.data as { id: string }).id });
                 if (projected.error) return { data: null, error: projected.error };
-                balance = Number(projected.data ?? 0);
+                const projection = projected.data;
+                if (typeof projection === 'number' || typeof projection === 'string') balance = projection;
+                else if (projection !== null && projection !== undefined) return { data: null, error: new Error('Invalid loyalty balance projection') };
             }
             const row = program.data as unknown as Omit<LoyaltySummary, 'balance'>;
             return { data: { ...row, balance }, error: null };
@@ -421,6 +431,56 @@ export function registerBuyerRealmRoutes(
                 .limit(limit);
             return { data: (data || null) as LoyaltyEntryRow[] | null, error };
         },
+    });
+
+    // Storefront buyer wishlist access reuses the merchant's existing list only after the
+    // explicit, verified buyer_store_customers link. The signed session supplies both principals.
+    registerBuyerWishlistRoutes(router, {
+        resolveLinkedCustomer: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('buyer_store_customers')
+                .select('store_customer_id, verified_at, store_customers!inner(store_id,status,deleted_at)')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('site_id', siteId)
+                .maybeSingle();
+            if (error || !data) return { data: null, error };
+            const row = data as {
+                store_customer_id: string;
+                verified_at: string | null;
+                store_customers?: { store_id?: string; status?: string; deleted_at?: string | null } | null;
+            };
+            if (!row.verified_at || row.store_customers?.store_id !== siteId) return { data: null, error: null };
+            return {
+                data: {
+                    storeCustomerId: row.store_customer_id,
+                    active: row.store_customers.status === 'active' && row.store_customers.deleted_at == null,
+                },
+                error: null,
+            };
+        },
+        list: async (c, storeCustomerId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('customer_wishlists')
+                .select('product_id')
+                .eq('customer_id', storeCustomerId)
+                .eq('store_id', siteId);
+            return { data: error ? null : (data ?? []).map((row) => (row as { product_id: string }).product_id), error };
+        },
+        save: async (c, storeCustomerId, siteId, productId, variantId) => getSupabaseAdmin(c)
+            .from('customer_wishlists')
+            .upsert({ customer_id: storeCustomerId, store_id: siteId, product_id: productId, variant_id: variantId }, { onConflict: 'customer_id,product_id' }),
+        remove: async (c, storeCustomerId, siteId, productId) => getSupabaseAdmin(c)
+            .from('customer_wishlists')
+            .delete()
+            .eq('customer_id', storeCustomerId)
+            .eq('store_id', siteId)
+            .eq('product_id', productId),
+    });
+
+    // One canonical transaction checks current ownership and commits content plus private authorship.
+    registerBuyerReviewRoutes(router, {
+        requireValidTurnstile: deps.requireValidTurnstile,
+        createReview: (c, input) => new BuyerReviewExecutionAdapter(c).create(input),
     });
 
     registerBuyerSupportRoutes(router, {
@@ -468,31 +528,19 @@ export function registerBuyerRealmRoutes(
         openTicket: async (c, buyerAccountId, input) => {
             const db = getSupabaseAdmin(c);
             const now = new Date();
-            const inserted = await db
-                .from('support_tickets')
-                .insert({
-                    ticket_ref: generateTicketRef(now),
-                    first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
-                    resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
-                    site_id: input.siteId,
-                    requester_type: 'customer',
-                    requester_user_id: buyerAccountId,
-                    subject: input.subject,
-                    channel: 'chat',
-                    status: 'open',
-                    last_customer_message_at: now.toISOString(),
-                })
-                .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
-                .maybeSingle();
-            if (inserted.error || !inserted.data) return { data: null, error: inserted.error };
-            const ticket = inserted.data as unknown as BuyerTicketRow;
-            const message = await db
-                .from('ticket_messages')
-                .insert({ ticket_id: ticket.id, author_type: 'requester', author_id: buyerAccountId, visibility: 'public', body: input.body })
-                .select('id')
-                .maybeSingle();
-            if (message.error) return { data: null, error: message.error };
-            return { data: ticket, error: null };
+            const { data, error } = await db.rpc('open_buyer_support_ticket_with_complaint', {
+                p_ticket_ref: generateTicketRef(now),
+                p_first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                p_resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
+                p_site_id: input.siteId,
+                p_requester_user_id: buyerAccountId,
+                p_subject: input.subject,
+                p_body: input.body,
+            });
+            if (error || !data || typeof data !== 'object') return { data: null, complaintCopy: null, error };
+            const result = data as { ticket?: BuyerTicketRow; message?: BuyerTicketMessageRow };
+            if (!result.ticket || !result.message) return { data: null, complaintCopy: null, error: new Error('Atomic buyer support intake returned an incomplete result') };
+            return { data: result.ticket, complaintCopy: result.message, error: null };
         },
         addRequesterMessage: async (c, ticketId, body) => {
             const { data, error } = await getSupabaseAdmin(c)
@@ -503,6 +551,100 @@ export function registerBuyerRealmRoutes(
             return { data: (data || null) as BuyerTicketMessageRow | null, error };
         },
     });
+
+    const PRIVACY_REQUEST_COLUMNS = 'id, ticket_ref, status, metadata, created_at, updated_at';
+
+    registerBuyerPrivacyRoutes(router, {
+        findOpenRequest: async (c, buyerAccountId, type) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .eq('topic', 'privacy')
+                .eq('metadata->>privacy_request_type', type)
+                .not('status', 'in', '(resolved,closed)')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+            return { data: (data || null) as PrivacyRequestRow | null, error };
+        },
+        // The database, not this check-then-insert, is what makes concurrent identical requests
+        // safe: migration 262's partial unique index on (requester_user_id,
+        // metadata->>'privacy_request_type') WHERE topic='privacy' AND status NOT IN
+        // (resolved,closed) makes a second concurrent insert for the same (buyer, type) fail with
+        // SQLSTATE 23505. That is caught here, specifically -- not "any error" -- and resolved by
+        // re-reading the row the other request created, exactly the pattern contact-public.ts
+        // already uses for its own idempotency (client_token unique violation -> re-query).
+        createRequest: async (c, buyerAccountId, type, notes) => {
+            const db = getSupabaseAdmin(c);
+            const now = new Date();
+            const subject = type === 'erasure' ? 'Account deletion request' : 'Data access request';
+            const inserted = await db
+                .from('support_tickets')
+                .insert({
+                    ticket_ref: generateTicketRef(now),
+                    first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                    resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
+                    site_id: null,
+                    requester_type: 'customer',
+                    requester_user_id: buyerAccountId,
+                    subject,
+                    channel: 'api',
+                    topic: 'privacy',
+                    priority: 'normal',
+                    status: 'open',
+                    metadata: { privacy_request_type: type },
+                })
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .maybeSingle();
+
+            if (inserted.error || !inserted.data) {
+                const sqlState = (inserted.error as { code?: string } | null)?.code;
+                if (sqlState === UNIQUE_VIOLATION) {
+                    const { data: existing, error: reReadError } = await db
+                        .from('support_tickets')
+                        .select(PRIVACY_REQUEST_COLUMNS)
+                        .eq('requester_user_id', buyerAccountId)
+                        .eq('requester_type', 'customer')
+                        .eq('topic', 'privacy')
+                        .eq('metadata->>privacy_request_type', type)
+                        .not('status', 'in', '(resolved,closed)')
+                        .is('deleted_at', null)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (reReadError || !existing) return { data: null, error: reReadError ?? inserted.error, created: false };
+                    return { data: existing as unknown as PrivacyRequestRow, error: null, created: false };
+                }
+                return { data: null, error: inserted.error, created: false };
+            }
+
+            const request = inserted.data as unknown as PrivacyRequestRow;
+            if (notes) {
+                const message = await db
+                    .from('ticket_messages')
+                    .insert({ ticket_id: request.id, author_type: 'requester', visibility: 'public', body: notes });
+                if (message.error) return { data: null, error: message.error, created: false };
+            }
+            return { data: request, error: null, created: true };
+        },
+        listRequests: async (c, buyerAccountId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .eq('topic', 'privacy')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            return { data: (data || null) as PrivacyRequestRow[] | null, error };
+        },
+    });
+
+    registerBuyerPrivacyExportRoutes(router);
 
     registerPersonalizationRoutes(router, {
         // Viewing again UPDATES the timestamp: 230's PK is (buyer, product), so the history holds one

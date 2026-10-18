@@ -18,7 +18,8 @@ function repositorySource(path: string): string {
 test('founding allocation is hooked at the single activation chokepoint, non-fatal + idempotent', () => {
     const adapter = source('execution/subscription-execution.adapter.ts');
     assert.match(adapter, /allocate_founding_merchant/);
-    assert.match(adapter, /if \(input\.amountPaid > 0\)/);     // gated on a real payment
+    assert.match(adapter, /activate_merchant_subscription_v1/);
+    assert.match(adapter, /row\.status\s*===\s*'active'\s*&&\s*Number\(row\.amount_paid\s*\|\|\s*0\)\s*>\s*0/); // allocation reads the committed paid receipt
     assert.match(adapter, /try \{[\s\S]*allocate_founding_merchant[\s\S]*\} catch/); // non-fatal
     assert.match(adapter, /founding,/);                          // returned to callers
 });
@@ -56,12 +57,16 @@ test('PLAN_NOT_PURCHASABLE guard + founding price lock applied at every charge s
     const checkout = source('lib/subscription-checkout.ts');
     const payments = source('routes/payments.ts');
     const billing = source('routes/billing.ts');
-    for (const f of [checkout, payments, billing]) {
+    for (const f of [checkout, billing]) {
         assert.match(f, /PLAN_NOT_PURCHASABLE/);
         assert.match(f, /resolveFoundingCheckoutLock/);
     }
     assert.match(checkout, /applyFoundingLockToPlan/);
-    assert.match(payments, /resolveMerchantPricing/);
+    // Verify consumes the original founding quote; catalog/offer movement cannot reprice it.
+    assert.match(payments, /readSubscriptionCheckoutSource/);
+    assert.match(checkout, /mode:checkout.mode,plan:effectivePlan,amount_minor:orderSpec.amount/);
+    const verification=payments.slice(payments.indexOf("router.post('/subscription/verify'"));
+    assert.doesNotMatch(verification, /resolveMerchantPricing|resolveFoundingCheckoutLock/);
     assert.match(billing, /applyFoundingLockToPlan/);
 });
 

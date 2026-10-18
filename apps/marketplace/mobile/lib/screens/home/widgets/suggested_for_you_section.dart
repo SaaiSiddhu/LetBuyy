@@ -56,7 +56,9 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                       gradient: LinearGradient(
                         colors: [
                           isDark ? AppColors.primaryLight : AppColors.primary,
-                          isDark ? AppColors.primaryLight.withValues(alpha: 0.5) : AppColors.primary.withValues(alpha: 0.5),
+                          isDark
+                              ? AppColors.primaryLight.withValues(alpha: 0.5)
+                              : AppColors.primary.withValues(alpha: 0.5),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -84,14 +86,18 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.primaryLight : AppColors.primary,
+                        color: isDark
+                            ? AppColors.primaryLight
+                            : AppColors.primary,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_rounded,
                       size: 16,
-                      color: isDark ? AppColors.primaryLight : AppColors.primary,
+                      color: isDark
+                          ? AppColors.primaryLight
+                          : AppColors.primary,
                     ),
                   ],
                 ),
@@ -120,25 +126,25 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
   Widget _buildPopularProducts(bool isDark, BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
-        var products = productProvider.products
-            .where((p) => p.isActive && p.rating > 0)
-            .toList()
-          ..sort((a, b) => b.rating.compareTo(a.rating));
-        
+        var products =
+            productProvider.products
+                .where((p) => p.isActive && p.rating > 0)
+                .toList()
+              ..sort((a, b) => b.rating.compareTo(a.rating));
+
         if (products.isEmpty) {
-          products = productProvider.products
-              .where((p) => p.isActive && p.reviewCount > 0)
-              .toList()
-            ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+          products =
+              productProvider.products
+                  .where((p) => p.isActive && p.reviewCount > 0)
+                  .toList()
+                ..sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
         }
-        
+
         if (products.isEmpty) {
-          products = productProvider.products
-              .where((p) => p.isActive)
-              .toList()
+          products = productProvider.products.where((p) => p.isActive).toList()
             ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
         }
-        
+
         products = products.take(10).toList();
 
         if (products.isEmpty) {
@@ -160,15 +166,19 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
     );
   }
 
-  Widget _buildSuggestedCard(ProductModel product, bool isDark, BuildContext context) {
+  Widget _buildSuggestedCard(
+    ProductModel product,
+    bool isDark,
+    BuildContext context,
+  ) {
     return FutureBuilder<DealModel?>(
       future: _getDealForProduct(product.id),
       builder: (context, dealSnapshot) {
         final deal = dealSnapshot.data;
         final hasDeal = deal != null && deal.isActive;
-        
+
         // Deal-specific colors
-        final dealBorderColor = hasDeal 
+        final dealBorderColor = hasDeal
             ? (isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA))
             : (isDark ? Colors.grey[800]! : Colors.grey[200]!);
         final dealBgColor = hasDeal
@@ -196,7 +206,7 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: hasDeal 
+                  color: hasDeal
                       ? AppColors.error.withValues(alpha: isDark ? 0.2 : 0.1)
                       : Colors.black.withValues(alpha: isDark ? 0.2 : 0.08),
                   blurRadius: 10,
@@ -212,9 +222,13 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                   child: Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
                         child: CachedNetworkImage(
-                          imageUrl: product.images.isNotEmpty ? product.images.first : '',
+                          imageUrl: product.images.isNotEmpty
+                              ? product.images.first
+                              : '',
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
@@ -227,19 +241,27 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                           ),
                         ),
                       ),
-                      
+
                       // 🔥 DEAL Badge
                       if (hasDeal)
                         Positioned(
                           top: 8,
                           left: 0,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [AppColors.error, const Color(0xFFDC2626)],
+                                colors: [
+                                  AppColors.error,
+                                  const Color(0xFFDC2626),
+                                ],
                               ),
-                              borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+                              borderRadius: const BorderRadius.horizontal(
+                                right: Radius.circular(6),
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: AppColors.error.withValues(alpha: 0.4),
@@ -251,7 +273,10 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('🔥', style: TextStyle(fontSize: 10)),
+                                const Text(
+                                  '🔥',
+                                  style: TextStyle(fontSize: 10),
+                                ),
                                 const SizedBox(width: 3),
                                 Text(
                                   deal.discountLabel,
@@ -265,7 +290,7 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                             ),
                           ),
                         ),
-                      
+
                       // Wishlist Heart
                       Positioned(
                         top: 8,
@@ -299,7 +324,10 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.success,
                                 borderRadius: BorderRadius.circular(4),
@@ -316,7 +344,11 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                                     ),
                                   ),
                                   const SizedBox(width: 2),
-                                  const Icon(Icons.star, size: 10, color: Colors.white),
+                                  const Icon(
+                                    Icons.star,
+                                    size: 10,
+                                    color: Colors.white,
+                                  ),
                                 ],
                               ),
                             ),
@@ -342,13 +374,21 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                       // Price Row - Show deal price if active
                       Row(
                         children: [
-                          if (hasDeal || (product.discount > 0 && product.originalPrice != null)) ...[
-                            Text(
-                              '₹${(hasDeal ? deal.originalPrice : product.originalPrice!).toStringAsFixed(0)}',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: isDark ? Colors.grey[500] : Colors.grey[600],
-                                decoration: TextDecoration.lineThrough,
+                          if (hasDeal ||
+                              product.hasDisplayableReferencePrice) ...[
+                            Flexible(
+                              child: Text(
+                                hasDeal
+                                    ? '₹${deal.originalPrice.toStringAsFixed(0)}'
+                                    : '${product.hasPriorThirtyDayLow ? '30d low' : 'M.R.P.'} ₹${product.originalPrice!.toStringAsFixed(0)}',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: isDark
+                                      ? Colors.grey[500]
+                                      : Colors.grey[600],
+                                  decoration: TextDecoration.lineThrough,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -358,7 +398,11 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: hasDeal ? AppColors.error : (isDark ? Colors.white : AppColors.textPrimary),
+                              color: hasDeal
+                                  ? AppColors.error
+                                  : (isDark
+                                        ? Colors.white
+                                        : AppColors.textPrimary),
                             ),
                           ),
                         ],
@@ -369,16 +413,25 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.error.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                              border: Border.all(
+                                color: AppColors.error.withValues(alpha: 0.3),
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.timer_rounded, size: 10, color: AppColors.error),
+                                Icon(
+                                  Icons.timer_rounded,
+                                  size: 10,
+                                  color: AppColors.error,
+                                ),
                                 const SizedBox(width: 2),
                                 Text(
                                   _formatDealTime(deal.timeRemaining),
@@ -392,7 +445,8 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
                             ),
                           ),
                         )
-                      else if (product.discount > 0)
+                      else if (product.discount > 0 &&
+                          product.marketplaceListingId == null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(

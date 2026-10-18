@@ -1,0 +1,83 @@
+{
+  "runId": "de849b9562e6",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-79626-mv231fl9-e4bbd9"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 12,
+  "assertionsPassed": 11,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 161.3,
+  "suiteSeconds": 158.4,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-customer-profile.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-79626-mv231fl9-e4bbd9",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 12,
+      "pass": 11,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 158.4,
+      "firstFailure": "not ok 11 - real Next Commerce login cookie completes a session and profile read through the rea",
+      "failures": [
+        "not ok 11 - real Next Commerce login cookie completes a session and profile read through the real Gateway worker"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_customer_profile_postgres",
+      "templateSeconds": 17.4,
+      "provisionSeconds": 1.6,
+      "rest": {
+        "container": "letbuyy-exec-de849b9562e6-rest-1",
+        "upstreamPort": 64427,
+        "proxyPort": 64428
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 4135,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

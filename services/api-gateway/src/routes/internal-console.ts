@@ -12,11 +12,20 @@ import type { Env } from '../index';
 import { sha256Hex, timingSafeEqualText } from '../lib/crypto';
 import { ValidationError } from '../lib/errors';
 import { isInternalApiSecretRequest } from '../lib/internal-secret';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
-import { checkSegregationOfDuty, validateSensitiveReason } from '../middleware/rbac';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
+import { validateSensitiveReason } from '../middleware/rbac';
+import { consoleApprovalRpc, consolePermission, credentialArguments, requireConsolePermission } from '../identity-foundation/console-approval-repository';
 import internalConsoleComplianceRouter from './internal-console/compliance';
+import { readConsoleOverview } from '../execution/console-overview-execution.adapter';
 import internalConsoleDevelopersRouter from './internal-console/developers';
+import trustSafetyRouter from './operations/trust-safety';
+import { bindConsoleOperatorIdentity } from '../identity-foundation/console-session-repository';
 import internalConsoleMoneyRouter from './internal-console/money-reconciliation';
+import internalConsoleSessionsRouter from './internal-console/sessions';
+import internalConsoleApprovalsRouter from './internal-console/approvals';
+import platformJobsRouter from './operations/platform-jobs';
+import consoleOperationsOncallRouter from './internal-console/operations-oncall';
+import consoleRuntimeCommandHistoryRouter from './internal-console/operations-runtime-commands';
 import {
     dayBounds,
     daysAgo,
@@ -33,7 +42,6 @@ import {
     type MerchantSiteRow,
     type MetricRollupRow,
     type MrrRollupRow,
-    type RevenueSubscriptionRow,
 } from './internal-console/shapes';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -77,8 +85,10 @@ const MerchantImpersonationStartSchema = MerchantActorSchema.extend({
     ttl_minutes: z.coerce.number().int().min(5).max(60).default(30),
 });
 const MerchantModerationSchema = MerchantActorSchema.extend({
+    actor_id: z.string().uuid().optional(), // Authority always comes from the bound session.
     action: z.enum(['suspend', 'restore']),
-    secondary_approver_id: z.string().uuid(),
+    secondary_approver_id: z.string().uuid().optional(), // Legacy input is never consent.
+    approval_id: z.string().uuid().optional(),
 });
 const ExecutiveAnalyticsQuerySchema = z.object({
     limit: z.coerce.number().int().min(1).max(90).default(13),
@@ -116,9 +126,15 @@ router.use('*', async (c, next) => {
 
     await next();
 });
+router.use('/trust-safety',bindConsoleOperatorIdentity);
+router.use('/trust-safety/*',bindConsoleOperatorIdentity);
+router.route('/trust-safety',trustSafetyRouter);
 router.route('/developers', internalConsoleDevelopersRouter);
 router.route('/compliance', internalConsoleComplianceRouter);
 router.route('/money', internalConsoleMoneyRouter);
+router.route('/platform-jobs', platformJobsRouter);
+router.route('/operations', consoleOperationsOncallRouter);
+router.route('/operations', consoleRuntimeCommandHistoryRouter);
 function cleanOptional(value: string | undefined): string | undefined {
     const trimmed = value?.trim();
     return trimmed ? trimmed : undefined;
@@ -161,28 +177,6 @@ function dbError(message: string) {
             code: 'DB_ERROR',
             message,
         },
-    };
-}
-function emptyConsoleSummary() {
-    return {
-        total_users: 0,
-        total_stores: 0,
-        active_stores: 0,
-        total_subscriptions: 0,
-        active_subscriptions: 0,
-        total_employees: 0,
-        total_audit_logs: 0,
-        monthly_revenue_paise: 0,
-    };
-}
-function emptyConsoleAnalytics() {
-    return {
-        period_days: 30,
-        new_signups: 0,
-        stores_created: 0,
-        subscriptions_created: 0,
-        audit_events: 0,
-        signup_to_store_conversion_percent: 0,
     };
 }
 function rollupFreshness(computedAt: string | null | undefined, hasRows: boolean) {
@@ -343,77 +337,13 @@ export async function generateImpersonationToken(): Promise<{ token: string; tok
         token_hash: await sha256Hex(token),
     };
 }
-router.get('/summary', async (c) => {
-    const db = getSupabaseAdmin(c);
+router.route('/sessions', internalConsoleSessionsRouter);
+router.route('/approvals', internalConsoleApprovalsRouter);
+// The former unsigned split consumption path cannot establish Identity authority.
+router.post('/magic-link/consume', c => c.json({error:{code:'IDENTITY_EXCHANGE_REQUIRED',message:'Use the canonical Identity operator exchange.'}},410));
 
-    const [users, stores, activeStores, subscriptions, activeSubscriptions, employees, auditLogs, revenueRows] = await Promise.all([
-        db.from('users_custom').select('id', { count: 'exact', head: true }),
-        db.from('sites').select('id', { count: 'exact', head: true }),
-        db.from('sites').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-        db.from('subscriptions').select('id', { count: 'exact', head: true }),
-        db.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-        // The platform's own staff, not every store's (APPID-P5b).
-        db.from('employees').select('id', { count: 'exact', head: true }).filter('store_id', 'is', null).is('deleted_at', null),
-        db.from('audit_logs').select('id', { count: 'exact', head: true }),
-        db.from('subscriptions').select('amount_paid').eq('status', 'active'),
-    ]);
-
-    for (const result of [users, stores, activeStores, subscriptions, activeSubscriptions, employees, auditLogs, revenueRows]) {
-        if (result.error) {
-            if (shouldReturnEmptyForMissingLocalSchema(c.env, result.error)) {
-                return c.json(success(emptyConsoleSummary()));
-            }
-            return c.json(dbError(result.error.message), 500);
-        }
-    }
-
-    const revenuePaise = ((revenueRows.data || []) as RevenueSubscriptionRow[]).reduce((total, row) => (
-        total + Number(row.amount_paid || 0)
-    ), 0);
-
-    return c.json(success({
-        total_users: users.count || 0,
-        total_stores: stores.count || 0,
-        active_stores: activeStores.count || 0,
-        total_subscriptions: subscriptions.count || 0,
-        active_subscriptions: activeSubscriptions.count || 0,
-        total_employees: employees.count || 0,
-        total_audit_logs: auditLogs.count || 0,
-        monthly_revenue_paise: revenuePaise,
-    }));
-});
-router.get('/analytics', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const since = daysAgo(30);
-
-    const [users, stores, subscriptions, auditLogs] = await Promise.all([
-        db.from('users_custom').select('id', { count: 'exact', head: true }).gte('created_at', since),
-        db.from('sites').select('id', { count: 'exact', head: true }).gte('created_at', since),
-        db.from('subscriptions').select('id', { count: 'exact', head: true }).gte('created_at', since),
-        db.from('audit_logs').select('id', { count: 'exact', head: true }).gte('created_at', since),
-    ]);
-
-    for (const result of [users, stores, subscriptions, auditLogs]) {
-        if (result.error) {
-            if (shouldReturnEmptyForMissingLocalSchema(c.env, result.error)) {
-                return c.json(success(emptyConsoleAnalytics()));
-            }
-            return c.json(dbError(result.error.message), 500);
-        }
-    }
-
-    const newUsers = users.count || 0;
-    const storesCreated = stores.count || 0;
-
-    return c.json(success({
-        period_days: 30,
-        new_signups: newUsers,
-        stores_created: storesCreated,
-        subscriptions_created: subscriptions.count || 0,
-        audit_events: auditLogs.count || 0,
-        signup_to_store_conversion_percent: newUsers > 0 ? Math.round((storesCreated / newUsers) * 1000) / 10 : 0,
-    }));
-});
+router.get('/summary', async (c) => c.json(success(await readConsoleOverview(c, 'summary'))));
+router.get('/analytics', async (c) => c.json(success(await readConsoleOverview(c, 'analytics'))));
 router.get('/analytics/mrr', async (c) => {
     const parsed = ExecutiveAnalyticsQuerySchema.safeParse({
         limit: c.req.query('limit'),
@@ -867,15 +797,14 @@ router.get('/merchants/search', async (c) => {
         total: uniqueRows.length,
     }));
 });
-router.get('/merchants/:id/overview', async (c) => {
-    const hasInternalConsoleGuard = isInternalApiSecretRequest(c.env, c.req)
-        || Boolean(readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token'));
-    if (!hasInternalConsoleGuard) {
-        return c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid platform console token.' } }, 401);
-    }
-
+router.get('/merchants/:id/overview', consolePermission('risk:view'), async (c) => {
+    const { state: operator } = await requireConsolePermission(c, 'merchant:pii', false);
     const merchantId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    // Risk scores may be platform entity records without site_id. This one
+    // operator-authorized read stays bound to entity_type=site, exact site and
+    // LIMIT 1; every other tenant query below retains the ordinary guard.
+    const riskDb = getSupabaseAdminForOperatorRead(c);
     const site = await readMerchantSite(c, merchantId);
 
     if (!site) {
@@ -887,7 +816,7 @@ router.get('/merchants/:id/overview', async (c) => {
         ? `store_id.eq.${site.id},user_id.eq.${site.user_id}`
         : `store_id.eq.${site.id}`;
     const orderQuery = `store_id.eq.${site.id},site_id.eq.${site.id}`;
-    const { actor_id: actorId, actor_email: actorEmail } = actorFromQuery(c);
+    const actorId = operator.actor_id, actorEmail = operator.email;
 
     const [
         ownersResult,
@@ -930,7 +859,7 @@ router.get('/merchants/:id/overview', async (c) => {
             .is('deleted_at', null)
             .order('activated_at', { ascending: false, nullsFirst: false })
             .limit(5),
-        db
+        riskDb
             .from('risk_scores')
             .select('id, entity_type, entity_id, score, band, status, breakdown, scored_at, updated_at')
             .eq('entity_type', 'site')
@@ -1117,58 +1046,21 @@ router.post('/merchants/:id/impersonation/:sessionId/end', async (c) => {
     return c.json(success({ session: data }));
 });
 router.post('/merchants/:id/moderation', async (c) => {
-    const hasInternalConsoleGuard = isInternalApiSecretRequest(c.env, c.req)
-        || Boolean(readBearerToken(c.req.header('Authorization')) || c.req.header('X-Platform-Console-Token'));
-    if (!hasInternalConsoleGuard) {
-        return c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid platform console token.' } }, 401);
+    const parsed = MerchantModerationSchema.safeParse(await c.req.json().catch(() => null));
+    const siteId = z.string().uuid().safeParse(c.req.param('id'));
+    if (!parsed.success || !siteId.success) throw new ValidationError('Invalid merchant moderation payload.');
+    const { credential, state, witness } = await requireConsolePermission(c, 'merchant:suspend');
+    if (parsed.data.actor_id && parsed.data.actor_id !== state.actor_id) {
+        return c.json({ error: { code: 'ACTOR_MISMATCH', message: 'The requester must match the current Console session.' } }, 403);
     }
-
-    const body = await c.req.json().catch(() => null);
-    const parsed = MerchantModerationSchema.safeParse(body);
-    if (!parsed.success) throw new ValidationError('Invalid merchant moderation payload', parsed.error.flatten());
-
-    const sod = checkSegregationOfDuty({
-        actorId: parsed.data.actor_id,
-        secondaryApproverId: parsed.data.secondary_approver_id,
-        targetAction: 'merchant.suspend',
-    });
-    if (!sod.ok) {
-        return c.json({ error: { code: sod.code || 'SEGREGATION_OF_DUTY_FAILED', message: sod.message || 'Segregation of duty failed.' } }, 403);
+    if (!parsed.data.approval_id) {
+        return c.json({ error: { code: 'INDEPENDENT_APPROVAL_REQUIRED', message: 'Request independent approval before executing merchant moderation.' } }, 428);
     }
-
-    const site = await readMerchantSite(c, c.req.param('id'));
-    if (!site) return c.json({ error: { code: 'NOT_FOUND', message: 'Merchant not found.' } }, 404);
-
-    const nextStatus = parsed.data.action === 'suspend' ? 'suspended' : 'published';
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('sites')
-        .update({
-            status: nextStatus,
-            updated_by: parsed.data.actor_id,
-            updated_at: new Date().toISOString(),
-        })
-        .eq('id', site.id)
-        .select('id, name, store_name, subdomain, custom_domain, status, updated_at')
-        .single();
-
-    if (error || !data) return c.json(dbError(error?.message || 'Merchant moderation update failed'), 500);
-
-    await writeConsoleAudit(c, {
-        actorId: parsed.data.actor_id,
-        actorEmail: parsed.data.actor_email || null,
-        action: parsed.data.action === 'suspend' ? 'merchant.suspend' : 'merchant.restore',
-        resourceType: 'site',
-        resourceId: site.id,
-        reason: parsed.data.reason,
-        metadata: {
-            old_status: site.status || null,
-            new_status: nextStatus,
-            secondary_approver_id: parsed.data.secondary_approver_id,
-        },
+    const result = await consoleApprovalRpc(c, 'execute_console_merchant_moderation_v1', {
+        ...credentialArguments(credential), p_permission_hash: witness, p_id: parsed.data.approval_id,
+        p_site_id: siteId.data, p_action: parsed.data.action, p_reason: parsed.data.reason,
     });
-
-    return c.json(success({ site: data }));
+    return c.json(success(result.result));
 });
 router.get('/subscriptions', async (c) => {
     const query = parseListQuery(c);

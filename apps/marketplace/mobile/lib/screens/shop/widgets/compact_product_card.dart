@@ -40,7 +40,7 @@ class _CompactProductCardState extends State<CompactProductCard>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   bool _isPressed = false;
-  
+
   DealModel? _deal;
   bool _hasCheckedDeal = false;
 
@@ -51,10 +51,11 @@ class _CompactProductCardState extends State<CompactProductCard>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
     _deal = widget.deal;
     if (_deal == null) {
       _checkForDeal();
@@ -66,7 +67,7 @@ class _CompactProductCardState extends State<CompactProductCard>
   Future<void> _checkForDeal() async {
     if (_hasCheckedDeal) return;
     _hasCheckedDeal = true;
-    
+
     try {
       final dealService = DealService();
       final deal = await dealService.getActiveDealForProduct(widget.product.id);
@@ -122,7 +123,7 @@ class _CompactProductCardState extends State<CompactProductCard>
     final isDark = themeProvider.isDarkMode;
 
     // Deal-specific colors
-    final dealBorderColor = _hasDeal 
+    final dealBorderColor = _hasDeal
         ? (isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA))
         : null;
     final dealBgColor = _hasDeal
@@ -144,21 +145,25 @@ class _CompactProductCardState extends State<CompactProductCard>
               width: widget.width,
               height: widget.height,
               decoration: BoxDecoration(
-                color: dealBgColor ?? (isDark ? const Color(0xFF1E1E1E) : Colors.white),
+                color:
+                    dealBgColor ??
+                    (isDark ? const Color(0xFF1E1E1E) : Colors.white),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: dealBorderColor ?? (isDark 
-                      ? Colors.white.withValues(alpha: 0.06) 
-                      : Colors.grey.withValues(alpha: 0.12)),
+                  color:
+                      dealBorderColor ??
+                      (isDark
+                          ? Colors.white.withValues(alpha: 0.06)
+                          : Colors.grey.withValues(alpha: 0.12)),
                   width: _hasDeal ? 2 : 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: _hasDeal 
+                    color: _hasDeal
                         ? AppColors.error.withValues(alpha: isDark ? 0.2 : 0.1)
-                        : (isDark 
-                            ? Colors.black.withValues(alpha: 0.3) 
-                            : Colors.black.withValues(alpha: 0.04)),
+                        : (isDark
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.04)),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -169,11 +174,9 @@ class _CompactProductCardState extends State<CompactProductCard>
                 children: [
                   // Image Section
                   _buildImageSection(isDark, isInWishlist, wishlistProvider),
-                  
+
                   // Content Section
-                  Expanded(
-                    child: _buildContentSection(isDark),
-                  ),
+                  Expanded(child: _buildContentSection(isDark)),
                 ],
               ),
             ),
@@ -183,7 +186,11 @@ class _CompactProductCardState extends State<CompactProductCard>
     );
   }
 
-  Widget _buildImageSection(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
+  Widget _buildImageSection(
+    bool isDark,
+    bool isInWishlist,
+    WishlistProvider wishlistProvider,
+  ) {
     final discount = widget.product.discount ?? 0;
     // C3 (Firebase SDK removal): was Provider.of<MarketplaceAdProvider>(...), which always threw
     // (never registered, see main.dart's own retirement comment) and was always caught to false --
@@ -206,7 +213,8 @@ class _CompactProductCardState extends State<CompactProductCard>
                       imageUrl: widget.product.imageUrl!,
                       fit: BoxFit.contain,
                       placeholder: (context, url) => _buildPlaceholder(isDark),
-                      errorWidget: (context, url, error) => _buildPlaceholder(isDark),
+                      errorWidget: (context, url, error) =>
+                          _buildPlaceholder(isDark),
                     )
                   : _buildPlaceholder(isDark),
             ),
@@ -223,7 +231,9 @@ class _CompactProductCardState extends State<CompactProductCard>
                   gradient: LinearGradient(
                     colors: [AppColors.error, const Color(0xFFDC2626)],
                   ),
-                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+                  borderRadius: const BorderRadius.horizontal(
+                    right: Radius.circular(6),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.error.withValues(alpha: 0.4),
@@ -310,7 +320,9 @@ class _CompactProductCardState extends State<CompactProductCard>
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.85),
+                  color: (isDark ? Colors.black : Colors.white).withValues(
+                    alpha: 0.85,
+                  ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -320,8 +332,12 @@ class _CompactProductCardState extends State<CompactProductCard>
                   ],
                 ),
                 child: Icon(
-                  isInWishlist ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  color: isInWishlist ? AppColors.error : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                  isInWishlist
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  color: isInWishlist
+                      ? AppColors.error
+                      : (isDark ? Colors.grey[400] : Colors.grey[600]),
                   size: 18,
                 ),
               ),
@@ -335,11 +351,16 @@ class _CompactProductCardState extends State<CompactProductCard>
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.5),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                 ),
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error,
                       borderRadius: BorderRadius.circular(4),
@@ -364,7 +385,7 @@ class _CompactProductCardState extends State<CompactProductCard>
 
   Widget _buildContentSection(bool isDark) {
     final originalPrice = widget.product.originalPrice;
-    final hasDiscount = originalPrice != null && originalPrice > widget.product.price;
+    final hasDiscount = widget.product.hasDisplayableReferencePrice;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
 
     return Padding(
@@ -384,7 +405,9 @@ class _CompactProductCardState extends State<CompactProductCard>
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 height: 1.2,
-                color: isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.9)
+                    : Colors.black87,
               ),
             ),
           ),
@@ -396,7 +419,10 @@ class _CompactProductCardState extends State<CompactProductCard>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: _getRatingColor(widget.product.rating),
                     borderRadius: BorderRadius.circular(3),
@@ -413,7 +439,11 @@ class _CompactProductCardState extends State<CompactProductCard>
                         ),
                       ),
                       const SizedBox(width: 2),
-                      const Icon(Icons.star_rounded, color: Colors.white, size: 8),
+                      const Icon(
+                        Icons.star_rounded,
+                        color: Colors.white,
+                        size: 8,
+                      ),
                     ],
                   ),
                 ),
@@ -440,19 +470,25 @@ class _CompactProductCardState extends State<CompactProductCard>
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: _hasDeal ? AppColors.error : (isDark ? Colors.white : Colors.black),
+                  color: _hasDeal
+                      ? AppColors.error
+                      : (isDark ? Colors.white : Colors.black),
                 ),
               ),
               if (_hasDeal || hasDiscount) ...[
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
-                    '₹${_formatPrice(_hasDeal ? _deal!.originalPrice : originalPrice!)}',
+                    _hasDeal
+                        ? '₹${_formatPrice(_deal!.originalPrice)}'
+                        : '${widget.product.hasPriorThirtyDayLow ? '30d low' : 'M.R.P.'} ₹${_formatPrice(originalPrice!)}',
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 10,
                       decoration: TextDecoration.lineThrough,
-                      decorationColor: isDark ? Colors.grey[500] : Colors.grey[500],
+                      decorationColor: isDark
+                          ? Colors.grey[500]
+                          : Colors.grey[500],
                       color: isDark ? Colors.grey[500] : Colors.grey[500],
                     ),
                   ),
@@ -460,7 +496,7 @@ class _CompactProductCardState extends State<CompactProductCard>
               ],
             ],
           ),
-          
+
           // Deal Timer or Delivery Info
           if (_hasDeal)
             Container(
@@ -469,7 +505,9 @@ class _CompactProductCardState extends State<CompactProductCard>
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(3),
-                border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -548,5 +586,4 @@ class _CompactProductCardState extends State<CompactProductCard>
       return '${duration.inSeconds}s left';
     }
   }
-
 }

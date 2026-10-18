@@ -125,7 +125,7 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('renders only discounted listings, with a computed percentage', (tester) async {
+    testWidgets('renders only eligible listings with a prior-low comparison', (tester) async {
       final repo = _FakeRepository(items: [
         _item(listingId: 'l-discounted', name: 'Half price', price: 500, comparePrice: 1000),
         _item(listingId: 'l-full-price', name: 'Full price', price: 1000, comparePrice: 1000),
@@ -135,7 +135,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Half price'), findsOneWidget);
-      expect(find.text('Up to 50% Off'), findsOneWidget);
+      expect(find.text('50% below prior 30-day low'), findsOneWidget);
+      expect(find.text('Up to 50% Off'), findsNothing);
       expect(find.text('Full price'), findsNothing);
       expect(find.text('No compare'), findsNothing);
     });

@@ -3,10 +3,10 @@
 // answer to "what counts as application source, and what counts as a reference", and two drifting
 // copies of that answer would mean two guards enforcing subtly different rules.
 
-import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { listWorkspaceFiles } from '../../scripts/validators/governance-common.mjs';
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const migrationsDir = join(repoRoot, 'database/supabase/migrations');
@@ -29,29 +29,19 @@ export function migrationFiles() {
 export const stripTsComments = (s) => s.replace(/\/\/[^\n]*/g, ' ').replace(/\/\*[\s\S]*?\*\//g, ' ');
 export const stripSqlComments = (s) => s.replace(/--[^\n]*/g, ' ');
 
-// Application source: tracked, non-test, and NOT the generated tenant registry.
+// Application source: current candidate (including untracked overlay), non-test,
+// and NOT the generated tenant registry or runtime/dependency output.
 //
 // Excluding the registry is load-bearing rather than tidy. `tenant-tables.registry.ts` is generated
 // from the migrations and names every tenant table, so counting it as a reference would make the
 // table guard vacuous for precisely the tables it most needs to check — every tenant table would be
 // "reachable" the moment it existed.
 export function applicationSources() {
-    return execFileSync('git', ['ls-files', 'services', 'apps', 'packages'], {
-        cwd: repoRoot,
-        encoding: 'utf8',
-        maxBuffer: 32 * 1024 * 1024,
-    })
-        .split('\n')
+    return listWorkspaceFiles(['services','apps','packages'])
         .filter((p) => /\.(ts|tsx|mjs|cjs)$/.test(p))
-        .filter((p) => !/__tests__|\/test\/|\.test\./.test(p))
+        .filter((p) => !/(^|\/)(__tests__|tests?)\/|\.(test|spec)[.-]/.test(p))
         .filter((p) => !/tenant-tables\.registry\.ts$/.test(p))
-        .map((path) => {
-            try {
-                return { path, text: stripTsComments(readFileSync(join(repoRoot, path), 'utf8')) };
-            } catch {
-                return { path, text: '' };
-            }
-        });
+        .map((path) => ({path,text:stripTsComments(readFileSync(join(repoRoot,path),'utf8'))}));
 }
 
 export function migrationBodies() {

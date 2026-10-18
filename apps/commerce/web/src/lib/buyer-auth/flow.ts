@@ -26,6 +26,7 @@ export interface StorefrontBuyerFlow {
     verifier: string;
     returnTo: string;
     redirectUri: string;
+    linkStoreCustomer?: true;
 }
 
 const HOSTNAME = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/;
@@ -83,7 +84,7 @@ export async function pkceChallenge(verifier: string): Promise<string> {
     return base64Url(new Uint8Array(digest));
 }
 
-export function authorizeUrl(identityOrigin: string, input: { redirectUri: string; state: string; challenge: string }): string {
+export function authorizeUrl(identityOrigin: string, input: { redirectUri: string; state: string; challenge: string; screen?: 'register' }): string {
     const url = new URL('/buyer/authorize', identityOrigin);
     url.searchParams.set('response_type', 'code');
     url.searchParams.set('client_id', LETBUYY_STOREFRONT_CLIENT_ID);
@@ -91,6 +92,7 @@ export function authorizeUrl(identityOrigin: string, input: { redirectUri: strin
     url.searchParams.set('state', input.state);
     url.searchParams.set('code_challenge', input.challenge);
     url.searchParams.set('code_challenge_method', 'S256');
+    if (input.screen === 'register') url.searchParams.set('screen', 'register');
     return url.toString();
 }
 
@@ -112,7 +114,14 @@ export function decodeFlow(value: string | null | undefined): StorefrontBuyerFlo
         if (typeof parsed.verifier !== 'string' || !TOKEN.test(parsed.verifier)) return null;
         if (typeof parsed.redirectUri !== 'string' || !parsed.redirectUri.endsWith(LETBUYY_STOREFRONT_BUYER_CALLBACK_PATH)) return null;
         if (typeof parsed.returnTo !== 'string' || safeReturnTo(parsed.returnTo) !== parsed.returnTo) return null;
-        return { state: parsed.state, verifier: parsed.verifier, returnTo: parsed.returnTo, redirectUri: parsed.redirectUri };
+        if (parsed.linkStoreCustomer !== undefined && parsed.linkStoreCustomer !== true) return null;
+        return {
+            state: parsed.state,
+            verifier: parsed.verifier,
+            returnTo: parsed.returnTo,
+            redirectUri: parsed.redirectUri,
+            ...(parsed.linkStoreCustomer === true ? { linkStoreCustomer: true as const } : {}),
+        };
     } catch {
         return null;
     }
@@ -153,16 +162,41 @@ export function identityOrigin(env: Record<string, string | undefined> = process
     return origin || 'https://accounts.letbuyy.com';
 }
 
-/// A POST is accepted only from this store's own pages. Sec-Fetch-Site when the browser sends it,
-/// otherwise an Origin whose host is this request's host.
-export function isSameOriginRequest(headers: { get(name: string): string | null }): boolean {
+/** Refusal-only account hint. No buyer credential or download grant enters a URL. */
+export function buyerPrivacyUrl(buyerAccountId: string, env: Record<string, string | undefined> = process.env): string {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(buyerAccountId)) throw new Error('A current buyer account is required.');
+    const base = new URL(identityOrigin(env));
+    if (base.username || base.password || !(base.protocol === 'https:' || (base.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)))) throw new Error('A secure Identity origin is required.');
+    const target = new URL('/buyer/privacy', base); target.searchParams.set('buyer_hint', buyerAccountId.toLowerCase());
+    return target.toString();
+}
+
+/// A POST is accepted only from this store's own pages. Sec-Fetch-Site rejects cross-site and
+/// sibling-store same-site requests; when Origin is present, it must also exactly match the
+/// request origin (including scheme and port). The request URL is supplied by the framework.
+export function isSameOriginRequest(headers: { get(name: string): string | null }, requestUrl: string): boolean {
     const fetchSite = headers.get('sec-fetch-site');
-    if (fetchSite) return fetchSite === 'same-origin';
+    if (fetchSite && fetchSite !== 'same-origin') return false;
     const origin = headers.get('origin');
-    const host = (headers.get('x-forwarded-host') || headers.get('host') || '').split(',')[0].trim().toLowerCase();
-    if (!origin || !host) return false;
+    if (!origin) return fetchSite === 'same-origin';
     try {
-        return new URL(origin).host.toLowerCase() === host;
+        const actualOrigin = new URL(origin).origin;
+        const request = new URL(requestUrl);
+        const forwardedHost = headers.get('x-forwarded-host');
+        const forwardedProto = headers.get('x-forwarded-proto');
+        let expectedOrigin = request.origin;
+        if (forwardedHost !== null || forwardedProto !== null) {
+            const host = forwardedHost === null ? request.host : forwardedHost.trim();
+            const forwardedProtocol = forwardedProto?.trim().toLowerCase();
+            const protocol = forwardedProtocol
+                ? `${forwardedProtocol.replace(/:$/, '')}:`
+                : request.protocol;
+            if (!host || /[\s,/@?#]/.test(host) || !/^https?:$/.test(protocol)) return false;
+            const forwardedOrigin = new URL(`${protocol}//${host}`);
+            if (forwardedOrigin.pathname !== '/' || forwardedOrigin.username || forwardedOrigin.password) return false;
+            expectedOrigin = forwardedOrigin.origin;
+        }
+        return origin === actualOrigin && actualOrigin === expectedOrigin;
     } catch {
         return false;
     }

@@ -35,15 +35,26 @@ test('products are isolated by owned store for read, update, and delete paths', 
     assert.match(routeSource, /\.in\('store_id',\s*ownedStoreIds\)/);
     assert.match(routeSource, /verifyStoreOwnership\(db,\s*query\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /service\.updateProduct\(productId,\s*customUser\.id,\s*body as Record<string, unknown>,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(adapterSource, /private async getOwnedProduct/);
-    // APPID-FIX2: the lookup itself now carries the store predicate (resolveOwnedStoreIds ->
-    // .in('store_id', storeIds)) instead of fetching the row unscoped and checking ownership after --
-    // the unscoped shape is refused outright by the tenant query guard, not merely "not proven isolated".
-    assert.match(adapterSource, /resolveOwnedStoreIds\(userId,\s*sessionStoreId\)/);
-    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.in\('store_id',\s*storeIds\)/);
+    // Phase 2 / F2.5: owner passes via verifyStoreOwnership on the product's own store_id; a
+    // non-owner falls through to assertStaffPermission on that same store_id.
+    assert.match(routeSource, /const storeId = String\(product\.store_id\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /assertStaffPermission\(c,\s*storeId,\s*customUser\.id,\s*'products:read'\)/);
+    // D03 permission equivalence follow-up (2026-09-28): updateProduct/softDelete now take the
+    // product's real store_id as an explicit parameter, ALREADY VERIFIED by the route (resolved from
+    // the product row itself via loadProductByIdUnguarded, then owner-OR-staff checked via
+    // assertStaffPermission) -- not re-derived through an owner-only lookup, which used to reject a
+    // real, permitted staff member's already-authorized request (see routes/products.ts:1170's
+    // "routing note" and docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md).
+    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>\)/);
+    assert.match(routeSource, /service\.softDelete\(productId,\s*productStoreId,\s*customUser\.id\)/);
+    assert.match(adapterSource, /private async loadProductScopedToStore/);
+    // APPID-FIX2 (still holds, in a tighter form): the lookup carries an EXACT store predicate
+    // (.eq('store_id', storeId), a single known-authorized store) rather than fetching the row unscoped
+    // and checking ownership after -- the unscoped shape is refused outright by the tenant query guard,
+    // not merely "not proven isolated". This is exact-match, not the former in-list-of-owned-stores
+    // shape, because the store is no longer being discovered by ownership -- it is already known.
+    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*storeId\)/);
 });
 
 test('orders are isolated by owned store before listing, reading, and mutating', () => {
@@ -58,7 +69,12 @@ test('orders are isolated by owned store before listing, reading, and mutating',
     assert.match(routeSource, /const tenant = await resolveTenantContextForOwnedSite\(c,\s*body\.store_id\)/);
     assert.match(tenantSource, /export async function resolveTenantContextForOrder/);
     assert.match(tenantSource, /\.from\('orders'\)\s*[\s\S]*\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*orderId\)/);
-    assert.match(tenantSource, /return resolveTenantContextForOwnedSite\(c,\s*order\.store_id as string\)/);
+    // A validated signed/selected hint already resolved live ownership. Its
+    // scoped query must match that hint; an ID-only result is reverified.
+    assert.match(tenantSource, /const hint = auth\.user\.storeId \|\| c\.req\.header\('X-Store-ID'\)/);
+    assert.match(tenantSource, /const knownTenant = hint \? await resolveTenantContextForOwnedSite\(c, hint\) : null/);
+    assert.match(tenantSource, /if \(hint\) query = query\.eq\('store_id', hint\)/);
+    assert.match(tenantSource, /return knownTenant \|\| resolveTenantContextForOwnedSite\(c,\s*order\.store_id as string\)/);
     assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
 });
 

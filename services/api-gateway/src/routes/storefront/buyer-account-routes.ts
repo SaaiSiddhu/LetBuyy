@@ -31,6 +31,8 @@ import type { Env } from '../../index';
 import type { BuyerEmailCodeSender } from '../../lib/buyer-email-code';
 import { dbFailureBody, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
+import { requireBuyerDataSession } from '../../middleware/buyer-data-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const BCRYPT_COST = 10;
@@ -258,13 +260,21 @@ export function registerBuyerAccountRoutes(
         return { buyer };
     }
 
-    router.post('/buyer/link-store-customer', requireBuyerSession, async (c) => {
+    router.post('/buyer/link-store-customer', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
 
         const body = await c.req.json().catch(() => null) as { store_id?: string } | null;
         if (!body?.store_id || !UUID.test(body.store_id)) {
             return c.json(failure('VALIDATION', 'store_id is required'), 400);
+        }
+
+        // Platform buyer sessions retain their existing cross-store link operation. A storefront
+        // buyer session may link only the site in its signed claims, even if the caller supplies a
+        // different store_id in either the query or JSON body.
+        const storefrontSession = getStorefrontBuyerSession(c);
+        if (storefrontSession && storefrontSession.siteId.toLowerCase() !== body.store_id.toLowerCase()) {
+            return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
         }
 
         const { data: result, error } = await linkStoreCustomer(c, { buyerAccountId: resolved.buyer.id, siteId: body.store_id });
@@ -288,7 +298,7 @@ export function registerBuyerAccountRoutes(
         }
     });
 
-    router.post('/buyer/orders/claim', requireBuyerSession, async (c) => {
+    router.post('/buyer/orders/claim', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
 
@@ -298,7 +308,16 @@ export function registerBuyerAccountRoutes(
             return c.json(failure('VALIDATION', 'store_id must be a store id'), 400);
         }
 
-        const { data: result, error } = await claimOrders(c, { buyerAccountId: resolved.buyer.id, siteId: storeId });
+        // A storefront session can claim only orders placed at its own signed site. Omitting the
+        // body selector narrows it to that site; a platform buyer session keeps the existing
+        // cross-store claim behavior. Linking a store-customer record never calls this route.
+        const storefrontSession = getStorefrontBuyerSession(c);
+        if (storefrontSession && storeId && storefrontSession.siteId !== storeId.toLowerCase()) {
+            return c.json(failure('UNAUTHORIZED', 'A buyer session is required.'), 401);
+        }
+        const claimSiteId = storefrontSession?.siteId ?? storeId;
+
+        const { data: result, error } = await claimOrders(c, { buyerAccountId: resolved.buyer.id, siteId: claimSiteId });
         if (error || !result) return c.json(dbFailureBody(), 500);
 
         switch (result.outcome) {
@@ -454,17 +473,17 @@ export function registerBuyerAccountRoutes(
     });
 
     // D1 (SUSTAINED-J) — the canonical buyer profile, read and updated by the buyer's own verified
-    // session, same gate as GET /buyer/orders (requireBuyerSession alone, no identityInternal): the
+    // session, accepting platform or site-bound storefront credentials (no identityInternal): the
     // buyer's own token is sufficient authorization for the buyer's own data; identityInternal is
     // reserved for identity-platform's own broker-specific pages (/buyer/me above), not every
     // buyer-consumable route. apps/commerce/web and apps/marketplace/mobile call this directly.
-    router.get('/buyer/profile', requireBuyerSession, async (c) => {
+    router.get('/buyer/profile', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
         return c.json(success({ buyer: publicBuyerAccount(resolved.buyer) }));
     });
 
-    router.patch('/buyer/profile', requireBuyerSession, async (c) => {
+    router.patch('/buyer/profile', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
 

@@ -1,13 +1,36 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, Page, PageHeader, Pencil, RefreshCw, SaveBar, Search, Section, Skeleton, useToast } from '@letbuyy/ui'
 import { formatDisplayDate } from '@letbuyy/ui/formatting'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import type { InventoryLevel } from '@letbuyy/shared-types'
 
 type InventoryItem = InventoryLevel
+
+type InventoryIntent = {
+    actorId: string; store: string; levelId: string; productId: string; variantId: string | null; locationId: string
+    name: string; from: number; target: number; delta: number; key: string; payload: string
+    phase: 'uncertain' | 'refused' | 'review' | 'confirmed'; message?: string
+}
+const inventoryUuid = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+function restoreInventoryIntent(raw: string, actorId: string, store: string): InventoryIntent {
+    const intent = JSON.parse(raw) as InventoryIntent
+    if (!intent || intent.actorId !== actorId || intent.store !== store || !inventoryUuid(intent.levelId) || !inventoryUuid(intent.productId)
+        || !inventoryUuid(intent.locationId) || (intent.variantId !== null && !inventoryUuid(intent.variantId))
+        || typeof intent.name !== 'string' || !Number.isSafeInteger(intent.from) || !Number.isSafeInteger(intent.target) || intent.target < 0
+        || !Number.isSafeInteger(intent.delta) || intent.delta === 0 || Math.abs(intent.delta) > 99999 || intent.target - intent.from !== intent.delta
+        || typeof intent.key !== 'string' || intent.key.trim() !== intent.key || intent.key.length < 8 || intent.key.length > 200
+        || typeof intent.payload !== 'string' || !['uncertain', 'refused', 'review', 'confirmed'].includes(intent.phase)
+        || (intent.message !== undefined && typeof intent.message !== 'string')) throw new Error('Unreadable saved adjustment')
+    const body = JSON.parse(intent.payload)
+    if (!body || Object.keys(body).sort().join(',') !== 'adjustment,location_id,notes,product_id,reason,variant_id'
+        || body.product_id !== intent.productId || body.variant_id !== intent.variantId || body.location_id !== intent.locationId
+        || body.adjustment !== intent.delta || body.reason !== 'correction' || body.notes !== 'Adjusted from admin inventory screen') throw new Error('Changed saved adjustment')
+    return intent
+}
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -35,7 +58,7 @@ function normalizeInventoryItem(row: Record<string, unknown>): InventoryItem {
         location_name: typeof row.location_name === 'string' ? row.location_name : 'Default location',
         sku: typeof row.sku === 'string' ? row.sku : null,
         images: Array.isArray(row.images) ? row.images.filter((image): image is string => typeof image === 'string') : [],
-        available: Number(row.available || 0),
+        available: typeof row.available === 'number' ? row.available : typeof row.available === 'string' && /^-?[0-9]+$/.test(row.available) ? Number(row.available) : Number.NaN,
         reserved: Number(row.reserved || 0),
         incoming: Number(row.incoming || 0),
         on_hand: Number(row.on_hand || 0),
@@ -49,6 +72,16 @@ export default function InventoryPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
 
+    const { actorId } = useMerchantSecurityContext(store)
+    const storageKey = `letbuyy.inventory-adjustment.v1:${actorId}:${store}`
+    const scope = useRef({ key: storageKey })
+    if (scope.current.key !== storageKey) scope.current = { key: storageKey }
+    const mounted = useRef(true), readSequence = useRef(0), busy = useRef(false)
+    const pendingRef = useRef<InventoryIntent | null>(null)
+    const [pending, setPending] = useState<InventoryIntent | null>(null)
+    const [readyScope, setReadyScope] = useState<string | null>(null)
+    const [storageError, setStorageError] = useState<string | null>(null)
+    const [accessChanged, setAccessChanged] = useState(false)
     const [products, setProducts] = useState<InventoryItem[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
@@ -56,140 +89,113 @@ export default function InventoryPage() {
     const [quantity, setQuantity] = useState('')
     const [savingId, setSavingId] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const currentScope = useCallback((captured: { key: string }) => mounted.current && captured === scope.current, [])
+    useEffect(() => { mounted.current = true; return () => { mounted.current = false; readSequence.current++ } }, [])
+    useEffect(() => {
+        setReadyScope(null); setStorageError(null); setAccessChanged(false); setProducts([]); setEditingId(null); setQuantity(''); setSavingId(null); busy.current = false
+        let restored: InventoryIntent | null = null
+        try {
+            const raw = window.sessionStorage.getItem(storageKey)
+            if (raw) restored = restoreInventoryIntent(raw, actorId, store)
+            if (restored?.phase === 'confirmed') { window.sessionStorage.removeItem(storageKey); restored = null }
+        } catch { setStorageError('The saved stock adjustment could not be verified. Keep this tab open and recover the original request before starting another adjustment.') }
+        pendingRef.current = restored; setPending(restored); setReadyScope(storageKey)
+    }, [actorId, store, storageKey])
 
     const loadInventory = useCallback(async (options?: { quiet?: boolean }) => {
+        const captured = scope.current, sequence = ++readSequence.current
         if (!options?.quiet) setLoading(true)
         setError(null)
-
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory/levels?limit=100`, {
-                cache: 'no-store',
+                cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId },
             })
             const payload = await response.json().catch(() => null)
-
-            if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to load inventory'))
-            }
-
-            const nextProducts = Array.isArray(payload?.data)
-                ? payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)).filter((row: InventoryItem) => row.id)
-                : []
-            setProducts(nextProducts)
+            if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to load inventory'))
+            const rows = Array.isArray(payload?.data) ? payload.data.map((row: Record<string, unknown>) => normalizeInventoryItem(row)) as InventoryItem[] : []
+            if (!currentScope(captured) || sequence !== readSequence.current) return
+            setProducts(rows.filter(row => row.id && Number.isSafeInteger(row.available)))
+            if (rows.some(row => !Number.isSafeInteger(row.available))) setError('Some stock quantities could not be verified. Refresh before adjusting those records.')
         } catch (inventoryError) {
-            const message = inventoryError instanceof Error ? inventoryError.message : 'Unable to load inventory'
-            setProducts([])
-            setError(message)
-            notify({
-                title: 'Inventory could not load',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setLoading(false)
-        }
-    }, [notify, store])
-
-    useEffect(() => {
-        void loadInventory()
-    }, [loadInventory])
+            if (!currentScope(captured) || sequence !== readSequence.current) return
+            setProducts([]); setError(inventoryError instanceof Error ? inventoryError.message : 'Unable to load inventory')
+        } finally { if (currentScope(captured) && sequence === readSequence.current) setLoading(false) }
+    }, [actorId, currentScope, store])
+    useEffect(() => { void loadInventory(); return () => { readSequence.current++ } }, [loadInventory])
 
     const filtered = useMemo(() => {
         const query = searchQuery.trim().toLowerCase()
-        if (!query) return products
-
-        return products.filter((product) =>
-            product.product_name.toLowerCase().includes(query) ||
-            product.location_name.toLowerCase().includes(query) ||
-            (product.sku && product.sku.toLowerCase().includes(query))
-        )
+        return query ? products.filter(product => product.product_name.toLowerCase().includes(query) || product.location_name.toLowerCase().includes(query) || product.sku?.toLowerCase().includes(query)) : products
     }, [products, searchQuery])
-
-    const editingItem = products.find((product) => product.id === editingId) || null
+    const editingItem = products.find(product => product.id === editingId) || null
     const parsedQuantity = Number(quantity)
-    const hasValidQuantity = Number.isInteger(parsedQuantity) && parsedQuantity >= 0
-    const hasUnsavedQuantity = Boolean(editingItem) && quantity.trim() !== '' && parsedQuantity !== Number(editingItem?.available || 0)
+    const hasValidQuantity = Number.isSafeInteger(parsedQuantity) && parsedQuantity >= 0
+    const hasUnsavedQuantity = !!editingItem && quantity.trim() !== '' && parsedQuantity !== editingItem.available
     const saveState = savingId ? 'saving' : hasUnsavedQuantity ? 'unsaved' : 'saved'
-
+    const actionsBlocked = readyScope !== storageKey || !!storageError || accessChanged || !!pending || !!savingId
     const startEdit = useCallback((item: InventoryItem) => {
-        setEditingId(item.id)
-        setQuantity(String(item.available))
-        setError(null)
-    }, [])
-
-    const cancelEdit = useCallback(() => {
-        setEditingId(null)
-        setQuantity('')
-        setError(null)
-    }, [])
-
-    const saveStock = useCallback(async (item?: InventoryItem | null) => {
-        const activeItem = item || editingItem
-        if (!activeItem || savingId) return
-
-        const nextQuantity = Number(quantity)
-        if (!Number.isFinite(nextQuantity) || nextQuantity < 0 || !Number.isInteger(nextQuantity)) {
-            const message = 'Stock must be a non-negative whole number.'
-            setError(message)
-            notify({
-                title: 'Inventory quantity is invalid',
-                description: message,
-                variant: 'warning',
-            })
-            return
-        }
-
-        const adjustment = Math.trunc(nextQuantity) - Number(activeItem.available || 0)
-        if (adjustment === 0) {
-            cancelEdit()
-            notify({
-                title: 'No inventory change',
-                description: 'The available quantity already matches your entry.',
-                variant: 'info',
-            })
-            return
-        }
-
-        setSavingId(activeItem.id)
-        setError(null)
-
+        if (busy.current || pendingRef.current || readyScope !== storageKey || storageError || accessChanged) return
+        setEditingId(item.id); setQuantity(String(item.available)); setError(null)
+    }, [readyScope, storageKey, storageError, accessChanged])
+    const cancelEdit = useCallback(() => { setEditingId(null); setQuantity(''); setError(null) }, [])
+    const retainIntent = useCallback((intent: InventoryIntent, captured: { key: string }) => {
+        if (!currentScope(captured)) return false
+        pendingRef.current = intent; setPending(intent)
+        try { window.sessionStorage.setItem(captured.key, JSON.stringify(intent)); return true }
+        catch { setStorageError('This tab could not retain the pending stock request. Keep it open and recover the saved adjustment before continuing.'); return false }
+    }, [currentScope])
+    const sendIntent = useCallback(async (intent: InventoryIntent) => {
+        if (busy.current || readyScope !== storageKey || storageError || accessChanged || intent.phase === 'confirmed') return
+        const captured = scope.current
+        busy.current = true; setSavingId(intent.levelId); setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory/adjust`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_id: activeItem.product_id,
-                    variant_id: activeItem.variant_id || null,
-                    location_id: activeItem.location_id || null,
-                    adjustment,
-                    reason: 'correction',
-                    notes: 'Adjusted from admin inventory screen',
-                }),
+            if (!retainIntent({ ...intent, phase: 'uncertain', message: undefined }, captured)) return
+            const response = await fetch(`/api/stores/${encodeURIComponent(intent.store)}/inventory/adjust`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': intent.key, 'X-LetBuyy-Merchant-Context': intent.actorId }, body: intent.payload,
             })
             const payload = await response.json().catch(() => null)
-
+            if (!currentScope(captured)) return
+            const code = payload?.error?.code
             if (!response.ok) {
-                throw new Error(getErrorMessage(payload, 'Unable to adjust inventory'))
+                const message = getErrorMessage(payload, 'The adjustment outcome could not be confirmed. Retry the saved request.')
+                const definiteRefusal = response.status === 400 && ['INVENTORY_ADJUSTMENT_FAILED', 'VALIDATION_ERROR', 'INVALID_INPUT'].includes(code)
+                const phase = definiteRefusal ? 'refused' : ['INVENTORY_ADJUST_KEY_CONFLICT', 'INVENTORY_ADJUST_LEGACY_KEY'].includes(code) ? 'review' : 'uncertain'
+                retainIntent({ ...intent, phase, message }, captured)
+                if ([401, 403, 404].includes(response.status) || code === 'SESSION_CONTEXT_CHANGED') setAccessChanged(true)
+                return
             }
-
-            notify({
-                title: 'Inventory adjusted',
-                description: `${activeItem.product_name} now has ${nextQuantity} available.`,
-                variant: 'success',
-            })
-            cancelEdit()
+            const level = payload?.data
+            if (!level || level.id !== intent.levelId || level.product_id !== intent.productId || (level.variant_id ?? null) !== intent.variantId
+                || level.location_id !== intent.locationId || !Number.isSafeInteger(level.available)) {
+                retainIntent({ ...intent, phase: 'uncertain', message: 'The reply did not confirm this stock command. Retry the saved request.' }, captured); return
+            }
+            readSequence.current++
+            try { window.sessionStorage.removeItem(captured.key) }
+            catch { pendingRef.current = { ...intent, phase: 'confirmed' }; setPending(pendingRef.current); setStorageError('The adjustment is confirmed, but this tab could not clear its saved request. Reload when tab storage is available.'); return }
+            pendingRef.current = null; setPending(null); cancelEdit()
+            notify({ title: 'Adjustment confirmed', description: `${intent.name}: stock change ${intent.delta > 0 ? '+' : ''}${intent.delta} confirmed.`, variant: 'success' })
             await loadInventory({ quiet: true })
-        } catch (inventoryError) {
-            const message = inventoryError instanceof Error ? inventoryError.message : 'Unable to adjust inventory'
-            setError(message)
-            notify({
-                title: 'Could not adjust inventory',
-                description: message,
-                variant: 'critical',
-            })
-        } finally {
-            setSavingId(null)
+        } catch {
+            if (currentScope(captured)) retainIntent({ ...intent, phase: 'uncertain', message: 'The reply was lost. Retry the same pending adjustment.' }, captured)
+        } finally { if (currentScope(captured)) { busy.current = false; setSavingId(null) } }
+    }, [readyScope, storageKey, storageError, accessChanged, currentScope, retainIntent, cancelEdit, notify, loadInventory])
+    const saveStock = useCallback(async (item?: InventoryItem | null) => {
+        if (busy.current || pendingRef.current || readyScope !== storageKey || storageError || accessChanged) return
+        const row = item || editingItem, target = Number(quantity)
+        if (!row || !Number.isSafeInteger(target) || target < 0 || quantity.trim() === '') { setError('Stock must be a non-negative whole number.'); return }
+        if (!inventoryUuid(row.id) || !inventoryUuid(row.product_id) || !inventoryUuid(row.location_id) || (row.variant_id !== null && row.variant_id !== undefined && !inventoryUuid(row.variant_id)) || !Number.isSafeInteger(row.available)) {
+            setError('Refresh a verified stock level and location before adjusting inventory.'); return
         }
-    }, [cancelEdit, editingItem, loadInventory, notify, quantity, savingId, store])
+        const delta = target - row.available
+        if (delta === 0) { cancelEdit(); return }
+        if (Math.abs(delta) > 99999) { setError('The stock change must be between -99999 and 99999 units.'); return }
+        const intent: InventoryIntent = { actorId, store, levelId: row.id, productId: row.product_id, variantId: row.variant_id || null,
+            locationId: row.location_id, name: row.product_name, from: row.available, target, delta,
+            key: `inventory-adjust-${crypto.randomUUID()}`, phase: 'uncertain',
+            payload: JSON.stringify({ product_id: row.product_id, variant_id: row.variant_id || null, location_id: row.location_id,
+                adjustment: delta, reason: 'correction', notes: 'Adjusted from admin inventory screen' }) }
+        await sendIntent(intent)
+    }, [editingItem, quantity, readyScope, storageKey, storageError, accessChanged, actorId, store, cancelEdit, sendIntent])
 
     const columns = useMemo(() => [
         {
@@ -229,7 +235,7 @@ export default function InventoryPage() {
                     step={1}
                     value={quantity}
                     onChange={(event) => setQuantity(event.target.value)}
-                    disabled={savingId === row.id}
+                    disabled={savingId === row.id || !!pending}
                     aria-invalid={!hasValidQuantity}
                     className="min-w-[112px]"
                 />
@@ -272,7 +278,7 @@ export default function InventoryPage() {
                         type="button"
                         size="sm"
                         onClick={() => void saveStock(row)}
-                        disabled={savingId === row.id || !hasValidQuantity || !hasUnsavedQuantity}
+                        disabled={!!pending || !!storageError || accessChanged || savingId === row.id || !hasValidQuantity || !hasUnsavedQuantity}
                         loading={savingId === row.id}
                     >
                         Save
@@ -282,13 +288,13 @@ export default function InventoryPage() {
                     </Button>
                 </div>
             ) : (
-                <Button type="button" size="sm" variant="ghost" onClick={() => startEdit(row)}>
+                <Button type="button" size="sm" variant="ghost" onClick={() => startEdit(row)} disabled={actionsBlocked}>
                     <Pencil className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                     Adjust
                 </Button>
             ),
         },
-    ], [cancelEdit, editingId, hasUnsavedQuantity, hasValidQuantity, quantity, saveStock, savingId, startEdit])
+    ], [cancelEdit, editingId, hasUnsavedQuantity, hasValidQuantity, quantity, saveStock, savingId, startEdit, pending, storageError, accessChanged, actionsBlocked])
 
     return (
         <Page>
@@ -303,6 +309,20 @@ export default function InventoryPage() {
                     icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
             />
+
+            {accessChanged && <Banner title="Account or store access changed" variant="critical">Reload with the intended account before recovering the saved adjustment.</Banner>}
+            {storageError && <Banner title="Saved adjustment needs recovery" variant="critical">{storageError}</Banner>}
+            {pending && <Banner title={pending.phase === 'confirmed' ? 'Adjustment confirmed' : 'Saved stock adjustment'} variant={pending.phase === 'uncertain' ? 'warning' : 'critical'}>
+                <p>{pending.name}: change {pending.delta > 0 ? '+' : ''}{pending.delta} from the recorded {pending.from} available.</p>
+                <p>Other stock changes may also apply. The original adjustment will be recovered with the same request.</p>
+                {pending.message && <p>{pending.message}</p>}
+                {pending.phase === 'uncertain' && <Button disabled={!!savingId || !!storageError || accessChanged} onClick={() => void sendIntent(pendingRef.current!)}>Retry pending adjustment</Button>}
+                {pending.phase === 'refused' && <Button disabled={!!savingId || !!storageError} onClick={() => {
+                    if (busy.current || pendingRef.current?.phase !== 'refused') return
+                    try { window.sessionStorage.removeItem(storageKey) } catch { setStorageError('The refused request could not be cleared from this tab.'); return }
+                    pendingRef.current = null; setPending(null); cancelEdit(); void loadInventory({ quiet: true })
+                }}>Discard refused adjustment</Button>}
+            </Banner>}
 
             {error && (
                 <Banner
@@ -370,12 +390,12 @@ export default function InventoryPage() {
                 </Section>
             </Card>
 
-            <SaveBar
+            {!pending && !storageError && !accessChanged && <SaveBar
                 state={saveState}
                 onSave={() => void saveStock()}
                 onDiscard={cancelEdit}
                 saveLabel="Save adjustment"
-            />
+            />}
         </Page>
     )
 }

@@ -5,6 +5,11 @@ import { resolvePlatformDomain } from "@letbuyy/shared-types";
 import { createSecurityHeaders } from "../../../config/security/next-security-headers";
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
+const sessionRuntimeDistDir = process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR;
+
+if (sessionRuntimeDistDir && !/^\.next-session-runtime-[a-zA-Z0-9-]+$/.test(sessionRuntimeDistDir)) {
+  throw new Error('LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR must be a unique .next-session-runtime-* directory');
+}
 
 function parseFrameAncestors(value: string | undefined): string[] {
   if (!value) return [];
@@ -33,6 +38,7 @@ function storefrontGatewayBaseUrl(): string {
 }
 
 const nextConfig: NextConfig = {
+  ...(sessionRuntimeDistDir ? { distDir: sessionRuntimeDistDir } : {}),
   compress: true, // Enable gzip compression for cost savings
 
   // theme-engine's Liquid sanitizer dynamically imports jsdom for server-side

@@ -1,11 +1,13 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { readProductForEdit } from '../execution/product-mutation.adapter';
+import { ValidationError } from '../lib/errors';
 import { registerGiftCardRoutes } from './gift-cards';
 import {
     CreateProductSchema,
@@ -70,6 +72,7 @@ const PRODUCT_LIST_COLUMN_NAMES = [
     'weight',
     'weight_unit',
     'country_of_origin',
+    'importer_details',
     'hs_code',
     'hsn_code',
     'version',
@@ -108,6 +111,7 @@ type DatabaseErrorLike = {
 function createProductExecutionAdapter(db: ReturnType<typeof getSupabaseAdmin>, env: Env): ProductExecutionAdapter {
     return new ProductExecutionAdapter(db, {
         variantDiffEnabled: isProductVariantDiffEnabled(env),
+        mutationEnv: env,
     });
 }
 
@@ -454,10 +458,13 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
 
     if (query.store_id) {
-        const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
-        if (!ownsStore) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-        }
+        // Phase 2 / F2.5: verifyStoreOwnership alone is owner-only, so an active staff member with a
+        // real products:read/products:write grant (staff-permission.ts) got 403'd reading the same
+        // catalog they can legitimately write to -- merchant-web's [store]/products page 404/403'd
+        // for every non-owner even after the store-shell fix in stores.ts. assertStaffPermission
+        // already allows the owner (its own ownsStore() check) or an active employees grant.
+        const staffBlock = await assertStaffPermission(c, query.store_id, customUser.id, 'products:read');
+        if (staffBlock) return staffBlock;
     }
 
     if (ownedStoreIds.length === 0) {
@@ -475,6 +482,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.category) dbQuery = dbQuery.eq('category', query.category);
         if (query.status === 'active') dbQuery = dbQuery.eq('is_active', true);
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
+        if (query.status === 'draft' || query.status === 'archived') dbQuery = dbQuery.eq('status', query.status);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
         if (decodedCursor) {
             dbQuery = query.order === 'asc'
@@ -1061,6 +1069,33 @@ router.post('/sample', validate('json', StoreScopedQuerySchema), async (c) => {
 });
 
 // GET /products/:id
+// Phase 2 / F2.5: products is a registered tenant table; `.eq('id', productId)` alone (no
+// store_id) is not a scope predicate, so GET /products/:id 500'd via the tenant guard for every
+// caller -- reproduced live. Bootstrap lookup by the product's own globally-unique id, before its
+// store_id is known: bounded to one row (.single()), and the caller (below) re-verifies the
+// result's own store_id via ownership/staff-permission before trusting it for anything -- the same
+// documented shape as the other getSupabaseAdminUnguarded call sites.
+async function loadProductByIdUnguarded(
+    c: Context<{ Bindings: Env }>,
+    productId: string,
+): Promise<{ product: Record<string, unknown> | null; error: unknown }> {
+    const unguardedDb = getSupabaseAdminUnguarded(c);
+    const buildProductQuery = (includeDeletedAtFilter: boolean) => {
+        const query = unguardedDb
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
+            .eq('id', productId);
+
+        return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
+    };
+
+    let { data, error } = await buildProductQuery(true);
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await buildProductQuery(false));
+    }
+    return { product: data as unknown as Record<string, unknown> | null, error };
+}
+
 router.get('/:id', async (c) => {
     const auth = c.get('auth');
     const productId = c.req.param('id');
@@ -1071,32 +1106,28 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const buildProductQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('products')
-            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
-            .eq('id', productId);
+    const { product, error } = await loadProductByIdUnguarded(c, productId);
 
-        return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
-    };
-
-    let { data, error } = await buildProductQuery(true);
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await buildProductQuery(false));
-    }
-
-    const product = data as unknown as Record<string, unknown> | null;
-
-    if (error || !product || !(await verifyStoreOwnership(db, String(product.store_id), customUser.id, auth.user.storeId))) {
+    if (error || !product) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    const rows = productVariantRelationalReadsEnabled(c.env)
-        ? await hydrateProductVariants(db, [product])
-        : [product];
+    // Re-verified against the product's OWN store_id (never a client-supplied value): the owner
+    // passes, or an active staff member holding products:read/products:write at that store --
+    // verifyStoreOwnership alone denied a real Manager with products:write reading a product they
+    // could otherwise edit, the same gap fixed for the list route (assertStaffPermission).
+    const storeId = String(product.store_id);
+    const isOwner = await verifyStoreOwnership(db, storeId, customUser.id, auth.user.storeId);
+    if (!isOwner) {
+        const staffBlock = await assertStaffPermission(c, storeId, customUser.id, 'products:read');
+        if (staffBlock) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    }
 
-    return c.json(success(rows[0]));
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== storeId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const data = await readProductForEdit(c.env, storeId, productId, customUser.id,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
+    return c.json(success(data));
 });
 
 // POST /products — Create a product
@@ -1114,7 +1145,7 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const data = await service.createProduct(body, customUser.id, auth.user.storeId);
+    const data = await service.createProduct(body, customUser.id, auth.user.storeId, true);
     await emitProductEvent(db, {
         eventType: 'product.created',
         product: data,
@@ -1138,19 +1169,25 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = createProductExecutionAdapter(db, c.env);
     // The staff check needs the product's own store; a session usually carries none (APPID-P5b).
-    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
-    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
+    // Resolved the same way GET /:id resolves it (loadProductByIdUnguarded, never an ownership
+    // derivation) -- the product's real store is looked up first, then owner-OR-staff is checked
+    // against it, so a real, permitted staff member (not just the literal owner) can reach this.
+    const { product, error: lookupError } = await loadProductByIdUnguarded(c, productId);
+    if (lookupError || !product) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    }
+    const productStoreId = String(product.store_id);
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== productStoreId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const headerKey = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
+    if (headerKey && headerKey.toLowerCase() !== body.idempotency_key.toLowerCase()) throw new ValidationError('The save key must match the edit intent.');
+    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write', 'enforce');
     if (staffBlock) return staffBlock;
 
-    const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
-    await emitProductEvent(db, {
-        eventType: 'product.updated',
-        product: data,
-        actorId: customUser.id,
-        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-    });
+    const service = createProductExecutionAdapter(db, c.env);
+    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
 
     return c.json(success(data));
 });
@@ -1170,7 +1207,7 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
+    const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId, true);
     const eventType = body.action === 'delete' ? 'product.deleted' : 'product.updated';
     const requestId = c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
 
@@ -1197,12 +1234,16 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = createProductExecutionAdapter(db, c.env);
-    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
+    const { product, error: lookupError } = await loadProductByIdUnguarded(c, productId);
+    if (lookupError || !product) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    }
+    const productStoreId = String(product.store_id);
     const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
+    const service = createProductExecutionAdapter(db, c.env);
+    const result = await service.softDelete(productId, productStoreId, customUser.id);
     await emitProductEvent(db, {
         eventType: 'product.deleted',
         product: result,

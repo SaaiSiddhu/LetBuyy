@@ -1,0 +1,37 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts",
+  "owned_runner_id": "f5bafc2764a3",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/authenticated-checkout.postgres.test.ts --kind gateway-db --jobs 1 --timeout 300",
+  "result": {
+    "suite_count": 1,
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 23.6,
+    "wall_seconds": 25.7,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "assertions": [
+    "Two authenticated buyer requests released concurrently for the final variant unit produce one successful order and one HTTP 409.",
+    "The losing response carries the stable INSUFFICIENT_INVENTORY code and buyer-safe message; it contains no database error or inventory table detail.",
+    "Postgres confirms exactly one order item, buyer ownership link, committed reservation and sale adjustment; the loser creates none."
+  ],
+  "cleanup": {
+    "failures": [],
+    "remaining_runner_resources": 0,
+    "result": "runner exited 0 after its run-id-scoped cleanup check"
+  },
+  "limits": [
+    "Synthetic buyers, product and inventory in the runner-owned disposable Postgres database only.",
+    "No hosted database, deployment, external message, provider transaction or production data was used.",
+    "The separate Commerce checkout BFF test uses a stubbed Gateway response to verify safe projection; this record does not claim the full hosted checkout browser path was exercised for this failure."
+  ]
+}

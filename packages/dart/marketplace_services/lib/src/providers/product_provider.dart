@@ -14,16 +14,22 @@ class ProductProvider with ChangeNotifier {
   List<ProductModel> _recentlyViewedProducts = [];
   ProductModel? _selectedProduct;
   bool _isLoading = false;
+  bool _isLoadingMore = false;
   String? _error;
+  String? _loadMoreError;
   bool _initializedFromCache = false;
+  int _feedRequestGeneration = 0;
 
-  // C2 corrective (27 September 2026 review, finding 2): marketplaceFeed is keyset-paged and this
-  // provider only ever requests one page (limit: 100) -- a category or search result with more
-  // than 100 live listings is silently truncated. Real "load more" pagination (consuming
-  // MarketplaceFeedPage.nextCursor across a second request) is out of scope for this pass; this
-  // field exists so that truncation is at least observable to a caller/UI rather than invisible,
-  // and so nothing here is tempted to present a capped list as the exhaustive catalog.
+  // The feed is keyset-paged. Keep the server-issued cursor and the exact filters that produced it
+  // together so a continuation cannot drift into another category/search/origin result set.
   bool _hasMore = false;
+  MarketplaceFeedCursor? _nextCursor;
+  String? _activeCategorySlug;
+  String? _activeSearch;
+  String? _activeCountryOfOrigin;
+  List<String> _countryOrigins = const <String>[];
+  bool _countryOriginsLoading = false;
+  String? _countryOriginsError;
 
   // ✅ NEW: State variables for variant management
   ProductVariant? _selectedVariant;
@@ -37,9 +43,15 @@ class ProductProvider with ChangeNotifier {
   String? get error => _error;
   int get productCount => _products.length;
   bool get hasProducts => _products.isNotEmpty;
+
   /// True when the last feed/search page fetched was not the last page -- see this field's own
   /// doc comment on _hasMore.
   bool get hasMore => _hasMore;
+  bool get isLoadingMore => _isLoadingMore;
+  bool get loadMoreFailed => _loadMoreError != null;
+  List<String> get countryOrigins => _countryOrigins;
+  bool get countryOriginsLoading => _countryOriginsLoading;
+  String? get countryOriginsError => _countryOriginsError;
 
   // ✅ NEW: Getters for variants
   ProductVariant? get selectedVariant => _selectedVariant;
@@ -74,25 +86,40 @@ class ProductProvider with ChangeNotifier {
     return loadProducts(categoryId: categoryId);
   }
 
-  Future<void> loadProducts({String? categoryId, bool forceReload = false}) async {
+  Future<void> loadProducts({
+    String? categoryId,
+    String? countryOfOrigin,
+    bool forceReload = false,
+  }) async {
     // 🚀 PERFORMANCE: Prevent simultaneous fetches (race condition fix)
-    if (_isLoading) {
+    if (_isLoading &&
+        !forceReload &&
+        countryOfOrigin == null &&
+        categoryId == null) {
       debugPrint('📦 Products load already in progress, skipping...');
       return;
     }
 
     // 🚀 PERFORMANCE: Skip if already loaded (unless force reload or category change)
-    if (!forceReload && _products.isNotEmpty && categoryId == null) {
-      debugPrint('📦 Products already loaded (${_products.length}), skipping fetch');
+    if (!forceReload &&
+        _products.isNotEmpty &&
+        categoryId == null &&
+        countryOfOrigin == null) {
+      debugPrint(
+        '📦 Products already loaded (${_products.length}), skipping fetch',
+      );
       return;
     }
 
+    final requestGeneration = ++_feedRequestGeneration;
     try {
       _isLoading = true;
       _error = null;
       _notifySafely();
 
-      debugPrint('🔍 Loading ${categoryId != null ? "category" : "all"} products...');
+      debugPrint(
+        '🔍 Loading ${categoryId != null ? "category" : "all"} products...',
+      );
 
       // C2 (canonical rewire): categoryId here is the value CategoryProvider hands out, which is
       // itself a canonical category slug (see category_provider.dart) -- exactly what
@@ -100,15 +127,32 @@ class ProductProvider with ChangeNotifier {
       // 'uncategorized' are legacy sentinel values from the old Firestore catalog with no
       // canonical meaning; treated the same as "no filter."
       final categorySlug =
-          (categoryId == null || categoryId == 'all' || categoryId == 'uncategorized' || categoryId == 'All')
-              ? null
-              : categoryId;
+          (categoryId == null ||
+              categoryId == 'all' ||
+              categoryId == 'uncategorized' ||
+              categoryId == 'All')
+          ? null
+          : categoryId;
 
-      final page = await _client.marketplaceFeed(category: categorySlug, limit: 100);
+      _activeCategorySlug = categorySlug;
+      _activeSearch = null;
+      _activeCountryOfOrigin = countryOfOrigin;
+      _nextCursor = null;
+      _hasMore = false;
+      _isLoadingMore = false;
+      _loadMoreError = null;
+
+      final page = await _client.marketplaceFeed(
+        category: categorySlug,
+        countryOfOrigin: countryOfOrigin,
+        limit: 100,
+      );
+      if (requestGeneration != _feedRequestGeneration) return;
       _products = page.items.map(_productFromFeedItem).toList();
       _hasMore = page.hasMore;
+      _nextCursor = page.nextCursor;
 
-      if (categorySlug == null) {
+      if (categorySlug == null && countryOfOrigin == null) {
         // 💾 Save to cache for instant loading next time
         await _cacheService.cacheProducts(_products);
       }
@@ -118,10 +162,47 @@ class ProductProvider with ChangeNotifier {
       _isLoading = false;
       _notifySafely();
     } catch (e) {
+      if (requestGeneration != _feedRequestGeneration) return;
       _error = e.toString();
       _isLoading = false;
       _notifySafely();
       debugPrint('❌ Error loading products: $e');
+    }
+  }
+
+  /// Fetch a seller page without replacing the home/shop feed or borrowing its cursor/cache.
+  /// Failures propagate to the seller screen so an outage cannot masquerade as an empty seller.
+  Future<({List<ProductModel> products, MarketplaceFeedCursor? nextCursor})>
+  loadSellerProducts(
+    String sellerSiteId, {
+    MarketplaceFeedCursor? cursor,
+  }) async {
+    final siteId = sellerSiteId.trim().toLowerCase();
+    final page = await _client.marketplaceFeed(
+      sellerSiteId: siteId,
+      limit: 20,
+      cursor: cursor,
+    );
+    if (page.items.any((item) => item.siteId != siteId)) {
+      throw StateError('The seller feed returned an unexpected store.');
+    }
+    return (
+      products: page.items.map(_productFromFeedItem).toList(growable: false),
+      nextCursor: page.nextCursor,
+    );
+  }
+  Future<void> loadCountryOrigins() async {
+    _countryOriginsLoading = true;
+    _countryOriginsError = null;
+    _notifySafely();
+    try {
+      _countryOrigins = await _client.marketplaceOrigins();
+    } catch (e) {
+      _countryOriginsError = e.toString();
+      debugPrint('❌ Error loading marketplace origin filters: $e');
+    } finally {
+      _countryOriginsLoading = false;
+      _notifySafely();
     }
   }
 
@@ -133,7 +214,9 @@ class ProductProvider with ChangeNotifier {
       clearSelectedProduct();
 
       final detail = await _client.marketplaceListing(productId);
-      _selectedProduct = detail == null ? null : _productFromListingDetail(detail);
+      _selectedProduct = detail == null
+          ? null
+          : _productFromListingDetail(detail);
 
       if (_selectedProduct != null) {
         if (_selectedProduct!.variants.isNotEmpty) {
@@ -204,11 +287,11 @@ class ProductProvider with ChangeNotifier {
     }
 
     for (final variant in _selectedProduct!.variants) {
-       for (final key in _selectedOptions.keys) {
-         if (variant.options[key] == _selectedOptions[key]) {
-           return variant;
-         }
-       }
+      for (final key in _selectedOptions.keys) {
+        if (variant.options[key] == _selectedOptions[key]) {
+          return variant;
+        }
+      }
     }
 
     return _selectedProduct!.variants.first;
@@ -275,19 +358,87 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> searchProducts(String query) async {
+  Future<void> searchProducts(String query, {String? countryOfOrigin}) async {
+    final requestGeneration = ++_feedRequestGeneration;
+    _activeCategorySlug = null;
+    _activeSearch = query;
+    _activeCountryOfOrigin = countryOfOrigin;
+    _nextCursor = null;
+    _hasMore = false;
+    _isLoadingMore = false;
+    _loadMoreError = null;
     try {
       _isLoading = true;
       _notifySafely();
-      final page = await _client.marketplaceFeed(search: query, limit: 100);
+      final page = await _client.marketplaceFeed(
+        search: query,
+        countryOfOrigin: countryOfOrigin,
+        limit: 100,
+      );
+      if (requestGeneration != _feedRequestGeneration) return;
       _products = page.items.map(_productFromFeedItem).toList();
       _hasMore = page.hasMore;
+      _nextCursor = page.nextCursor;
       _isLoading = false;
       _notifySafely();
     } catch (e) {
+      if (requestGeneration != _feedRequestGeneration) return;
       _error = e.toString();
       _isLoading = false;
       _notifySafely();
+    }
+  }
+
+  /// Appends the next canonical keyset page for the exact active feed filters.
+  ///
+  /// The cursor is only advanced after a successful response. A failed request therefore leaves
+  /// the current page retryable, while a newer filter request invalidates any late page response.
+  Future<void> loadMoreProducts() => _loadMoreProducts(retryAfterFailure: false);
+
+  /// Retries the same cursor after an explicit user action following a failed page load.
+  Future<void> retryLoadMoreProducts() => _loadMoreProducts(retryAfterFailure: true);
+
+  Future<void> _loadMoreProducts({required bool retryAfterFailure}) async {
+    final cursor = _nextCursor;
+    if (_isLoading ||
+        _isLoadingMore ||
+        (!_hasMore || cursor == null) ||
+        (_loadMoreError != null && !retryAfterFailure)) {
+      return;
+    }
+
+    final requestGeneration = ++_feedRequestGeneration;
+    _isLoadingMore = true;
+    _loadMoreError = null;
+    _notifySafely();
+
+    try {
+      final page = await _client.marketplaceFeed(
+        category: _activeCategorySlug,
+        search: _activeSearch,
+        countryOfOrigin: _activeCountryOfOrigin,
+        limit: 100,
+        cursor: cursor,
+      );
+      if (requestGeneration != _feedRequestGeneration) return;
+
+      final seen = _products.map((product) => product.id).toSet();
+      _products = [
+        ..._products,
+        ...page.items
+            .map(_productFromFeedItem)
+            .where((product) => seen.add(product.id)),
+      ];
+      _nextCursor = page.nextCursor;
+      _hasMore = page.hasMore;
+    } catch (error) {
+      if (requestGeneration != _feedRequestGeneration) return;
+      _loadMoreError = error.toString();
+    } finally {
+      if (requestGeneration == _feedRequestGeneration) {
+        _isLoadingMore = false;
+        _notifySafely();
+      }
     }
   }
 
@@ -339,6 +490,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   void clearAll() {
+    _feedRequestGeneration++;
     _products.clear();
     _recentlyViewedProducts.clear();
     _selectedProduct = null;
@@ -346,6 +498,13 @@ class ProductProvider with ChangeNotifier {
     _selectedOptions.clear();
     _error = null;
     _isLoading = false;
+    _isLoadingMore = false;
+    _loadMoreError = null;
+    _hasMore = false;
+    _nextCursor = null;
+    _activeCategorySlug = null;
+    _activeSearch = null;
+    _activeCountryOfOrigin = null;
     _notifySafely();
   }
 
@@ -377,8 +536,11 @@ class ProductProvider with ChangeNotifier {
     final approvedAt = DateTime.tryParse(item.approvedAt) ?? DateTime.now();
     return ProductModel(
       id: item.listingId,
+      marketplaceListingId: item.listingId,
+      catalogProductId: item.productId,
       sellerId: item.siteId,
       storeName: item.storeName,
+      countryOfOrigin: item.countryOfOrigin,
       name: item.name,
       description: '',
       salePrice: (item.price ?? 0).toDouble(),
@@ -394,12 +556,17 @@ class ProductProvider with ChangeNotifier {
   }
 
   ProductModel _productFromListingDetail(MarketplaceListingDetail detail) {
-    final approvedAt = detail.approvedAt == null ? null : DateTime.tryParse(detail.approvedAt!);
+    final approvedAt = detail.approvedAt == null
+        ? null
+        : DateTime.tryParse(detail.approvedAt!);
     final timestamp = approvedAt ?? DateTime.now();
     return ProductModel(
       id: detail.listingId,
+      marketplaceListingId: detail.listingId,
+      catalogProductId: detail.productId,
       sellerId: detail.siteId,
       storeName: detail.storeName,
+      importerDetails: detail.importerDetails,
       name: detail.name,
       description: detail.description ?? '',
       salePrice: (detail.price ?? 0).toDouble(),
@@ -423,7 +590,9 @@ class ProductProvider with ChangeNotifier {
   // exists to stop. variant_selector.dart already hides itself entirely when variantOptions is
   // empty, so a single-variant listing (the common case) shows no picker at all rather than a
   // confusing one.
-  List<VariantOption> _variantOptionsFromCanonical(List<MarketplaceVariant> variants) {
+  List<VariantOption> _variantOptionsFromCanonical(
+    List<MarketplaceVariant> variants,
+  ) {
     final slots = <String, List<String>>{};
     for (final v in variants) {
       final values = [v.option1, v.option2, v.option3];
@@ -435,7 +604,9 @@ class ProductProvider with ChangeNotifier {
         if (!list.contains(value)) list.add(value);
       }
     }
-    return slots.entries.map((e) => VariantOption(name: e.key, values: e.value)).toList();
+    return slots.entries
+        .map((e) => VariantOption(name: e.key, values: e.value))
+        .toList();
   }
 
   ProductVariant _variantFromCanonical(MarketplaceVariant v) {
@@ -450,7 +621,9 @@ class ProductProvider with ChangeNotifier {
       salePrice: (v.price ?? 0).toDouble(),
       originalPrice: v.comparePrice?.toDouble(),
       stock: v.stock ?? 0,
-      images: v.imageUrl != null && v.imageUrl!.isNotEmpty ? [v.imageUrl!] : const [],
+      images: v.imageUrl != null && v.imageUrl!.isNotEmpty
+          ? [v.imageUrl!]
+          : const [],
       options: options,
     );
   }

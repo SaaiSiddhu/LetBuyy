@@ -1,11 +1,10 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { getSupabaseAdmin, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
-import { ValidationError } from '../lib/errors';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, shouldReturnEmptyForMissingLocalSchema, success } from '../lib/supabase';
+import { AppError, ValidationError } from '../lib/errors';
 import { getRequestId } from '../lib/tenant-context';
 import {
-    checkSegregationOfDuty,
     requirePermission,
     requireRoleCategory,
     requireSuperAdmin,
@@ -186,7 +185,8 @@ router.post('/webhook-deliveries/dispatch', async (c) => {
 
 router.get('/outbox', async (c) => {
     const query = parseListQuery(c);
-    const db = getSupabaseAdmin(c);
+    // This is a bounded platform-operator read behind this router's ops + super-admin gate.
+    const db = getSupabaseAdminForOperatorRead(c);
 
     let request = db
         .from('outbox_events')
@@ -207,7 +207,8 @@ router.get('/outbox', async (c) => {
 
 router.get('/outbox/dead-letters', async (c) => {
     const query = parseListQuery(c);
-    const db = getSupabaseAdmin(c);
+    // Keep platform-wide dead-letter visibility inside the same super-admin-only boundary.
+    const db = getSupabaseAdminForOperatorRead(c);
 
     let request = db
         .from('outbox_dead_letters')
@@ -651,67 +652,14 @@ router.post('/runtime/control-commands', requirePermission('incident:command'), 
         return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required.' } }, 400);
     }
 
-    const db = getSupabaseAdmin(c);
-    const requestId = getRequestId(c);
-    const authUserId = actorId(c);
-    const segregation = checkSegregationOfDuty({
-        actorId: authUserId,
-        targetAction: 'runtime.control-command',
-        secondaryApproverId: parsed.data.secondary_approver_id || null,
-    });
-    if (!segregation.ok) {
-        return c.json({
-            error: {
-                code: segregation.code || 'DUAL_CONTROL_REQUIRED',
-                message: segregation.message || 'This runtime command requires dual control.',
-            },
-        }, 403);
-    }
-
-    const { data, error } = await db
-        .from('runtime_control_commands')
-        .insert({
-            command_id: parsed.data.command_id,
-            operation: parsed.data.operation,
-            target_type: parsed.data.target_type,
-            target_id: parsed.data.target_id,
-            requested_by: authUserId,
-            reason,
-            result: {
-                approval: {
-                    dual_control: true,
-                    secondary_approver_id: parsed.data.secondary_approver_id || null,
-                    approved_at: new Date().toISOString(),
-                },
-            },
-            request_id: requestId,
-            correlation_id: requestId,
-            trace_id: c.req.header('X-Trace-ID') || null,
-            created_by: authUserId,
-            updated_by: authUserId,
-        })
-        .select('id, command_id, operation, target_type, target_id, status, created_at')
-        .single();
-
-    if (error) throw new Error(`Runtime control command submission failed: ${error.message}`);
-
-    await writeOperationsAudit(db, {
-        actorId: authUserId,
-        actorEmail: actorEmail(c),
-        action: 'incident.runtime_control_command.submit',
-        resourceType: 'runtime_control_command',
-        resourceId: data.id,
-        reason,
-        metadata: {
-            command_id: parsed.data.command_id,
-            operation: parsed.data.operation,
-            target_type: parsed.data.target_type,
-            target_id: parsed.data.target_id,
-            secondary_approver_id: parsed.data.secondary_approver_id || null,
-        },
-    });
-
-    return c.json(success({ command: data }), 201);
+    // This legacy intake has no wired operational consumer or independent
+    // session-bound command protocol. A typed actor ID is not consent, and
+    // persisting "accepted" would fabricate both approval and execution readiness.
+    // Keep the accepted V1 operational obligation open; canonical queue/outbox
+    // recovery remains in its existing owners, and frozen workflow machinery
+    // must never be activated by this generic command envelope.
+    throw new AppError('Runtime commands are unavailable until independent consent and the canonical execution owner are integrated. No command was accepted.',
+        503, 'RUNTIME_CONTROL_UNAVAILABLE');
 });
 
 router.get('/runtime/incidents', requirePermission('incident:view'), async (c) => {

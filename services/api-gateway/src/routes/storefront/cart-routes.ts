@@ -7,6 +7,8 @@ import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
+import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
+import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import {
     canonicalCheckoutCartBinding,
     canonicalCheckoutHandoffPayload,
@@ -38,7 +40,7 @@ const StorefrontCartMutationSchema = z.object({
     cart_token: z.string().trim().min(1).max(120).optional().nullable(),
     customer_id: z.string().uuid().optional().nullable(),
     buyer_email: z.string().trim().email().max(254).optional().nullable(),
-    channel: CommerceChannelSchema.optional().default('web'),
+    channel: CommerceChannelSchema.unwrap().optional(),
     lines: z.array(StorefrontCartLineInputSchema).max(250).default([]),
     coupon_codes: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
 }).strict();
@@ -46,7 +48,7 @@ const StorefrontCartMutationSchema = z.object({
 const StorefrontCartBuyerIdentitySchema = z.object({
     customer_id: z.string().uuid().optional().nullable(),
     buyer_email: z.string().trim().email().max(254).optional().nullable(),
-    channel: CommerceChannelSchema.optional().default('web'),
+    channel: CommerceChannelSchema.unwrap().optional(),
 }).strict();
 
 const StorefrontCartDiscountCodesSchema = z.object({
@@ -55,11 +57,13 @@ const StorefrontCartDiscountCodesSchema = z.object({
 
 type StorefrontCartLineInput = z.infer<typeof StorefrontCartLineInputSchema>;
 type StorefrontCartMutationInput = z.infer<typeof StorefrontCartMutationSchema>;
+type SalesOrigin = 'storefront' | 'marketplace';
 
 type StorefrontServerCartLine = {
     id: string;
     product_id: string;
     variant_id?: string | null;
+    marketplace_listing_id?: string | null;
     title: string;
     sku?: string | null;
     image_url?: string | null;
@@ -79,6 +83,7 @@ type StorefrontServerCart = {
     cart_token: string;
     status: string;
     channel: CommerceChannel;
+    sales_origin: SalesOrigin;
     currency: string;
     lines: StorefrontServerCartLine[];
     subtotal: number;
@@ -104,6 +109,7 @@ const CART_SELECT = [
     'coupon_code',
     'status',
     'channel',
+    'sales_origin',
     'checkout_handoff',
     'abandonment_enqueued_at',
     'expires_at',
@@ -139,7 +145,8 @@ function currencyValue(product: DbRecord): string {
 }
 
 function lineId(line: StorefrontCartLineInput): string {
-    return line.variant_id ? `${line.product_id}:${line.variant_id}` : line.product_id;
+    const productVariant = line.variant_id ? `${line.product_id}:${line.variant_id}` : line.product_id;
+    return line.marketplace_listing_id ? `${productVariant}:${line.marketplace_listing_id}` : productVariant;
 }
 
 function createCartToken(): string {
@@ -177,6 +184,7 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
         cart_token: String(row.session_id),
         status: stringValue(row.status) || 'active',
         channel: parsedChannel.success ? parsedChannel.data : 'web',
+        sales_origin: row.sales_origin === 'marketplace' ? 'marketplace' : 'storefront',
         currency,
         lines,
         subtotal,
@@ -214,6 +222,7 @@ async function hydrateCartLines(
     c: AppContext,
     store: PublishedStoreRecord,
     lines: StorefrontCartLineInput[],
+    salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<{ lines: StorefrontServerCartLine[]; error?: Response }> {
     const quantities = new Map<string, StorefrontCartLineInput>();
@@ -228,6 +237,49 @@ async function hydrateCartLines(
 
     const mergedLines = Array.from(quantities.values());
     if (mergedLines.length === 0) return { lines: [] };
+
+    if (salesOrigin === 'marketplace') {
+        if (mergedLines.some((line) => !line.marketplace_listing_id)) {
+            return {
+                lines: [],
+                error: c.json({ success: false, error: { code: 'MARKETPLACE_LISTING_REQUIRED', message: 'Every marketplace cart line must identify its approved listing.' } }, 400),
+            };
+        }
+
+        const db = getSupabaseAdmin(c);
+        const listingChecks = await Promise.all(mergedLines.map(async (line) => {
+            const { data, error } = await db.rpc('marketplace_listing_detail', {
+                p_listing_id: line.marketplace_listing_id,
+            });
+            if (error) return { line, failed: true, listing: null as DbRecord | null };
+            const listing = Array.isArray(data) ? data[0] : data;
+            return {
+                line,
+                failed: false,
+                listing: listing && typeof listing === 'object' ? listing as DbRecord : null,
+            };
+        }));
+        if (listingChecks.some((check) => check.failed)) {
+            return { lines: [], error: c.json(dbFailureBody(), 503) };
+        }
+        const unavailable = listingChecks.some(({ line, listing }) =>
+            !listing
+            || String(listing.listing_id) !== line.marketplace_listing_id
+            || String(listing.product_id) !== line.product_id
+            || String(listing.site_id) !== store.id,
+        );
+        if (unavailable) {
+            return {
+                lines: [],
+                error: c.json({ success: false, error: { code: 'MARKETPLACE_LISTING_UNAVAILABLE', message: 'One or more marketplace listings are no longer available.' } }, 409),
+            };
+        }
+    } else if (mergedLines.some((line) => line.marketplace_listing_id)) {
+        return {
+            lines: [],
+            error: c.json({ success: false, error: { code: 'SALES_ORIGIN_MISMATCH', message: 'Marketplace listings must use the marketplace cart route.' } }, 400),
+        };
+    }
 
     const productIds = Array.from(new Set(mergedLines.map((line) => line.product_id)));
     const products = await queryPublicProducts(c, store.id, {
@@ -264,6 +316,7 @@ async function hydrateCartLines(
                 id: lineId(line),
                 product_id: line.product_id,
                 variant_id: line.variant_id || null,
+                marketplace_listing_id: line.marketplace_listing_id || null,
                 title,
                 sku: stringValue(product.sku),
                 image_url: imageUrl(product),
@@ -286,6 +339,7 @@ function cartLinesToInput(lines: StorefrontServerCartLine[]): StorefrontCartLine
     return lines.map((line) => ({
         product_id: line.product_id,
         variant_id: line.variant_id || null,
+        marketplace_listing_id: line.marketplace_listing_id || null,
         quantity: line.quantity,
         properties: line.properties || {},
     }));
@@ -308,6 +362,97 @@ function checkoutSigningSecret(c: AppContext): string | null {
     if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
     if (c.env.ENVIRONMENT === 'production' || c.env.APP_ENV === 'production') return null;
     return 'letbuyy-local-sandbox-checkout-handoff-secret';
+}
+
+async function createCheckoutHandoff(
+    c: AppContext,
+    store: PublishedStoreRecord,
+    cart: StorefrontServerCart,
+    bindBuyer: boolean,
+): Promise<Response> {
+    const secret = checkoutSigningSecret(c);
+    if (!secret) {
+        // [HUMAN-REQUIRED] Production checkout URL signing secret must be installed before live checkout handoff.
+        return c.json({ success: false, error: { code: 'CHECKOUT_SIGNING_UNAVAILABLE', message: 'Checkout handoff is unavailable.' } }, 503);
+    }
+
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const cartContentDigest = await sha256Hex(canonicalCheckoutCartBinding({
+        siteId: store.id,
+        cartId: cart.id,
+        cartToken: cart.cart_token,
+        channel: cart.channel,
+        salesOrigin: cart.sales_origin,
+        expiresAt,
+        couponCodes: cart.coupon_codes,
+        lines: cart.lines,
+    }));
+    const signaturePayload = canonicalCheckoutHandoffPayload({
+        siteId: store.id,
+        cartId: cart.id,
+        cartToken: cart.cart_token,
+        channel: cart.channel,
+        expiresAt,
+        cartContentDigest,
+        couponCodes: cart.coupon_codes,
+        lines: cart.lines,
+    });
+    const signature = await hmacSha256Hex(secret, signaturePayload);
+    const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
+    checkoutUrl.searchParams.set('site_id', store.id);
+    checkoutUrl.searchParams.set('cart_id', cart.id);
+    checkoutUrl.searchParams.set('cart_token', cart.cart_token);
+    checkoutUrl.searchParams.set('channel', cart.channel);
+    checkoutUrl.searchParams.set('expires_at', expiresAt);
+    checkoutUrl.searchParams.set('cart_digest', cartContentDigest);
+    checkoutUrl.searchParams.set('signature', signature);
+
+    if (bindBuyer) {
+        const buyer = getStorefrontBuyerSession(c);
+        if (!buyer || buyer.siteId !== store.id) {
+            return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+        }
+        const { error } = await getSupabaseAdmin(c).rpc('bind_hosted_checkout_buyer', {
+            p_site_id: store.id,
+            p_cart_id: cart.id,
+            p_cart_token: cart.cart_token,
+            p_channel: cart.channel,
+            p_buyer_account_id: buyer.buyerAccountId,
+            p_buyer_session_epoch: buyer.sessionEpoch,
+        });
+        if (error) {
+            if (error.message?.includes('buyer session is no longer active')) {
+                return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+            }
+            if (error.message?.includes('already bound') || error.message?.includes('no longer available') || error.message?.includes('conflicts')) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_IDENTITY_CONFLICT', message: 'This checkout cannot be linked to the current account.' } }, 409);
+            }
+            return c.json({ success: false, error: { code: 'CHECKOUT_UNAVAILABLE', message: 'Secure checkout is temporarily unavailable.' } }, 503);
+        }
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { error } = await db
+        .from('carts')
+        .update({
+            checkout_handoff: {
+                checkout_url: checkoutUrl.toString(),
+                expires_at: expiresAt,
+                signed_at: new Date().toISOString(),
+                channel: cart.channel,
+                cart_content_digest: cartContentDigest,
+            },
+        })
+        .eq('store_id', store.id)
+        .eq('id', cart.id);
+    if (error) return c.json(dbFailureBody(), 500);
+
+    return c.json(success({
+        checkout_url: checkoutUrl.toString(),
+        expires_at: expiresAt,
+        cart_digest: cartContentDigest,
+        signature,
+    }));
 }
 
 async function emitCartEvent(
@@ -347,6 +492,7 @@ async function enqueueAbandonmentCheck(c: AppContext, cart: StorefrontServerCart
         .upsert(
             {
                 site_id: cart.store_id,
+                event_id: crypto.randomUUID(),
                 queue_name: 'analytics-events',
                 job_type: 'cart.abandonment_check',
                 payload: {
@@ -358,6 +504,7 @@ async function enqueueAbandonmentCheck(c: AppContext, cart: StorefrontServerCart
                 },
                 idempotency_key: `cart.abandonment_check:${cart.store_id}:${cart.id}`,
                 request_id: requestId(c),
+                schema_version: 1,
                 available_at: availableAt,
             },
             { onConflict: 'queue_name,idempotency_key' },
@@ -386,16 +533,18 @@ async function persistCart(
     store: PublishedStoreRecord,
     cartToken: string,
     input: StorefrontCartMutationInput,
+    salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<Response> {
-    const hydrated = await hydrateCartLines(c, store, input.lines, queryPublicProducts);
+    const hydrated = await hydrateCartLines(c, store, input.lines, salesOrigin, queryPublicProducts);
     if (hydrated.error) return hydrated.error;
 
     const payload = {
         store_id: store.id,
         customer_id: input.customer_id || null,
         buyer_email: input.buyer_email || null,
-        channel: input.channel || 'web',
+        channel: input.channel,
+        sales_origin: salesOrigin,
         session_id: cartToken,
         items: hydrated.lines,
         coupon_code: input.coupon_codes[0] || null,
@@ -405,6 +554,10 @@ async function persistCart(
 
     const existing = await loadCartByToken(c, store.id, cartToken);
     if (existing.error) return c.json(dbFailureBody(), 500);
+    if (existing.cart && existing.cart.sales_origin !== salesOrigin) {
+        return c.json({ success: false, error: { code: 'SALES_ORIGIN_IMMUTABLE', message: 'A cart cannot change its sales origin.' } }, 409);
+    }
+    payload.channel = input.channel || existing.cart?.channel || 'web';
 
     const db = getSupabaseAdmin(c);
     const result = existing.cart
@@ -454,7 +607,27 @@ export function registerStorefrontCartRoutes(
         }
 
         const cartToken = requestedToken || createCartToken();
-        return persistCart(c, store, cartToken, body, queryPublicProducts);
+        return persistCart(c, store, cartToken, body, 'storefront', queryPublicProducts);
+    });
+
+    const MarketplaceCartMutationSchema = StorefrontCartMutationSchema.extend({
+        lines: z.array(StorefrontCartLineInputSchema.extend({
+            marketplace_listing_id: z.string().uuid(),
+        })).max(250).default([]),
+    }).strict();
+
+    router.post('/:subdomain/marketplace-cart', validate('json', MarketplaceCartMutationSchema), async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const body = c.get('validatedBody') as StorefrontCartMutationInput;
+        const requestedToken = body.cart_token ? normalizePublicRouteToken(body.cart_token) : null;
+        if (body.cart_token && !requestedToken) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+        }
+
+        const cartToken = requestedToken || createCartToken();
+        return persistCart(c, store, cartToken, body, 'marketplace', queryPublicProducts);
     });
 
     router.get('/:subdomain/cart/:cartToken', async (c) => {
@@ -478,7 +651,7 @@ export function registerStorefrontCartRoutes(
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
         const body = c.get('validatedBody') as StorefrontCartMutationInput;
-        return persistCart(c, store, cartToken, body, queryPublicProducts);
+        return persistCart(c, store, cartToken, body, 'storefront', queryPublicProducts);
     });
 
     router.put('/:subdomain/cart/:cartToken/buyer-identity', validate('json', StorefrontCartBuyerIdentitySchema), async (c) => {
@@ -500,7 +673,7 @@ export function registerStorefrontCartRoutes(
             channel: body.channel || existing.cart.channel,
             lines: cartLinesToInput(existing.cart.lines),
             coupon_codes: existing.cart.coupon_codes,
-        }, queryPublicProducts);
+        }, existing.cart.sales_origin, queryPublicProducts);
     });
 
     router.post('/:subdomain/cart/:cartToken/discount-codes', validate('json', StorefrontCartDiscountCodesSchema), async (c) => {
@@ -522,7 +695,7 @@ export function registerStorefrontCartRoutes(
             channel: existing.cart.channel,
             lines: cartLinesToInput(existing.cart.lines),
             coupon_codes: body.coupon_codes,
-        }, queryPublicProducts);
+        }, existing.cart.sales_origin, queryPublicProducts);
     });
 
     router.get('/:subdomain/cart/:cartToken/checkout-url', async (c) => {
@@ -537,62 +710,86 @@ export function registerStorefrontCartRoutes(
         if (!cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
         if (cart.lines.length === 0) return c.json({ success: false, error: { code: 'EMPTY_CART', message: 'Cart has no checkout lines' } }, 409);
 
-        const secret = checkoutSigningSecret(c);
-        if (!secret) {
-            // [HUMAN-REQUIRED] Production checkout URL signing secret must be installed before live checkout handoff.
-            return c.json({ success: false, error: { code: 'CHECKOUT_SIGNING_UNAVAILABLE', message: 'Checkout handoff is unavailable.' } }, 503);
-        }
+        return createCheckoutHandoff(c, store, cart, false);
+    });
 
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-        const cartContentDigest = await sha256Hex(canonicalCheckoutCartBinding({
-            siteId: store.id,
-            cartId: cart.id,
-            cartToken: cart.cart_token,
-            channel: cart.channel,
-            expiresAt,
-            couponCodes: cart.coupon_codes,
-            lines: cart.lines,
-        }));
-        const signaturePayload = canonicalCheckoutHandoffPayload({
-            siteId: store.id,
-            cartId: cart.id,
-            cartToken: cart.cart_token,
-            channel: cart.channel,
-            expiresAt,
-            cartContentDigest,
-            couponCodes: cart.coupon_codes,
-            lines: cart.lines,
-        });
-        const signature = await hmacSha256Hex(secret, signaturePayload);
-        const checkoutUrl = new URL('/checkout', checkoutOrigin(c));
-        checkoutUrl.searchParams.set('site_id', store.id);
-        checkoutUrl.searchParams.set('cart_id', cart.id);
-        checkoutUrl.searchParams.set('cart_token', cart.cart_token);
-        checkoutUrl.searchParams.set('channel', cart.channel);
-        checkoutUrl.searchParams.set('expires_at', expiresAt);
-        checkoutUrl.searchParams.set('cart_digest', cartContentDigest);
-        checkoutUrl.searchParams.set('signature', signature);
+    router.post('/:subdomain/cart/:cartToken/checkout-url', async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const { cart, error } = await loadCartByToken(c, store.id, cartToken);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        if (cart.lines.length === 0) return c.json({ success: false, error: { code: 'EMPTY_CART', message: 'Cart has no checkout lines' } }, 409);
+
+        const token = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
+        if (token) {
+            const rejected = await authenticateStorefrontBuyerSession(c, token, store.id);
+            if (rejected) return rejected;
+        }
+        return createCheckoutHandoff(c, store, cart, Boolean(token));
+    });
+
+    // A random cart token is the buyer's recovery capability. Return only the minimal completion
+    // receipt; never expose contact/address/session data through this unauthenticated recovery read.
+    // The marketplace mobile app uses it after resume to distinguish an unsubmitted cart from an
+    // order that committed just before the app was closed or lost its response.
+    router.get('/:subdomain/cart/:cartToken/checkout-status', async (c) => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
         const db = getSupabaseAdmin(c);
-        await db
+        const { data: carts, error: cartError } = await db
             .from('carts')
-            .update({
-                checkout_handoff: {
-                    checkout_url: checkoutUrl.toString(),
-                    expires_at: expiresAt,
-                    signed_at: new Date().toISOString(),
-                    channel: cart.channel,
-                    cart_content_digest: cartContentDigest,
-                },
-            })
+            .select('id, store_id, session_id, status, deleted_at')
             .eq('store_id', store.id)
-            .eq('id', cart.id);
+            .eq('session_id', cartToken)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(2);
+        if (cartError) return c.json(dbFailureBody(), 500);
+        if (!carts || carts.length === 0) {
+            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        }
+        if (carts.length > 1) {
+            return c.json({ success: false, error: { code: 'CART_REFERENCE_AMBIGUOUS', message: 'Checkout status needs support review.' } }, 409);
+        }
+
+        const cart = carts[0] as { id: string; status: string };
+        const { data: session, error: sessionError } = await db
+            .from('checkout_sessions')
+            .select('checkout_state, order_id')
+            .eq('site_id', store.id)
+            .eq('cart_id', cart.id)
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (sessionError) return c.json(dbFailureBody(), 500);
+
+        const state = (session as { checkout_state?: string; order_id?: string | null } | null)?.checkout_state || null;
+        const orderId = (session as { order_id?: string | null } | null)?.order_id || null;
+        let order: { id: string; order_number: string; total: number; currency: string; status: string } | null = null;
+        if (state === 'completed' && orderId) {
+            const { data, error } = await db
+                .from('orders')
+                .select('id, order_number, total, currency, status')
+                .eq('store_id', store.id)
+                .eq('id', orderId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (error) return c.json(dbFailureBody(), 500);
+            order = data as typeof order;
+        }
 
         return c.json(success({
-            checkout_url: checkoutUrl.toString(),
-            expires_at: expiresAt,
-            cart_digest: cartContentDigest,
-            signature,
+            cart_status: cart.status,
+            checkout_state: state,
+            ...(order ? { order } : {}),
         }));
     });
 

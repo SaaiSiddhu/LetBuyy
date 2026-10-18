@@ -14,7 +14,7 @@
 // synchronously on `.then()`, before any network call, so a rejection here is the guard itself,
 // and an ACCEPTANCE that then fails is a network error, never the guard's message -- the same
 // technique __tests__/product-tenant-guard.test.ts's negative control and
-// __tests__/merchant-tenant-predicate.test.ts use.
+// __tests__/owned-db/merchant-tenant-predicate.test.ts use.
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -90,11 +90,42 @@ test('a scope column named in .filter() with an unsafe operator does not satisfy
     );
 });
 
-test('.or(): an alternative on a scope column with a safe operator (eq/in/is-null) still satisfies the guard', async () => {
-    assert.equal(await guardRefused(guardedClient().from('employees').select('id').or('store_id.eq.a-store,other.eq.x')), false);
-    assert.equal(await guardRefused(guardedClient().from('employees').select('id').or('store_id.is.null,other.eq.x')), false);
-    // scope column second, still found
-    assert.equal(await guardRefused(guardedClient().from('employees').select('id').or('other.eq.x,store_id.eq.a-store')), false);
+test('.or(): every alternative must be scoped; one scoped branch cannot bound an unrelated branch', async () => {
+    for (const expression of ['store_id.eq.a-store,other.eq.x','store_id.is.null,other.eq.x','other.eq.x,store_id.eq.a-store']) {
+        assert.equal(await guardRefused(guardedClient().from('employees').select('id').or(expression)), true);
+    }
+});
+
+test('fully scoped OR alternatives preserve equality, IN lists, quoted commas and the platform-null exception', async () => {
+    for (const expression of ['store_id.eq.a-store,store_id.eq.b-store','store_id.is.null,store_id.eq.a-store',
+        'store_id.in.(a-store,b-store),store_id.eq.c-store','store_id.eq."a,b",store_id.eq.c-store']) {
+        assert.equal(await guardRefused(guardedClient().from('employees').select('id').or(expression)), false);
+    }
+});
+
+test('an embedded-table OR cannot scope its parent; an independent parent predicate still bounds search', async () => {
+    assert.equal(await guardRefused(guardedClient().from('employees').select('id').or('store_id.eq.a-store',{referencedTable:'stores'})),true);
+    assert.equal(await guardRefused(guardedClient().from('employees').select('id').or('store_id.eq.a-store',{foreignTable:'stores'})),true);
+    assert.equal(await guardRefused(guardedClient().from('employees').select('id').eq('store_id','a-store').or('other.eq.x,another.eq.y')),false);
+});
+
+test('malformed or nested alternatives cannot count as a parent scope on their own', async () => {
+    for(const expression of ['store_id.eq.a-store,','store_id.eq."a,b','store_id.in.(a,b','store_id.eq.a-store,or(other.eq.x,other.eq.y)']) {
+        assert.equal(await guardRefused(guardedClient().from('employees').select('id').or(expression)),true);
+    }
+});
+
+test('every inserted or upserted row needs scope; a read predicate cannot repair an incomplete write payload',async()=>{
+    for(const method of ['insert','upsert'] as const) {
+        const write=(rows:Record<string,string>[])=>{
+            const table=guardedClient().from('employees');
+            return method==='insert'?table.insert(rows):table.upsert(rows);
+        };
+        assert.equal(await guardRefused(write([{store_id:'a-store'},{name:'unscoped'}])),true);
+        assert.equal(await guardRefused(write([{store_id:'a-store'},{name:'unscoped'}]).eq('store_id','a-store')),true);
+        assert.equal(await guardRefused(write([{store_id:'a-store'},{store_id:'b-store'}])),false);
+        assert.equal(await guardRefused(write([])),true);
+    }
 });
 
 test('REGRESSION CLOSED: .or() with ONLY an unsafe operator on the scope column is now refused', async () => {

@@ -21,6 +21,8 @@ test('Task 013 settlements are monolith routes backed by billing-core and the F6
     const settlementRoute = source('routes/settlements.ts');
     const billingCore = repositorySource('packages/billing-core/src/index.ts');
     const migration = repositorySource('database/supabase/migrations/151_executable_settlement_ledger.sql');
+    const payoutAtomicityMigration = repositorySource('database/supabase/migrations/300_atomic_settlement_payout_instruction.sql');
+    const payoutReleaseMigration = repositorySource('database/supabase/migrations/301_atomic_payout_release_finalization.sql');
     const rollback = repositorySource('database/supabase/rollback/151_executable_settlement_ledger.rollback.sql');
 
     assert.match(indexSource, /import settlementsRouter from '\.\/routes\/settlements'/);
@@ -36,10 +38,22 @@ test('Task 013 settlements are monolith routes backed by billing-core and the F6
     assert.match(settlementRoute, /no_custody:\s*true/);
     assert.match(settlementRoute, /loadExistingSettlement/);
     assert.match(settlementRoute, /provider_reference/);
-    assert.match(settlementRoute, /ensureSettlementPayoutStatement/);
-    assert.match(settlementRoute, /settlement-payout:\$\{input\.settlement\.id\}/);
-    assert.match(settlementRoute, /payout_statement_id: payoutStatement\.id/);
-    assert.match(settlementRoute, /canonical_executor:\s*'payout_statements'/);
+    assert.match(settlementRoute, /createSettlementPayoutWithEffects/);
+    assert.match(settlementRoute, /create_settlement_payout_with_effects/);
+    assert.match(settlementRoute, /body\.rail === 'pa_split'\s*&& body\.provider === 'razorpay_route'/);
+    assert.doesNotMatch(settlementRoute, /\.from\('payout_items'\)\s*\.insert/);
+    assert.match(payoutAtomicityMigration, /CREATE OR REPLACE FUNCTION public\.create_settlement_payout_with_effects/);
+    assert.match(payoutAtomicityMigration, /public\.create_payout_statement_with_effects/);
+    assert.match(payoutAtomicityMigration, /INSERT INTO public\.payout_items/);
+    assert.match(payoutAtomicityMigration, /'payout\.scheduled'/);
+    assert.match(payoutAtomicityMigration, /GRANT EXECUTE[\s\S]*TO service_role/);
+    const payoutRoute = source('routes/payouts.ts');
+    assert.match(payoutRoute, /finalizePayoutStatementRelease/);
+    assert.match(payoutRoute, /finalize_payout_statement_release_with_effects/);
+    assert.match(payoutReleaseMigration, /post_settlement_ledger_transaction/);
+    assert.match(payoutReleaseMigration, /payout-debit:/);
+    assert.match(payoutReleaseMigration, /UPDATE public\.payouts/);
+    assert.match(payoutReleaseMigration, /GRANT EXECUTE[\s\S]*TO service_role/);
 
     assert.match(billingCore, /export const SettlementIngestSchema/);
     assert.match(billingCore, /export function planSettlementLedgerPosting/);
@@ -67,12 +81,12 @@ test('Task 013 reconciles mobile money compatibility tables to canonical ledger'
 
     assert.match(payoutsRoute, /postCanonicalPayoutLedger/);
     assert.match(payoutsRoute, /payout-fee-assessment:\$\{statement\.id\}/);
-    assert.match(payoutsRoute, /payout-release:\$\{claimedStatement\.id\}/);
+    assert.match(payoutsRoute, /p_release_idempotency_key: input\.idempotencyKey/);
     assert.match(payoutsRoute, /canonical_ledger_transaction_id/);
     assert.match(payoutsRoute, /release_ledger_transaction_id/);
-    assert.match(payoutsRoute, /syncSettlementPayoutInstruction/);
-    assert.match(payoutsRoute, /\.from\('payouts'\)[\s\S]*payout_statement_id/);
-    assert.match(payoutsRoute, /ledgerTransactionId: releaseLedgerTransactionId/);
+    assert.match(payoutsRoute, /finalize_payout_statement_release_with_effects/);
+    assert.doesNotMatch(payoutsRoute, /\.from\('payouts'\)\s*\.update/);
+    assert.doesNotMatch(payoutsRoute, /\.from\('payout_statements'\)\s*\.update\(\{\s*status: nextStatus/);
 
     assert.match(walletRoute, /loadCanonicalLedgerSummary/);
     assert.match(walletRoute, /ledger_entries/);
@@ -90,6 +104,10 @@ test('Task 013 live PA split remains human-gated and no rejected service topolog
     assert.match(settlementRoute, /HR-PA-SPLIT-LIVE/);
     assert.match(settlementRoute, /HumanRequiredError/);
     assert.match(settlementRoute, /SETTLEMENT_PROVIDER_SETUP_REQUIRED/);
+    assert.match(settlementRoute, /isLivePASplitProviderReady\('razorpay_route'/);
+    assert.match(settlementRoute, /input\.rail === 'cod_remittance'[\s\S]*input\.provider === 'cod'[\s\S]*Live COD remittance records must use the COD or manual provider classification/);
+    assert.match(settlementRoute, /input\.rail === 'pa_split'[\s\S]*input\.provider === 'razorpay_route'/);
+    assert.match(settlementRoute, /input\.provider === 'cashfree'[\s\S]*provider-specific execution and reconciliation adapter/);
     assert.match(humanRequired, /HR-PA-SPLIT-LIVE/);
     assert.match(humanRequired, /services\/api-gateway\/src\/routes\/settlements\.ts/);
 

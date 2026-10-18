@@ -7,11 +7,11 @@ import { registerStorefrontBlogRoutes } from './storefront-blog-routes';
 import { PUBLIC_PRODUCT_SELECT, PUBLIC_PRODUCT_SELECT_RELATIONAL, toPublicProduct } from '../../lib/public-product-view';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
-import { MarketplaceFeedQuery, type MarketplaceFeedInput } from '../../schemas/channel-listing.schema';
 import { authRateLimit, sensitiveRateLimit } from '../../middleware/rateLimit';
 import { registerStorefrontCartRoutes } from './cart-routes';
 import { registerStorefrontMarketplaceDetailRoutes, type StorefrontMarketplaceDetailDependencies } from './marketplace-detail-routes';
 import { registerMarketplaceBannerRoutes, type MarketplaceBannerRoutesDeps } from './marketplace-banner-routes';
+import { registerStorefrontMarketplaceFeedRoutes, type StorefrontMarketplaceFeedDependencies } from './marketplace-feed-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
@@ -19,11 +19,26 @@ import { mapPublicStorePayload, normalizeStorefrontHandle, type PublishedStoreRe
 import { StorefrontAnalyticsBeaconSchema, type StorefrontAnalyticsBeacon } from '@letbuyy/shared-types';
 import type { AppBlockInstance } from '@letbuyy/shared-types';
 
+// Compatibility exports keep existing callers/tests on their published import path.
+export {
+    MARKETPLACE_FEED_RPC,
+    loadMarketplaceFeedFromDatabase,
+    loadMarketplacePriceObservationsFromDatabase,
+    listMarketplaceCategoriesFromDatabase,
+    listMarketplaceOriginsFromDatabase,
+    marketplaceFeedParams,
+    type MarketplaceFeedParams,
+    type MarketplaceFeedRow,
+    type MarketplacePriceObservation,
+    type MarketplaceCategoryRow,
+    type MarketplaceOriginRow,
+} from './marketplace-feed-routes';
+
 type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
 type PublicProductRow = SqlRecord;
 type StorefrontProductDetail = { id: string; slug?: string | null };
-type DatabaseErrorLike = { message?: string; details?: string; hint?: string } | null | undefined;
+type DatabaseErrorLike = { code?: string; message?: string; details?: string; hint?: string } | null | undefined;
 type StorefrontAnalyticsBeaconEventType = StorefrontAnalyticsBeacon['event_type'];
 const STOREFRONT_SITE_SELECT: string =
     'id,store_name,name,description,site_type,status,subdomain,custom_domain,domain,is_published,is_active,is_password_protected,coming_soon_enabled,tagline,logo_url,cover_image,primary_color,secondary_color,published_at,created_at,updated_at,seo_title,seo_description,seo_keywords,og_image_url,twitter_handle,settings,theme_settings,currency,timezone,language,theme_id,theme_config';
@@ -113,6 +128,7 @@ type PublicProductQueryOptions = {
     paginated?: boolean;
     category?: string;
     search?: string;
+    countryOfOrigin?: string;
     ids?: string[];
 };
 
@@ -146,7 +162,7 @@ type ThemeEditorDraftRow = {
     auto_saved_at: string | null;
 };
 
-type StorefrontPublicRouteDependencies = {
+type StorefrontPublicRouteDependencies = StorefrontMarketplaceFeedDependencies & {
     loadSiteByHandle: (c: AppContext, handle: string, options: { publishedOnly: boolean }) => Promise<StorefrontSiteRecord | null>;
     loadPublishedStore: (c: AppContext, subdomain: string) => Promise<PublishedStoreRecord | null>;
     loadPublishedStoreById: (c: AppContext, storeId: string) => Promise<PublishedStoreRecord | null>;
@@ -171,91 +187,11 @@ type StorefrontPublicRouteDependencies = {
     requireValidTurnstile: (c: AppContext, body: unknown) => Promise<Response | null>;
     getRequestId: (c: AppContext) => string;
     emitStorefrontOrderPaidEvent: Parameters<typeof registerStorefrontCheckoutPaymentRoutes>[1]['emitStorefrontOrderPaidEvent'];
-    // MKT-1 — marketplace reads. Optional so the storefront.ts call site is untouched; the defaults
-    // below call the SECURITY DEFINER functions from migration 217. Injectable for unit tests.
-    loadMarketplaceFeed?: (c: AppContext, params: MarketplaceFeedParams) => Promise<{ data: MarketplaceFeedRow[] | null; error: DatabaseErrorLike }>;
-    listMarketplaceCategories?: (c: AppContext) => Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }>;
     // MKT-2: injectable so unit tests can drive the detail route without a database.
     loadMarketplaceListingDetail?: StorefrontMarketplaceDetailDependencies['loadMarketplaceListingDetail'];
     // CAP-FB-BANNERS: injectable so unit tests can drive the strip without a database.
     loadActiveMarketplaceBanners?: MarketplaceBannerRoutesDeps['loadActiveBanners'];
 };
-
-// ── MKT-1: marketplace feed + taxonomy (public reads) ─────────────────────────────────────────
-// marketplace_feed (217) is the ONE designed cross-tenant read: SECURITY DEFINER, explicit column
-// allowlist ⊆ PRODUCT_SELECT_FULL, filters mirroring the storefront. The gateway never re-implements
-// its filters or joins — it passes the five named parameters through and caches the answer.
-export const MARKETPLACE_FEED_RPC = 'marketplace_feed';
-
-export type MarketplaceFeedParams = {
-    category: string | null;
-    search: string | null;
-    limit: number;
-    afterApprovedAt: string | null;
-    afterId: string | null;
-};
-
-export type MarketplaceFeedRow = {
-    listing_id: string;
-    product_id: string;
-    site_id: string;
-    store_name: string | null;
-    subdomain: string | null;
-    name: string;
-    slug: string | null;
-    images: string[] | null;
-    price: number | string | null;
-    compare_price: number | string | null;
-    category_slug: string | null;
-    approved_at: string;
-};
-
-export type MarketplaceCategoryRow = {
-    id: string;
-    slug: string;
-    name: string;
-    parent_id: string | null;
-    position: number;
-};
-
-export async function loadMarketplaceFeedFromDatabase(
-    c: AppContext,
-    params: MarketplaceFeedParams,
-): Promise<{ data: MarketplaceFeedRow[] | null; error: DatabaseErrorLike }> {
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db.rpc(MARKETPLACE_FEED_RPC, {
-        p_category_slug: params.category,
-        p_search: params.search,
-        p_limit: params.limit,
-        p_after_approved_at: params.afterApprovedAt,
-        p_after_id: params.afterId,
-    });
-    return { data: (data as MarketplaceFeedRow[] | null) ?? null, error: error as DatabaseErrorLike };
-}
-
-export async function listMarketplaceCategoriesFromDatabase(
-    c: AppContext,
-): Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }> {
-    const db = getSupabaseAdmin(c);
-    // Mirrors marketplace_categories_public_read (217): only live taxonomy is ever exposed.
-    const { data, error } = await db
-        .from('marketplace_categories')
-        .select('id, slug, name, parent_id, position')
-        .eq('is_active', true)
-        .order('position', { ascending: true })
-        .order('name', { ascending: true });
-    return { data: (data as MarketplaceCategoryRow[] | null) ?? null, error: error as DatabaseErrorLike };
-}
-
-export function marketplaceFeedParams(query: MarketplaceFeedInput): MarketplaceFeedParams {
-    return {
-        category: query.category ?? null,
-        search: query.search && query.search.length > 0 ? query.search : null,
-        limit: query.limit,
-        afterApprovedAt: query.after_approved_at ?? null,
-        afterId: query.after_id ?? null,
-    };
-}
 
 export function registerStorefrontPublicRoutes(
     router: Hono<{ Bindings: Env }>,
@@ -287,49 +223,7 @@ export function registerStorefrontPublicRoutes(
         getRequestId,
         emitStorefrontOrderPaidEvent,
     } = dependencies;
-    const loadMarketplaceFeed = dependencies.loadMarketplaceFeed ?? loadMarketplaceFeedFromDatabase;
-    const listMarketplaceCategories = dependencies.listMarketplaceCategories ?? listMarketplaceCategoriesFromDatabase;
-
-    // MKT-1 — registered before the `/:subdomain/...` family so no handle-shaped pattern can shadow them.
-    // GET /storefront/marketplace/feed?category=&search=&limit=&after_approved_at=&after_id=
-    router.get('/marketplace/feed', validate('query', MarketplaceFeedQuery), async (c) => {
-        const query = c.get('validatedQuery') as MarketplaceFeedInput;
-        const params = marketplaceFeedParams(query);
-        const key = await storefrontRequestCacheKey(
-            c,
-            'marketplace:feed',
-            params.category ?? '',
-            params.search ?? '',
-            String(params.limit),
-            params.afterApprovedAt ?? '',
-            params.afterId ?? '',
-        );
-        return cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
-            const { data, error } = await loadMarketplaceFeed(c, params);
-            if (error) return { status: 500, body: dbFailureBody() };
-            const items = data || [];
-            const last = items.length === params.limit ? items[items.length - 1] : null;
-            return {
-                body: success(items, {
-                    meta: {
-                        limit: params.limit,
-                        next_cursor: last ? { after_approved_at: last.approved_at, after_id: last.listing_id } : null,
-                    },
-                }),
-                tags: ['marketplace:feed'],
-            };
-        });
-    });
-
-    // GET /storefront/marketplace/categories — the live platform taxonomy (no site scope by design)
-    router.get('/marketplace/categories', async (c) => {
-        const key = await storefrontRequestCacheKey(c, 'marketplace:categories');
-        return cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
-            const { data, error } = await listMarketplaceCategories(c);
-            if (error) return { status: 500, body: dbFailureBody() };
-            return { body: success(data || []), tags: ['marketplace:categories'] };
-        });
-    });
+    registerStorefrontMarketplaceFeedRoutes(router, dependencies);
 
     // MKT-2 — the single-listing read, beside the feed and taxonomy above.
     registerStorefrontMarketplaceDetailRoutes(router, {
@@ -923,6 +817,7 @@ export function registerStorefrontPublicRoutes(
         if (c.req.method !== 'POST') { await next(); return; }
         return authRateLimit(c, next);
     });
+    router.use('/:subdomain/shipping-rates', authRateLimit);
     router.use('/:subdomain/payments/razorpay/order', async (c, next) => {
         if (c.req.method !== 'POST') { await next(); return; }
         return authRateLimit(c, next);
@@ -944,6 +839,10 @@ export function registerStorefrontPublicRoutes(
     router.get('/:subdomain/products', async (c) => {
         const page = parseInt(c.req.query('page') || '1');
         const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
+        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
+        if (countryOfOrigin && countryOfOrigin.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
+        }
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         return cachedJson(c, await storefrontRequestCacheKey(c, 'products', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const store = await loadPublishedStore(c, c.req.param('subdomain'));
@@ -959,10 +858,11 @@ export function registerStorefrontPublicRoutes(
                 paginated: true,
                 category: c.req.query('category') || undefined,
                 search: c.req.query('search') || undefined,
+                countryOfOrigin,
             });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
-                body: paginated(data || [], count || 0, page, limit),
+                body: paginated((data || []).map((product) => toPublicProduct(product)), count || 0, page, limit),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
             };
         });
@@ -970,11 +870,16 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/:subdomain/products/by-ids?ids=a,b — Public product subset scoped by store
     router.get('/:subdomain/products/by-ids', async (c) => {
+        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
+        if (countryOfOrigin && countryOfOrigin.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
+        }
         const ids = (c.req.query('ids') || '')
             .split(',')
             .map((id) => id.trim())
             .filter((id) => /^[0-9a-f-]{36}$/i.test(id))
             .slice(0, 100);
+        const page = Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1);
 
         if (!ids.length) return c.json(success([]));
 
@@ -988,10 +893,18 @@ export function registerStorefrontPublicRoutes(
                 };
             }
 
-            const { data, error } = await queryPublicProducts(c, store.id, { limit: 100, ids });
+            const { data, error } = await queryPublicProducts(c, store.id, {
+                limit: 100,
+                page,
+                paginated: true,
+                ids,
+                category: c.req.query('category') || undefined,
+                search: c.req.query('search') || undefined,
+                countryOfOrigin,
+            });
             if (error) return { status: 500, body: dbFailureBody() };
             return {
-                body: success(data || []),
+                body: success((data || []).map((product) => toPublicProduct(product))),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
             };
         });
@@ -1135,6 +1048,10 @@ export function registerStorefrontPublicRoutes(
         if (!identifier || identifier.length > 120 || !/^[a-z0-9_-]+$/i.test(identifier)) {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection identifier' } }, 400);
         }
+        const countryOfOrigin = c.req.query('country_of_origin')?.trim() || undefined;
+        if (countryOfOrigin && countryOfOrigin.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Country of origin must be at most 100 characters' } }, 400);
+        }
 
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         return cachedJson(c, await storefrontRequestCacheKey(c, 'collection-detail', handle, identifier), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
@@ -1189,14 +1106,21 @@ export function registerStorefrontPublicRoutes(
                 .filter(Boolean);
 
             let products: PublicProductRow[] = [];
+            let total = 0;
             if (productIds.length > 0) {
-                const { data: productData, error: productError } = await queryPublicProducts(c, store.id, {
+                const { data: productData, count, error: productError } = await queryPublicProducts(c, store.id, {
                     limit: Math.min(productIds.length, 100),
+                    page: Math.max(1, parseInt(c.req.query('page') || '1', 10) || 1),
+                    paginated: true,
                     ids: productIds,
+                    category: c.req.query('category') || undefined,
+                    search: c.req.query('search') || undefined,
+                    countryOfOrigin,
                 });
                 if (!productError) {
                     const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
                     products = hydratedProducts;
+                    total = count;
                 }
             }
 
@@ -1209,7 +1133,7 @@ export function registerStorefrontPublicRoutes(
                         image_url: collectionRow.image_url || null,
                     },
                     products,
-                    total: products.length,
+                    total,
                 }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:collections', `storefront:collection:${identifier}`),
             };
@@ -1429,7 +1353,7 @@ export function registerStorefrontPublicRoutes(
         return sensitiveRateLimit(c, next);
     });
 
-    // POST /storefront/customer/find-or-create — Sessionless checkout customer bootstrap
+    // Internal-signed customer lifecycle routes, including the order-scoped checkout CRM bootstrap.
     registerStorefrontCustomerEngagementRoutes(router, {
         loadPublishedStore,
         hydrateStorefrontOrderItems,

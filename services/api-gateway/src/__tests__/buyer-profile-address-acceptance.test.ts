@@ -135,6 +135,7 @@ function harness(w: ReturnType<typeof world>) {
         },
     });
     registerBuyerOrderRoutes(router, {
+        loadBuyerOrderDetail: async () => ({ data: null, error: null }),
         listBuyerOrders: async (_c, buyerAccountId, { limit }) => {
             const mine = w.orders.filter((o) => o.buyerAccountId === buyerAccountId).slice(0, limit);
             return { data: mine, error: null, hasMore: false };

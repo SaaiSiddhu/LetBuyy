@@ -23,6 +23,10 @@ class AppConfig {
     defaultValue: 'https://accounts.letbuyy.com',
   );
 
+  /// Public Merchant origin used to validate pasted invitation destinations.
+  static const String adminBaseUrl = String.fromEnvironment(
+    'ADMIN_BASE_URL', defaultValue: 'https://admin.letbuyy.com');
+
   /// Storefront base URL used for merchant preview and live links.
   static const String storefrontBaseUrl = String.fromEnvironment(
     'STOREFRONT_BASE_URL',

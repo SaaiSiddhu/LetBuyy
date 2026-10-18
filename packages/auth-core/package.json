@@ -12,7 +12,8 @@
     "./keys": "./src/keys.ts",
     "./legacy": "./src/legacy.ts",
     "./rp-sdk": "./src/rp-sdk.ts",
-    "./session": "./src/session.ts"
+    "./session": "./src/session.ts",
+    "./platform-identity": "./src/platform-identity.ts"
   },
   "scripts": {
     "build": "tsc -b",
@@ -21,7 +22,8 @@
   },
   "dependencies": {
     "@letbuyy/shared-types": "workspace:*",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "jose": "^6.1.3"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

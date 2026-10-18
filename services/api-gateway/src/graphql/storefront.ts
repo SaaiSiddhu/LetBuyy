@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
+import { getSupabaseAdmin } from '../lib/supabase';
 import { verifyGatewayCustomerSession } from '../middleware/customer-session';
 import { checkQueryCostRateLimitKey, type QueryCostRateLimitResult } from '../middleware/rateLimit';
 import { calculateGraphQLQueryCost } from './cost';
@@ -518,6 +519,28 @@ async function resolveStorefrontData(
 
     if (hasField(document, 'customer')) {
         const session = await requireCustomerGraphQLSession(c, 'customer');
+        const { data: customer, error } = await getSupabaseAdmin(c)
+            .from('store_customers')
+            .select('id')
+            .eq('id', session.customerId)
+            .eq('store_id', session.storeId)
+            .eq('status', 'active')
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (error) {
+            throw new StorefrontGraphQLError(
+                'The customer account is temporarily unavailable.',
+                'CUSTOMER_ACCOUNT_UNAVAILABLE',
+                'customer',
+            );
+        }
+        if (!customer) {
+            throw new StorefrontGraphQLError(
+                'A valid customer session is required for this Storefront GraphQL field.',
+                'CUSTOMER_SESSION_REQUIRED',
+                'customer',
+            );
+        }
         data.customer = {
             id: session.customerId,
             store_id: session.storeId,

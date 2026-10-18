@@ -218,3 +218,20 @@ test('lb-logout performLogout reads data-logout-url (not a hardcoded path)', () 
   // There must be a fallback for when the attribute is missing.
   assert.match(src, /this\.dataset\.logoutUrl \|\| '\/api\/customer\/logout'/);
 });
+
+test('buyer order history exposes a same-origin claim form backed by the existing scoped proxy', () => {
+  const bundle = read('packages/theme-engine/src/theme-bundle.ts');
+  const sectionStart = bundle.indexOf("'customer-orders': createLiquidSectionFile");
+  const sectionEnd = bundle.indexOf("'customer-order-detail': createLiquidSectionFile", sectionStart);
+  const ordersSection = sectionStart >= 0 && sectionEnd > sectionStart ? bundle.slice(sectionStart, sectionEnd) : '';
+  assert.ok(ordersSection, 'built-in customer-orders section must remain extractable');
+  assert.match(ordersSection, /method="post" action="\/api\/buyer\/orders"/);
+  assert.match(ordersSection, /name="return_to" value="\{\{ routes\.account_orders_url \}\}"/);
+  assert.match(ordersSection, /request\.query\.buyer_claim/);
+
+  const proxy = read('apps/commerce/web/src/app/api/buyer/orders/route.ts');
+  assert.match(proxy, /export async function POST/);
+  assert.match(proxy, /resolveBuyerDataSession\(request\)/);
+  assert.match(proxy, /storefront\/buyer\/orders\/claim\?store_id=/);
+  assert.match(proxy, /JSON\.stringify\(\{ store_id: session\.siteId \}\)/);
+});

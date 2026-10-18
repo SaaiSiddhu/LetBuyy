@@ -14,6 +14,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 import 'widgets/filter_drawer.dart';
+import 'product_filter_request.dart';
 import 'widgets/product_card.dart';
 import '../search/mobile_search_screen.dart';
 import '../../widgets/premium_scaffold.dart';
@@ -38,12 +39,14 @@ class MobileShopScreen extends StatefulWidget {
 }
 
 class _MobileShopScreenState extends State<MobileShopScreen>
-    with TickerProviderStateMixin, WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
-  
+    with
+        TickerProviderStateMixin,
+        WidgetsBindingObserver,
+        AutomaticKeepAliveClientMixin {
   // 🚀 WEB OPTIMIZATION: Keep state alive when switching tabs
   @override
   bool get wantKeepAlive => true;
-  
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
@@ -65,6 +68,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
 
   // Real-time
   StreamSubscription? _productUpdateSubscription;
+  Timer? _realTimeUpdateTimer;
   final Map<String, bool> _productAvailability = {};
   bool _isRefreshing = false;
 
@@ -75,10 +79,14 @@ class _MobileShopScreenState extends State<MobileShopScreen>
 
     // Anim Controllers
     _headerAnimController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
-        
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
     _fabAnimController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     // Listeners
     _scrollController.addListener(_onScroll);
@@ -91,7 +99,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     } else {
       _isLoadingCategory = false;
     }
-    
+
     // NEW: Initialize search query from parameter
     if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
       _searchController.text = widget.searchQuery!;
@@ -108,6 +116,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     WidgetsBinding.instance.removeObserver(this);
     _headerAnimController.dispose();
     _fabAnimController.dispose();
+    _realTimeUpdateTimer?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     _debounceTimer?.cancel();
@@ -117,10 +126,17 @@ class _MobileShopScreenState extends State<MobileShopScreen>
 
   void _onScroll() {
     final offset = _scrollController.offset;
+    if (_scrollController.position.extentAfter <= 480) {
+      unawaited(
+        Provider.of<ProductProvider>(context, listen: false).loadMoreProducts(),
+      );
+    }
     // Show FAB
-    if (offset > 500 && _fabAnimController.status != AnimationStatus.completed) {
+    if (offset > 500 &&
+        _fabAnimController.status != AnimationStatus.completed) {
       _fabAnimController.forward();
-    } else if (offset <= 500 && _fabAnimController.status == AnimationStatus.completed) {
+    } else if (offset <= 500 &&
+        _fabAnimController.status == AnimationStatus.completed) {
       _fabAnimController.reverse();
     }
     setState(() {}); // For scroll progress update
@@ -129,10 +145,13 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   void _loadCategoryInfo(String categoryId) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+      final categoryProvider = Provider.of<CategoryProvider>(
+        context,
+        listen: false,
+      );
       setState(() {
-         _currentCategory = categoryProvider.getCategoryById(categoryId);
-         _isLoadingCategory = false;
+        _currentCategory = categoryProvider.getCategoryById(categoryId);
+        _isLoadingCategory = false;
       });
     });
   }
@@ -140,16 +159,26 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
-      final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-      
-      productProvider.loadProducts();
+      final productProvider = Provider.of<ProductProvider>(
+        context,
+        listen: false,
+      );
+      final categoryProvider = Provider.of<CategoryProvider>(
+        context,
+        listen: false,
+      );
+
+      // Revalidate the canonical marketplace feed whenever the shop surface opens.
+      // ProductProvider's default load is a no-op once it already has products, so
+      // returning here could otherwise keep a revoked listing in the mounted feed.
+      productProvider.loadProducts(forceReload: true);
+      productProvider.loadCountryOrigins();
       categoryProvider.loadCategories();
     });
   }
 
   void _setupRealTimeUpdates() {
-    Timer.periodic(const Duration(seconds: 45), (timer) {
+    _realTimeUpdateTimer = Timer.periodic(const Duration(seconds: 45), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -163,7 +192,10 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     if (!mounted) return;
     try {
       final random = math.Random();
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      final productProvider = Provider.of<ProductProvider>(
+        context,
+        listen: false,
+      );
       for (var product in productProvider.products.take(5)) {
         if (random.nextBool()) {
           _productAvailability[product.id] = product.inStock;
@@ -180,20 +212,25 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       // Price range
       final range = _appliedFilters['priceRange'] as RangeValues?;
       if (range != null && (range.start > 0 || range.end < 50000)) count++;
-      
+
       // Rating (can be int or double)
       final minRating = _appliedFilters['minRating'];
       if (minRating != null && (minRating is num) && minRating > 0) count++;
-      
+
       // Discount (can be int or double)
       final minDiscount = _appliedFilters['minDiscount'];
-      if (minDiscount != null && (minDiscount is num) && minDiscount > 0) count++;
-      
+      if (minDiscount != null && (minDiscount is num) && minDiscount > 0)
+        count++;
+
       // Deals toggle
       if (_appliedFilters['dealsOnly'] == true) count++;
-      
+
+      if ((_appliedFilters['countryOfOrigin'] as String?)?.isNotEmpty == true)
+        count++;
+
       // Dynamic attribute filters
-      final attrFilters = _appliedFilters['attributeFilters'] as Map<String, dynamic>?;
+      final attrFilters =
+          _appliedFilters['attributeFilters'] as Map<String, dynamic>?;
       if (attrFilters != null) {
         for (final entry in attrFilters.entries) {
           final values = entry.value as List?;
@@ -216,10 +253,10 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     setState(() => _isSearching = true);
     _debounceTimer = Timer(const Duration(milliseconds: 400), () {
       if (mounted) {
-          setState(() {
-            _searchQuery = query.toLowerCase().trim();
-            _isSearching = false;
-          });
+        setState(() {
+          _searchQuery = query.toLowerCase().trim();
+          _isSearching = false;
+        });
       }
     });
   }
@@ -234,8 +271,10 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
 
-    final productProvider = Provider.of<ProductProvider>(context); // listen: true for FilterDrawer to update
-    
+    final productProvider = Provider.of<ProductProvider>(
+      context,
+    ); // listen: true for FilterDrawer to update
+
     return PremiumScaffold(
       scaffoldKey: _scaffoldKey,
       extendBody: true,
@@ -244,9 +283,21 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       endDrawer: FilterDrawer(
         initialFilters: _appliedFilters,
         preSelectedCategoryId: widget.categoryId,
-        products: productProvider.products, // ✅ Pass products for dynamic attribute filters
+        products: productProvider
+            .products, // ✅ Pass products for dynamic attribute filters
+        originOptions: productProvider.countryOrigins,
+        originOptionsLoading: productProvider.countryOriginsLoading,
+        originOptionsError: productProvider.countryOriginsError != null,
+        onRetryOriginOptions: productProvider.loadCountryOrigins,
         onApply: (filters) {
           setState(() => _appliedFilters = filters);
+          final countryOfOrigin = filters['countryOfOrigin'] as String?;
+          reloadShopProductsForFilters(
+            provider: productProvider,
+            categoryId: widget.categoryId,
+            searchQuery: _searchQuery,
+            countryOfOrigin: countryOfOrigin,
+          );
           _updateActiveFiltersCount();
           HapticFeedback.heavyImpact();
         },
@@ -282,10 +333,19 @@ class _MobileShopScreenState extends State<MobileShopScreen>
               child: FloatingActionButton(
                 mini: true,
                 onPressed: () {
-                   _scrollController.animateTo(0, duration: 600.ms, curve: Curves.easeOutCubic);
+                  _scrollController.animateTo(
+                    0,
+                    duration: 600.ms,
+                    curve: Curves.easeOutCubic,
+                  );
                 },
-                backgroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
-                child: const Icon(Icons.arrow_upward_rounded, color: Colors.white),
+                backgroundColor: isDark
+                    ? AppColors.primaryLight
+                    : AppColors.primary,
+                child: const Icon(
+                  Icons.arrow_upward_rounded,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -307,8 +367,10 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     String title = "Shop";
     if (widget.showRecentlyViewed) {
       title = "Recently Viewed";
-    } else if (widget.showDeals) title = "Special Deals";
-    else if (_currentCategory != null) title = _currentCategory!.name;
+    } else if (widget.showDeals)
+      title = "Special Deals";
+    else if (_currentCategory != null)
+      title = _currentCategory!.name;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -326,7 +388,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
             );
           },
         ),
-        
+
         // 2. Filter Chips Row
         Container(
           color: isDark ? AppColors.surfaceDark : Colors.white,
@@ -344,7 +406,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
                   onTap: () => _showSortBottomSheet(),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // Express Delivery Chip (Toggle)
                 _buildFilterChip(
                   label: 'Express',
@@ -353,13 +415,14 @@ class _MobileShopScreenState extends State<MobileShopScreen>
                   isSelected: _appliedFilters['expressDelivery'] == true,
                   onTap: () {
                     setState(() {
-                      _appliedFilters['expressDelivery'] = !(_appliedFilters['expressDelivery'] ?? false);
+                      _appliedFilters['expressDelivery'] =
+                          !(_appliedFilters['expressDelivery'] ?? false);
                       _updateActiveFiltersCount();
                     });
                   },
                 ),
                 const SizedBox(width: 8),
-                
+
                 // Price Chip
                 _buildFilterChip(
                   label: 'Price',
@@ -369,16 +432,18 @@ class _MobileShopScreenState extends State<MobileShopScreen>
                   onTap: () => _showPriceFilter(),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // Grid/List Toggle
                 _buildFilterChip(
                   label: _isGridView ? 'Grid' : 'List',
-                  icon: _isGridView ? Icons.grid_view_rounded : Icons.view_list_rounded,
+                  icon: _isGridView
+                      ? Icons.grid_view_rounded
+                      : Icons.view_list_rounded,
                   isDark: isDark,
                   onTap: () => setState(() => _isGridView = !_isGridView),
                 ),
                 const SizedBox(width: 8),
-                
+
                 // More Filters
                 _buildFilterChip(
                   label: 'Filters',
@@ -391,20 +456,22 @@ class _MobileShopScreenState extends State<MobileShopScreen>
             ),
           ),
         ),
-        
+
         // 3. Sub-Category Buttons (if category selected)
         if (_currentCategory != null || widget.categoryId != null)
           _buildSubCategoryRow(isDark),
-        
+
         // Divider
         Container(
           height: 1,
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
         ),
       ],
     );
   }
-  
+
   // Filter Chip Widget
   Widget _buildFilterChip({
     required String label,
@@ -487,17 +554,17 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       ),
     );
   }
-  
+
   // Sub-Category Row
   Widget _buildSubCategoryRow(bool isDark) {
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, _) {
         final categoryId = widget.categoryId ?? _currentCategory?.id;
         if (categoryId == null) return const SizedBox.shrink();
-        
+
         final subcategories = categoryProvider.getSubCategories(categoryId);
         if (subcategories.isEmpty) return const SizedBox.shrink();
-        
+
         return Container(
           color: isDark ? AppColors.surfaceDark : Colors.white,
           padding: const EdgeInsets.only(bottom: 8),
@@ -519,22 +586,24 @@ class _MobileShopScreenState extends State<MobileShopScreen>
                   },
                 ),
                 const SizedBox(width: 8),
-                
+
                 // Subcategory chips
-                ...subcategories.map((subcat) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: _buildSubCategoryChip(
-                    label: subcat.name,
-                    isSelected: _appliedFilters['subCategory'] == subcat.id,
-                    isDark: isDark,
-                    onTap: () {
-                      setState(() {
-                        _appliedFilters['subCategory'] = subcat.id;
-                        _updateActiveFiltersCount();
-                      });
-                    },
+                ...subcategories.map(
+                  (subcat) => Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: _buildSubCategoryChip(
+                      label: subcat.name,
+                      isSelected: _appliedFilters['subCategory'] == subcat.id,
+                      isDark: isDark,
+                      onTap: () {
+                        setState(() {
+                          _appliedFilters['subCategory'] = subcat.id;
+                          _updateActiveFiltersCount();
+                        });
+                      },
+                    ),
                   ),
-                )),
+                ),
               ],
             ),
           ),
@@ -542,7 +611,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       },
     );
   }
-  
+
   Widget _buildSubCategoryChip({
     required String label,
     required bool isSelected,
@@ -580,7 +649,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       ),
     );
   }
-  
+
   void _showSortBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -589,16 +658,19 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       builder: (context) => _buildSortSheet(),
     );
   }
-  
+
   Widget _buildSortSheet() {
-    final isDark = Provider.of<ThemeProvider>(context, listen: false).isDarkMode;
+    final isDark = Provider.of<ThemeProvider>(
+      context,
+      listen: false,
+    ).isDarkMode;
     final sortOptions = [
       {'value': 'newest', 'label': 'Newest First'},
       {'value': 'price_low', 'label': 'Price: Low to High'},
       {'value': 'price_high', 'label': 'Price: High to Low'},
       {'value': 'popular', 'label': 'Popularity'},
     ];
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -629,35 +701,41 @@ class _MobileShopScreenState extends State<MobileShopScreen>
             ),
           ),
           const SizedBox(height: 16),
-          ...sortOptions.map((option) => ListTile(
-            leading: Radio<String>(
-              value: option['value']!,
-              groupValue: _sortBy,
-              onChanged: (value) {
-                setState(() => _sortBy = value!);
+          ...sortOptions.map(
+            (option) => ListTile(
+              leading: Radio<String>(
+                value: option['value']!,
+                groupValue: _sortBy,
+                onChanged: (value) {
+                  setState(() => _sortBy = value!);
+                  Navigator.pop(context);
+                },
+                activeColor: AppColors.primary,
+              ),
+              title: Text(
+                option['label']!,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+              ),
+              onTap: () {
+                setState(() => _sortBy = option['value']!);
                 Navigator.pop(context);
               },
-              activeColor: AppColors.primary,
             ),
-            title: Text(
-              option['label']!,
-              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-            ),
-            onTap: () {
-              setState(() => _sortBy = option['value']!);
-              Navigator.pop(context);
-            },
-          )),
+          ),
           const SizedBox(height: 20),
         ],
       ),
     );
   }
-  
+
   void _showPriceFilter() {
-    final isDark = Provider.of<ThemeProvider>(context, listen: false).isDarkMode;
-    RangeValues currentRange = _appliedFilters['priceRange'] ?? const RangeValues(0, 10000);
-    
+    final isDark = Provider.of<ThemeProvider>(
+      context,
+      listen: false,
+    ).isDarkMode;
+    RangeValues currentRange =
+        _appliedFilters['priceRange'] ?? const RangeValues(0, 10000);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -711,8 +789,18 @@ class _MobileShopScreenState extends State<MobileShopScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('₹${currentRange.start.round()}', style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[700])),
-                  Text('₹${currentRange.end.round()}', style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[700])),
+                  Text(
+                    '₹${currentRange.start.round()}',
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    '₹${currentRange.end.round()}',
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : Colors.grey[700],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -729,9 +817,17 @@ class _MobileShopScreenState extends State<MobileShopScreen>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Apply',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -742,70 +838,105 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     );
   }
 
-  Widget _buildMiniControlBtn(IconData icon, bool isDark, {required VoidCallback onTap}) {
+  Widget _buildMiniControlBtn(
+    IconData icon,
+    bool isDark, {
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
-       onTap: () {
-         HapticFeedback.lightImpact();
-         onTap();
-       },
-       child: Container(
-          width: 36, height: 36,
-          decoration: BoxDecoration(
-             color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
-             borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, size: 18, color: isDark ? AppColors.textLightHint : AppColors.textPrimary),
-       ),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: isDark ? AppColors.textLightHint : AppColors.textPrimary,
+        ),
+      ),
     );
   }
 
   Widget _buildSortDropdown(bool isDark) {
     return Container(
-       height: 36,
-       padding: const EdgeInsets.symmetric(horizontal: 10),
-       decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(10),
-       ),
-       child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-             value: _sortBy,
-             icon: Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: isDark ? AppColors.textLightHint : AppColors.textPrimary),
-             dropdownColor: isDark ? AppColors.surfaceDark : AppColors.surface,
-             style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                color: isDark ? AppColors.textLight : AppColors.textPrimary,
-                fontWeight: FontWeight.w600
-             ),
-             items: const [
-                DropdownMenuItem(value: 'newest', child: Text('Newest')),
-                DropdownMenuItem(value: 'price_low', child: Text('Price: Low to High')),
-                DropdownMenuItem(value: 'price_high', child: Text('Price: High to Low')),
-                DropdownMenuItem(value: 'popular', child: Text('Popular')),
-             ],
-             onChanged: (v) {
-                if (v != null) setState(() => _sortBy = v);
-             },
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.1)
+            : Colors.black.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _sortBy,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 16,
+            color: isDark ? AppColors.textLightHint : AppColors.textPrimary,
           ),
-       ),
+          dropdownColor: isDark ? AppColors.surfaceDark : AppColors.surface,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 12,
+            color: isDark ? AppColors.textLight : AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+          items: const [
+            DropdownMenuItem(value: 'newest', child: Text('Newest')),
+            DropdownMenuItem(
+              value: 'price_low',
+              child: Text('Price: Low to High'),
+            ),
+            DropdownMenuItem(
+              value: 'price_high',
+              child: Text('Price: High to Low'),
+            ),
+            DropdownMenuItem(value: 'popular', child: Text('Popular')),
+          ],
+          onChanged: (v) {
+            if (v != null) setState(() => _sortBy = v);
+          },
+        ),
+      ),
     );
   }
 
-  Widget _buildHeaderIconBtn(IconData icon, bool isDark, {required VoidCallback onTap}) {
+  Widget _buildHeaderIconBtn(
+    IconData icon,
+    bool isDark, {
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
           shape: BoxShape.circle,
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.1),
           ),
         ),
-        child: Icon(icon, color: isDark ? AppColors.textLight : AppColors.textPrimary, size: 20),
+        child: Icon(
+          icon,
+          color: isDark ? AppColors.textLight : AppColors.textPrimary,
+          size: 20,
+        ),
       ),
     );
   }
@@ -815,37 +946,44 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   // ---------------------------------------------------------------------------
 
   Widget _buildProductContent(ProductProvider provider, bool isDark) {
-    if ((provider.isLoading && !_isRefreshing) || _isSearching || _isLoadingCategory) {
-       return _buildShimmerLoading(isDark);
+    if ((provider.isLoading && !_isRefreshing) ||
+        _isSearching ||
+        _isLoadingCategory) {
+      return _buildShimmerLoading(isDark);
     }
 
     final products = _getFilteredProducts(provider);
 
     if (products.isEmpty) {
-       return _buildEmptyState(isDark);
+      return _buildEmptyState(isDark);
     }
 
     return RefreshIndicator(
-       onRefresh: () async {
-          setState(() => _isRefreshing = true);
-          await provider.loadProducts();
-          setState(() => _isRefreshing = false);
-       },
-       displacement: 20,
-       edgeOffset: 120, // Push down refresh indicator
-       child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-             // No padding - edge to edge
-             _isGridView
-                ? _buildMetricsGrid(products, isDark)
-                : _buildMetricsList(products, isDark),
-             
-             // Bottom padding for nav bar
-             const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          ],
-       ),
+      onRefresh: () async {
+        setState(() => _isRefreshing = true);
+        await provider.loadProducts(forceReload: true);
+        setState(() => _isRefreshing = false);
+      },
+      displacement: 20,
+      edgeOffset: 120, // Push down refresh indicator
+      child: CustomScrollView(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // No padding - edge to edge
+          _isGridView
+              ? _buildMetricsGrid(products, isDark)
+              : _buildMetricsList(products, isDark),
+
+          if (provider.hasMore ||
+              provider.isLoadingMore ||
+              provider.loadMoreFailed)
+            _buildLoadMoreFooter(provider),
+
+          // Bottom padding for nav bar
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        ],
+      ),
     );
   }
 
@@ -864,91 +1002,137 @@ class _MobileShopScreenState extends State<MobileShopScreen>
         crossAxisSpacing: 0,
         mainAxisSpacing: 0,
       ),
-      delegate: SliverChildBuilderDelegate(
-        (context, idx) {
-          final product = products[idx];
-          return ProductCard(
-            product: product,
-            isGridView: true,
-            source: _searchQuery.isNotEmpty ? 'search' : (widget.categoryId != null ? 'category' : 'organic'), // Analytics: source attribution
-          ).animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms).fadeIn().slideY(begin: 0.1, end: 0);
-        },
-        childCount: products.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, idx) {
+        final product = products[idx];
+        return ProductCard(
+              product: product,
+              isGridView: true,
+              source: _searchQuery.isNotEmpty
+                  ? 'search'
+                  : (widget.categoryId != null
+                        ? 'category'
+                        : 'organic'), // Analytics: source attribution
+            )
+            .animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms)
+            .fadeIn()
+            .slideY(begin: 0.1, end: 0);
+      }, childCount: products.length),
     );
   }
 
   Widget _buildMetricsList(List<ProductModel> products, bool isDark) {
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, idx) {
-          final product = products[idx];
-          return ProductCard(
-            product: product,
-            isGridView: false,
-            source: _searchQuery.isNotEmpty ? 'search' : (widget.categoryId != null ? 'category' : 'organic'), // Analytics: source attribution
-          ).animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms).fadeIn().slideX(begin: 0.1, end: 0);
-        },
-        childCount: products.length,
+      delegate: SliverChildBuilderDelegate((context, idx) {
+        final product = products[idx];
+        return ProductCard(
+              product: product,
+              isGridView: false,
+              source: _searchQuery.isNotEmpty
+                  ? 'search'
+                  : (widget.categoryId != null
+                        ? 'category'
+                        : 'organic'), // Analytics: source attribution
+            )
+            .animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms)
+            .fadeIn()
+            .slideX(begin: 0.1, end: 0);
+      }, childCount: products.length),
+    );
+  }
+
+  Widget _buildLoadMoreFooter(ProductProvider provider) {
+    if (provider.isLoadingMore) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (provider.loadMoreFailed) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Center(
+            child: TextButton.icon(
+              onPressed: () => unawaited(provider.retryLoadMoreProducts()),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Could not load more products. Retry'),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SliverToBoxAdapter(child: SizedBox(height: 24));
+  }
+
+  Widget _buildShimmerLoading(bool isDark) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemBuilder: (_, __) => Shimmer.fromColors(
+        baseColor: isDark ? Colors.white10 : Colors.grey[300]!,
+        highlightColor: isDark ? Colors.white24 : Colors.grey[100]!,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildShimmerLoading(bool isDark) {
-     return GridView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 6,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-           crossAxisCount: 2,
-           childAspectRatio: 0.65,
-           crossAxisSpacing: 12,
-           mainAxisSpacing: 12,
-        ),
-        itemBuilder: (_, __) => Shimmer.fromColors(
-           baseColor: isDark ? Colors.white10 : Colors.grey[300]!,
-           highlightColor: isDark ? Colors.white24 : Colors.grey[100]!,
-           child: Container(
-              decoration: BoxDecoration(
-                 color: Colors.white,
-                 borderRadius: BorderRadius.circular(20),
-              ),
-           ),
-        ),
-     );
-  }
-
   Widget _buildEmptyState(bool isDark) {
-     return Center(
-        child: Column(
-           mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-              Icon(Icons.search_off_rounded, size: 60, color: isDark ? Colors.white24 : Colors.black12),
-              const SizedBox(height: 16),
-              Text(
-                 "No products found",
-                 style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.textLightHint : AppColors.textHint
-                 ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off_rounded,
+            size: 60,
+            color: isDark ? Colors.white24 : Colors.black12,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "No products found",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.textLightHint : AppColors.textHint,
+            ),
+          ),
+          if (_activeFiltersCount > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _appliedFilters.clear();
+                    _updateActiveFiltersCount();
+                  });
+                },
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text("Clear Filters"),
               ),
-              if (_activeFiltersCount > 0)
-                 Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: TextButton.icon(
-                       onPressed: () {
-                          setState(() {
-                             _appliedFilters.clear();
-                             _updateActiveFiltersCount();
-                          });
-                       },
-                       icon: const Icon(Icons.refresh_rounded),
-                       label: const Text("Clear Filters"),
-                    ),
-                 ),
-           ],
-        ),
-     );
+            ),
+        ],
+      ),
+    );
   }
 
   // --- Filtering Logic (Reused) ---
@@ -960,11 +1144,14 @@ class _MobileShopScreenState extends State<MobileShopScreen>
 
     // 1. Category Filter - includes all subcategories recursively
     // Get CategoryProvider to look up subcategories
-    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    
+    final categoryProvider = Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    );
+
     // Build a set of all matching category IDs (including subcategories)
     Set<String> matchingCategoryIds = {};
-    
+
     // Check local filters first (which are init with widget.categoryId)
     final categoryFilters = _appliedFilters['categories'] as List<dynamic>?;
     if (categoryFilters != null && categoryFilters.isNotEmpty) {
@@ -972,42 +1159,56 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       for (final catId in categoryFilters) {
         if (catId is String) {
           matchingCategoryIds.add(catId);
-          _addDescendantCategories(catId, categoryProvider, matchingCategoryIds);
+          _addDescendantCategories(
+            catId,
+            categoryProvider,
+            matchingCategoryIds,
+          );
         }
       }
     } else if (widget.categoryId != null) {
       // Fallback - add widget.categoryId and all its descendants
       matchingCategoryIds.add(widget.categoryId!);
-      _addDescendantCategories(widget.categoryId!, categoryProvider, matchingCategoryIds);
+      _addDescendantCategories(
+        widget.categoryId!,
+        categoryProvider,
+        matchingCategoryIds,
+      );
     }
-    
+
     // Apply category filter if we have matching categories
     if (matchingCategoryIds.isNotEmpty) {
       debugPrint('🔍 Category Filter: widget.categoryId=${widget.categoryId}');
       debugPrint('🔍 Matching category IDs: $matchingCategoryIds');
       debugPrint('🔍 Total products before filter: ${filtered.length}');
-      debugPrint('🔍 Product categoryIds: ${filtered.take(5).map((p) => '${p.name}: cat=${p.categoryId}, sub=${p.subCategoryId}').join(', ')}');
-      
+      debugPrint(
+        '🔍 Product categoryIds: ${filtered.take(5).map((p) => '${p.name}: cat=${p.categoryId}, sub=${p.subCategoryId}').join(', ')}',
+      );
+
       // Match products by EITHER categoryId OR subCategoryId
-      filtered = filtered.where((p) => 
-        matchingCategoryIds.contains(p.categoryId) || 
-        (p.subCategoryId != null && matchingCategoryIds.contains(p.subCategoryId))
-      ).toList();
+      filtered = filtered
+          .where(
+            (p) =>
+                matchingCategoryIds.contains(p.categoryId) ||
+                (p.subCategoryId != null &&
+                    matchingCategoryIds.contains(p.subCategoryId)),
+          )
+          .toList();
       debugPrint('🔍 Products after filter: ${filtered.length}');
     }
-    
+
     // 2. Search
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((p) {
         final q = _searchQuery.toLowerCase();
-        return p.name.toLowerCase().contains(q) || 
-               p.description.toLowerCase().contains(q);
+        return p.name.toLowerCase().contains(q) ||
+            p.description.toLowerCase().contains(q);
       }).toList();
     }
-    
+
     // 3. Special Modes
     if (widget.showDeals) {
-       filtered = filtered.where((p) => p.discount > 0).toList();
+      filtered = filtered.where((p) => p.discount > 0).toList();
     }
 
     // 4. Other Filters
@@ -1015,28 +1216,33 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       // Price Range
       final priceRange = _appliedFilters['priceRange'] as RangeValues?;
       if (priceRange != null) {
-        filtered = filtered.where((p) => p.price >= priceRange.start && p.price <= priceRange.end).toList();
+        filtered = filtered
+            .where(
+              (p) => p.price >= priceRange.start && p.price <= priceRange.end,
+            )
+            .toList();
       }
-      
+
       // Min Rating (can be int or double)
       final minRating = _appliedFilters['minRating'];
       if (minRating != null && minRating is num && minRating > 0) {
         filtered = filtered.where((p) => p.rating >= minRating).toList();
       }
-      
+
       // Min Discount (int from new filter drawer)
       final minDiscount = _appliedFilters['minDiscount'];
       if (minDiscount != null && minDiscount is num && minDiscount > 0) {
         filtered = filtered.where((p) => p.discount >= minDiscount).toList();
       }
-      
+
       // Deals only (toggle from new filter drawer)
       if (_appliedFilters['dealsOnly'] == true) {
         filtered = filtered.where((p) => p.discount > 0).toList();
       }
-      
+
       // Dynamic attribute filters
-      final attrFilters = _appliedFilters['attributeFilters'] as Map<String, dynamic>?;
+      final attrFilters =
+          _appliedFilters['attributeFilters'] as Map<String, dynamic>?;
       if (attrFilters != null && attrFilters.isNotEmpty) {
         for (final entry in attrFilters.entries) {
           final key = entry.key;
@@ -1078,11 +1284,19 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   }
 
   /// Recursively adds all descendant category IDs to the set
-  void _addDescendantCategories(String parentId, CategoryProvider provider, Set<String> categoryIds) {
+  void _addDescendantCategories(
+    String parentId,
+    CategoryProvider provider,
+    Set<String> categoryIds,
+  ) {
     final children = provider.getSubCategories(parentId);
-    debugPrint('🔍 _addDescendantCategories: parentId=$parentId, found ${children.length} children');
+    debugPrint(
+      '🔍 _addDescendantCategories: parentId=$parentId, found ${children.length} children',
+    );
     if (children.isNotEmpty) {
-      debugPrint('🔍 Children: ${children.map((c) => '${c.name}(${c.id})').join(', ')}');
+      debugPrint(
+        '🔍 Children: ${children.map((c) => '${c.name}(${c.id})').join(', ')}',
+      );
     }
     for (final child in children) {
       categoryIds.add(child.id);

@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/operator-queue-correctness.postgres.test.ts",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/operator-queue-correctness.postgres.test.ts",
+  "runner_id": "7bae03fad00b",
+  "result": {
+    "status": "pass",
+    "tests": 22,
+    "passed": 22,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "coverage": [
+    "two Gateway worker instances race on the same signed identity JTI; exactly one request succeeds and a subsequent replay is refused",
+    "a fresh credential succeeds as the positive control",
+    "replay-claim RPC outage denies access without disclosing storage errors; the unclaimed credential succeeds after recovery",
+    "migration 307 replay-function execute privileges, SECURITY DEFINER configuration and rollback/reapply behavior",
+    "incident-command's inherited operator/super-admin protection remains on sibling routes",
+    "marketplace listing review uses its separately documented F6.2 active reviewer tier and permission gate"
+  ],
+  "test_correction": "The first owned run identified that the older sibling-route assertion still expected /operations/marketplace-listings to inherit incident-command's broad super-admin gate. F6.2 acceptance intentionally mounts that workbench before the broad gate with its own active-reviewer gate. The test now separately verifies the workbench allow/deny matrix while retaining inherited-gate checks for the other siblings.",
+  "resource_ownership": "verified by the executable-suite runner before start",
+  "cleanup": {
+    "runner_exit_code": 0,
+    "owned_fixture_cleanup": "passed"
+  },
+  "limits": [
+    "synthetic identities and data only",
+    "no hosted database, hosted deployment, live operator identity, or production transaction was used",
+    "this does not complete Phase 2 or the eleven-phase programme"
+  ]
+}

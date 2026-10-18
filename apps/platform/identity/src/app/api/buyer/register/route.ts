@@ -3,7 +3,7 @@ import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/clie
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { validateCsrf } from '@/lib/auth/csrf'
-import { createIdentityIssuedBuyerSessionToken } from '@/lib/auth/identity-issued-session'
+import { IdentitySessionIssuanceUnavailableError, prepareIdentityIssuedBuyerSession } from '@/lib/auth/identity-issued-session'
 import { buyerSessionEpoch, setBuyerSessionCookie } from '@/lib/auth/buyer-session'
 
 /**
@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
 
         // No store_id. A buyer spans sellers; site_id is the tenant boundary and a buyer is not a
         // tenant. If a caller ever needs to pass one here, the buyer model has been misunderstood.
+        const issueSession = await prepareIdentityIssuedBuyerSession()
         const created = await identityApiRequest('/storefront/buyer/register', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
@@ -61,14 +62,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Could not create the account.' }, { status: 500 })
         }
 
-        const token = await createIdentityIssuedBuyerSessionToken({
+        const token = await issueSession({
             buyerAccountId: buyer.id,
             sessionEpoch: buyerSessionEpoch(buyer.session_epoch),
         })
-        if (token) await setBuyerSessionCookie(token)
+        await setBuyerSessionCookie(token)
 
         return NextResponse.json({ buyer: { id: buyer.id, email: buyer.email, status: buyer.status } }, { status: 201 })
-    } catch {
+    } catch (error) {
+        if (error instanceof IdentitySessionIssuanceUnavailableError) {
+            return NextResponse.json({ error: 'Sign-in is unavailable right now. Try again in a moment.' }, { status: 503 })
+        }
         return NextResponse.json({ error: 'Could not create the account.' }, { status: 500 })
     }
 }

@@ -6,6 +6,50 @@ import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl, getStorefrontUrl } from '@/lib/config/urls'
 import { sendStoreCreatedEmail } from '@/lib/email/resend'
 
+export async function GET() {
+    try {
+        const response = await identityApiRequest('/onboarding/web-draft', {
+            method: 'GET',
+            requireSession: true,
+        })
+        const payload = await response.json().catch(() => null)
+        if (!response.ok) {
+            return NextResponse.json({ error: 'Unable to load saved setup progress.' }, { status: response.status })
+        }
+        return NextResponse.json(payload)
+    } catch {
+        return NextResponse.json({ error: 'Unable to load saved setup progress.' }, { status: 503 })
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    if (!validateCsrf(request)) {
+        return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
+    }
+
+    let body: unknown
+    try {
+        body = await request.json()
+    } catch {
+        return NextResponse.json({ error: 'Invalid setup draft.' }, { status: 400 })
+    }
+
+    try {
+        const response = await identityApiRequest('/onboarding/web-draft', {
+            method: 'PUT',
+            requireSession: true,
+            body: JSON.stringify(body),
+        })
+        const payload = await response.json().catch(() => null)
+        if (!response.ok) {
+            return NextResponse.json({ error: 'Unable to save setup progress.' }, { status: response.status })
+        }
+        return NextResponse.json(payload)
+    } catch {
+        return NextResponse.json({ error: 'Unable to save setup progress.' }, { status: 503 })
+    }
+}
+
 const ACTIVE_SITE_TYPES = ['store'] as const
 const COMING_SOON_SITE_TYPES = ['landing', 'blog'] as const
 const LEGACY_SITE_TYPES = ['portfolio', 'resume'] as const
@@ -54,6 +98,7 @@ export async function POST(request: NextRequest) {
             subdomain,
             templateId,
             survey,
+            attemptId,
         } = body
 
         // Validate required fields
@@ -120,6 +165,23 @@ export async function POST(request: NextRequest) {
         }
 
         const site = storePayload.data
+
+        if (typeof attemptId === 'string' && attemptId) {
+            try {
+                const completionResponse = await identityApiRequest('/onboarding/web-draft/complete', {
+                    method: 'POST',
+                    requireSession: true,
+                    sessionToken,
+                    headers: { 'X-Idempotency-Key': `onboarding-complete:${attemptId}` },
+                    body: JSON.stringify({ attempt_id: attemptId, store_id: site.id }),
+                })
+                if (!completionResponse.ok) {
+                    console.error('[create-store] onboarding draft completion could not be recorded', completionResponse.status)
+                }
+            } catch {
+                console.error('[create-store] onboarding draft completion could not be recorded')
+            }
+        }
 
         // The store-created email, sent here to the merchant this request has already authenticated.
         // It used to be sent by fetching the public /api/email/store-creation-success route, which

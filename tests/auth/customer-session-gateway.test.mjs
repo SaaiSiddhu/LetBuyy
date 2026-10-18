@@ -8,8 +8,13 @@ const gatewaySessionMiddleware = readFileSync('services/api-gateway/src/middlewa
 const storefrontRouteSource = readStorefrontRouteSource();
 const storefrontGraphQLSource = readFileSync('services/api-gateway/src/graphql/storefront.ts', 'utf8');
 const storefrontApiClientSource = readFileSync('apps/commerce/web/src/lib/api/client.ts', 'utf8');
+// T4 W4 / CAP-C24 split the internal-only-path allowlist out of client.ts into its own
+// unit-testable module (client.ts imports isStorefrontInternalOnlyPath from it and no longer
+// contains these literals directly).
+const storefrontInternalOnlyPathsSource = readFileSync('apps/commerce/web/src/lib/api/internal-only-paths.ts', 'utf8');
 const storefrontSetPasswordRouteSource = readFileSync('apps/commerce/web/src/app/api/customer/set-password/route.ts', 'utf8');
 const customerResetMigrationSource = readFileSync('database/supabase/migrations/077_customer_reset_tokens.sql', 'utf8');
+const customerResetAtomicMigrationSource = readFileSync('database/supabase/migrations/269_customer_password_reset_atomic.sql', 'utf8');
 
 test('auth-core exposes a 30-minute HMAC customer session primitive', () => {
   assert.match(authCoreSessionSource, /LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS = 30 \* 60/);
@@ -23,6 +28,8 @@ test('gateway customer-account routes require a signed customer session by defau
   assert.match(gatewaySessionMiddleware, /CUSTOMER_SESSION_REQUIRED/);
   assert.match(gatewaySessionMiddleware, /verifyCustomerSession\(/);
   assert.match(gatewaySessionMiddleware, /verifyCustomerSessionToken\(/);
+  assert.match(gatewaySessionMiddleware, /acceptsCustomerSessionFormat\(compatibility, 'gateway_hs256_v1'\)/);
+  assert.match(gatewaySessionMiddleware, /acceptsCustomerSessionFormat\(compatibility, 'shopper_hs256_legacy'\)/);
   assert.match(gatewaySessionMiddleware, /X-LetBuyy-Customer-Session/);
 
   for (const route of [
@@ -44,7 +51,6 @@ test('legacy enumeration routes are internal-signed and do not return password_h
   for (const marker of [
     "router.post('/customer/password'",
     "router.get('/customer/by-email'",
-    "router.get('/customer/status'",
     "router.get('/:subdomain/orders/contact'",
   ]) {
     const index = storefrontRouteSource.indexOf(marker);
@@ -65,6 +71,12 @@ test('legacy enumeration routes are internal-signed and do not return password_h
   assert.doesNotMatch(loginBlock, /success\(\{ customer: data \}\)/);
 });
 
+test('legacy customer status enumeration route is removed from the worker and API client', () => {
+  assert.doesNotMatch(storefrontRouteSource, /router\.get\('\/customer\/status'/);
+  assert.doesNotMatch(storefrontApiClientSource, /customerStatus\s*:/);
+  assert.doesNotMatch(storefrontInternalOnlyPathsSource, /\/storefront\/customer\/status/);
+});
+
 test('customer password reset is token-bound and stores only hashed reset intents', () => {
   assert.match(customerResetMigrationSource, /reset_token_hash text/);
   assert.match(customerResetMigrationSource, /reset_expires_at timestamp with time zone/);
@@ -75,8 +87,11 @@ test('customer password reset is token-bound and stores only hashed reset intent
   assert.match(storefrontRouteSource, /router\.post\('\/customer\/password\/confirm-reset'/);
   assert.match(storefrontRouteSource, /hashCustomerPasswordResetToken/);
   assert.match(storefrontRouteSource, /reset_token_hash: tokenHash/);
-  assert.match(storefrontRouteSource, /reset_used_at: now/);
+  assert.match(storefrontRouteSource, /rpc\('confirm_customer_password_reset'/);
   assert.doesNotMatch(storefrontRouteSource, /reset_token:\s*token/);
+  assert.match(customerResetAtomicMigrationSource, /reset_used_at = pg_catalog\.clock_timestamp\(\)/);
+  assert.match(customerResetAtomicMigrationSource, /FOR UPDATE/);
+  assert.match(customerResetAtomicMigrationSource, /REVOKE ALL ON FUNCTION public\.confirm_customer_password_reset/);
 
   assert.match(storefrontSetPasswordRouteSource, /resetToken/);
   assert.match(storefrontSetPasswordRouteSource, /action === 'request_reset'/);
@@ -90,8 +105,8 @@ test('customer-web signs server-only legacy customer lookups', () => {
   assert.match(storefrontApiClientSource, /createLetbuyyInternalAppHeaders/);
   assert.match(storefrontApiClientSource, /app: 'storefront'/);
   assert.match(storefrontApiClientSource, /getLetbuyyInternalAuthSecret/);
-  assert.match(storefrontApiClientSource, /\/storefront\/customer\/by-email/);
-  assert.match(storefrontApiClientSource, /\/storefront\/customer\/status/);
+  assert.match(storefrontInternalOnlyPathsSource, /\/storefront\/customer\/by-email/);
+  assert.doesNotMatch(storefrontInternalOnlyPathsSource, /\/storefront\/customer\/status/);
 });
 
 test('Storefront GraphQL customer and order fields require customer sessions', () => {

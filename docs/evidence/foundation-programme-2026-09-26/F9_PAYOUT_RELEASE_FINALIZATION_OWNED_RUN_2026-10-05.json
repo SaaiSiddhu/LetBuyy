@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "workingTree": "test executed against uncommitted source and migration changes; unrelated user-owned changes were preserved",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payout-statement-replay.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "a68db73f7cf1",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "additionalChecks": {
+    "apiGatewayTypecheck": "passed",
+    "migrationSafety": "passed",
+    "focusedProviderIdempotencySettlementAndMoneyContracts": {
+      "passed": 20,
+      "failed": 0
+    },
+    "gitDiffCheck": "passed"
+  },
+  "verified": [
+    "owner payout read route scopes the lookup to the authenticated store",
+    "cross-tenant payout read returns 404",
+    "real owner payout release route calls a local synthetic provider HTTP stub",
+    "documented concurrent idempotent-request response remains processing and retry reaches provider with same body and X-Transfer-Idempotency key",
+    "wallet debit insertion failure rolls back canonical payout posting, release status and instruction update",
+    "settlement payout instruction update failure rolls back canonical payout posting, wallet debit and release status",
+    "retry atomically finalizes payout statement, canonical payout ledger, wallet debit and linked instruction",
+    "provider-safe idempotency key is stable across retries and scoped to the durable tenant statement claim; key and payload match across all four provider calls",
+    "generic payout-route replay of a settlement-backed statement reuses and validates its settlement-scoped pending wallet projection without duplicating the credit",
+    "exact release replay creates no duplicate effects and does not call provider again; changed provider reference conflicts",
+    "only service_role can execute the release finalizer",
+    "migration rollback and reapply preserve posted payout evidence"
+  ],
+  "providerMode": "local HTTP stub intercepted inside the test process; first response is synthetic 409, later responses model provider success; no external provider request",
+  "providerSandboxOrLiveMoney": false,
+  "cleanup": "runner completed and removed its owned disposable database resources"
+}

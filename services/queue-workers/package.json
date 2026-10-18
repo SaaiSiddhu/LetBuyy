@@ -13,6 +13,7 @@
     "test": "tsx --test test/*.test.mjs"
   },
   "dependencies": {
+    "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/billing-core": "workspace:*",
     "@letbuyy/event-core": "workspace:*",
     "@letbuyy/infrastructure": "workspace:*",
@@ -20,7 +21,7 @@
     "@letbuyy/shared-types": "workspace:*"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260524.1",
+    "@cloudflare/workers-types": "4.20260611.1",
     "tsx": "4.20.6",
     "typescript": "^5.7.0",
     "wrangler": "^4.100.0"

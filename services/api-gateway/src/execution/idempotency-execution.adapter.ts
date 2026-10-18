@@ -131,14 +131,17 @@ export class IdempotencyExecutionAdapter {
             throw new ConflictError('An identical mutation is already processing');
         }
 
-        const { data: reclaimed, error: reclaimError } = await this.db
+        const reclaimQuery = this.db
             .from('idempotency_keys')
             .update({
                 status: 'processing',
                 locked_until: lockedUntil,
                 request_id: params.requestId || null,
             })
-            .eq('id', record.id)
+            .eq('id', record.id);
+        const { data: reclaimed, error: reclaimError } = await (this.currentSiteId
+            ? reclaimQuery.eq('site_id', this.currentSiteId)
+            : reclaimQuery)
             .select('id')
             .single();
 
@@ -188,6 +191,9 @@ export class IdempotencyExecutionAdapter {
                 locked_until: null,
             })
             .eq('id', id);
-        await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
+        const { error } = await (this.currentSiteId ? query.eq('site_id', this.currentSiteId) : query);
+        if (error && !isMissingSchemaError(error)) {
+            throw new Error(`Idempotency failure update failed: ${error.message}`);
+        }
     }
 }

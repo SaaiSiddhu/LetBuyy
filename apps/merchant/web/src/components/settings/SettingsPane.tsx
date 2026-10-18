@@ -43,6 +43,16 @@ function findSidebarIcon(title: string): LucideIcon | undefined {
     return SETTINGS_NAV_ITEMS.find((item) => item.label === title)?.Icon
 }
 
+/**
+ * Renders the header icon for a page. The icon component is a stable reference out of SETTINGS_NAV_ITEMS (a module-level
+ * constant), never something created while rendering; it reaches this module-level component as a prop, so the element
+ * type SettingsPane renders is static and no component is looked up and instantiated inside SettingsPane's own render
+ * (react-hooks/static-components). Same DOM as rendering the icon directly.
+ */
+function SidebarTitleIcon({ Icon }: { Icon: LucideIcon }) {
+    return <Icon className="letbuyy-icon" aria-hidden="true" />
+}
+
 export function SettingsPane({
     title,
     description,
@@ -64,7 +74,7 @@ export function SettingsPane({
                 title={title}
                 description={description}
                 eyebrow={eyebrow}
-                icon={SidebarIcon ? <SidebarIcon className="letbuyy-icon" aria-hidden="true" /> : undefined}
+                icon={SidebarIcon ? <SidebarTitleIcon Icon={SidebarIcon} /> : undefined}
                 iconName={SidebarIcon ? undefined : iconName}
                 breadcrumbs={breadcrumbs ?? [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
                 primaryAction={primaryAction}

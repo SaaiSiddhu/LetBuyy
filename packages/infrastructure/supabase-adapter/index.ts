@@ -146,5 +146,6 @@ export async function upsertSupabaseRows<T>(
     throw new Error(`Supabase upsert failed for ${table}: ${response.status} ${message}`);
   }
 
+  if (options.prefer?.includes('return=minimal')) return [];
   return response.json() as Promise<T[]>;
 }

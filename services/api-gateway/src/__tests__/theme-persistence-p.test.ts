@@ -1,19 +1,7 @@
-/**
- * Phase P — theme persistence (idempotency + CAS + validate) tests.
- *
- * ALL tests are logic-level with mocked DB (no real database connection required).
- * Source-pattern assertions read the adapter/route source to confirm correctness of
- * structural properties (field presence, ordering, emitAuditEvent action strings,
- * route registration ordering, migration safety).
- *
- * Cross-tenant isolation is proven at the logic level:
- *   - verifyStoreOwner with a mocked DB that returns no row → ForbiddenError BEFORE
- *     any theme/release operation (Site B merchant cannot access Site A resources).
- *   - Idempotency pre-check query is confirmed to have store_id as the FIRST eq() filter
- *     (source pattern assertion on adapter source).
- *   - Rollback CAS query is confirmed to scope by store_id (source pattern assertion).
+/** Adapter contracts with mocked transport, plus preserved rollback/migration guards.
+ * Real concurrent mutations, tenant/staff authorization, replay and transactional
+ * audit/outbox/receipt faults are exercised by owned-db/theme-draft-cas.postgres.test.ts.
  */
-
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
@@ -112,10 +100,10 @@ test('isStaleThemeEditorBaseVersion — current > base returns true (stale)', ()
     assert.equal(isStaleThemeEditorBaseVersion(1, 0), true);
 });
 
-test('isStaleThemeEditorBaseVersion — current <= base or base absent returns false (fresh)', () => {
-    assert.equal(isStaleThemeEditorBaseVersion(3, 5), false);
-    assert.equal(isStaleThemeEditorBaseVersion(5, undefined), false);
-    assert.equal(isStaleThemeEditorBaseVersion(5, null), false);
+test('isStaleThemeEditorBaseVersion — future and absent bases conflict; exact bases pass', () => {
+    assert.equal(isStaleThemeEditorBaseVersion(3, 5), true);
+    assert.equal(isStaleThemeEditorBaseVersion(5, undefined), true);
+    assert.equal(isStaleThemeEditorBaseVersion(5, null), true);
     assert.equal(isStaleThemeEditorBaseVersion(3, 3), false);
 });
 
@@ -125,7 +113,7 @@ test('validateDocument: ForbiddenError when Site B merchant calls with Site A st
     // Return no row from sites table → verifyStoreOwner throws ForbiddenError
     // This happens BEFORE parseThemeDocument is called.
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -156,14 +144,9 @@ test('validateDocument: ForbiddenError when Site B merchant calls with Site A st
     assert.equal(releaseQueries.length, 0, 'theme_releases must not be queried when auth fails');
 });
 
-// ─── Token rejection — authMiddleware level (primary) ─────────────────────────
-
-// The PRIMARY defence against customer HS256 tokens is authMiddleware: it calls
-// supabase.auth.getUser() which only accepts Supabase-issued JWTs. A custom HS256
-// token (CUSTOMER_SESSION_SECRET) returns an error there → 401 UNAUTHORIZED.
-// The test below is a source-pattern assertion that all three Phase P routes have
-// authMiddleware applied, confirming they are gated at that layer.
-test('authMiddleware applied to validate/publish/rollback routes (primary HS256 rejection)', () => {
+// These source checks establish route wiring only. They do not certify token
+// verification; executable realm/audience/identity gates belong to auth suites.
+test('authMiddleware covers validate/publish/rollback routes (wiring only)', () => {
     // themes.ts registers authMiddleware as route-level middleware via router.use()
     // before the route handlers. Confirm all three new routes have their prefix covered.
     assert.ok(
@@ -267,139 +250,80 @@ test('validateDocument: invalid V2 structure throws before any DB write (spy con
     assert.equal(updateCalled, false, 'update must not be called when ThemeDocument is invalid');
 });
 
-// ─── Publish idempotency early return ─────────────────────────────────────────
-
-test('publish: idempotency pre-check returns early without calling publishReleaseSnapshot', async () => {
-    let rpcCalled = false;
-
-    const existingRelease = {
-        id: 'release-existing-123',
-        release_version: 3,
+// Publication replay and conflict are resolved by the same database mutation.
+// No application pre-check may return a receipt before current authorization.
+function publicationTransport(options: { deniedRead?: boolean; newerDraft?: boolean; mutationError?: { code: string; message: string } } = {}) {
+    const rpcCalls: Array<{ name: string; params: Record<string, unknown> }> = [];
+    const receipt = { version: 2, current_version: 8, replayed: true, template_key: 'index',
         published_at: '2026-01-01T00:00:00Z',
-    };
-
-    const mockDb = {
-        from: (table: string) => {
-            if (table === 'sites') {
-                return makeChain({ data: { id: 'store-1', user_id: 'user-1', custom_user_id: null }, error: null });
-            }
-            if (table === 'theme_releases') {
-                return makeChain({ data: existingRelease, error: null });
-            }
-            if (table === 'themes') {
-                return makeChain({ data: { id: 'theme-1', slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
-            }
-            return makeChain({ data: null, error: null });
+        store: { id: VALID_STORE_UUID, status: 'published', theme_id: 'urban-kicks' },
+        theme: { id: VALID_RELEASE_UUID, slug: 'urban-kicks', name: 'Urban Kicks' },
+        release: { release_id: VALID_RELEASE_UUID, release_version: 1, published_at: '2026-01-01T00:00:00Z' } };
+    const db = {
+        from(table: string) {
+            assert.equal(table, 'themes', 'publication must not read/write release, receipt, audit or draft tables directly');
+            return makeChain({ data: { id: 'theme-1', slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
         },
-        rpc: (_fn: string, _args: unknown) => {
-            rpcCalled = true;
-            return Promise.resolve({ data: null, error: null });
+        async rpc(name: string, params: Record<string, unknown>) {
+            rpcCalls.push({ name, params });
+            if (name === 'read_owned_theme_draft_v1') return options.deniedRead
+                ? { data: null, error: { code: '42501', message: 'denied' } }
+                : { data: { version: 8, store: { id: VALID_STORE_UUID }, has_draft: Boolean(options.newerDraft),
+                    theme_instance_draft_id: options.newerDraft ? VALID_RELEASE_UUID : null,
+                    template_config: options.newerDraft ? { themeId: 'urban-kicks', sections: { template: [] } } : null }, error: null };
+            assert.equal(name, 'mutate_owned_theme_draft_v1');
+            return { data: options.mutationError ? null : receipt, error: options.mutationError || null };
         },
     };
+    return { db, rpcCalls, receipt };
+}
+const publishIntent = { store_id: VALID_STORE_UUID, template_key: 'index', base_version: 1,
+    idempotency_key: 'accepted-publish-intent', make_store_live: true };
 
+test('publish retries reach the canonical receipt after the active draft has been cleared', async () => {
+    const { db, rpcCalls, receipt } = publicationTransport();
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
-    const adapter = new ThemeExecutionAdapter(mockDb as never);
-
-    const result = await adapter.publish('urban-kicks', {
-        store_id: 'store-1',
-        idempotency_key: 'idem-key-12345678',
-        make_store_live: true,
-        template_key: 'index',
-    }, 'user-1');
-
-    assert.equal(rpcCalled, false, 'publish_theme_release RPC must NOT be called on idempotent hit');
-    assert.equal((result as Record<string, unknown>).idempotent, true, 'result must carry idempotent:true flag');
-    assert.equal(
-        ((result as Record<string, unknown>).release as Record<string, unknown>).release_id,
-        existingRelease.id,
-        'must return the existing release id',
-    );
+    const result = await new ThemeExecutionAdapter(db as never, VALID_STORE_UUID)
+        .publish('urban-kicks', publishIntent, 'actor-1', 'request-1');
+    assert.deepEqual(result, receipt);
+    assert.deepEqual(rpcCalls.map(c => c.name), ['read_owned_theme_draft_v1', 'mutate_owned_theme_draft_v1']);
+    assert.deepEqual(rpcCalls[1].params, {
+        p_actor_id: 'actor-1', p_store_id: VALID_STORE_UUID, p_theme_slug: 'urban-kicks', p_template_key: 'index',
+        p_base_version: 1, p_key: 'accepted-publish-intent', p_operation: 'publish', p_config: null, p_runtime: {},
+        p_bound_site_id: VALID_STORE_UUID, p_request_id: 'request-1',
+        p_publish_options: { publish_message: null, make_store_live: true },
+    });
 });
 
-// ─── Publish idempotency cross-tenant scope (source pattern assertion) ─────────
-
-test('publish idempotency pre-check: store_id is the FIRST eq() filter in the query (cross-tenant safety)', () => {
-    // Locate the idempotency pre-check block in the adapter source
-    const preCheckBlock = ADAPTER_SRC.match(
-        /\/\/ Idempotency pre-check[\s\S]*?\.maybeSingle\(\)/,
-    )?.[0] ?? '';
-
-    assert.ok(preCheckBlock.length > 0, 'Idempotency pre-check block must exist in adapter source');
-
-    const storeIdIdx = preCheckBlock.indexOf("'store_id'");
-    const idemKeyIdx = preCheckBlock.indexOf("'idempotency_key'");
-
-    assert.ok(storeIdIdx !== -1, "store_id must appear in the idempotency pre-check query");
-    assert.ok(idemKeyIdx !== -1, "idempotency_key must appear in the idempotency pre-check query");
-    assert.ok(
-        storeIdIdx < idemKeyIdx,
-        "store_id eq() must appear before idempotency_key eq() — tenant scope first",
-    );
-});
-
-// ─── Publish audit event presence (source pattern assertion) ──────────────────
-
-test('publish: emitAuditEvent with action theme.publish is called in the publish() method body', () => {
-    // Extract the publish() method body from adapter source
-    const publishMethodBlock = ADAPTER_SRC.match(
-        /async publish\([\s\S]*?(?=\n    async )/,
-    )?.[0] ?? '';
-
-    assert.ok(publishMethodBlock.length > 0, 'publish() method must be found in adapter source');
-    assert.ok(
-        publishMethodBlock.includes('emitAuditEvent'),
-        "publish() must call emitAuditEvent",
-    );
-    assert.ok(
-        publishMethodBlock.includes("'theme.publish'"),
-        "publish() emitAuditEvent must use action 'theme.publish'",
-    );
-});
-
-// ─── Publish stale draft → no release written ─────────────────────────────────
-
-test('publish: stale base_version throws ConflictError before publishReleaseSnapshot is called', async () => {
-    let rpcCalled = false;
-
-    const mockDb = {
-        from: (table: string) => {
-            if (table === 'sites') {
-                return makeChain({ data: { id: 'store-1', user_id: 'user-1', custom_user_id: null }, error: null });
-            }
-            if (table === 'themes') {
-                return makeChain({ data: { id: 'theme-1', slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
-            }
-            if (table === 'theme_editor_drafts') {
-                // Current DB draft is at version 5
-                return makeChain({ data: { id: 'draft-1', draft_config: {}, version: 5, auto_saved_at: null }, error: null });
-            }
-            if (table === 'theme_releases') {
-                // No existing idempotency hit (no idempotency_key supplied)
-                return makeChain({ data: null, error: null });
-            }
-            return makeChain({ data: null, error: null });
-        },
-        rpc: (_fn: string, _args: unknown) => {
-            rpcCalled = true;
-            return Promise.resolve({ data: null, error: null });
-        },
-    };
-
+test('publish denied by current actor/site authorization cannot reach a receipt or mutation', async () => {
+    const { db, rpcCalls } = publicationTransport({ deniedRead: true });
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
-    const adapter = new ThemeExecutionAdapter(mockDb as never);
+    await assert.rejects(() => new ThemeExecutionAdapter(db as never).publish('urban-kicks', publishIntent, 'revoked-actor'), ForbiddenError);
+    assert.equal(rpcCalls.length, 1);
+});
 
-    await assert.rejects(
-        () => adapter.publish('urban-kicks', {
-            store_id: 'store-1',
-            make_store_live: true,
-            template_key: 'index',
-            base_version: 3, // stale — DB is at 5
-        }, 'user-1'),
-        ConflictError,
-        'stale base_version must throw ConflictError',
-    );
+test('publish receipt recovery does not validate or consume a different newer draft', async () => {
+    const { db, rpcCalls, receipt } = publicationTransport({ newerDraft: true });
+    const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+    assert.deepEqual(await new ThemeExecutionAdapter(db as never).publish('urban-kicks', publishIntent, 'actor-1'), receipt);
+    assert.deepEqual(rpcCalls[1].params.p_runtime, {});
+    assert.equal(rpcCalls[1].params.p_base_version, 1);
+});
 
-    assert.equal(rpcCalled, false, 'publish_theme_release RPC must NOT be called on stale draft');
+test('publish stale intent is rejected by the atomic writer without application-side effects', async () => {
+    const { db, rpcCalls } = publicationTransport({ mutationError: { code: 'PT409', message: 'changed' } });
+    const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+    await assert.rejects(() => new ThemeExecutionAdapter(db as never).publish('urban-kicks', publishIntent, 'actor-1'), ConflictError);
+    assert.equal(rpcCalls.length, 2);
+    assert.equal(rpcCalls[1].params.p_base_version, 1);
+    assert.equal(rpcCalls[1].params.p_key, publishIntent.idempotency_key);
+});
+
+test('publish transaction infrastructure failure returns unavailable, never a fabricated release', async () => {
+    const { db } = publicationTransport({ mutationError: { code: 'PGRST202', message: 'function unavailable' } });
+    const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+    await assert.rejects(() => new ThemeExecutionAdapter(db as never).publish('urban-kicks', publishIntent, 'actor-1'),
+        (error: unknown) => (error as { statusCode: number }).statusCode === 503);
 });
 
 // ─── Rollback CAS guard — mismatch ───────────────────────────────────────────
@@ -608,25 +532,14 @@ test('migration 189: CREATE UNIQUE INDEX uses IF NOT EXISTS (idempotent re-run s
 
 // ─── Schema field presence assertions ─────────────────────────────────────────
 
-test('PublishThemeSchema contains optional idempotency_key field', async () => {
+test('PublishThemeSchema requires the explicit saved version and stable intent key', async () => {
     const { PublishThemeSchema } = await import('../schemas/theme.schema');
-    // Valid payload without idempotency_key must pass
-    const withoutKey = PublishThemeSchema.safeParse({ store_id: VALID_STORE_UUID });
-    assert.equal(withoutKey.success, true, 'PublishThemeSchema must accept body without idempotency_key');
-
-    // With a valid key
-    const withKey = PublishThemeSchema.safeParse({
-        store_id: VALID_STORE_UUID,
-        idempotency_key: 'idem-key-00000000',
-    });
-    assert.equal(withKey.success, true, 'PublishThemeSchema must accept idempotency_key >= 8 chars');
-
-    // Key too short must fail
-    const tooShort = PublishThemeSchema.safeParse({
-        store_id: VALID_STORE_UUID,
-        idempotency_key: 'short',
-    });
-    assert.equal(tooShort.success, false, 'PublishThemeSchema must reject idempotency_key shorter than 8 chars');
+    const valid = { store_id: VALID_STORE_UUID, base_version: 1, idempotency_key: 'publish-key-00000000' };
+    assert.equal(PublishThemeSchema.safeParse(valid).success, true);
+    for (const invalid of [{ ...valid, base_version: undefined }, { ...valid, base_version: 0 },
+        { ...valid, idempotency_key: undefined }, { ...valid, idempotency_key: 'short' }]) {
+        assert.equal(PublishThemeSchema.safeParse(invalid).success, false);
+    }
 });
 
 test('RollbackThemeReleaseSchema contains optional expected_current_release_id (UUID) field', async () => {
@@ -665,21 +578,38 @@ test('ValidateThemeDocumentSchema is exported and enforces store_id + theme_docu
     assert.equal(missingDoc.success, false, 'ValidateThemeDocumentSchema must reject body without theme_document');
 });
 
-// ─── idempotency_key post-enrich: field present in adapter source ──────────────
+test('publication persistence and renderer enrichment share the canonical transaction', () => {
+    const sql = readFileSync(path.resolve(__dirname, '../../../../database/supabase/migrations/344_atomic_theme_draft_cas.sql'), 'utf8');
+    assert.match(sql, /public\.publish_theme_release/);
+    assert.match(sql, /UPDATE public\.theme_releases SET release_manifest/);
+    assert.match(sql, /INSERT INTO public\.audit_activity_events/);
+    assert.match(sql, /INSERT INTO public\.idempotency_keys/);
+    const publish = ADAPTER_SRC.slice(ADAPTER_SRC.indexOf('    async publish('), ADAPTER_SRC.indexOf('    async listReleases('));
+    assert.doesNotMatch(publish, /\.from\(/);
+});
 
-test('publish: idempotency post-enrich block exists in adapter source (store_id + id scoped update)', () => {
-    // Match from the post-enrich comment to the closing paren of the store_id eq() call
-    const postEnrichBlock = ADAPTER_SRC.match(
-        /\/\/ Idempotency post-enrich[\s\S]*?\.eq\('store_id'[^)]*\)/,
-    )?.[0] ?? '';
 
-    assert.ok(postEnrichBlock.length > 0, 'Idempotency post-enrich block with store_id scope must exist in adapter source');
-    assert.ok(
-        postEnrichBlock.includes('idempotency_key'),
-        'Post-enrich block must reference idempotency_key',
-    );
-    assert.ok(
-        postEnrichBlock.includes("'store_id'"),
-        'Post-enrich update must scope by store_id (tenant isolation)',
-    );
+test('save receipt recovery bypasses mutable runtime validation for an already-advanced base without permitting a new write', async () => {
+    const at = '2026-01-01T00:00:00Z';
+    const receipt = { version: 2, current_version: 8, replayed: true, saved_at: at,
+        draft: { id: VALID_RELEASE_UUID, version: 2, auto_saved_at: at } };
+    const calls: Array<{ name: string; params: Record<string, unknown> }> = [];
+    const db = {
+        from(table: string) {
+            assert.equal(table, 'themes', 'a stale receipt lookup must not resolve or validate against a different current runtime');
+            return makeChain({ data: { id: VALID_RELEASE_UUID, slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
+        },
+        async rpc(name: string, params: Record<string, unknown>) {
+            calls.push({ name, params });
+            if (name === 'read_owned_theme_draft_v1') return { data: { version: 8, store: { id: VALID_STORE_UUID }, has_draft: false }, error: null };
+            assert.equal(name, 'mutate_owned_theme_draft_v1'); return { data: receipt, error: null };
+        },
+    };
+    const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
+    const result = await new ThemeExecutionAdapter(db as never).saveDraft('urban-kicks', {
+        store_id: VALID_STORE_UUID, template_key: 'index', base_version: 1, idempotency_key: 'accepted-old-runtime-intent', client: 'api',
+        template_config: { themeId: 'urban-kicks', sections: { template: [{ id: 'old-section', type: 'old-runtime-section', settings: {} }] } },
+    }, 'actor-1');
+    assert.deepEqual(result, receipt); assert.deepEqual(calls[1].params.p_runtime, {});
+    assert.equal(calls[1].params.p_base_version, 1); assert.equal(calls[1].params.p_key, 'accepted-old-runtime-intent');
 });

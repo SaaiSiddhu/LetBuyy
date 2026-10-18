@@ -13,6 +13,8 @@ const storefrontGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/grap
 const productsRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/products.ts');
 const ordersRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/orders.ts');
 const pagesRoutePath = path.join(repoRoot, 'services/api-gateway/src/routes/pages.ts');
+const typescriptGraphQLClientPath = path.join(repoRoot, 'packages/typescript/api-client/src/graphql.ts');
+const dartGraphQLClientPath = path.join(repoRoot, 'packages/dart/api_client/lib/src/graphql.dart');
 
 const restShimSource = readFileSync(restShimPath, 'utf8');
 const adminGraphQLSource = readFileSync(adminGraphQLPath, 'utf8');
@@ -20,6 +22,8 @@ const storefrontGraphQLSource = readFileSync(storefrontGraphQLPath, 'utf8');
 const productsRouteSource = readFileSync(productsRoutePath, 'utf8');
 const ordersRouteSource = readFileSync(ordersRoutePath, 'utf8');
 const pagesRouteSource = readFileSync(pagesRoutePath, 'utf8');
+const typescriptGraphQLClientSource = readFileSync(typescriptGraphQLClientPath, 'utf8');
+const dartGraphQLClientSource = readFileSync(dartGraphQLClientPath, 'utf8');
 const storefrontRouteSource = readStorefrontRouteSource();
 
 function assertIncludesAll(source, needles, context) {
@@ -45,10 +49,17 @@ test('WS12 G6 publishes the migrated REST shim parity endpoint contract', () => 
     "restPath: '/storefront/:subdomain'",
     "restPath: '/storefront/:subdomain/products'",
     "restPath: '/storefront/:subdomain/pages'",
-    "field: 'customerOrders'",
-    "restPath: '/storefront/customer/orders'",
     "parity: 'rest-envelope-data-preserved'",
   ], 'REST shim parity endpoint contract');
+});
+
+test('store-customer orders stay on the scoped REST contract, not deferred GraphQL', () => {
+  assert.doesNotMatch(typescriptGraphQLClientSource, /customerOrders|StorefrontCustomerOrders/);
+  assert.doesNotMatch(dartGraphQLClientSource, /customerOrders|StorefrontCustomerOrders/);
+  assert.ok(readFileSync(path.join(repoRoot, 'packages/typescript/api-client/src/index.ts'), 'utf8')
+    .includes("'/storefront/customer/orders'"));
+  assert.ok(readFileSync(path.join(repoRoot, 'packages/dart/api_client/lib/src/api_client.dart'), 'utf8')
+    .includes("'/storefront/customer/orders'"));
 });
 
 test('WS12 G6 Admin and Storefront GraphQL use the shared REST shim request/envelope adapter', () => {
@@ -96,7 +107,10 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
     "router.get('/:subdomain/products'",
     "body: paginated(data || [], count || 0, page, limit)",
     "router.get('/:subdomain/products/:slug'",
-    "body: success(product)",
+    // SEC-1: the product body is still a success() envelope (the parity contract), but it is now
+    // filtered through toPublicProduct at the point of serialisation so nothing an upstream step
+    // attaches reaches an anonymous caller unreviewed. The pin follows that filter, not the bare row.
+    "body: success(toPublicProduct(product as Record<string, unknown>))",
     "router.get('/:subdomain/pages'",
     "body: success(pages)",
     "router.get('/customer/orders'",

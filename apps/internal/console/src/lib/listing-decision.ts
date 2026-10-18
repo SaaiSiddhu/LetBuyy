@@ -21,14 +21,26 @@ export function newListingDecisionKey(decision: ListingDecision, listingId: stri
     return `admin-web:listing:${decision}:${listingId}:${crypto.randomUUID()}`;
 }
 
+export function newListingClaimKey(listingId: string): string {
+    return `admin-web:listing:claim:${listingId}:${crypto.randomUUID()}`;
+}
+
+export function newListingAssignmentKey(listingId: string): string {
+    return `admin-web:listing:assign:${listingId}:${crypto.randomUUID()}`;
+}
+
 export function buildListingDecisionBody(input: {
     decision: ListingDecision;
     reason: string;
     idempotencyKey: string;
-}): { idempotency_key: string; reason?: string } {
+    operatorUserId: string;
+}): { idempotency_key: string; operator_user_id: string; reason?: string } {
     const idempotencyKey = input.idempotencyKey.trim();
     if (!idempotencyKey || idempotencyKey.length > MAX_IDEMPOTENCY_KEY) {
         throw new Error('This decision could not be submitted. Reload the page and try again.');
+    }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.operatorUserId)) {
+        throw new Error('The signed-in operator identity is unavailable. Sign in again before deciding.');
     }
 
     // A negative moderation decision with nothing recorded is one nobody can audit or explain to the
@@ -38,5 +50,7 @@ export function buildListingDecisionBody(input: {
         throw new Error(`A ${input.decision} requires a reason of ${MIN_DECISION_REASON} to ${MAX_DECISION_REASON} characters.`);
     }
 
-    return reason ? { idempotency_key: idempotencyKey, reason } : { idempotency_key: idempotencyKey };
+    return reason
+        ? { idempotency_key: idempotencyKey, operator_user_id: input.operatorUserId, reason }
+        : { idempotency_key: idempotencyKey, operator_user_id: input.operatorUserId };
 }

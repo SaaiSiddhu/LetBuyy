@@ -1,6 +1,7 @@
 // lib/screens/user/main_screen.dart
 // 💎 PREMIUM: Ultra-Professional Floating Navigation
 
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -39,6 +40,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late int _currentIndex;
+  bool _shopTabWasSelected = false;
 
   // Animations
   late AnimationController _bottomBarController;
@@ -61,6 +63,7 @@ class _MainScreenState extends State<MainScreen>
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    _shopTabWasSelected = widget.initialIndex == 2;
     WidgetsBinding.instance.addObserver(this);
 
     // Slide up animation for Bottom Bar
@@ -93,6 +96,7 @@ class _MainScreenState extends State<MainScreen>
     if (widget.initialIndex != oldWidget.initialIndex) {
       setState(() {
         _currentIndex = widget.initialIndex;
+        if (widget.initialIndex == 2) _shopTabWasSelected = true;
       });
     }
   }
@@ -127,10 +131,17 @@ class _MainScreenState extends State<MainScreen>
     if (!mounted) return;
     Provider.of<CartProvider>(context, listen: false).loadCart();
     Provider.of<WishlistProvider>(context, listen: false).loadWishlist();
+    unawaited(
+      Provider.of<ProductProvider>(context, listen: false)
+          .loadProducts(forceReload: true),
+    );
   }
 
   Future<void> _onTabTapped(int index) async {
     if (_isNavigating || _currentIndex == index) return;
+
+    final shouldRevalidateShop = index == 2 && _shopTabWasSelected;
+    if (index == 2) _shopTabWasSelected = true;
 
     HapticFeedback.lightImpact(); // Subtle premium feedback
     setState(() => _isNavigating = true);
@@ -139,6 +150,12 @@ class _MainScreenState extends State<MainScreen>
       Navigator.of(context).pushReplacementNamed(_screenRoutes[index]);
     } else {
       setState(() => _currentIndex = index);
+      if (shouldRevalidateShop) {
+        unawaited(
+          Provider.of<ProductProvider>(context, listen: false)
+              .loadProducts(forceReload: true),
+        );
+      }
     }
 
     await Future.delayed(const Duration(milliseconds: 150));

@@ -5,6 +5,7 @@ import '../../app/store_context.dart';
 import '../../services/money_service.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/shared/provider_mode_badge.dart';
+import 'payout_statement_detail_sheet.dart';
 
 class MoneyScreen extends StatefulWidget {
   const MoneyScreen({super.key, this.initialTab = 0});
@@ -97,6 +98,18 @@ class _MoneyScreenState extends State<MoneyScreen>
         );
       }
     });
+  }
+
+  Future<void> _showPayoutDetails(String payoutId) async {
+    final moneyService = context.read<MoneyService>();
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => PayoutStatementDetailSheet(
+        load: () => moneyService.fetchPayoutStatement(payoutId),
+      ),
+    );
   }
 
   Future<void> _reconcileCommission() async {
@@ -221,6 +234,7 @@ class _MoneyScreenState extends State<MoneyScreen>
                       pendingActionKeys: _pendingMoneyActions,
                       onCreate: _createPayout,
                       onSettle: _settlePayout,
+                      onDetails: _showPayoutDetails,
                     ),
                     _WalletTab(
                       wallet: money.wallet,
@@ -257,6 +271,7 @@ class _PayoutsTab extends StatelessWidget {
     required this.pendingActionKeys,
     required this.onCreate,
     required this.onSettle,
+    required this.onDetails,
   });
 
   final List<Map<String, dynamic>> payouts;
@@ -265,6 +280,7 @@ class _PayoutsTab extends StatelessWidget {
   final Set<String> pendingActionKeys;
   final Future<void> Function() onCreate;
   final Future<void> Function(String payoutId) onSettle;
+  final Future<void> Function(String payoutId) onDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -304,6 +320,7 @@ class _PayoutsTab extends StatelessWidget {
                 title: payout['statement_number']?.toString() ?? 'Payout',
                 subtitle: payout['status']?.toString() ?? 'pending',
                 amount: _formatMinor(payout['net_amount_minor']),
+                onTap: payoutId.isEmpty ? null : () => onDetails(payoutId),
                 trailing: payout['status'] == 'pending'
                     ? TextButton(
                         onPressed:
@@ -625,12 +642,14 @@ class _MoneyTile extends StatelessWidget {
     required this.subtitle,
     required this.amount,
     this.trailing,
+    this.onTap,
   });
 
   final String title;
   final String subtitle;
   final String amount;
   final Widget? trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -638,39 +657,64 @@ class _MoneyTile extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: colors.border),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w600,
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: onTap,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                style: TextStyle(color: colors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          amount,
+                          style: TextStyle(
+                            color: colors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(subtitle, style: TextStyle(color: colors.textSecondary)),
+              ),
+              if (trailing != null) ...[
+                const SizedBox(width: 8),
+                trailing!,
               ],
-            ),
+            ],
           ),
-          Text(
-            amount,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          if (trailing != null) ...[const SizedBox(width: 8), trailing!],
-        ],
+        ),
       ),
     );
   }

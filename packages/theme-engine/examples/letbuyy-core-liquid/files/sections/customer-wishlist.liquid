@@ -1,8 +1,15 @@
 <section class="lb-wishlist" data-section-id="{{ section.id }}">
-  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class="lb-wishlist__count">({{ customer.wishlist_products.size }})</span>{% endif %}</h1>
-  {% if customer.wishlist_products and customer.wishlist_products.size > 0 %}
+  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class="lb-wishlist__count">({{ customer.wishlist_products.size }})</span>{% elsif buyer_wishlist.products.size > 0 %} <span class="lb-wishlist__count">({{ buyer_wishlist.products.size }})</span>{% endif %}</h1>
+  {% if buyer_wishlist.authenticated %}
+    {% if buyer_wishlist.unavailable %}<p class="lb-wishlist__unavailable" role="status">Your wishlist is temporarily unavailable. Please try again.</p>
+    {% elsif buyer_wishlist.storeAccountUnavailable %}<p class="lb-wishlist__unavailable" role="status">This store account is unavailable. Contact the store for help.</p>
+    {% elsif buyer_wishlist.linked and buyer_wishlist.products.size > 0 %}
+      <div class="lb-product-grid__items">{% for item in buyer_wishlist.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}</div>
+    {% elsif buyer_wishlist.linked %}<p class="lb-wishlist__empty">Your wishlist is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>
+    {% else %}<p class="lb-wishlist__guest">Connect your verified store account in <a href="{{ routes.account_settings_url }}">account settings</a> to use this store wishlist.</p>{% endif %}
+  {% elsif customer.wishlist_products and customer.wishlist_products.size > 0 %}
   <div class="lb-product-grid__items">
-    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}
+    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-account-type="store_customer" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}
   </div>
   {% elsif customer %}
   <p class="lb-wishlist__empty">Your wishlist is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>

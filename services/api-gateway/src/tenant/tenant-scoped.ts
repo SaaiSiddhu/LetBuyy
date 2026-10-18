@@ -33,7 +33,7 @@ export function assertTenantScopedTableAccess(
 }
 
 function payloadHasScope(value: unknown, scopeColumns: readonly string[]): boolean {
-    if (Array.isArray(value)) return value.some((item) => payloadHasScope(item, scopeColumns));
+    if (Array.isArray(value)) return value.length > 0 && value.every((item) => payloadHasScope(item, scopeColumns));
     if (!value || typeof value !== 'object') return false;
     const record = value as Record<string, unknown>;
     return scopeColumns.some((column) => Object.prototype.hasOwnProperty.call(record, column));
@@ -65,15 +65,40 @@ function isSafeFilterOperator(operator: unknown, value: unknown): boolean {
     return false;
 }
 
-// PostgREST's `or=(a.eq.b,c.is.null)` grammar: comma-separated alternatives, each
-// `column.operator.value`. The column is the text before the first dot; the operator is the next
-// token (the value may itself legally contain dots -- an ISO timestamp, for instance -- so it is
-// never parsed past the operator). An OR is safely scoped only if AT LEAST ONE alternative both
-// names a scope column and uses one of the operators above -- exactly mirroring the semantics an
-// `eq`/`in` predicate on its own already has, just spread across the OR's branches.
+// Split flat PostgREST alternatives while keeping IN lists and quoted commas intact.
+// Malformed syntax earns no scope. Nested logic can still be used with a separate
+// parent eq/in predicate; it does not independently prove bounded parent access here.
+function orAlternatives(expression: string): string[] | null {
+    const alternatives: string[] = [];
+    let depth = 0, quoted = false, escaped = false, start = 0;
+    for (let index = 0; index < expression.length; index += 1) {
+        const character = expression[index];
+        if (quoted) {
+            if (escaped) escaped = false;
+            else if (character === '\\') escaped = true;
+            else if (character === '"') quoted = false;
+            continue;
+        }
+        if (character === '"') quoted = true;
+        else if (character === '(') depth += 1;
+        else if (character === ')') { depth -= 1; if (depth < 0) return null; }
+        else if (character === ',' && depth === 0) {
+            alternatives.push(expression.slice(start, index).trim());
+            start = index + 1;
+        }
+    }
+    if (quoted || depth !== 0) return null;
+    alternatives.push(expression.slice(start).trim());
+    return alternatives.every(Boolean) ? alternatives : null;
+}
+
+// Every branch of an OR must bound the parent. One scoped branch alongside an
+// unrelated condition can return another tenant's rows through that condition.
 function orIsSafelyScoped(expression: unknown, scopeColumns: readonly string[]): boolean {
     if (typeof expression !== 'string') return false;
-    return expression.split(',').some((alternative) => {
+    const alternatives = orAlternatives(expression);
+    if (!alternatives) return false;
+    return alternatives.every((alternative) => {
         const columnEnd = alternative.indexOf('.');
         if (columnEnd < 0) return false;
         const column = alternative.slice(0, columnEnd);
@@ -86,8 +111,10 @@ function orIsSafelyScoped(expression: unknown, scopeColumns: readonly string[]):
     });
 }
 
+interface QueryScopeState { scoped: boolean; payloadScoped?: boolean }
+
 function markScopeFromCall(
-    state: { scoped: boolean },
+    state: QueryScopeState,
     table: string,
     scopeColumns: readonly string[],
     method: string,
@@ -111,11 +138,15 @@ function markScopeFromCall(
         return;
     }
     if (method === 'or') {
+        const options = args[1] as { referencedTable?: unknown; foreignTable?: unknown } | undefined;
+        if (options?.referencedTable || options?.foreignTable) return;
         if (orIsSafelyScoped(args[0], columns)) state.scoped = true;
         return;
     }
     if (method === 'insert' || method === 'upsert') {
-        if (payloadHasScope(args[0], columns)) state.scoped = true;
+        // PostgREST read filters do not bind each inserted row. Keep write scope
+        // separate so a later eq cannot authorize an incomplete bulk payload.
+        state.payloadScoped = payloadHasScope(args[0], columns);
     }
 }
 
@@ -123,13 +154,13 @@ function guardQueryBuilder<T extends object>(
     table: string,
     builder: T,
     scopeColumns: readonly string[],
-    state: { scoped: boolean },
+    state: QueryScopeState,
 ): T {
     return new Proxy(builder, {
         get(target, property, receiver) {
             const value = Reflect.get(target, property, receiver);
             if (property === 'then') {
-                if (!state.scoped) {
+                if (!(state.payloadScoped ?? state.scoped)) {
                     return (_onFulfilled: unknown, onRejected?: (reason: unknown) => unknown) => Promise
                         .reject(new Error(`Tenant table ${table} requires a tenant/owner predicate before execution`))
                         .catch(onRejected as never);

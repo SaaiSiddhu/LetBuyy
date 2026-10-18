@@ -89,6 +89,12 @@ class PendingMerchantSignUp {
   final bool needsVerification;
 }
 
+class MerchantMfaRequiredException implements Exception {
+  const MerchantMfaRequiredException();
+  @override
+  String toString() => 'Enter your current authenticator code to sign in.';
+}
+
 class StoreAuthService extends ChangeNotifier {
   StoreAuthService({
     required ApiClient api,
@@ -166,6 +172,7 @@ class StoreAuthService extends ChangeNotifier {
     String email,
     String password, {
     String? turnstileToken,
+    String? mfaCode,
   }) async {
     final normalizedEmail = email.trim().toLowerCase();
     final csrf = await _fetchCsrfCookie();
@@ -175,11 +182,16 @@ class StoreAuthService extends ChangeNotifier {
       body: {
         'email': normalizedEmail,
         'password': password,
+        if (mfaCode != null && mfaCode.trim().isNotEmpty)
+          'mfaCode': mfaCode.trim(),
         'turnstileToken': await _requireTurnstileToken(turnstileToken),
       },
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      if (response.statusCode == 403 &&
+          _decodeBody(response)['mfaRequired'] == true)
+        throw const MerchantMfaRequiredException();
       throw Exception(_errorMessage(response, 'Invalid email or password'));
     }
 

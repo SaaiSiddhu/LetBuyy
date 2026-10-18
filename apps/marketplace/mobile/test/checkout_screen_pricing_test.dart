@@ -217,11 +217,11 @@ void main() {
           reason: 'the old ₹40-fallback total must never reappear');
       expect(find.text('Pay ₹500'), findsNothing,
           reason: 'the bare subtotal must never silently stand in for a real total, either');
-      expect(find.text('Pay'), findsOneWidget,
+      expect(find.text('Review server total'), findsOneWidget,
           reason: 'with shipping genuinely unknown, the button must show no amount at all');
       expect(find.text('Pending'), findsOneWidget,
           reason: 'the Shipping Fee row must honestly say the fee is not known yet');
-      expect(find.text('Calculated at checkout'), findsOneWidget,
+      expect(find.text('Shown after repricing'), findsOneWidget,
           reason: 'the Total Amount row must not present a partial or fabricated sum as complete');
       expect(find.textContaining('business days'), findsNothing,
           reason: 'no delivery-time promise may be shown when shippingDays was never provided');
@@ -231,7 +231,7 @@ void main() {
   );
 
   testWidgets(
-    'PaymentMethodScreen trusts the total/shippingFee it is given instead of silently recomputing subtotal - discount',
+    'PaymentMethodScreen labels the app-provided amount as an estimate until the server reprices it',
     (tester) async {
       // Deliberately mismatched: CartProvider's own subtotal here (₹100) differs from the
       // total/shippingFee this screen is constructed with (₹540). If payment_method_screen.dart
@@ -270,8 +270,9 @@ void main() {
       ));
       await tester.pump();
 
-      expect(find.text('Pay ₹540'), findsOneWidget,
-          reason: 'must show the total it was constructed with, not subtotal(100) - discount(0) = 100');
+      expect(find.text('Review server total'), findsOneWidget,
+          reason: 'the server must reprice the cart before the app offers COD order placement');
+      expect(find.text('Estimate (not final)'), findsOneWidget);
       expect(find.text('Subtotal'), findsOneWidget,
           reason: 'the Subtotal row legitimately shows the cart\'s own ₹100 -- only Total/Pay must reflect widget.total, not this row');
     },
@@ -312,9 +313,9 @@ void main() {
       ));
       await tester.pump();
 
-      expect(find.text('Pay'), findsOneWidget);
+      expect(find.text('Review server total'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
-      expect(find.text('Calculated at checkout'), findsOneWidget);
+      expect(find.text('Shown after repricing'), findsOneWidget);
       expect(find.textContaining('₹null'), findsNothing,
           reason: 'a null total must never leak into a rendered string via naive interpolation');
     },

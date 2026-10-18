@@ -2,22 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
+
 import 'dart:ui';
 import 'dart:io';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+
+import '../../services/subscription_catalog.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../models/store_model.dart';
-import '../../app/routes.dart';
 import '../shared/cached_merchant_image.dart';
 
 /// Premium Hero Store Card - COMPACT ENHANCED VERSION
 class HeroStoreCard extends StatefulWidget {
   final StoreModel store;
   final VoidCallback onPublishToggle;
+  final MerchantBillingState? billing;
+  final VoidCallback? onPlanTap;
   final bool isPublishing;
   final VoidCallback? onAnalyticsTap;
   final VoidCallback? onSettingsTap;
@@ -26,6 +30,8 @@ class HeroStoreCard extends StatefulWidget {
     super.key,
     required this.store,
     required this.onPublishToggle,
+    this.billing,
+    this.onPlanTap,
     this.isPublishing = false,
     this.onAnalyticsTap,
     this.onSettingsTap,
@@ -37,6 +43,7 @@ class HeroStoreCard extends StatefulWidget {
 
 class _HeroStoreCardState extends State<HeroStoreCard>
     with TickerProviderStateMixin {
+  final FocusNode _storeUrlFocusNode = FocusNode(debugLabel: 'Copy store URL');
   late AnimationController _pulseController;
   late AnimationController _shimmerController;
   late AppThemeColors colors;
@@ -59,6 +66,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
   void dispose() {
     _pulseController.dispose();
     _shimmerController.dispose();
+    _storeUrlFocusNode.dispose();
     super.dispose();
   }
 
@@ -162,6 +170,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                                 child: _CompactActionButton(
                                   icon: Icons.open_in_new_rounded,
                                   label: 'Visit',
+                                  hint: 'Open the public storefront',
                                   onTap: () => launchUrl(
                                     Uri.parse(widget.store.publicUrl),
                                   ),
@@ -176,6 +185,9 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                                   label: widget.store.isPublished
                                       ? 'Unpublish'
                                       : 'Go Live',
+                                  hint: widget.store.isPublished
+                                      ? 'Change the storefront publication status'
+                                      : 'Publish the storefront',
                                   onTap: widget.onPublishToggle,
                                   isLoading: widget.isPublishing,
                                   isPrimary: !widget.store.isPublished,
@@ -186,16 +198,22 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                         ),
                         const SizedBox(width: 10),
                         // Quick action icons
-                        _buildQuickActionIcon(Icons.share_rounded, _shareStore),
+                        _buildQuickActionIcon(
+                          Icons.share_rounded,
+                          'Share store',
+                          _shareStore,
+                        ),
                         const SizedBox(width: 6),
                         _buildQuickActionIcon(
                           Icons.qr_code_2_rounded,
+                          'Store QR code',
                           _showQRCode,
                         ),
                         const SizedBox(width: 6),
                         _buildQuickActionIcon(
                           Icons.settings_outlined,
-                          widget.onSettingsTap ?? () {},
+                          'Store settings',
+                          widget.onSettingsTap,
                         ),
                       ],
                     ),
@@ -306,35 +324,64 @@ class _HeroStoreCardState extends State<HeroStoreCard>
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
-        GestureDetector(
+        Semantics(
+          container: true,
+          excludeSemantics: true,
+          button: true,
+          enabled: true,
+          label: 'Copy store URL',
+          hint: '${widget.store.publicUrl} to clipboard',
           onTap: _copyStoreUrl,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.link_rounded,
-                size: 11,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  '${widget.store.subdomain}.letbuyy.com',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white.withValues(alpha: 0.8),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Center(
+              child: Focus(
+                key: const ValueKey('hero-store-url-focus'),
+                focusNode: _storeUrlFocusNode,
+                onKeyEvent: (_, event) {
+                  if (event is KeyDownEvent &&
+                      (event.logicalKey == LogicalKeyboardKey.enter ||
+                          event.logicalKey == LogicalKeyboardKey.space)) {
+                    _copyStoreUrl();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: InkWell(
+                  canRequestFocus: false,
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: _copyStoreUrl,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.link_rounded,
+                        size: 11,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          '${widget.store.subdomain}.letbuyy.com',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white.withValues(alpha: 0.8),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.copy_rounded,
+                        size: 10,
+                        color: Colors.white.withValues(alpha: 0.5),
+                      ),
+                    ],
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.copy_rounded,
-                size: 10,
-                color: Colors.white.withValues(alpha: 0.5),
-              ),
-            ],
+            ),
           ),
         ),
       ],
@@ -477,24 +524,46 @@ class _HeroStoreCardState extends State<HeroStoreCard>
     return n.toString();
   }
 
-  Widget _buildQuickActionIcon(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onTap();
-      },
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white.withValues(alpha: 0.85),
-          size: 16,
+  Widget _buildQuickActionIcon(
+    IconData icon,
+    String label,
+    VoidCallback? onTap,
+  ) {
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      hint: onTap == null ? 'Unavailable' : null,
+      onTap: onTap,
+      child: SizedBox(
+        width: 44,
+        height: 48,
+        child: Center(
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap == null
+                ? null
+                : () {
+                    HapticFeedback.lightImpact();
+                    onTap();
+                  },
+            child: Ink(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white.withValues(alpha: 0.85),
+                size: 16,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -502,36 +571,15 @@ class _HeroStoreCardState extends State<HeroStoreCard>
 
   /// Subscription info row with plan, usage, and upgrade
   Widget _buildSubscriptionRow() {
-    final plan = widget.store.subscriptionPlan ?? SubscriptionPlan.trial;
-    final limit = widget.store.effectiveProductLimit;
-    final used = widget.store.currentProductCount;
-    final isUnlimited = limit == -1;
-    final usagePercent = isUnlimited ? 0.0 : (used / limit * 100).clamp(0, 100);
-    final commission = widget.store.effectiveCommission;
-    final isPro = plan == SubscriptionPlan.professional;
-
-    // Plan info
-    String planEmoji;
-    String planName;
-    Color planColor;
-    switch (plan) {
-      case SubscriptionPlan.trial:
-        planEmoji = '🎁';
-        planName = 'Starter';
-        planColor = const Color(0xFF10B981);
-      case SubscriptionPlan.starter:
-        planEmoji = '🚀';
-        planName = 'Starter';
-        planColor = const Color(0xFF3B82F6);
-      case SubscriptionPlan.business:
-        planEmoji = '⭐';
-        planName = 'Business';
-        planColor = const Color(0xFFF59E0B);
-      case SubscriptionPlan.professional:
-        planEmoji = '👑';
-        planName = 'Pro';
-        planColor = mobile_tokens.LetbuyyColorTokens.brandPrimary;
-    }
+    final billing = widget.billing;
+    final isUnlimited =
+        billing?.productLimitKnown == true && billing?.productLimit == null;
+    final usagePercent = (billing?.productUsageFraction ?? 0) * 100;
+    final planName = billing == null
+        ? 'Billing unavailable'
+        : '${billing.planName}${billing.id != null && !billing.active ? ' (${billing.status})' : ''}';
+    final planEmoji = billing?.active == true ? '⭐' : '🎁';
+    const planColor = Colors.white;
 
     Color progressColor;
     if (isUnlimited) {
@@ -603,7 +651,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        isUnlimited ? '$used / ∞' : '$used / $limit',
+                        billing?.compactProductUsageLabel ?? 'Unavailable',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.end,
@@ -632,71 +680,16 @@ class _HeroStoreCardState extends State<HeroStoreCard>
 
           const SizedBox(width: 10),
 
-          // Commission Fee
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(6),
+          // Open the canonical catalog for every tier.
+          TextButton.icon(
+            onPressed: widget.onPlanTap,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              minimumSize: const Size(48, 48),
             ),
-            child: Text(
-              '${commission.toStringAsFixed(0)}%',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
-            ),
+            icon: const Icon(Icons.arrow_upward_rounded, size: 12),
+            label: const Text('Plans', style: TextStyle(fontSize: 11)),
           ),
-
-          const SizedBox(width: 8),
-
-          // Upgrade Button (hide for Pro users)
-          if (!isPro)
-            GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.pushNamed(context, AppRoutes.pricing);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF10B981), Color(0xFF059669)],
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.arrow_upward_rounded,
-                      size: 12,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 3),
-                    Text(
-                      'Upgrade',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -707,6 +700,7 @@ class _HeroStoreCardState extends State<HeroStoreCard>
 class _CompactActionButton extends StatefulWidget {
   final IconData icon;
   final String label;
+  final String hint;
   final VoidCallback onTap;
   final bool isLoading;
   final bool isPrimary;
@@ -714,6 +708,7 @@ class _CompactActionButton extends StatefulWidget {
   const _CompactActionButton({
     required this.icon,
     required this.label,
+    required this.hint,
     required this.onTap,
     this.isLoading = false,
     this.isPrimary = false,
@@ -729,71 +724,89 @@ class _CompactActionButtonState extends State<_CompactActionButton> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        if (!widget.isLoading) {
-          HapticFeedback.mediumImpact();
-          widget.onTap();
-        }
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedScale(
-        scale: _isPressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            gradient: widget.isPrimary
-                ? const LinearGradient(
-                    colors: [Colors.white, Color(0xFFF5F5F5)],
-                  )
-                : null,
-            color: widget.isPrimary
-                ? null
-                : Colors.white.withValues(alpha: 0.12),
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: !widget.isLoading,
+      label: widget.label,
+      hint: widget.hint,
+      onTap: widget.isLoading ? null : widget.onTap,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Focus(
+          onFocusChange: (focused) {
+            if (_isPressed != focused) setState(() => _isPressed = focused);
+          },
+          child: InkWell(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: widget.isPrimary
-                  ? Colors.transparent
-                  : Colors.white.withValues(alpha: 0.2),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.isLoading)
-                SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
+            onHighlightChanged: (pressed) {
+              if (_isPressed != pressed) setState(() => _isPressed = pressed);
+            },
+            onTap: widget.isLoading
+                ? null
+                : () {
+                    HapticFeedback.mediumImpact();
+                    widget.onTap();
+                  },
+            child: AnimatedScale(
+              scale: _isPressed ? 0.98 : 1.0,
+              duration: const Duration(milliseconds: 100),
+              child: Ink(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: widget.isPrimary
+                      ? const LinearGradient(
+                          colors: [Colors.white, Color(0xFFF5F5F5)],
+                        )
+                      : null,
+                  color: widget.isPrimary
+                      ? null
+                      : Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
                     color: widget.isPrimary
-                        ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                        : Colors.white,
+                        ? Colors.transparent
+                        : Colors.white.withValues(alpha: 0.2),
                   ),
-                )
-              else
-                Icon(
-                  widget.icon,
-                  size: 14,
-                  color: widget.isPrimary
-                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                      : Colors.white,
                 ),
-              const SizedBox(width: 5),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: widget.isPrimary
-                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                      : Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (widget.isLoading)
+                      SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: widget.isPrimary
+                              ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              : Colors.white,
+                        ),
+                      )
+                    else
+                      Icon(
+                        widget.icon,
+                        size: 14,
+                        color: widget.isPrimary
+                            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                            : Colors.white,
+                      ),
+                    const SizedBox(width: 5),
+                    Text(
+                      widget.label,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: widget.isPrimary
+                            ? mobile_tokens.LetbuyyColorTokens.brandPrimary
+                            : Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -15,23 +16,26 @@ import '../../widgets/premium_scaffold.dart';
 class SellerStoreScreen extends StatefulWidget {
   final String sellerId;
 
-  const SellerStoreScreen({
-    super.key,
-    required this.sellerId,
-  });
+  const SellerStoreScreen({super.key, required this.sellerId});
 
   @override
   State<SellerStoreScreen> createState() => _SellerStoreScreenState();
 }
 
-class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTickerProviderStateMixin {
+class _SellerStoreScreenState extends State<SellerStoreScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   // C3 (Firebase SDK removal, 27 September 2026 review continuation): SellerModel/the Firestore
   // `sellers` collection are gone -- there is no canonical "get seller profile by id" endpoint yet
   // (only /storefront/marketplace/sellers/:siteId/follower-count exists server-side), so this
   // screen no longer claims a seller profile (business info, verification, join date) it cannot
   // honestly back. storeName is derived from this seller's own canonical products below.
   String? _storeName;
-  bool _sellerFound = false;
+  MarketplaceFeedCursor? _nextCursor;
+  bool _isLoadingMore = false;
+  bool _loadFailed = false;
+  bool _loadMoreFailed = false;
+  int _requestGeneration = 0;
+  bool get _hasMore => _nextCursor != null;
   List<ProductModel> _products = [];
   List<Map<String, dynamic>> _reels = [];
   bool _isLoading = true;
@@ -39,9 +43,9 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
   int _totalReviews = 0;
   final int _followersCount = 0;
   bool _isFollowing = false;
-  
+
   TabController? _tabController;
-  
+
   // Deal support
   final Map<String, DealModel?> _dealCache = {};
   final DealService _dealService = DealService();
@@ -63,58 +67,125 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 2, vsync: this);
     _loadSellerData();
   }
-  
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _requestGeneration++;
     _tabController?.dispose();
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant SellerStoreScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sellerId != widget.sellerId) _loadSellerData();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _loadSellerData();
+  }
+
   Future<void> _loadSellerData() async {
+    final generation = ++_requestGeneration;
+    setState(() {
+      // A seller refresh reads the current public feed. Do not borrow cached home cards or
+      // represent an earlier successful page as current after a pending/failed refresh.
+      _isLoading = true;
+      _isLoadingMore = false;
+      _loadFailed = false;
+      _loadMoreFailed = false;
+      _products = [];
+      _nextCursor = null;
+      _storeName = null;
+      _averageRating = 0;
+      _totalReviews = 0;
+      _dealCache.clear();
+    });
     try {
-      final productProvider = context.read<ProductProvider>();
-      await productProvider.loadProducts();
+      final page = await context.read<ProductProvider>().loadSellerProducts(
+        widget.sellerId,
+      );
+      if (!mounted || generation != _requestGeneration) return;
+      setState(() {
+        final seen = <String>{};
+        _products = page.products
+            .where((product) => seen.add(product.id))
+            .toList();
+        _nextCursor = page.nextCursor;
+        _updateSellerSummary();
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _requestGeneration) return;
+      setState(() {
+        _loadFailed = true;
+        _isLoading = false;
+      });
+    }
+  }
 
-      // C3 (Firebase SDK removal): the canonical marketplaceFeed has no per-seller filter yet, so
-      // this filters the already-loaded canonical feed page client-side -- same truthful-pagination
-      // caveat as ProductProvider.hasMore elsewhere (a seller with listings outside the loaded page
-      // will show fewer products here than they actually have, honestly, not silently show zero).
-      _products = productProvider.products
-          .where((p) => p.sellerId == widget.sellerId)
-          .toList();
+  void _updateSellerSummary() {
+    _storeName = _products.isEmpty ? null : _products.first.storeName;
+    _totalReviews = _products.fold(
+      0,
+      (count, product) => count + product.reviewCount,
+    );
+    _averageRating = _totalReviews == 0
+        ? 0
+        : _products.fold<double>(
+                0,
+                (total, product) =>
+                    total + product.rating * product.reviewCount,
+              ) /
+              _totalReviews;
+    // Reels retain their existing unavailable state until canonical reel delivery is connected.
+    _reels = [];
+  }
 
-      if (_products.isNotEmpty) {
-        _storeName = _products.first.storeName;
-        _sellerFound = true;
-
-        double totalRating = 0;
-        int totalReviews = 0;
-        for (var product in _products) {
-          totalRating += product.rating * product.reviewCount;
-          totalReviews += product.reviewCount;
-        }
-        if (totalReviews > 0) {
-          _averageRating = totalRating / totalReviews;
-          _totalReviews = totalReviews;
-        }
+  Future<void> _loadMoreProducts({bool retry = false}) async {
+    final cursor = _nextCursor;
+    if (_isLoading ||
+        _isLoadingMore ||
+        cursor == null ||
+        (_loadMoreFailed && !retry))
+      return;
+    final generation = _requestGeneration;
+    setState(() {
+      _isLoadingMore = true;
+      _loadMoreFailed = false;
+    });
+    try {
+      final page = await context.read<ProductProvider>().loadSellerProducts(
+        widget.sellerId,
+        cursor: cursor,
+      );
+      if (!mounted || generation != _requestGeneration) return;
+      if (page.nextCursor?.afterApprovedAt == cursor.afterApprovedAt &&
+          page.nextCursor?.afterId == cursor.afterId) {
+        throw StateError('The seller feed did not advance.');
       }
-
-      // Reels: explicitly deferred (this phase's reels placeholder policy) -- no canonical reels
-      // backend exists, so this stays honestly empty rather than querying a retired Firestore
-      // collection. The Reels tab itself stays visible (see _buildReelsTab's empty state).
-      _reels = [];
-
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    } catch (e) {
-      debugPrint('Error loading seller: $e');
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      setState(() {
+        final seen = _products.map((product) => product.id).toSet();
+        _products = [
+          ..._products,
+          ...page.products.where((product) => seen.add(product.id)),
+        ];
+        _nextCursor = page.nextCursor;
+        _updateSellerSummary();
+        _isLoadingMore = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _requestGeneration) return;
+      setState(() {
+        _loadMoreFailed = true;
+        _isLoadingMore = false;
+      });
     }
   }
 
@@ -125,118 +196,148 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
     final accentColor = isDark ? AppColors.primaryLight : AppColors.primary;
 
     if (_isLoading) {
-    return PremiumScaffold(
-      // resizeToAvoidBottomInset handled internally
-      // backgroundColor handled internally
-      body: Column(
-        children: [
-          UnifiedSearchHeader(
-            showBackButton: true,
-            searchHint: 'Search store...',
-          ),
-          const Expanded(
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        ],
-      ),
-    );
-  }
+      return PremiumScaffold(
+        // resizeToAvoidBottomInset handled internally
+        // backgroundColor handled internally
+        body: Column(
+          children: [
+            UnifiedSearchHeader(
+              showBackButton: true,
+              searchHint: 'Search store...',
+            ),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
+      );
+    }
 
-    if (!_sellerFound) {
-    return PremiumScaffold(
-      // resizeToAvoidBottomInset handled internally
-      // backgroundColor handled internally
-      body: Column(
-        children: [
-          UnifiedSearchHeader(
-            showBackButton: true,
-            searchHint: 'Search store...',
-          ),
-          const Expanded(
-            child: Center(child: Text('Seller not found')),
-          ),
-        ],
-      ),
-    );
-  }
-
-    return PremiumScaffold(
-    // resizeToAvoidBottomInset handled internally
-    // backgroundColor handled internally
-    body: _tabController == null 
-        ? const Center(child: CircularProgressIndicator())
-        : Column(
-        children: [
-          // 1️⃣ Sticky Search Header
-          UnifiedSearchHeader(
-            showBackButton: true,
-            searchHint: 'Search in ${_storeName ?? "this store"}...',
-          ),
-          
-          // 2️⃣ Main Content
-          Expanded(
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                // Seller Header Section
-                SliverToBoxAdapter(
-                  child: _buildSellerHeader(isDark, accentColor),
+    if (_loadFailed || _products.isEmpty) {
+      return PremiumScaffold(
+        // resizeToAvoidBottomInset handled internally
+        // backgroundColor handled internally
+        body: Column(
+          children: [
+            UnifiedSearchHeader(
+              showBackButton: true,
+              searchHint: 'Search store...',
+            ),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _loadFailed
+                          ? 'Unable to load this seller’s products. Check your connection and try again.'
+                          : 'No products available from this seller.',
+                    ),
+                    TextButton(
+                      onPressed: _loadSellerData,
+                      child: Text(
+                        _loadFailed
+                            ? 'Retry seller products'
+                            : 'Refresh products',
+                      ),
+                    ),
+                  ],
                 ),
-                
-                // Tab Bar
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _StickyTabBarDelegate(
-                    TabBar(
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return PremiumScaffold(
+      // resizeToAvoidBottomInset handled internally
+      // backgroundColor handled internally
+      body: _tabController == null
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                // 1️⃣ Sticky Search Header
+                UnifiedSearchHeader(
+                  showBackButton: true,
+                  searchHint: 'Search in ${_storeName ?? "this store"}...',
+                ),
+
+                // 2️⃣ Main Content
+                Expanded(
+                  child: NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      // Seller Header Section
+                      SliverToBoxAdapter(
+                        child: _buildSellerHeader(isDark, accentColor),
+                      ),
+
+                      // Tab Bar
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _StickyTabBarDelegate(
+                          TabBar(
+                            controller: _tabController,
+                            indicatorColor: accentColor,
+                            indicatorWeight: 3,
+                            labelColor: accentColor,
+                            unselectedLabelColor: isDark
+                                ? Colors.grey[500]
+                                : Colors.grey[600],
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            tabs: [
+                              Tab(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.grid_view_rounded,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Products (${_products.length}${_hasMore ? '+' : ''})',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Tab(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.play_circle_outline_rounded,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text('Reels (${_reels.length})'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          isDark: isDark,
+                        ),
+                      ),
+                    ],
+                    body: TabBarView(
                       controller: _tabController,
-                      indicatorColor: accentColor,
-                      indicatorWeight: 3,
-                      labelColor: accentColor,
-                      unselectedLabelColor: isDark ? Colors.grey[500] : Colors.grey[600],
-                      labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                      tabs: [
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.grid_view_rounded, size: 18),
-                              const SizedBox(width: 6),
-                              Text('Products (${_products.length})'),
-                            ],
-                          ),
-                        ),
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.play_circle_outline_rounded, size: 18),
-                              const SizedBox(width: 6),
-                              Text('Reels (${_reels.length})'),
-                            ],
-                          ),
-                        ),
+                      children: [
+                        // Products Tab
+                        _buildProductsTab(isDark),
+
+                        // Reels Tab
+                        _buildReelsTab(isDark, accentColor),
                       ],
                     ),
-                    isDark: isDark,
                   ),
                 ),
               ],
-              body: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Products Tab
-                  _buildProductsTab(isDark),
-                  
-                  // Reels Tab
-                  _buildReelsTab(isDark, accentColor),
-                ],
-              ),
             ),
-          ),
-        ],
-      ),
     );
   }
-  
+
   // ============================================================
   // SELLER HEADER SECTION
   // ============================================================
@@ -456,7 +557,7 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
       ),
       child: Row(
         children: [
-          _buildStat('${_products.length}', 'Products', Icons.shopping_bag_outlined, isDark),
+          _buildStat('${_products.length}${_hasMore ? '+' : ''}', 'Products', Icons.shopping_bag_outlined, isDark),
           _buildStatDivider(),
           _buildStat('$_totalReviews', 'Reviews', Icons.star_outline_rounded, isDark),
           _buildStatDivider(),
@@ -530,25 +631,60 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
         ),
       );
     }
-    
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.62,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: _products.length,
-      itemBuilder: (context, index) {
-        return ProductCard(
-          product: _products[index],
-          isGridView: true,
-        );
-      },
+
+    return Column(
+      children: [
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _loadSellerData,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification.metrics.extentAfter < 300) _loadMoreProducts();
+                return false;
+              },
+              child: GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.62,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: _products.length,
+                itemBuilder: (context, index) =>
+                    ProductCard(product: _products[index], isGridView: true),
+              ),
+            ),
+          ),
+        ),
+        if (_isLoadingMore)
+          const Padding(
+            padding: EdgeInsets.all(12),
+            child: CircularProgressIndicator(
+              semanticsLabel: 'Loading more seller products',
+            ),
+          )
+        else if (_loadMoreFailed)
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Could not load more products.'),
+              TextButton(
+                onPressed: () => _loadMoreProducts(retry: true),
+                child: const Text('Retry more products'),
+              ),
+            ],
+          )
+        else if (_hasMore)
+          TextButton(
+            onPressed: _loadMoreProducts,
+            child: const Text('Load more products'),
+          ),
+      ],
     );
   }
-  
+
   // ============================================================
   // REELS TAB
   // ============================================================

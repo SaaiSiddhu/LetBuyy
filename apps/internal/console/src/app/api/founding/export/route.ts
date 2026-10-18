@@ -1,5 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
+import { requireConsoleApiSession } from '@/lib/console-api-auth';
+import { CONSOLE_SESSION_COOKIE } from '@/lib/console-session';
+
+// Auth hardening follow-up (Section 13): this export route was reachable with NO session check at
+// all -- see founding/action/route.ts's own comment for the full reasoning (identical gap, same fix).
 
 type Alloc = {
     founding_number: number;
@@ -13,10 +18,12 @@ type Alloc = {
 };
 
 // CSV export of founding allocations (server-side; uses the console API token).
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const unauthorized = await requireConsoleApiSession(request, { mfa: true });
+    if (unauthorized) return unauthorized;
     const result = await fetchConsoleApi<ConsoleDataResponse<{ allocations: Alloc[] }>>(
         '/internal/founding/allocations',
-        { limit: 500 },
+        { query: { limit: 500 }, sessionToken: request.cookies.get(CONSOLE_SESSION_COOKIE)?.value },
     );
     if (result.error) {
         return NextResponse.json({ error: result.error }, { status: 502 });

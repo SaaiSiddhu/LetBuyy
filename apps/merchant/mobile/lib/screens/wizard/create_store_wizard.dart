@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
+import '../../models/store_model.dart';
 import '../../app/store_context.dart';
 import '../../widgets/wizard/wizard_container.dart';
 import '../../services/store_service.dart';
@@ -13,6 +18,8 @@ import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../models/store_theme_model.dart';
 import '../../app/routes.dart';
+
+enum _SubdomainErrorKind { tooShort, invalidCharacters, taken, checkFailed }
 
 /// Unified Store Creation Wizard - 7-step flow
 /// Combines onboarding (steps 1-4) and store setup (steps 5-7)
@@ -51,10 +58,24 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   final _subdomainFocusNode = FocusNode();
   bool _isSubdomainAvailable = false;
   bool _isCheckingSubdomain = false;
-  String? _subdomainError;
+  _SubdomainErrorKind? _subdomainError;
+  int _subdomainCheckGeneration = 0;
 
   // Step 7: Theme
   String _selectedThemeId = 'minimal_modern';
+  StoreModel? _createdDraft;
+
+  static const _storeCreationPreferencePrefix =
+      'letbuyy.pending_mobile_store_creation';
+
+  String get _storeCreationPreferenceScope =>
+      context.read<StoreAuthService>().currentUser?.id ?? 'signed-out';
+  String get _storeCreationKeyPreference =>
+      '$_storeCreationPreferencePrefix.$_storeCreationPreferenceScope.key';
+  String get _storeCreationFingerprintPreference =>
+      '$_storeCreationPreferencePrefix.$_storeCreationPreferenceScope.fingerprint';
+  String get _storeCreationRequestPreference =>
+      '$_storeCreationPreferencePrefix.$_storeCreationPreferenceScope.request';
 
   static const int _totalSteps = 7;
 
@@ -64,7 +85,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     // Start at step 1 (0-indexed = 0) - unified 7-step wizard
     _pageController = PageController(initialPage: 0);
     _currentStep = 1;
-    _isInitialized = true;
+    _restorePendingStoreCreation();
   }
 
   @override
@@ -146,6 +167,57 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   }
 
   Future<void> _showLogoutConfirmation() async {
+    Widget buildDialogAction({
+      required BuildContext context,
+      required String key,
+      required String label,
+      required Color backgroundColor,
+      required Color foregroundColor,
+      required bool shouldLogout,
+    }) {
+      void dismiss() => Navigator.pop(context, shouldLogout);
+
+      return Semantics(
+        key: ValueKey(key),
+        container: true,
+        excludeSemantics: true,
+        button: true,
+        enabled: true,
+        label: label,
+        onTap: dismiss,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: dismiss,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: foregroundColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final result = await showDialog<bool>(
       context: context,
       barrierColor: Colors.black54,
@@ -214,49 +286,27 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                 children: [
                   // Cancel button
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context, false),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          color: _isDark
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.grey.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _lang.cancel,
-                          style: TextStyle(
-                            color: _textPrimary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                    child: buildDialogAction(
+                      context: context,
+                      key: 'wizard-logout-cancel',
+                      label: _lang.cancel,
+                      backgroundColor: _isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.grey.withValues(alpha: 0.1),
+                      foregroundColor: _textPrimary,
+                      shouldLogout: false,
                     ),
                   ),
                   const SizedBox(width: 12),
                   // Logout button
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => Navigator.pop(context, true),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          color: LetbuyyColorTokens.error,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _lang.logout,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                    child: buildDialogAction(
+                      context: context,
+                      key: 'wizard-logout-confirm',
+                      label: _lang.logout,
+                      backgroundColor: LetbuyyColorTokens.error,
+                      foregroundColor: Colors.white,
+                      shouldLogout: true,
                     ),
                   ),
                 ],
@@ -305,10 +355,126 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     };
   }
 
+  Map<String, dynamic> _storeCreationRequest() => {
+    'name': _nameController.text.trim(),
+    'subdomain': _subdomainController.text.trim().toLowerCase(),
+    'site_type': 'store',
+    'tagline': '',
+    'theme_id': _selectedThemeId,
+    'template_config': _onboardingTemplateConfig(),
+  };
+
+  Future<void> _restorePendingStoreCreation() async {
+    String? restoredSubdomain;
+    final keyPreference = _storeCreationKeyPreference;
+    final fingerprintPreference = _storeCreationFingerprintPreference;
+    final requestPreference = _storeCreationRequestPreference;
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final key = preferences.getString(keyPreference);
+      final fingerprint = preferences.getString(fingerprintPreference);
+      final encodedRequest = preferences.getString(requestPreference);
+      if (key != null && fingerprint != null && encodedRequest != null) {
+        final request = Map<String, dynamic>.from(
+          jsonDecode(encodedRequest) as Map,
+        );
+        if (jsonEncode(request) == fingerprint &&
+            request['name'] is String &&
+            request['subdomain'] is String &&
+            request['theme_id'] is String &&
+            request['template_config'] is Map) {
+          _nameController.text = request['name'] as String;
+          restoredSubdomain = request['subdomain'] as String;
+          _subdomainController.text = restoredSubdomain;
+          _selectedThemeId = request['theme_id'] as String;
+          final config = Map<String, dynamic>.from(
+            request['template_config'] as Map,
+          );
+          final onboarding = config['onboarding'];
+          if (onboarding is Map) {
+            final values = Map<String, dynamic>.from(onboarding);
+            _businessType = values['business_type'] as String?;
+            _productType = values['product_type'] as String?;
+            _category = values['category'] as String?;
+            final channels = values['channels'];
+            if (channels is List) {
+              _selectedChannels.addAll(channels.whereType<String>());
+            }
+          }
+          _currentStep = _totalSteps;
+          _pageController.dispose();
+          _pageController = PageController(initialPage: _totalSteps - 1);
+        }
+      }
+    } catch (_) {
+      // A malformed local draft must not stop a merchant from starting over.
+    }
+
+    if (!mounted) return;
+    setState(() => _isInitialized = true);
+    if (restoredSubdomain != null) {
+      await _checkSubdomainAvailability(restoredSubdomain);
+    }
+  }
+
+  Future<String> _storeCreationIdempotencyKey(
+    Map<String, dynamic> request,
+  ) async {
+    final keyPreference = _storeCreationKeyPreference;
+    final fingerprintPreference = _storeCreationFingerprintPreference;
+    final requestPreference = _storeCreationRequestPreference;
+    final fingerprint = jsonEncode(request);
+    final preferences = await SharedPreferences.getInstance();
+    final previousKey = preferences.getString(keyPreference);
+    if (previousKey != null &&
+        preferences.getString(fingerprintPreference) == fingerprint) {
+      final requestSaved = await preferences.setString(
+        requestPreference,
+        fingerprint,
+      );
+      if (!requestSaved) {
+        throw StateError('Store retry details could not be saved.');
+      }
+      return previousKey;
+    }
+
+    final key = const Uuid().v4();
+    final keySaved = await preferences.setString(
+      keyPreference,
+      key,
+    );
+    final fingerprintSaved = await preferences.setString(
+      fingerprintPreference,
+      fingerprint,
+    );
+    final requestSaved = await preferences.setString(
+      requestPreference,
+      fingerprint,
+    );
+    if (!keySaved || !fingerprintSaved || !requestSaved) {
+      throw StateError('Store retry details could not be saved.');
+    }
+    return key;
+  }
+
+  Future<void> _clearStoreCreationIdempotencyKey() async {
+    final keyPreference = _storeCreationKeyPreference;
+    final fingerprintPreference = _storeCreationFingerprintPreference;
+    final requestPreference = _storeCreationRequestPreference;
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(keyPreference);
+    await preferences.remove(fingerprintPreference);
+    await preferences.remove(requestPreference);
+  }
+
   Future<void> _checkSubdomainAvailability(String subdomain) async {
+    final generation = ++_subdomainCheckGeneration;
     if (subdomain.length < 3) {
       setState(() {
-        _subdomainError = 'Minimum 3 characters required';
+        _isCheckingSubdomain = false;
+        _subdomainError = subdomain.isEmpty
+            ? null
+            : _SubdomainErrorKind.tooShort;
         _isSubdomainAvailable = false;
       });
       return;
@@ -317,7 +483,8 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     final validPattern = RegExp(r'^[a-z0-9-]+$');
     if (!validPattern.hasMatch(subdomain)) {
       setState(() {
-        _subdomainError = 'Only lowercase letters, numbers, and hyphens';
+        _isCheckingSubdomain = false;
+        _subdomainError = _SubdomainErrorKind.invalidCharacters;
         _isSubdomainAvailable = false;
       });
       return;
@@ -325,20 +492,41 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
 
     setState(() {
       _isCheckingSubdomain = true;
+      _isSubdomainAvailable = false;
       _subdomainError = null;
     });
 
-    final storeService = context.read<StoreService>();
-    final available = await storeService.isSubdomainAvailable(subdomain);
+    bool available;
+    try {
+      final storeService = context.read<StoreService>();
+      available = await storeService.isSubdomainAvailable(subdomain);
+    } catch (_) {
+      if (!mounted || generation != _subdomainCheckGeneration) return;
+      setState(() {
+        _isCheckingSubdomain = false;
+        _isSubdomainAvailable = false;
+        _subdomainError = _SubdomainErrorKind.checkFailed;
+      });
+      return;
+    }
+
+    if (!mounted || generation != _subdomainCheckGeneration) return;
 
     setState(() {
       _isCheckingSubdomain = false;
       _isSubdomainAvailable = available;
-      if (!available) {
-        _subdomainError = 'This subdomain is already taken';
-      }
+      _subdomainError = available ? null : _SubdomainErrorKind.taken;
     });
   }
+
+  String _subdomainErrorMessage() => switch (_subdomainError) {
+    _SubdomainErrorKind.tooShort => _lang.subdomainTooShort,
+    _SubdomainErrorKind.invalidCharacters => _lang.subdomainInvalidCharacters,
+    _SubdomainErrorKind.taken =>
+      '${_lang.subdomainTaken}\n${_lang.subdomainChooseAnother}',
+    _SubdomainErrorKind.checkFailed => _lang.subdomainCheckFailed,
+    null => '',
+  };
 
   Future<void> _createStore() async {
     if (_nameController.text.isEmpty ||
@@ -351,17 +539,21 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
 
     try {
       final storeService = context.read<StoreService>();
+      final request = _storeCreationRequest();
+      final idempotencyKey = await _storeCreationIdempotencyKey(request);
 
-      final store = await storeService.createStore(
-        name: _nameController.text.trim(),
-        tagline: '',
-        subdomain: _subdomainController.text.trim().toLowerCase(),
-        themeId: _selectedThemeId,
-        templateConfig: _onboardingTemplateConfig(),
+      final store = _createdDraft ??= await storeService.createStore(
+        name: request['name'] as String,
+        tagline: request['tagline'] as String,
+        subdomain: request['subdomain'] as String,
+        idempotencyKey: idempotencyKey,
+        themeId: request['theme_id'] as String,
+        templateConfig: request['template_config'] as Map<String, dynamic>,
       );
 
       final publishedStore = await storeService.publishStore(store.id);
       await context.read<StoreContext>().adoptCreatedStore(publishedStore);
+      await _clearStoreCreationIdempotencyKey();
 
       if (!mounted) return;
 
@@ -413,6 +605,10 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
         _previousStep();
       },
       child: Scaffold(
+        bottomNavigationBar: _currentStep == 1 ? SafeArea(child: TextButton(
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.acceptStaffInvitation),
+          child: const Text('Join a store with a staff invitation'),
+        )) : null,
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
@@ -764,78 +960,126 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     required IconData icon,
   }) {
     final isSelected = _category == id;
+    void selectCategory() {
+      HapticFeedback.lightImpact();
+      setState(() => _category = id);
+      Future.delayed(const Duration(milliseconds: 200), _nextStep);
+    }
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() => _category = id);
-        Future.delayed(const Duration(milliseconds: 200), _nextStep);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (_isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-                        alpha: 0.1,
-                      ))
-              : (_isDark
-                    ? Colors.white.withValues(alpha: 0.04)
-                    : Colors.grey.withValues(alpha: 0.05)),
+    return Semantics(
+      key: ValueKey('wizard-category-$id'),
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: true,
+      selected: isSelected,
+      label: title,
+      onTap: selectCategory,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected
-                ? LetbuyyColorTokens.brandPrimary
-                : (_isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.grey.withValues(alpha: 0.2)),
-            width: isSelected ? 1.5 : 1,
+          onTap: selectCategory,
+          child: Ink(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? (_isDark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              .withValues(alpha: 0.1))
+                  : (_isDark
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.grey.withValues(alpha: 0.05)),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected
+                    ? LetbuyyColorTokens.brandPrimary
+                    : (_isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.grey.withValues(alpha: 0.2)),
+                width: isSelected ? 1.5 : 1,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Smaller Icon
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isSelected
+                          ? [
+                              LetbuyyColorTokens.brandPrimary,
+                              LetbuyyColorTokens.accentPink,
+                            ]
+                          : (_isDark
+                                ? [
+                                    Colors.white.withValues(alpha: 0.12),
+                                    Colors.white.withValues(alpha: 0.06),
+                                  ]
+                                : [
+                                    Colors.grey.withValues(alpha: 0.12),
+                                    Colors.grey.withValues(alpha: 0.06),
+                                  ]),
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 14,
+                    color: isSelected ? Colors.white : _textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                // Smaller Title
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: _textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Smaller Icon
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isSelected
-                      ? [LetbuyyColorTokens.brandPrimary, LetbuyyColorTokens.accentPink]
-                      : (_isDark
-                            ? [
-                                Colors.white.withValues(alpha: 0.12),
-                                Colors.white.withValues(alpha: 0.06),
-                              ]
-                            : [
-                                Colors.grey.withValues(alpha: 0.12),
-                                Colors.grey.withValues(alpha: 0.06),
-                              ]),
+      ),
+    );
+  }
+
+  Widget _buildWizardBackAction(String key) {
+    return Semantics(
+      key: ValueKey(key),
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: true,
+      label: _lang.back,
+      onTap: _previousStep,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: _previousStep,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            child: Ink(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: Text(
+                  _lang.back,
+                  style: TextStyle(color: _textSecondary),
                 ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                size: 14,
-                color: isSelected ? Colors.white : _textPrimary,
               ),
             ),
-            const SizedBox(height: 6),
-            // Smaller Title
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: _textPrimary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -844,6 +1088,36 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
   // ============================================
   // STEP 5: Store Name
   // ============================================
+  Widget _buildStoreNameFeedback({
+    required String key,
+    required String message,
+    required Color color,
+    required IconData icon,
+  }) {
+    return Semantics(
+      key: ValueKey(key),
+      container: true,
+      excludeSemantics: true,
+      liveRegion: true,
+      label: message,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: color, fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildStep5StoreName() {
     return WizardContainer(
       currentStep: _currentStep,
@@ -926,65 +1200,25 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           // Validation helper text
           if (_nameController.text.isNotEmpty &&
               _nameController.text.trim().length < 4)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    size: 14,
-                    color: LetbuyyColorTokens.error,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Minimum 4 characters required',
-                    style: TextStyle(
-                      color: LetbuyyColorTokens.error,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+            _buildStoreNameFeedback(
+              key: 'wizard-store-name-too-short',
+              message: _lang.wizardStoreNameTooShort,
+              color: LetbuyyColorTokens.error,
+              icon: Icons.info_outline_rounded,
             )
           else if (_nameController.text.trim().length >= 4)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_rounded,
-                    size: 14,
-                    color: LetbuyyColorTokens.successStrong,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Great store name!',
-                    style: TextStyle(
-                      color: LetbuyyColorTokens.successStrong,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+            _buildStoreNameFeedback(
+              key: 'wizard-store-name-meets-minimum',
+              message: _lang.wizardStoreNameMeetsMinimum,
+              color: LetbuyyColorTokens.successStrong,
+              icon: Icons.check_circle_rounded,
             ),
 
           const SizedBox(height: 20),
 
           Row(
             children: [
-              GestureDetector(
-                onTap: _previousStep,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Text(
-                    _lang.back,
-                    style: TextStyle(color: _textSecondary),
-                  ),
-                ),
-              ),
+              _buildWizardBackAction('wizard-store-name-back'),
               const Spacer(),
               SizedBox(
                 width: 120,
@@ -1080,18 +1314,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
                               vertical: 14,
                             ),
                           ),
-                          onChanged: (value) {
-                            if (value.length >= 3) {
-                              _checkSubdomainAvailability(
-                                value.toLowerCase().trim(),
-                              );
-                            } else {
-                              setState(() {
-                                _isSubdomainAvailable = false;
-                                _subdomainError = null;
-                              });
-                            }
-                          },
+                          onChanged: (value) => _checkSubdomainAvailability(
+                            value.toLowerCase().trim(),
+                          ),
                         ),
                       ),
                       // Simple suffix
@@ -1126,95 +1351,114 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
 
           // Status indicator
           if (_isCheckingSubdomain)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        LetbuyyColorTokens.brandPrimary,
+            Semantics(
+              key: const ValueKey('wizard-subdomain-status-checking'),
+              container: true,
+              liveRegion: true,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          LetbuyyColorTokens.brandPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _lang.checkingAvailability,
-                    style: TextStyle(color: _textSecondary),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      _lang.checkingAvailability,
+                      style: TextStyle(color: _textSecondary),
+                    ),
+                  ],
+                ),
               ),
             )
           else if (_isSubdomainAvailable &&
               _subdomainController.text.length >= 3)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: LetbuyyColorTokens.successStrong.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: LetbuyyColorTokens.successStrong,
-                      size: 20,
+            Semantics(
+              key: const ValueKey('wizard-subdomain-status-available'),
+              container: true,
+              liveRegion: true,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: LetbuyyColorTokens.successStrong.withValues(
+                      alpha: 0.15,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Available! Your store will be at:\nhttps://${_subdomainController.text}.letbuyy.com',
-                        style: TextStyle(
-                          color: LetbuyyColorTokens.successStrong,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: LetbuyyColorTokens.successStrong.withValues(
+                        alpha: 0.3,
                       ),
                     ),
-                  ],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: LetbuyyColorTokens.successStrong,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          '${_lang.subdomainAvailable}\nhttps://${_subdomainController.text}.letbuyy.com',
+                          style: TextStyle(
+                            color: LetbuyyColorTokens.successStrong,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )
           else if (_subdomainError != null &&
-              _subdomainController.text.length >= 3)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: LetbuyyColorTokens.error.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: LetbuyyColorTokens.error.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.error_rounded,
-                      color: LetbuyyColorTokens.error,
-                      size: 20,
+              _subdomainController.text.isNotEmpty)
+            Semantics(
+              key: ValueKey('wizard-subdomain-status-${_subdomainError!.name}'),
+              container: true,
+              liveRegion: true,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: LetbuyyColorTokens.error.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: LetbuyyColorTokens.error.withValues(alpha: 0.3),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'This domain is already taken.\nPlease choose a different name.',
-                        style: TextStyle(
-                          color: LetbuyyColorTokens.error,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_rounded,
+                        color: LetbuyyColorTokens.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          _subdomainErrorMessage(),
+                          style: TextStyle(
+                            color: LetbuyyColorTokens.error,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1223,19 +1467,7 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
 
           Row(
             children: [
-              GestureDetector(
-                onTap: _previousStep,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Text(
-                    _lang.back,
-                    style: TextStyle(color: _textSecondary),
-                  ),
-                ),
-              ),
+              _buildWizardBackAction('wizard-subdomain-back'),
               const Spacer(),
               SizedBox(
                 width: 120,
@@ -1314,7 +1546,9 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
           const SizedBox(height: 16),
 
           WizardPrimaryButton(
-            text: _lang.createStore,
+            text: _createdDraft == null
+                ? _lang.createStore
+                : _lang.retryPublishStore,
             isLoading: _isLoading,
             onPressed: _createStore,
           ),
@@ -1487,178 +1721,193 @@ class _CreateStoreWizardState extends State<CreateStoreWizard> {
     final secondary = theme.secondaryColorValue;
     final accent = theme.accentColorValue;
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() => _selectedThemeId = theme.id);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: isSelected
-              ? Border.all(color: LetbuyyColorTokens.brandPrimary, width: 2.5)
-              : Border.all(color: _borderColor, width: 1),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: primary.withValues(alpha: 0.4),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ]
-              : null,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Stack(
-            children: [
-              // Gradient background
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [primary, secondary, accent],
-                    stops: const [0.0, 0.5, 1.0],
-                  ),
-                ),
-              ),
+    void selectTheme() {
+      HapticFeedback.lightImpact();
+      setState(() => _selectedThemeId = theme.id);
+    }
 
-              // Glass effect overlay
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.15),
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.3),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // Recommended badge
-              if (isRecommended)
-                Positioned(
-                  top: 6,
-                  left: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 3,
-                    ),
+    return Semantics(
+      key: ValueKey('wizard-theme-${theme.id}'),
+      label: theme.name,
+      button: true,
+      enabled: true,
+      selected: isSelected,
+      onTap: selectTheme,
+      child: InkWell(
+        onTap: selectTheme,
+        child: ExcludeSemantics(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: isSelected
+                  ? Border.all(
+                      color: LetbuyyColorTokens.brandPrimary,
+                      width: 2.5,
+                    )
+                  : Border.all(color: _borderColor, width: 1),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: primary.withValues(alpha: 0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Stack(
+                children: [
+                  // Gradient background
+                  Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.star_rounded, size: 10, color: primary),
-                        const SizedBox(width: 2),
-                        Text(
-                          'Recommended',
-                          style: TextStyle(
-                            color: primary,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [primary, secondary, accent],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
                     ),
                   ),
-                ),
 
-              // Theme name and selection indicator
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.6),
-                      ],
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          theme.name,
-                          style: TextStyle(
-                            color: _textPrimary,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w600,
-                            fontSize: 12,
-                            shadows: [
-                              const Shadow(
-                                color: Colors.black54,
-                                blurRadius: 4,
-                              ),
-                            ],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  // Glass effect overlay
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.15),
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.3),
+                          ],
                         ),
                       ),
-                      if (isSelected)
-                        Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: _textPrimary,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 4,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.check_rounded,
-                            size: 14,
-                            color: Colors.black,
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // Color palette preview dots
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Row(
-                  children: [
-                    _buildColorDot(primary),
-                    const SizedBox(width: 4),
-                    _buildColorDot(secondary),
-                    const SizedBox(width: 4),
-                    _buildColorDot(accent),
-                  ],
-                ),
+                  // Recommended badge
+                  if (isRecommended)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.star_rounded, size: 10, color: primary),
+                            const SizedBox(width: 2),
+                            Text(
+                              'Recommended',
+                              style: TextStyle(
+                                color: primary,
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  // Theme name and selection indicator
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.6),
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              theme.name,
+                              style: TextStyle(
+                                color: _textPrimary,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w600,
+                                fontSize: 12,
+                                shadows: [
+                                  const Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isSelected)
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: _textPrimary,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.check_rounded,
+                                size: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Color palette preview dots
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Row(
+                      children: [
+                        _buildColorDot(primary),
+                        const SizedBox(width: 4),
+                        _buildColorDot(secondary),
+                        const SizedBox(width: 4),
+                        _buildColorDot(accent),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

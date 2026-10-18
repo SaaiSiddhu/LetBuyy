@@ -1,4 +1,4 @@
-// F-ADM4-1 — the operator moderation chain, measured through the REAL auth and permission layers.
+// F-ADM4-1/F6.2 — operator moderation through real auth, RBAC and session-user revalidation.
 //
 // marketplace-listings-operations.test.ts proves the handler, but it injects a fixed operator actor and a
 // pass-through permission (lines 61 and 77), so it never meets authMiddleware, requirePermission or the
@@ -7,14 +7,17 @@
 // real authMiddleware, in the order services/api-gateway/src/index.ts mounts them (pinned below), against
 // a fake PostgREST on globalThis.fetch.
 //
-// What it establishes, at 1e6cc4c3 + this phase:
+// What it establishes:
 //   * the console's shared bearer token, a buyer token, no credentials, and a merchant identity cannot
 //     approve anything — correct, and must stay so under every operator-identity option;
 //   * an identity holding only review:view cannot decide;
-//   * an identity holding review:decide gets PAST auth and RBAC and is then refused by the tenant query
-//     guard, because channel_listings is a registered tenant table and the operator route reads it with
-//     no site_id (break #5 of F-ADM4-1). The intended approve is kept below as a TODO test with its real
-//     assertions: it is blocked on the operator read-path decision, not forgotten.
+//   * an identity holding review:decide gets past auth and RBAC and reaches
+//     channel_listings for real: the route now reads it through getSupabaseAdminUnguarded (the listing
+//     lookup, a bounded single-row bootstrap by globally-unique id) and getSupabaseAdminForOperatorRead
+//     (the cross-site queue list, permission-gated and page-capped) instead of the tenant-guarded
+//     default client. Both are narrow, allowlisted exceptions — see their doc comments in
+//     lib/supabase.ts and the two ALLOWED_CALLERS contract tests that enforce the allowlists. Fixed,
+//     was F-ADM4-1 break #5 ("KNOWN BREAK #5" below is now a fixed-regression guard, not an open break).
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -33,6 +36,7 @@ const SITE = 'dddddddd-0000-4000-8000-0000000000d1';
 const MODERATOR = 'eeeeeeee-0000-4000-8000-0000000000e1';
 const VIEWER = 'eeeeeeee-0000-4000-8000-0000000000e2';
 const MERCHANT = 'ffffffff-0000-4000-8000-0000000000f1';
+const REPLACEMENT_LEAD = 'eeeeeeee-0000-4000-8000-0000000000e3';
 
 type Row = Record<string, unknown>;
 type Captured = { method: string; table: string };
@@ -74,6 +78,7 @@ function installFakePostgrest(tables: Record<string, Row[]>, rpc: Record<string,
         requests.push({ method, table });
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
+        if (table === 'rpc/consume_internal_auth_replay_jti') return json(true);
         if (table.startsWith('rpc/')) return json(rpc[table.slice(4)] ?? null);
         if (method !== 'GET') return json([], 201);
         const rows = (tables[table] ?? []).filter((row) => matches(row, url.searchParams));
@@ -110,15 +115,16 @@ function approve(headers: Record<string, string>) {
     return gateway().request(`/operations/marketplace-listings/${LISTING}/approve`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', ...headers },
-        body: JSON.stringify({ idempotency_key: 'admin-web:listing:approve:test-key-0001' }),
+        body: JSON.stringify({ idempotency_key: 'admin-web:listing:approve:test-key-0001', operator_user_id: MODERATOR }),
     });
 }
 
 const EMPLOYEES: Row[] = [
-    { id: 'emp-moderator', user_id: MODERATOR, email: 'moderator@letbuyy.test', role: null, role_id: null, permissions: ['review:view', 'review:decide'], is_active: true, status: 'active' },
-    { id: 'emp-viewer', user_id: VIEWER, email: 'viewer@letbuyy.test', role: null, role_id: null, permissions: ['review:view'], is_active: true, status: 'active' },
+    { id: 'emp-moderator', user_id: MODERATOR, email: 'moderator@letbuyy.test', role: 'operations', role_id: null, permissions: [], is_active: true, status: 'active' },
+    { id: 'emp-viewer', user_id: VIEWER, email: 'viewer@letbuyy.test', role: 'viewer', role_id: null, permissions: [], is_active: true, status: 'active' },
+    { id: 'emp-replacement-lead', user_id: REPLACEMENT_LEAD, email: 'lead2@letbuyy.test', role: 'manager', role_id: null, permissions: [], is_active: true, status: 'active' },
 ];
-const LISTINGS: Row[] = [{ id: LISTING, site_id: SITE, product_id: 'p1', channel: 'marketplace', status: 'pending_review', version: 1 }];
+const LISTINGS: Row[] = [{ id: LISTING, site_id: SITE, product_id: 'p1', channel: 'marketplace', status: 'pending_review', assigned_reviewer_id: MODERATOR, version: 1 }];
 
 test('the console\'s shared bearer token is not an operator identity: 401 before any lookup', async (t) => {
     const postgrest = installFakePostgrest({ employees: EMPLOYEES, channel_listings: LISTINGS });
@@ -149,7 +155,7 @@ test('a merchant identity with no operator role is authenticated but denied: 403
     const response = await approve(await identityHeaders(MERCHANT, 'merchant@example.invalid'));
 
     assert.equal(response.status, 403);
-    assert.equal((await response.json() as { error: { code: string } }).error.code, 'PERMISSION_SCOPE_DENIED');
+    assert.equal((await response.json() as { error: { code: string } }).error.code, 'FORBIDDEN');
     assert.equal(postgrest.touched('channel_listings'), false);
     assert.equal(postgrest.touched('rpc/transition_channel_listing'), false);
 });
@@ -164,24 +170,24 @@ test('an operator holding only review:view cannot decide', async (t) => {
     assert.equal(postgrest.touched('rpc/transition_channel_listing'), false);
 });
 
-test('KNOWN BREAK #5: a review:decide operator passes auth and RBAC, then the tenant guard refuses the cross-site read', async (t) => {
-    const postgrest = installFakePostgrest({ employees: EMPLOYEES, channel_listings: LISTINGS });
+test('FIXED (F2.6): a review:decide operator passes auth and RBAC, and the listing read now reaches channel_listings', async (t) => {
+    const postgrest = installFakePostgrest(
+        { employees: EMPLOYEES, channel_listings: LISTINGS },
+        { transition_channel_listing: [{ listing_id: LISTING, from_status: 'pending_review', to_status: 'approved', event_id: 'ev-1', replayed: false }] },
+    );
     t.after(() => postgrest.restore());
 
     const response = await approve(await identityHeaders(MODERATOR, 'moderator@letbuyy.test'));
 
     // Auth and RBAC both let the moderator through — the permission lookup ran …
     assert.equal(postgrest.touched('employees'), true, 'requirePermission resolved the moderator\'s scopes');
-    // … and the refusal is the tenant query guard: channel_listings is registered with scope site_id,
-    // loadListing filters by id only, so the guard rejects before the query is ever sent.
-    assert.equal(response.status, 500);
-    assert.equal(postgrest.touched('channel_listings'), false, 'the guard refused before any request left');
-    assert.equal(postgrest.touched('rpc/transition_channel_listing'), false);
+    // … and the read now succeeds: loadChannelListingById (getSupabaseAdminUnguarded) reaches the
+    // table instead of being refused by the tenant guard before any request left.
+    assert.equal(postgrest.touched('channel_listings'), true, 'the bounded single-row lookup reached the table');
+    assert.equal(response.status, 200, await response.clone().text());
 });
 
-test('an authorized operator approves a pending listing, recorded as the operator realm', {
-    todo: 'blocked on the operator read-path decision — the tenant guard refuses cross-site channel_listings reads (F-ADM4-1 break #5); flip KNOWN BREAK #5 when this passes',
-}, async (t) => {
+test('an authorized operator approves a pending listing, recorded as the operator realm', async (t) => {
     const postgrest = installFakePostgrest(
         { employees: EMPLOYEES, channel_listings: LISTINGS },
         { transition_channel_listing: [{ listing_id: LISTING, from_status: 'pending_review', to_status: 'approved', event_id: 'ev-1', replayed: false }] },
@@ -195,12 +201,57 @@ test('an authorized operator approves a pending listing, recorded as the operato
     assert.equal(postgrest.touched('audit_logs'), true, 'every operator decision names its operator in audit_logs');
 });
 
+test('the production claim route revalidates the human reviewer and reaches the atomic claim RPC', async (t) => {
+    const postgrest = installFakePostgrest(
+        {
+            employees: EMPLOYEES,
+            channel_listings: [{ ...LISTINGS[0], assigned_reviewer_id: null, version: 4 }],
+        },
+        { claim_marketplace_listing_review: [{ listing_id: LISTING, assigned_reviewer_id: MODERATOR, version: 4, event_id: 'claim-1', replayed: false }] },
+    );
+    t.after(() => postgrest.restore());
+
+    const headers = await identityHeaders(MODERATOR, 'moderator@letbuyy.test');
+    const response = await gateway().request(`/operations/marketplace-listings/${LISTING}/claim`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...headers },
+        body: JSON.stringify({
+            reason: 'I will review this product submission.',
+            idempotency_key: 'claim-key-0001',
+            expected_version: 4,
+            operator_user_id: MODERATOR,
+        }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal(postgrest.touched('employees'), true, 'the claimed identity has current platform membership and permissions checked');
+    assert.equal(postgrest.touched('rpc/claim_marketplace_listing_review'), true);
+});
+
+test('a live platform lead can reassign through the production route and the atomic RPC', async (t) => {
+    const postgrest = installFakePostgrest(
+        { employees: EMPLOYEES, channel_listings: LISTINGS },
+        { assign_marketplace_listing_reviewer: [{ listing_id: LISTING, previous_reviewer_id: MODERATOR, assigned_reviewer_id: REPLACEMENT_LEAD, version: 2, event_id: 'assignment-1', replayed: false }] },
+    );
+    t.after(() => postgrest.restore());
+
+    const response = await gateway().request(`/operations/marketplace-listings/${LISTING}/assign`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...await identityHeaders(MODERATOR, 'moderator@letbuyy.test') },
+        body: JSON.stringify({ assignee_user_id: REPLACEMENT_LEAD, reason: 'Reviewer on-call rotation changed.', idempotency_key: 'lead-assign-1', expected_version: 1, operator_user_id: MODERATOR }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal(postgrest.touched('employees'), true, 'actor and assignee are checked against current platform membership');
+    assert.equal(postgrest.touched('rpc/assign_marketplace_listing_reviewer'), true);
+});
+
 test('production mounts the moderation router behind authMiddleware, as this harness does', () => {
     const index = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
     const auth = index.indexOf("api.use('/*', authMiddleware);");
     const mount = index.indexOf("api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);");
+    const broadOperationsGate = index.indexOf("api.route('/operations', operationsIncidentCommandRouter);");
     const consoleMount = index.indexOf("api.route('/internal/console', internalConsoleRouter);");
-    assert.ok(auth !== -1 && mount !== -1 && consoleMount !== -1);
+    assert.ok(auth !== -1 && mount !== -1 && consoleMount !== -1 && broadOperationsGate !== -1);
     assert.ok(auth < mount, 'the operator routes sit behind authMiddleware — the console bearer never reaches them');
+    assert.ok(mount < broadOperationsGate, 'review routes with their own active-platform gate are mounted before incident-command');
     assert.ok(consoleMount < auth, 'only /internal/console, mounted before auth, accepts the console token');
 });

@@ -1,0 +1,39 @@
+{
+  "runId": "4ec852a32e9e",
+  "dateLocal": "2026-10-08",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+  "runtime": {
+    "gateway": "production Gateway worker",
+    "database": "runner-owned PostgreSQL 16 and PostgREST 16.2",
+    "identity": "local Identity Next.js app with synthetic buyer credentials",
+    "browser": "headless Chromium through Playwright",
+    "hosted": false,
+    "provider": false
+  },
+  "result": {
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "wallSeconds": 106.8,
+    "browserJourney": "After verified account linking, Chromium saves the owned synthetic product from product detail, receives the successful buyer BFF response, opens account wishlist and observes the saved product.",
+    "databaseAssertion": "The same product is present under the store-customer ID resolved from the verified buyer/site relationship."
+  },
+  "cleanup": {
+    "runnerOwnedDatabase": true,
+    "runnerOwnedPostgrest": true,
+    "remainingContainers": 0,
+    "remainingNetworks": 0,
+    "remainingVolumes": 0
+  },
+  "limits": [
+    "Synthetic credentials and test records only.",
+    "No hosted storefront, hosted database, Razorpay sandbox, real message, live transaction, migration deployment, or release was involved.",
+    "This verifies one local identity-link and wishlist journey; it does not complete Phase 2 or the eleven-phase programme."
+  ]
+}

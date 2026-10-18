@@ -8,6 +8,7 @@
     "SUPABASE_ANON_KEY": { "type": "string" },
     "BFF_BASE_URL": { "type": "string", "format": "uri" },
     "API_BASE_URL": { "type": "string", "format": "uri" },
+    "ADMIN_BASE_URL": { "type": "string", "format": "uri" },
     "IDENTITY_BASE_URL": { "type": "string", "format": "uri" },
     "STOREFRONT_BASE_URL": { "type": "string", "format": "uri" },
     "MOBILE_PUSH_DEVICE_TOKEN": { "type": "string" },

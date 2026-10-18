@@ -10,11 +10,13 @@ import {
     INTERNAL_PERMISSION_TIERS,
     type InternalEffectivePermissionScope,
     type InternalPermissionScope,
+    type InternalPermissionTier,
 } from '@letbuyy/shared-types';
 import type { RbacRoleCategory } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { AppError } from '../lib/errors';
 
 type RbacDb = ReturnType<typeof getSupabaseAdmin>;
 type JsonRecord = Record<string, unknown>;
@@ -274,6 +276,7 @@ interface PlatformEmployeeRow {
 async function activeEmployeeForUser(db: RbacDb, userId: string): Promise<PlatformEmployeeRow | null> {
     const { data, error } = await platformEmployeeRows(db, 'id, user_id, email, role, role_id, permissions, is_active, status')
         .eq('user_id', userId)
+        .eq('is_active',true)
         .in('status', ['active'])
         .maybeSingle();
 
@@ -411,7 +414,7 @@ export async function logSensitiveRead(
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
 
-    await db.from('audit_logs').insert({
+    const { error } = await db.from('audit_logs').insert({
         actor_id: auth?.user?.id || null,
         actor_type: 'employee',
         actor_email: auth?.user?.email || null,
@@ -426,6 +429,7 @@ export async function logSensitiveRead(
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,
     });
+    if(error) throw new AppError('The required sensitive-read audit could not be saved.',503,'AUDIT_UNAVAILABLE');
 }
 
 /**
@@ -579,3 +583,90 @@ export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
         await next();
     }
 );
+
+/**
+ * Phase 2 / D04 (Mandate 7, Section 7) -- a NEW, explicit platform-operator eligibility gate. Not a
+ * replacement for requireSuperAdmin (still used wherever superadmin-only is the actual requirement,
+ * e.g. internal-console.ts's static-token router upstream of MFA); this exists for routers like
+ * operations/support.ts where the goal is "any active platform operator, at whatever tier their own
+ * per-route requirePermission(...) call recognizes" -- today that is only ever a superadmin in
+ * practice (see the test suite for why), but this function is what makes a non-superadmin platform
+ * operator ABLE to reach a route's permission check at all, rather than being blocked before ever
+ * getting there.
+ *
+ * Preserves every property the router-level requireRoleCategory('ops') + requireSuperAdmin pair
+ * established, and adds nothing that widens who can pass beyond "a real platform operator":
+ *
+ *  1. Authenticated canonical principal -- 401 if no auth.user at all, checked here explicitly
+ *     rather than assumed (requireSuperAdmin above dereferences auth.user without this check, relying
+ *     on it always running after session middleware; this function does not make that assumption).
+ *  2 + 4. Active platform-operator eligibility, revocation-fresh -- hasOpsAllowlistEntry and
+ *     activeEmployeeForUser both query the database on THIS request, not a cache, matching every
+ *     other fail-closed-per-request pattern in this codebase (staff-permission.ts, this same file's
+ *     requireRoleCategory/requireSuperAdmin).
+ *  3. Platform-scoped role/membership, not a merchant one -- activeEmployeeForUser reads through
+ *     platformEmployeeRows, whose OWN query filters `store_id IS NULL` at the database level (see
+ *     its doc comment: APPID-P5b fixed the exact bug of a store-scoped employee's role/permissions
+ *     being read as if platform-scoped). A merchant's own employees row -- whatever its role string,
+ *     whatever support:*-shaped permission keys it happens to hold, even a "*" wildcard, even if some
+ *     future bug ever left its store_id null in a client-supplied payload (store_id here is never
+ *     read from anything the client sends; activeEmployeeForUser takes only a server-derived userId)
+ *     -- is structurally never returned by this query if its store_id is not null. This is the
+ *     authoritative membership model this codebase already established and already fixed a real bug
+ *     in once; this function reuses it rather than inventing a second one.
+ *  5. Required permission for the endpoint -- deliberately NOT this function's job. Every route in
+ *     operations/support.ts already carries its own requirePermission('support:...') call; this
+ *     function only decides whether the caller is a platform operator AT ALL, never which action
+ *     they may take. Removing this function would not remove that check -- it lives on each route,
+ *     unchanged.
+ *  6. Step-up/MFA for high-risk actions -- NOT implemented by this function, and not invented here.
+ *     D04.6 (whether the merchant-detail cross-domain view or any support action needs dual control)
+ *     remains an open, unanswered decision; nothing in this router currently requires step-up, and
+ *     this change does not add or imply one.
+ *  7. Audit actor identity -- unchanged; every route's own writeAudit/logSensitiveRead call already
+ *     derives the actor from `auth.user.id` (via actorUserId(c)), never from anything client-supplied.
+ *
+ * `admittedTiers` (P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE, owner decision O1 of 2026-10-02): a router may admit only some
+ * platform tiers. A super admin always passes, unchanged. Any other caller must still be an active platform employee (above),
+ * AND the default tier of its platform role (INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS) must be one the router admits; a role with no
+ * tier, or a tier the router does not list, is refused here (fail closed), before any route runs. Without the option, every
+ * active platform employee passes, as before. Which ACTIONS an admitted caller may take is still each route's requirePermission.
+ */
+export function requirePlatformOperator(options: { admittedTiers?: readonly InternalPermissionTier[] } = {}) {
+    const { admittedTiers } = options;
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        const auth = c.get('auth');
+        if (!auth?.user) {
+            return c.json(
+                { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+                401
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const [isSuperAdmin, employee] = await Promise.all([
+            hasOpsAllowlistEntry(db, auth.user.id, auth.user.email),
+            activeEmployeeForUser(db, auth.user.id),
+        ]);
+
+        if (!isSuperAdmin && !employee) {
+            return c.json(
+                { error: { code: 'FORBIDDEN', message: 'Platform operator access required' } },
+                403
+            );
+        }
+
+        if (!isSuperAdmin && admittedTiers) {
+            const role = typeof employee?.role === 'string' ? employee.role.trim() : '';
+            const tier = role && Object.hasOwn(INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS, role) ? INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS[role] : undefined;
+            if (!tier || !admittedTiers.includes(tier)) {
+                return c.json(
+                    { error: { code: 'FORBIDDEN', message: 'Platform operator tier not admitted' } },
+                    403
+                );
+            }
+        }
+
+        await next();
+    });
+}

@@ -1,0 +1,19 @@
+{
+  "runId": "8a2836646cbe",
+  "suite": "hosted-checkout-buyer-ownership.postgres",
+  "runtime": "API Gateway worker + PostgREST + runner-owned PostgreSQL 16",
+  "tests": 8,
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "todo": 0,
+  "cancelled": 0,
+  "wallSeconds": 27.7,
+  "provider": "synthetic test-only Razorpay adapter; no provider request",
+  "cleanup": {
+    "failures": [],
+    "remainingContainers": [],
+    "remainingNetworks": [],
+    "remainingVolumes": []
+  }
+}

@@ -36,7 +36,7 @@
       <button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>
       <span data-lb-add-to-cart-status aria-live="polite"></span>
     </lb-add-to-cart>
-    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
+    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
   </div>
   {% if section.settings.showDescription and product.description %}
   <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>

@@ -11,13 +11,15 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import {
     FIRST_GOVERNED_MIGRATION,
     applicationSources,
     assertExemptionIsWellFormed,
     migrationFiles,
+    migrationBodies,
     migrationsDir,
     numericPrefix,
     referencesIn,
@@ -27,6 +29,34 @@ import {
 // Each exemption states why the table is legitimately untouched by application code, and what
 // removes the exemption.
 const EXEMPT = {
+    console_magic_link_consumptions: {
+        why: 'single-use magic-link evidence is written atomically with the durable operator session '
+            + 'inside exchange_identity_console_magic_v1 (332), called by the canonical Gateway '
+            + 'accounts-only operator exchange. Direct runtime writes would split the transaction',
+        blockedOn: 'nothing: the narrow exchange RPC is the intended writer; real browser and owned DB proof cover replay and audit failure',
+        viaRpc: 'exchange_identity_console_magic_v1',
+    },
+    internal_auth_replay_claims: {
+        why: 'private single-use JTI storage is read/written only by consume_internal_auth_replay_jti (307), '
+            + 'called by the canonical Gateway replay consumer in src/lib/supabase.ts. Direct API-role table access '
+            + 'is revoked; the owned operator replay suite proves concurrency, outage recovery and rollback',
+        blockedOn: 'nothing: the narrow claim RPC is its intended access path',
+        viaRpc: 'consume_internal_auth_replay_jti',
+    },
+    product_price_observations: {
+        why: 'trigger-owned historical price records are read through product_price_reference_window, called '
+            + 'by the actual public storefront and marketplace routes. Direct runtime writes would falsify the '
+            + 'historical observations. The owned price-observation suite proves channel, time-window and ACL behavior',
+        blockedOn: 'nothing: the read projection and observation triggers are the intended access paths',
+        viaRpc: 'product_price_reference_window',
+    },
+    support_mutation_receipts: {
+        why: 'written and replayed only inside execute_operator_support_mutation (265), called by '
+            + 'services/api-gateway/src/execution/support-execution.adapter.ts. Separate application '
+            + 'writes would break atomicity. The owned operator-mutation-integrity suite proves '
+            + 'durable replay, concurrency and rollback after receipt completion failure',
+        blockedOn: 'nothing: the transactional support function is its intended reader and writer',
+    },
     purchases: {
         why: 'written by create_checkout_order in SQL and deliberately unreadable by merchants '
             + '(D-PURCHASE-TENANCY: FORCE RLS with app_tenant revoked outright). While D-3 keeps '
@@ -80,6 +110,17 @@ function governedTables() {
 const sources = applicationSources();
 const governed = governedTables();
 
+test('reachability includes genuine untracked candidate source without counting tests or generated registries', () => {
+    const path=`services/api-gateway/src/lib/reachability-fixture-${randomUUID()}.mjs`;
+    const absolute=join(migrationsDir,'../../../',path);
+    let created=false;
+    try {
+        writeFileSync(absolute,"export const readSynthetic = db => db.from('synthetic_reachability_table');\n",{flag:'wx'});
+        created=true;
+        assert.deepEqual(referencesIn(applicationSources(),'synthetic_reachability_table'),[path]);
+    } finally { if(created)unlinkSync(absolute); }
+});
+
 test('the sweep actually found this programme\'s tables', () => {
     // Non-vacuity: a sweep that matched nothing would pass every assertion below.
     assert.ok(governed.length >= 15, `expected the 217+ tables, found ${governed.length}`);
@@ -120,6 +161,17 @@ for (const [name, file] of governed) {
                 `${name} is now used (${users.join(', ')}) — remove its exemption rather than leaving a waiver`,
             );
             assertExemptionIsWellFormed(assert, name, exemption);
+            if(exemption.viaRpc) {
+                assert.ok(referencesIn(sources,exemption.viaRpc).length>0,
+                    `${name}'s private access RPC must remain called by actual application source`);
+                let latestBody;
+                for(const migration of migrationBodies()) {
+                    const pattern=new RegExp(`CREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+public\\.${exemption.viaRpc}\\s*\\([\\s\\S]*?\\bAS\\s+(\\$[a-z_]*\\$)([\\s\\S]*?)\\1`,'gi');
+                    for(const definition of migration.text.matchAll(pattern)) latestBody=definition[2];
+                }
+                assert.ok(latestBody && referencesIn([{path:exemption.viaRpc,text:latestBody}],name).length>0,
+                    `${name}'s latest RPC definition must actually access the private table`);
+            }
         });
         continue;
     }

@@ -13,15 +13,18 @@
 // widening the match would sign — and thus internally-authorize — more than intended.
 export function isStorefrontInternalOnlyPath(path: string): boolean {
     const pathname = (path.split('?')[0] || '').replace(/\/+$/, '') || '/';
-    return pathname === '/storefront/customer/find-or-create'
+    return pathname === '/storefront/customer/from-order'
         || pathname === '/storefront/customer/by-email'
-        || pathname === '/storefront/customer/status'
         || pathname === '/storefront/customer/password'
         || pathname === '/storefront/customer/login-success'
         || pathname === '/storefront/customer/order-credential'
         || pathname === '/storefront/customer/order-credential/login'
         || pathname === '/storefront/customer/order-credential/login-success'
         || pathname === '/storefront/customer/order-stats'
+        // Legacy address writes pass through the same-origin Commerce BFF, which adds the
+        // server-origin signature required by the Gateway CSRF boundary.
+        || pathname === '/storefront/customer/addresses'
+        || /^\/storefront\/customer\/addresses\/[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pathname)
         // APPID-P4c: the gateway accepts a buyer's storefront session only through this server.
         || pathname === '/storefront/buyer/storefront-session'
         || /^\/storefront\/[^/]+\/orders\/contact$/.test(pathname);

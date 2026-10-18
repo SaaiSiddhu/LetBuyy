@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
+
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+
 import '../../services/analytics_service.dart';
 import '../../services/app_badge_service.dart';
 import '../../services/home_widget_service.dart';
 import '../../services/store_service.dart';
+import '../../services/subscription_service.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
 import '../../theme/app_theme_colors.dart';
@@ -21,6 +25,7 @@ import '../../widgets/dashboard/quick_actions_grid.dart';
 import '../../widgets/dashboard/animated_revenue_chart.dart';
 import '../../widgets/dashboard/activity_timeline.dart';
 import '../../widgets/dashboard/premium_header.dart';
+import '../../widgets/shared/accessible_tap_region.dart';
 import '../../widgets/shared/provider_mode_badge.dart';
 
 /// Premium Enhanced Dashboard - Bento Grid Layout
@@ -35,6 +40,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   StoreModel? _store;
   StoreAnalytics? _analytics;
+  MerchantBillingState? _billing;
+  int _loadVersion = 0;
+  int? _loadedEpoch;
+  String? _loadError;
   Map<String, dynamic>? _payoutSummary;
   String? _dashboardProviderMode;
   bool _isLoading = true;
@@ -48,18 +57,32 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadStore() async {
-    setState(() => _isLoading = true);
+    final version = ++_loadVersion;
+    setState(() {
+      _isLoading = true;
+      _billing = null;
+      _store = null;
+      _loadedEpoch = null;
+      _loadError = null;
+    });
     final storeContext = context.read<StoreContext>();
+    final epoch = storeContext.requestContextVersion;
     final analyticsService = context.read<AnalyticsService>();
     final appBadgeService = context.read<AppBadgeService>();
     final homeWidgetService = context.read<HomeWidgetService>();
 
     try {
       final store = await storeContext.ensureSelectedStore();
+      MerchantBillingState? billing;
       StoreAnalytics? analytics;
       Map<String, dynamic>? payoutSummary;
       String? providerMode;
       if (store != null) {
+        try {
+          billing = await context.read<SubscriptionService>().fetchBillingState(
+            store.id,
+          );
+        } catch (_) {}
         try {
           final snapshot = await analyticsService.getMobileDashboardSnapshot(
             store.id,
@@ -74,8 +97,13 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
       }
-      if (!mounted) return;
+      if (!mounted || version != _loadVersion) return;
+      if (epoch != storeContext.requestContextVersion ||
+          storeContext.selectedStoreId != store?.id)
+        throw StateError('Store changed');
       setState(() {
+        _loadedEpoch = epoch;
+        _billing = billing;
         _store = store;
         _analytics = analytics;
         _payoutSummary = payoutSummary;
@@ -96,8 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       debugPrint('Error loading store: $e');
+      if (mounted && version == _loadVersion)
+        setState(() => _loadError = 'Store details could not load. Try again.');
     } finally {
-      if (mounted) {
+      if (mounted && version == _loadVersion) {
         setState(() => _isLoading = false);
       }
     }
@@ -132,9 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
       HapticFeedback.mediumImpact();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _isPublishing = false);
@@ -143,10 +172,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final storeContext = context.watch<StoreContext>();
+    if (_loadError != null)
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(_loadError!),
+                FilledButton(
+                  onPressed: _loadStore,
+                  child: const Text('Retry store details'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    final stale =
+        _loadedEpoch != null &&
+        (_loadedEpoch != storeContext.requestContextVersion ||
+            _store?.id != storeContext.selectedStoreId);
+    if (stale && !_isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_isLoading) _loadStore();
+      });
+    }
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headerBg = isDark ? const Color(0xFF0A0912) : const Color(0xFFFAF9FF);
     final colors = AppThemeColors.of(context);
-    final cardBg  = isDark ? const Color(0xFF100E1C) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF100E1C) : Colors.white;
 
     return Scaffold(
       backgroundColor: headerBg, // status bar inherits this color
@@ -157,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: false,
             child: ColoredBox(
               color: headerBg,
-              child: _isLoading || _store == null
+              child: _isLoading || stale || _store == null
                   ? const SizedBox(height: 62)
                   : PremiumHeader(
                       isDark: isDark,
@@ -171,12 +227,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft:  Radius.circular(28),
+                topLeft: Radius.circular(28),
                 topRight: Radius.circular(28),
               ),
               child: Container(
                 color: cardBg,
-                child: _isLoading
+                child: _isLoading || stale
                     ? const SkeletonLoader()
                     : _store == null
                     ? _buildNoStore(colors)
@@ -190,7 +246,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDashboard(AppThemeColors colors) {
-
     final analytics = _analytics;
     final totalOrders = analytics?.totalOrders ?? _store!.totalOrders;
     final totalProducts = analytics?.totalProducts ?? _store!.productCount;
@@ -234,6 +289,11 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: HeroStoreCard(
                 store: _store!,
+                billing: _billing,
+                onPlanTap: () async {
+                  await Navigator.pushNamed(context, AppRoutes.pricing);
+                  if (mounted) await _loadStore();
+                },
                 onPublishToggle: _togglePublish,
                 isPublishing: _isPublishing,
               ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -256,36 +316,54 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   // Period Dropdown
-                  GestureDetector(
+                  Semantics(
+                    key: const ValueKey('dashboard-period-picker'),
+                    container: true,
+                    excludeSemantics: true,
+                    button: true,
+                    enabled: true,
+                    label: 'Dashboard reporting period',
+                    hint: 'Current reporting period: $_selectedPeriod',
                     onTap: () => _showPeriodPicker(colors),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
                       ),
-                      decoration: BoxDecoration(
-                        color: colors.glassMedium,
+                      child: InkWell(
+                        excludeFromSemantics: true,
+                        onTap: () => _showPeriodPicker(colors),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: colors.glassMediumBorder),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _selectedPeriod,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: colors.textPrimary,
-                            ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
                           ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 14,
-                            color: colors.textSecondary,
+                          decoration: BoxDecoration(
+                            color: colors.glassMedium,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: colors.glassMediumBorder),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _selectedPeriod,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                size: 14,
+                                color: colors.textSecondary,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -470,7 +548,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   void _showPeriodPicker(AppThemeColors colors) {
     final periods = ['7 Days', '30 Days', '90 Days', '12 Months'];
 
@@ -482,67 +559,70 @@ class _HomeScreenState extends State<HomeScreen> {
           color: colors.card,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Select Period',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...periods.map(
-              (period) => ListTile(
-                onTap: () {
-                  setState(() => _selectedPeriod = period);
-                  Navigator.pop(context);
-                  _loadStore();
-                },
-                leading: Icon(
-                  _selectedPeriod == period
-                      ? Icons.radio_button_checked_rounded
-                      : Icons.radio_button_off_rounded,
-                  color: _selectedPeriod == period
-                      ? mobile_tokens.LetbuyyColorTokens.brandPrimary
-                      : colors.textSecondary,
-                  size: 20,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                title: Text(
-                  period,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: _selectedPeriod == period
-                        ? FontWeight.w600
-                        : FontWeight.w500,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Select Period',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...periods.map(
+                (period) => ListTile(
+                  onTap: () {
+                    setState(() => _selectedPeriod = period);
+                    Navigator.pop(context);
+                    _loadStore();
+                  },
+                  leading: Icon(
+                    _selectedPeriod == period
+                        ? Icons.radio_button_checked_rounded
+                        : Icons.radio_button_off_rounded,
                     color: _selectedPeriod == period
-                        ? colors.textPrimary
+                        ? mobile_tokens.LetbuyyColorTokens.brandPrimary
                         : colors.textSecondary,
+                    size: 20,
                   ),
+                  title: Text(
+                    period,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: _selectedPeriod == period
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: _selectedPeriod == period
+                          ? colors.textPrimary
+                          : colors.textSecondary,
+                    ),
+                  ),
+                  trailing: _selectedPeriod == period
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                          size: 18,
+                        )
+                      : null,
                 ),
-                trailing: _selectedPeriod == period
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                        size: 18,
-                      )
-                    : null,
               ),
-            ),
-            SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
-          ],
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+            ],
+          ),
         ),
       ),
     );
@@ -574,71 +654,87 @@ class _HomeScreenState extends State<HomeScreen> {
       _dashboardProviderMode ?? _payoutSummary?['provider_mode'],
     );
 
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.money),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.glassMedium,
+    void openMoney() => Navigator.pushNamed(context, AppRoutes.money);
+
+    return AccessibleTapRegion(
+      label: 'Next payout, $amount. $subtitle',
+      hint: 'Open Money and payouts',
+      onTap: openMoney,
+      excludeChildSemantics: true,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          excludeFromSemantics: true,
+          onTap: openMoney,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-              alpha: 0.24,
+          child: Ink(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.glassMedium,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
+                  alpha: 0.24,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary
+                        .withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet_outlined,
+                    color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Next payout',
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        amount,
+                        style: TextStyle(
+                          color: colors.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ProviderModeBadge(mode: providerMode, compact: true),
+                const SizedBox(width: 8),
+                Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
+              ],
             ),
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-                  alpha: 0.12,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.account_balance_wallet_outlined,
-                color: mobile_tokens.LetbuyyColorTokens.brandPrimary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Next payout',
-                    style: TextStyle(
-                      color: colors.textSecondary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    amount,
-                    style: TextStyle(
-                      color: colors.textPrimary,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            ProviderModeBadge(mode: providerMode, compact: true),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right_rounded, color: colors.textSecondary),
-          ],
         ),
       ),
     );

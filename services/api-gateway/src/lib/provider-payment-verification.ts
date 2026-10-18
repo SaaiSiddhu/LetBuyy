@@ -22,6 +22,7 @@
 // provider payment id been used by ANYONE" — a different question with a different storage model.
 // Folding it in here would make this module know about tables again.
 
+import {razorpayBillingSignaturePayload} from '@letbuyy/billing-core';
 import { hmacSha256Hex, timingSafeEqualHex } from './crypto';
 
 export type ProviderPaymentVerificationFailure =
@@ -32,6 +33,7 @@ export type ProviderPaymentVerificationFailure =
 export interface RazorpayVerificationInput {
     /// The provider order id the client presents.
     providerOrderId: string;
+    referenceKind?: 'order' | 'subscription';
     providerPaymentId: string;
     signature: string;
     /// The reference the SERVER stored when it created the provider order — orders.payment_id for a
@@ -49,7 +51,7 @@ export type ProviderPaymentVerification =
 // payload construction is one thing, in one place, rather than a template literal repeated per
 // caller — the shape of defect this repository has found in its own money code more than once.
 export function razorpaySignaturePayload(providerOrderId: string, providerPaymentId: string): string {
-    return `${providerOrderId}|${providerPaymentId}`;
+    return razorpayBillingSignaturePayload({orderId:providerOrderId,paymentId:providerPaymentId});
 }
 
 export async function verifyRazorpayPayment(
@@ -59,7 +61,7 @@ export async function verifyRazorpayPayment(
     // Fails closed: with no secret nothing can be verified, so nothing may be treated as paid.
     if (!keySecret) return { ok: false, reason: 'provider_not_configured' };
 
-    const expected = await hmacSha256Hex(keySecret, razorpaySignaturePayload(input.providerOrderId, input.providerPaymentId));
+    const expected = await hmacSha256Hex(keySecret, razorpayBillingSignaturePayload({paymentId:input.providerPaymentId,...(input.referenceKind==='subscription'?{subscriptionId:input.providerOrderId}:{orderId:input.providerOrderId})}));
     if (!timingSafeEqualHex(expected, input.signature)) return { ok: false, reason: 'invalid_signature' };
 
     // SECURITY, and the order matters: the signature is checked FIRST so an attacker learns nothing

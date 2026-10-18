@@ -2,651 +2,457 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import '../../models/store_model.dart';
 import '../../services/subscription_service.dart';
+import '../../theme/app_theme_colors.dart';
 import 'razorpay_checkout_screen.dart';
 
-import '../../models/store_model.dart';
-import '../../theme/app_theme_colors.dart';
-
-/// Modern Pricing Page with all 4 subscription plans
-/// Dark theme with glassmorphism, matching dashboard aesthetic
 class PricingScreen extends StatefulWidget {
   const PricingScreen({super.key});
-
   @override
   State<PricingScreen> createState() => _PricingScreenState();
 }
 
 class _PricingScreenState extends State<PricingScreen> {
-  SubscriptionPlan? _selectedPlan;
   StoreModel? _store;
-  bool _isLoading = true;
-  bool _isProcessing = false;
-  late AppThemeColors colors;
-
+  MerchantBillingState? _current;
+  List<MerchantBillingPlan> _plans = const [];
+  String _period = 'monthly';
+  String? _error;
+  bool _loading = true, _processing = false, _choosing = false;
+  int _loadVersion = 0;
+  int? _loadedEpoch;
+  AppThemeColors get colors => AppThemeColors.of(context);
   @override
   void initState() {
     super.initState();
-    _loadStore();
+    _load();
   }
 
-  Future<void> _loadStore() async {
+  Future<void> _load() async {
+    final version = ++_loadVersion;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      final storeContext = context.read<StoreContext>();
+      final epoch = storeContext.requestContextVersion;
+      final service = context.read<SubscriptionService>();
+      final store = await storeContext.ensureSelectedStore();
+      if (store == null)
+        throw StateError('Choose a store before managing its plan.');
+      final values = await Future.wait<Object>([
+        service.fetchPlans(store.id),
+        service.fetchBillingState(store.id),
+      ]);
+      if (!mounted || version != _loadVersion) return;
+      if (storeContext.requestContextVersion != epoch ||
+          storeContext.selectedStoreId != store.id)
+        throw StateError('Store changed. Refresh plans for the current store.');
       setState(() {
+        _loadedEpoch = epoch;
         _store = store;
-        _selectedPlan = store?.subscriptionPlan ?? SubscriptionPlan.trial;
+        _plans = values[0] as List<MerchantBillingPlan>;
+        _current = values[1] as MerchantBillingState;
+        _loading = false;
       });
-    } finally {
-      setState(() => _isLoading = false);
+    } catch (_) {
+      if (mounted && version == _loadVersion)
+        setState(() {
+          _loading = false;
+          _error = 'Plans could not load. Refresh to try again.';
+        });
     }
   }
 
-  Future<void> _selectPlan(SubscriptionPlan plan) async {
-    if (_store == null || _isProcessing) return;
-    if (plan == _store!.subscriptionPlan) return;
+  bool _isCurrent(MerchantBillingPlan plan) =>
+      _current?.active == true &&
+      _current?.planSlug == plan.slug &&
+      _current?.billingPeriod == _period;
 
-    setState(() => _isProcessing = true);
+  Future<void> _selectPlan(MerchantBillingPlan plan) async {
+    if (_store == null ||
+        _processing ||
+        _choosing ||
+        !plan.purchasable ||
+        _isCurrent(plan))
+      return;
+    final period = _period;
+    setState(() => _choosing = true);
     HapticFeedback.mediumImpact();
-
-    try {
-      final subscriptionService = context.read<SubscriptionService>();
-
-      if (plan == SubscriptionPlan.trial) {
-        await subscriptionService.createSubscription(
-          storeId: _store!.id,
-          plan: plan,
-        );
-        _showSuccessDialog(plan);
-      } else {
-        // Show payment modal for paid plans
-        _showPaymentModal(plan);
-      }
-    } catch (e) {
-      _showError(e.toString());
-    } finally {
-      setState(() => _isProcessing = false);
-    }
-  }
-
-  void _showSuccessDialog(SubscriptionPlan plan) {
-    final planInfo = SubscriptionService.getPlanInfo(plan);
-    showDialog(
+    final confirmed = await showModalBottomSheet<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Text(planInfo['badge'], style: const TextStyle(fontSize: 28)),
-            const SizedBox(width: 12),
-            Text(
-              'Welcome to ${planInfo['name']}!',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          'Your plan has been activated. Enjoy your new features!',
-          style: TextStyle(color: colors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: Text(
-              'Got it',
-              style: TextStyle(color: Color(planInfo['color'] as int)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPaymentModal(SubscriptionPlan plan) {
-    final planInfo = SubscriptionService.getPlanInfo(plan);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              planInfo['badge'] as String,
-              style: const TextStyle(fontSize: 48),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Upgrade to ${planInfo['name']}',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
+      backgroundColor: colors.card,
+      builder: (sheet) => SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  planInfo['priceLabel'] as String,
+                  'Choose ${plan.name}',
                   style: TextStyle(
-                    fontSize: 36,
+                    color: colors.textPrimary,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(planInfo['color'] as int),
                   ),
                 ),
+                const SizedBox(height: 12),
                 Text(
-                  planInfo['period'] as String,
-                  style: TextStyle(fontSize: 16, color: colors.textSecondary),
+                  '${plan.priceLabel(period)} /${period == 'yearly' ? 'year' : 'month'}',
+                  style: TextStyle(
+                    color: colors.accent,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                for (final feature in plan.features)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      feature,
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pop(sheet, true),
+                  child: const Text('Continue to Payment'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.pop(sheet, false),
+                  child: const Text('Back to plans'),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: (planInfo['features'] as List<String>)
-                    .take(4)
-                    .map(
-                      (f) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Color(planInfo['color'] as int),
-                              size: 18,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              f,
-                              style: TextStyle(color: colors.textPrimary),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _initiatePayment(plan);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(planInfo['color'] as int),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        'Continue to Payment',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Cancel anytime • Secure payment via Razorpay',
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
+    if (!mounted) return;
+    setState(() => _choosing = false);
+    if (confirmed == true) await _initiatePayment(plan, period);
   }
 
-  Future<void> _initiatePayment(SubscriptionPlan plan) async {
-    if (_store == null || _isProcessing) return;
-
-    setState(() => _isProcessing = true);
+  Future<void> _initiatePayment(MerchantBillingPlan plan, String period) async {
+    final store = _store;
+    if (store == null || _processing) return;
+    setState(() => _processing = true);
     try {
-      final subscriptionService = context.read<SubscriptionService>();
-      final checkout = await subscriptionService.createSubscriptionOrder(
-        storeId: _store!.id,
-        plan: plan,
-      );
-
+      final checkout = await context
+          .read<SubscriptionService>()
+          .createCatalogCheckout(
+            storeId: store.id,
+            planSlug: plan.slug,
+            billingPeriod: period,
+          );
+      if (!mounted) return;
+      if (context.read<StoreContext>().selectedStoreId != store.id)
+        throw StateError('Store changed. Open billing for the current store.');
       if (checkout['activated'] == true) {
-        _showSuccessDialog(plan);
+        await _load();
+        if (mounted) _showMessage('${plan.name} is activated.');
         return;
       }
-
+      final amount = checkout['amount'];
+      if (amount is! int || amount <= 0 || checkout['currency'] != 'INR')
+        throw const FormatException('Checkout pricing is unavailable.');
+      if (amount != plan.amountMinor(period)) {
+        final accepted = await showDialog<bool>(
+          context: context,
+          builder: (dialog) => AlertDialog(
+            title: const Text('Review updated price'),
+            content: Text(
+              'The saved checkout is ${subscriptionMoney(amount)} for this ${period == 'yearly' ? 'year' : 'month'}. Review this amount before continuing.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialog, false),
+                child: const Text('Back'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialog, true),
+                child: const Text('Continue'),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || accepted != true) return;
+      }
       final verified = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
           builder: (_) => RazorpayCheckoutScreen(
-            storeId: _store!.id,
-            plan: plan,
+            storeId: store.id,
+            planSlug: plan.slug,
+            billingPeriod: period,
             checkout: checkout,
           ),
         ),
       );
-
       if (!mounted) return;
       if (verified == true) {
-        _showSuccessDialog(plan);
-      } else if (verified == false) {
-        _showError('Razorpay checkout did not complete.');
+        await _load();
+        if (mounted) _showMessage('${plan.name} is activated.');
       }
-    } catch (e) {
-      _showError(e.toString());
+    } catch (error) {
+      if (mounted)
+        _showMessage(error.toString().replaceFirst('Exception: ', ''));
     } finally {
-      setState(() => _isProcessing = false);
+      if (mounted) setState(() => _processing = false);
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red[700],
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
+  void _showMessage(String message) =>
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
   @override
   Widget build(BuildContext context) {
-    colors = AppThemeColors.of(context);
+    final storeContext = context.watch<StoreContext>();
+    final changed =
+        _store != null &&
+        (_store?.id != storeContext.selectedStoreId ||
+            _loadedEpoch != storeContext.requestContextVersion);
+    if (changed && !_loading && _error == null)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_loading) _load();
+      });
     return Scaffold(
       backgroundColor: colors.bgStart,
       body: Container(
         decoration: colors.backgroundGradient,
         child: SafeArea(
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _buildContent(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 24),
-          _buildCurrentPlanBanner(),
-          const SizedBox(height: 24),
-          ...SubscriptionPlan.values.map(
-            (plan) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: _buildPlanCard(plan),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildFAQ(),
-          const SizedBox(height: 40),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Column(
-        children: [
-          Row(
+          child: Column(
             children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_ios, color: colors.textPrimary),
-              ),
-              const Spacer(),
-              Text(
-                'Choose Your Plan',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: colors.textPrimary,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                child: Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Back',
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Choose Your Plan',
+                        style: TextStyle(
+                          color: colors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Refresh plans',
+                      onPressed: _processing ? null : _load,
+                      icon: const Icon(Icons.refresh),
+                    ),
+                  ],
                 ),
               ),
-              const Spacer(),
-              const SizedBox(width: 48),
+              Expanded(
+                child: _loading || (changed && _error == null)
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _error!,
+                                style: TextStyle(color: colors.textPrimary),
+                              ),
+                              const SizedBox(height: 12),
+                              FilledButton(
+                                onPressed: _load,
+                                child: const Text('Retry loading plans'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : _content(),
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Scale your business with the right plan',
-            style: TextStyle(fontSize: 14, color: colors.textSecondary),
-          ),
-        ],
-      ).animate().fadeIn(duration: 300.ms),
+        ),
+      ),
     );
   }
 
-  Widget _buildCurrentPlanBanner() {
-    if (_store == null) return const SizedBox.shrink();
-
-    final currentPlan = _store!.subscriptionPlan ?? SubscriptionPlan.trial;
-    final planInfo = SubscriptionService.getPlanInfo(currentPlan);
-    final daysLeft = _store!.daysLeftInTrial;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(planInfo['color'] as int).withValues(alpha: 0.2),
-            Color(planInfo['color'] as int).withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Color(planInfo['color'] as int).withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            planInfo['badge'] as String,
-            style: const TextStyle(fontSize: 28),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
+  Widget _content() => RefreshIndicator(
+    onRefresh: _load,
+    child: ListView(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      children: [
+        if (_current != null)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.cardBorder),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Current: ${planInfo['name']}',
+                  'Current: ${_current!.planName}',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
                     color: colors.textPrimary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (currentPlan == SubscriptionPlan.trial && daysLeft > 0)
-                  Text(
-                    '$daysLeft days remaining',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: daysLeft <= 5
-                          ? Colors.orange[300]
-                          : colors.textSecondary,
-                    ),
-                  ),
+                Text(
+                  _current!.status.replaceAll('_', ' '),
+                  style: TextStyle(color: colors.textSecondary),
+                ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        const SizedBox(height: 20),
+        SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(value: 'monthly', label: Text('Monthly')),
+            ButtonSegment(value: 'yearly', label: Text('Yearly')),
+          ],
+          selected: {_period},
+          onSelectionChanged: _processing || _choosing
+              ? null
+              : (value) => setState(() => _period = value.single),
+        ),
+        const SizedBox(height: 20),
+        if (_plans.isEmpty)
+          Text(
+            'No plans are available for this store.',
+            style: TextStyle(color: colors.textPrimary),
+          ),
+        for (final plan in _plans)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _planCard(plan),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          'Review the selected billing period and checkout amount before paying. Billing shows recorded payments and invoices.',
+          style: TextStyle(color: colors.textSecondary, fontSize: 12),
+        ),
+      ],
+    ),
+  );
+
+  Widget _planCard(MerchantBillingPlan plan) {
+    final current = _isCurrent(plan),
+        selectable = plan.purchasable && !current && !_processing && !_choosing;
+    final label = [
+      '${plan.name} plan',
+      plan.requiresContact
+          ? 'Contact sales'
+          : plan.comingSoon
+          ? 'Coming soon'
+          : '${plan.priceLabel(_period)} /${_period == 'yearly' ? 'year' : 'month'}',
+      plan.productLimit == null
+          ? 'Unlimited products'
+          : '${plan.productLimit} products',
+      ...plan.features,
+      if (current) 'Current plan',
+      if (!plan.purchasable) 'Unavailable for checkout',
+    ].join(', ');
+    return Semantics(
+      key: ValueKey('subscription-plan-${plan.slug}'),
+      container: true,
+      button: true,
+      enabled: selectable,
+      selected: current,
+      label: label,
+      onTap: selectable ? () => _selectPlan(plan) : null,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: selectable ? () => _selectPlan(plan) : null,
+        borderRadius: BorderRadius.circular(20),
+        child: ExcludeSemantics(
+          child: Container(
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Color(planInfo['color'] as int),
+              color: colors.glassMedium,
               borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              'ACTIVE',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+              border: Border.all(
+                color: current ? colors.accent : colors.glassMediumBorder,
+                width: current ? 2 : 1,
               ),
             ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1);
-  }
-
-  Widget _buildPlanCard(SubscriptionPlan plan) {
-    final planInfo = SubscriptionService.getPlanInfo(plan);
-    final isCurrentPlan = _store?.subscriptionPlan == plan;
-    final isPopular = planInfo['isPopular'] == true;
-    final color = Color(planInfo['color'] as int);
-
-    return GestureDetector(
-      onTap: isCurrentPlan ? null : () => _selectPlan(plan),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colors.glassMedium,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isCurrentPlan
-                ? color
-                : isPopular
-                ? color.withValues(alpha: 0.5)
-                : colors.glassMediumBorder,
-            width: isCurrentPlan || isPopular ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  planInfo['badge'] as String,
-                  style: const TextStyle(fontSize: 24),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  planInfo['name'] as String,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                if (isPopular)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'POPULAR',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                if (isCurrentPlan)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'CURRENT',
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  planInfo['priceLabel'] as String,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                Text(
-                  planInfo['period'] as String,
-                  style: TextStyle(fontSize: 14, color: colors.textSecondary),
-                ),
-                const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Row(
                   children: [
-                    Text(
-                      planInfo['productLimit'] == -1
-                          ? 'Unlimited'
-                          : '${planInfo['productLimit']} products',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
+                    Expanded(
+                      child: Text(
+                        plan.name,
+                        style: TextStyle(
+                          color: colors.textPrimary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Text(
-                      planInfo['commissionLabel'] as String? ??
-                          '${planInfo['commission']}% commission',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.textSecondary,
-                      ),
-                    ),
+                    if (current)
+                      Text('CURRENT', style: TextStyle(color: colors.accent)),
                   ],
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  plan.requiresContact
+                      ? 'Contact sales'
+                      : plan.comingSoon
+                      ? 'Coming soon'
+                      : '${plan.priceLabel(_period)} /${_period == 'yearly' ? 'year' : 'month'}',
+                  style: TextStyle(
+                    color: colors.accent,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  plan.productLimit == null
+                      ? 'Unlimited products'
+                      : '${plan.productLimit} products',
+                  style: TextStyle(color: colors.textPrimary),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: plan.features
+                      .take(3)
+                      .map((f) => Chip(label: Text(f)))
+                      .toList(),
+                ),
+                if (plan.features.length > 3)
+                  Text(
+                    'Review all ${plan.features.length} features',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
               ],
             ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: (planInfo['features'] as List<String>)
-                  .take(3)
-                  .map(
-                    (f) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        f,
-                        style: TextStyle(fontSize: 11, color: color),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
+          ),
         ),
       ),
-    ).animate(delay: (100 + plan.index * 100).ms).fadeIn().slideX(begin: 0.1);
-  }
-
-  Widget _buildFAQ() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Frequently Asked',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildFAQItem(
-            'Can I upgrade or downgrade anytime?',
-            'Yes! You can change your plan anytime. Upgrades take effect immediately.',
-          ),
-          _buildFAQItem(
-            'What happens when trial ends?',
-            'Your store becomes read-only. Upgrade to any paid plan to continue.',
-          ),
-          _buildFAQItem(
-            'Is there a setup fee?',
-            'No setup fees. Pay only the monthly subscription.',
-          ),
-        ],
-      ),
-    ).animate(delay: 500.ms).fadeIn();
-  }
-
-  Widget _buildFAQItem(String question, String answer) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.glassMedium,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            question,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: colors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            answer,
-            style: TextStyle(fontSize: 13, color: colors.textSecondary),
-          ),
-        ],
-      ),
-    );
+    ).animate().fadeIn(duration: 200.ms);
   }
 }

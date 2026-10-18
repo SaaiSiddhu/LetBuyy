@@ -202,11 +202,24 @@ test('5C Navigation: operations dashboard linked (no dead nav)', () => {
   assert.match(nav, /path: 'products\/operations-dashboard'/);
 });
 
-test('5C Invite acceptance: public proxy forwards to the real gateway endpoint (pre-auth, no ownership check) + page consumes it without a dead link', () => {
-  const proxy = read('apps/merchant/web/src/app/api/employees/accept-invite/route.ts');
-  assert.match(proxy, /\/employees\/auth\/accept-invite/);          // real gateway endpoint
-  assert.doesNotMatch(proxy, /resolveOwnedStoreId/);                 // pre-auth: no store ownership
-  const page = read('apps/merchant/web/src/app/accept-invite/page.tsx');
-  assert.match(page, /\/api\/employees\/accept-invite/);            // consumes the proxy
-  assert.doesNotMatch(page, /href="\/login"/);                      // no dead link (merchant app has no /login)
+// N1.6 replaces the retired GoTrue path with canonical verified-account consent.
+// This is a source boundary contract; actual worker/browser evidence is separate.
+const withoutComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+test('5C Invite acceptance uses the authenticated canonical proxy and an explicit consent action', () => {
+  const proxy = withoutComments(read('apps/merchant/web/src/app/api/employees/accept-invite/route.ts'));
+  assert.match(proxy, /validateStaffMutationRequest/);
+  assert.match(proxy, /createMerchantApiClient/);
+  assert.match(proxy, /employees\.previewInvite/);
+  assert.match(proxy, /employees\.acceptInvite/);
+  assert.match(proxy, /idempotencyKey/);
+  assert.doesNotMatch(proxy, /getSupabase|SignJWT|RESEND_API_KEY|STAFF_INVITATION_SIGNING_SECRET/);
+  const page = withoutComments(read('apps/merchant/web/src/app/accept-invite/page.tsx'));
+  const client = withoutComments(read('apps/merchant/web/src/app/accept-invite/accept-invite-client.tsx'));
+  assert.match(page, /getSessionUser/);
+  assert.match(client, /action: 'preview'/);
+  assert.match(client, /action: 'accept'/);
+  assert.match(client, /staffMutationKey/);
+  assert.match(client, /Accept staff invitation/);
+  assert.doesNotMatch(client, /getSupabase|SignJWT|STAFF_INVITATION_SIGNING_SECRET/);
 });

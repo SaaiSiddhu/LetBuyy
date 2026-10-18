@@ -30,6 +30,11 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   late Animation<double> _avatarScale;
 
   bool _isLoading = false;
+  bool _loadingAccount = true;
+  String? _loadError;
+  String? _activeToken;
+  int _sessionGeneration = 0;
+  late final BuyerSignInController _signIn;
   // Phase 1R corrective (C2): profile photo editing removed. It was entirely Firebase Storage-
   // backed (FirebaseStorage.instance) with no canonical successor -- BuyerAccountApi.updateProfile
   // only carries fullName/phone. Worse than just disconnected: _saveProfile() uploaded a picked
@@ -106,11 +111,33 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     );
     // --- End Toast Animations ---
 
-    _loadUserData();
+    _signIn = context.read<BuyerSignInController>();
+    _signIn.addListener(_onSessionChanged);
+    _onSessionChanged();
     _animationController.forward();
     Future.delayed(const Duration(milliseconds: 200), () {
-      _avatarController.forward();
+      if (mounted) _avatarController.forward();
     });
+  }
+
+  bool _current(String token, int generation) => mounted &&
+      _signIn.token == token && _activeToken == token && _sessionGeneration == generation;
+
+  void _onSessionChanged() {
+    final token = _signIn.token;
+    if (!mounted || token == _activeToken) return;
+    _sessionGeneration++;
+    _toastTimer?.cancel();
+    setState(() {
+      _activeToken = token;
+      _nameController.clear();
+      _phoneController.clear();
+      _isLoading = false;
+      _loadingAccount = token != null;
+      _loadError = null;
+      _showToast = false;
+    });
+    if (token != null) _loadUserData();
   }
 
   // Phase 1R corrective (C2): was Provider.of<AuthProvider>(...).currentUser -- AuthProvider is
@@ -119,17 +146,22 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   // (this screen is only reachable from profile_screen.dart's signed-in-only menu). Fetches from
   // the canonical BuyerAccountApi instead.
   Future<void> _loadUserData() async {
-    final token = context.read<BuyerSignInController>().token;
+    final token = _signIn.token;
     if (token == null) return;
+    final generation = _sessionGeneration;
+    setState(() { _loadingAccount = true; _loadError = null; });
 
     try {
       final account = await context.read<BuyerAccountApi>().account(token);
-      if (!mounted) return;
-      _nameController.text = account.fullName ?? '';
-      _phoneController.text = account.phone ?? '';
-      debugPrint('✅ Loaded buyer account: ${account.fullName}');
-    } catch (e) {
-      debugPrint('❌ Error loading buyer account: $e');
+      if (!_current(token, generation)) return;
+      setState(() {
+        _nameController.text = account.fullName ?? '';
+        _phoneController.text = account.phone ?? '';
+        _loadingAccount = false;
+      });
+    } catch (_) {
+      if (!_current(token, generation)) return;
+      setState(() { _loadingAccount = false; _loadError = 'We couldn’t load your profile. Please try again.'; });
     }
   }
 
@@ -157,6 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
 
   @override
   void dispose() {
+    _signIn.removeListener(_onSessionChanged);
     _nameController.dispose();
     _phoneController.dispose();
     _animationController.dispose();
@@ -167,26 +200,25 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   }
 
   String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
+    if (value == null || value.trim().isEmpty) {
       return 'Please enter your name';
     }
-    if (value.length < 3) {
+    if (value.trim().length < 3) {
       return 'Name must be at least 3 characters';
     }
+    if (value.trim().length > 200) return 'Name must be 200 characters or fewer';
     return null;
   }
 
   String? _validatePhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your phone number';
-    }
-    if (value.length < 10) {
-      return 'Please enter a valid phone number';
-    }
+    // The canonical profile accepts an optional, unverified phone (max32),
+    // not a required phone identity or an invented verification rule.
+    if (value != null && value.trim().length > 32) return 'Phone must be 32 characters or fewer';
     return null;
   }
 
   Future<void> _saveProfile() async {
+    if (_isLoading || _loadingAccount || _loadError != null) return;
     if (!_formKey.currentState!.validate()) {
       _showToastMessage('⚠️ Please fix the errors in the form', isSuccess: false);
       return;
@@ -199,7 +231,8 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     // preceded by a Firebase Storage photo upload that aborted this whole save if it failed
     // (which it always would have). Calls the canonical BuyerAccountApi directly; no photo field
     // to carry (see the field-removal note above).
-    final token = context.read<BuyerSignInController>().token;
+    final token = _signIn.token;
+    final generation = _sessionGeneration;
     if (token == null) {
       _showToastMessage('❌ Your session has ended. Please sign in again.', isSuccess: false);
       setState(() => _isLoading = false);
@@ -210,21 +243,20 @@ class _EditProfileScreenState extends State<EditProfileScreen>
       await context.read<BuyerAccountApi>().updateProfile(
             token,
             fullName: _nameController.text.trim(),
-            phone: _phoneController.text.trim(),
+            phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
           );
 
-      if (!mounted) return;
+      if (!_current(token, generation)) return;
 
       _showToastMessage('✅ Profile updated successfully!');
       Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted) {
+        if (_current(token, generation)) {
           Navigator.pop(context);
         }
       });
-    } catch (e) {
-      debugPrint('❌ Save profile error: $e');
-      if (mounted) {
-        _showToastMessage('❌ Error: ${e.toString()}', isSuccess: false);
+    } catch (_) {
+      if (_current(token, generation)) {
+        _showToastMessage('We couldn’t save your profile. Please try again.', isSuccess: false);
         setState(() => _isLoading = false);
       }
     }
@@ -408,6 +440,17 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
+    final token = context.watch<BuyerSignInController>().token;
+    if (token == null || _loadingAccount || _loadError != null || token != _activeToken) {
+      return Scaffold(
+        appBar: const CustomAppBar(title: 'Edit Profile', isGlass: false),
+        body: token == null
+            ? const EmptyState(icon: Icons.lock_outline, title: 'Sign in to edit your profile', message: 'Use Sign in with LetBuyy on the Profile tab.')
+            : _loadingAccount || token != _activeToken
+                ? const Center(child: CircularProgressIndicator())
+                : ErrorView(message: _loadError!, onRetry: _loadUserData),
+      );
+    }
 
     return PremiumScaffold(
       // resizeToAvoidBottomInset handled internally
@@ -451,7 +494,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                             ),
                             _buildTextFormCard(
                               controller: _phoneController,
-                              label: 'Phone Number',
+                              label: 'Phone (optional, not verified)',
                               icon: Icons.phone_outlined,
                               keyboardType: TextInputType.phone,
                               validator: _validatePhone,

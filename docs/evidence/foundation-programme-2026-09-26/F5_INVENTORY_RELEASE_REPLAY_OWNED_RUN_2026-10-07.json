@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-07",
+  "runId": "53ec1183300e",
+  "suite": "services/api-gateway/src/__tests__/owned-db/inventory-reservation-lifecycle.test.ts",
+  "lane": "gateway-db",
+  "databaseOwnership": "repository-runner-owned disposable database; ownership verified before start",
+  "database": "PostgreSQL 16",
+  "postgrest": "16.2",
+  "result": {
+    "suites": 1,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0,
+    "wallSeconds": 22.8,
+    "suiteSeconds": 20.7
+  },
+  "proxyRequests": {
+    "forwarded": 3,
+    "refused": 0,
+    "upstreamErrors": 1
+  },
+  "cleanup": {
+    "failures": [],
+    "remainingContainers": [],
+    "remainingNetworks": [],
+    "remainingVolumes": []
+  },
+  "verifiedBehavior": [
+    "a second unpaid-reservation sweep with a distinct request ID reports no newly released order",
+    "available stock and committed quantity remain unchanged after the replay",
+    "the released reservation remains released",
+    "exactly one sale_released inventory event exists for the order",
+    "the same owned suite confirms aged COD reservations remain committed"
+  ],
+  "limits": [
+    "synthetic tenant and fixture data only",
+    "no production or shared database",
+    "no provider, device, hosted, or deployment acceptance"
+  ]
+}

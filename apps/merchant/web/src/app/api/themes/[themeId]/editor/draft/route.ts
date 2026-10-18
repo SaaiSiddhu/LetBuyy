@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SaveThemeDraftSchema, DiscardThemeDraftSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
@@ -6,14 +7,6 @@ function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
         ? value.trim()
         : 'index'
-}
-
-function readPositiveInt(value: unknown): number | undefined {
-    const numeric = typeof value === 'number'
-        ? value
-        : typeof value === 'string' ? Number(value) : Number.NaN
-
-    return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -62,7 +55,8 @@ export async function POST(
         const body = isRecord(rawBody) ? rawBody : {}
         const draftConfig = isRecord(body.draftConfig) ? body.draftConfig : undefined
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
-        const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
+        const baseVersion = body.baseVersion ?? body.base_version
+        const idempotencyKey = body.idempotencyKey ?? body.idempotency_key
 
         if (!draftConfig) {
             return NextResponse.json(
@@ -74,19 +68,24 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const payload = await createMerchantApiClient().themes.saveDraft(themeId, {
+        const parsed = SaveThemeDraftSchema.safeParse({
             store_id: resolved.storeId,
             template_key: templateKey,
             template_config: mergeLiquidDraftConfig(body, draftConfig),
             base_version: baseVersion,
             client: 'admin-web',
+            idempotency_key: idempotencyKey,
         })
+        if (!parsed.success) return NextResponse.json({ error: 'A valid draft, current version and retry key are required.' }, { status: 400 })
+        const payload = await createMerchantApiClient().themes.saveDraft(themeId, parsed.data)
 
         return NextResponse.json({
             success: true,
-            savedAt: payload.saved_at || new Date().toISOString(),
+            savedAt: payload.saved_at,
             version: payload.version,
             templateKey,
+            replayed: payload.replayed,
+            currentVersion: payload.current_version,
         })
     } catch (err) {
         return merchantApiErrorResponse(err)
@@ -118,11 +117,18 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId, {
-            query: { template_key: templateKey },
+        const body = await request.json().catch(() => ({})) as Record<string, unknown>
+        const parsed = DiscardThemeDraftSchema.safeParse({
+            store_id: resolved.storeId, template_key: templateKey,
+            base_version: body.baseVersion ?? body.base_version,
+            idempotency_key: body.idempotencyKey ?? body.idempotency_key,
+        })
+        if (!parsed.success) return NextResponse.json({ error: 'The current draft version and retry key are required.' }, { status: 400 })
+        const result = await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId, {
+            query: { template_key: templateKey, base_version: parsed.data.base_version, idempotency_key: parsed.data.idempotency_key },
         })
 
-        return NextResponse.json({ success: true, templateKey })
+        return NextResponse.json({ success: true, templateKey, ...result })
     } catch (err) {
         return merchantApiErrorResponse(err)
     }

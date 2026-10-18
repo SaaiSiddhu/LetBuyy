@@ -32,6 +32,13 @@ async function tok(privateKey: CryptoKey, sub: string) {
         .setIssuer(ISSUER).setAudience('letbuyy:buyer-session').setSubject(sub)
         .setIssuedAt(now).setExpirationTime(now + 3600).setJti('0123456789abcdef0123456789abcdef').sign(privateKey);
 }
+async function storefrontTok(privateKey: CryptoKey, sub: string, site = SITE) {
+    const now = Math.floor(Date.now() / 1000);
+    return new SignJWT({ realm: 'buyer', token_use: 'storefront_session', site_id: site, sep: 1 })
+        .setProtectedHeader({ alg: 'ES256', typ: 'JWT', kid: 'test' })
+        .setIssuer(ISSUER).setAudience('letbuyy:storefront-session').setSubject(sub)
+        .setIssuedAt(now).setExpirationTime(now + 3600).setJti(crypto.randomUUID().replace(/-/g, '')).sign(privateKey);
+}
 const SUMMARY: LoyaltySummary = { site_id: SITE, balance: 120, is_active: true, earn_rate_bps: 500, redeem_cap_bps: 5000, point_value_minor: 100 };
 
 function harness(o: { summary?: LoyaltySummary | null; error?: unknown } = {}) {
@@ -88,6 +95,29 @@ test('a non-UUID siteId is refused before any database call', async () => {
     assert.deepEqual(h.calls.summary, []);
 });
 
+test('a storefront token reads only its signed store balance, and cannot substitute another store', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness();
+    const token = await storefrontTok(privateKey, BUYER);
+    const headers = { 'X-LetBuyy-Storefront-Session': token };
+    const res = await h.app.request('/storefront/buyer/storefront-loyalty?store_id=' + SITE + '&buyer_account_id=' + OTHER, { headers }, env(jwks));
+    assert.equal(res.status, 200);
+    assert.deepEqual(h.calls.summary, [{ buyer: BUYER, site: SITE }]);
+    assert.equal((await h.app.request('/storefront/buyer/storefront-loyalty?store_id=' + OTHER, { headers }, env(jwks))).status, 401);
+    assert.equal(h.calls.summary.length, 1, 'the wrong-site request must stop before reading the ledger');
+});
+
+test('storefront loyalty history uses the signed buyer/store and caps the requested page size', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness();
+    const token = await storefrontTok(privateKey, BUYER);
+    const response = await h.app.request(`/storefront/buyer/storefront-loyalty/history?store_id=${SITE}&limit=9999`, {
+        headers: { 'X-LetBuyy-Storefront-Session': token },
+    }, env(jwks));
+    assert.equal(response.status, 200);
+    assert.deepEqual(h.calls.entries, [{ buyer: BUYER, site: SITE, limit: 100 }]);
+});
+
 test('the history limit is capped', async () => {
     const { privateKey, jwks } = await keys();
     const h = harness();
@@ -101,7 +131,7 @@ const wiring = code(readFileSync(join(SRC, 'routes/storefront/buyer-realm-wiring
 const block = (() => {
     const at = wiring.indexOf('registerBuyerLoyaltyRoutes(router');
     assert.ok(at > 0);
-    return wiring.slice(at, wiring.indexOf('registerBuyerSupportRoutes(router', at));
+    return wiring.slice(at, wiring.indexOf('registerBuyerWishlistRoutes(router', at));
 })();
 const migrationRaw = readFileSync(join(SRC, '../../../database/supabase/migrations/231_merchant_funded_loyalty_ledger.sql'), 'utf8');
 // SQL comments stripped before ANY absence assertion. 231 explains itself at length — including the

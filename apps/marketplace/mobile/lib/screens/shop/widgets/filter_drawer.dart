@@ -16,6 +16,10 @@ class FilterDrawer extends StatefulWidget {
   final Map<String, dynamic> initialFilters;
   final String? preSelectedCategoryId;
   final List<ProductModel> products;
+  final List<String> originOptions;
+  final bool originOptionsLoading;
+  final bool originOptionsError;
+  final Future<void> Function()? onRetryOriginOptions;
 
   const FilterDrawer({
     super.key,
@@ -23,6 +27,10 @@ class FilterDrawer extends StatefulWidget {
     this.initialFilters = const {},
     this.preSelectedCategoryId,
     this.products = const [],
+    this.originOptions = const [],
+    this.originOptionsLoading = false,
+    this.originOptionsError = false,
+    this.onRetryOriginOptions,
   });
 
   @override
@@ -40,10 +48,10 @@ class _FilterDrawerState extends State<FilterDrawer> {
   late RangeValues _priceRange;
   double _minProductPrice = 0;
   double _maxProductPrice = 50000;
-  
+
   // Rating filter (1-5 stars)
   int _selectedMinRating = 0;
-  
+
   // Discount filter (based on actual product discounts)
   Set<int> _availableDiscounts = {};
   int _selectedMinDiscount = 0;
@@ -53,9 +61,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
   // way as _availableDiscounts so the "Rating" section can hide itself rather than offer a filter
   // that will always match zero products.
   bool _hasAnyRating = false;
-  
+
   // Deals toggle
   bool _dealsOnly = false;
+  String _selectedCountryOrigin = '';
+  TextEditingController? _originTextController;
 
   // Dynamic attribute filters
   final Map<String, Set<String>> _attributeFilters = {};
@@ -72,11 +82,17 @@ class _FilterDrawerState extends State<FilterDrawer> {
 
   void _initializeFilters() {
     final priceRange = widget.initialFilters['priceRange'];
-    _priceRange = priceRange is RangeValues ? priceRange : const RangeValues(0, 50000);
-    
-    _selectedMinRating = (widget.initialFilters['minRating'] as num?)?.toInt() ?? 0;
-    _selectedMinDiscount = (widget.initialFilters['minDiscount'] as num?)?.toInt() ?? 0;
+    _priceRange = priceRange is RangeValues
+        ? priceRange
+        : const RangeValues(0, 50000);
+
+    _selectedMinRating =
+        (widget.initialFilters['minRating'] as num?)?.toInt() ?? 0;
+    _selectedMinDiscount =
+        (widget.initialFilters['minDiscount'] as num?)?.toInt() ?? 0;
     _dealsOnly = widget.initialFilters['dealsOnly'] ?? false;
+    _selectedCountryOrigin =
+        widget.initialFilters['countryOfOrigin'] as String? ?? '';
 
     final attrFilters = widget.initialFilters['attributeFilters'];
     if (attrFilters is Map<String, dynamic>) {
@@ -93,7 +109,10 @@ class _FilterDrawerState extends State<FilterDrawer> {
       List<ProductModel> products = widget.products;
       if (products.isEmpty && mounted) {
         try {
-          final productProvider = Provider.of<ProductProvider>(context, listen: false);
+          final productProvider = Provider.of<ProductProvider>(
+            context,
+            listen: false,
+          );
           products = productProvider.products;
         } catch (_) {}
       }
@@ -150,7 +169,8 @@ class _FilterDrawerState extends State<FilterDrawer> {
       // Aggregate attribute values
       for (final attr in _allFilterableAttributes) {
         final key = attr.key;
-        dynamic value = product.attributes[key] ??
+        dynamic value =
+            product.attributes[key] ??
             product.specifications?[key] ??
             product.attributes[attr.label] ??
             product.specifications?[attr.label];
@@ -160,11 +180,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
         _attributeValueCounts[key] ??= {};
 
         if (value is String && value.isNotEmpty) {
-          _attributeValueCounts[key]![value] = (_attributeValueCounts[key]![value] ?? 0) + 1;
+          _attributeValueCounts[key]![value] =
+              (_attributeValueCounts[key]![value] ?? 0) + 1;
         } else if (value is List) {
           for (final v in value) {
             if (v is String && v.isNotEmpty) {
-              _attributeValueCounts[key]![v] = (_attributeValueCounts[key]![v] ?? 0) + 1;
+              _attributeValueCounts[key]![v] =
+                  (_attributeValueCounts[key]![v] ?? 0) + 1;
             }
           }
         }
@@ -182,78 +204,114 @@ class _FilterDrawerState extends State<FilterDrawer> {
     }
 
     // Clamp price range values to be within bounds
-    final clampedStart = _priceRange.start.clamp(_minProductPrice, _maxProductPrice);
-    final clampedEnd = _priceRange.end.clamp(_minProductPrice, _maxProductPrice);
-    _priceRange = RangeValues(clampedStart, clampedEnd > clampedStart ? clampedEnd : _maxProductPrice);
+    final clampedStart = _priceRange.start.clamp(
+      _minProductPrice,
+      _maxProductPrice,
+    );
+    final clampedEnd = _priceRange.end.clamp(
+      _minProductPrice,
+      _maxProductPrice,
+    );
+    _priceRange = RangeValues(
+      clampedStart,
+      clampedEnd > clampedStart ? clampedEnd : _maxProductPrice,
+    );
   }
 
   void _buildSections() {
     _sections.clear();
 
     // 1. Price (always first)
-    _sections.add(_FilterSection(
-      title: 'Price',
-      icon: FontAwesomeIcons.indianRupeeSign.data,
-      type: _FilterType.price,
-    ));
+    _sections.add(
+      _FilterSection(
+        title: 'Price',
+        icon: FontAwesomeIcons.indianRupeeSign.data,
+        type: _FilterType.price,
+      ),
+    );
+
+    _sections.add(
+      _FilterSection(
+        title: 'Origin',
+        icon: FontAwesomeIcons.globe.data,
+        type: _FilterType.countryOfOrigin,
+      ),
+    );
 
     // 2. Rating (only if at least one product actually carries one)
     if (_hasAnyRating) {
-      _sections.add(_FilterSection(
-        title: 'Rating',
-        icon: FontAwesomeIcons.star.data,
-        type: _FilterType.rating,
-      ));
+      _sections.add(
+        _FilterSection(
+          title: 'Rating',
+          icon: FontAwesomeIcons.star.data,
+          type: _FilterType.rating,
+        ),
+      );
     }
 
     // 3. Discount (only if products have discounts)
     if (_availableDiscounts.isNotEmpty) {
-      _sections.add(_FilterSection(
-        title: 'Discount',
-        icon: FontAwesomeIcons.percent.data,
-        type: _FilterType.discount,
-      ));
+      _sections.add(
+        _FilterSection(
+          title: 'Discount',
+          icon: FontAwesomeIcons.percent.data,
+          type: _FilterType.discount,
+        ),
+      );
     }
 
     // 4. Deals toggle (always show)
-    _sections.add(_FilterSection(
-      title: 'Deals',
-      icon: FontAwesomeIcons.fire.data,
-      type: _FilterType.deals,
-    ));
+    _sections.add(
+      _FilterSection(
+        title: 'Deals',
+        icon: FontAwesomeIcons.fire.data,
+        type: _FilterType.deals,
+      ),
+    );
 
     // 5+ Database-driven attributes
     for (final attr in _allFilterableAttributes) {
-      final hasProductValues = _attributeValueCounts[attr.key]?.isNotEmpty ?? false;
+      final hasProductValues =
+          _attributeValueCounts[attr.key]?.isNotEmpty ?? false;
       final hasSchemaOptions = attr.options.isNotEmpty;
 
       if (hasProductValues || hasSchemaOptions) {
-        _sections.add(_FilterSection(
-          title: attr.label,
-          icon: _getAttributeIcon(attr.key),
-          type: _FilterType.attribute,
-          attributeKey: attr.key,
-          attribute: attr,
-        ));
+        _sections.add(
+          _FilterSection(
+            title: attr.label,
+            icon: _getAttributeIcon(attr.key),
+            type: _FilterType.attribute,
+            attributeKey: attr.key,
+            attribute: attr,
+          ),
+        );
       }
     }
   }
 
   IconData _getAttributeIcon(String key) {
     final k = key.toLowerCase();
-    if (k.contains('color') || k.contains('colour')) return FontAwesomeIcons.palette.data;
+    if (k.contains('color') || k.contains('colour'))
+      return FontAwesomeIcons.palette.data;
     if (k.contains('size')) return FontAwesomeIcons.ruler.data;
-    if (k.contains('ram') || k.contains('memory')) return FontAwesomeIcons.memory.data;
-    if (k.contains('storage') || k.contains('disk')) return FontAwesomeIcons.hardDrive.data;
-    if (k.contains('material') || k.contains('fabric')) return FontAwesomeIcons.shirt.data;
-    if (k.contains('screen') || k.contains('display')) return FontAwesomeIcons.display.data;
-    if (k.contains('processor') || k.contains('cpu')) return FontAwesomeIcons.microchip.data;
+    if (k.contains('ram') || k.contains('memory'))
+      return FontAwesomeIcons.memory.data;
+    if (k.contains('storage') || k.contains('disk'))
+      return FontAwesomeIcons.hardDrive.data;
+    if (k.contains('material') || k.contains('fabric'))
+      return FontAwesomeIcons.shirt.data;
+    if (k.contains('screen') || k.contains('display'))
+      return FontAwesomeIcons.display.data;
+    if (k.contains('processor') || k.contains('cpu'))
+      return FontAwesomeIcons.microchip.data;
     if (k.contains('battery')) return FontAwesomeIcons.batteryFull.data;
     if (k.contains('brand')) return FontAwesomeIcons.tag.data;
     if (k.contains('weight')) return FontAwesomeIcons.weightScale.data;
-    if (k.contains('connectivity') || k.contains('wifi')) return FontAwesomeIcons.wifi.data;
+    if (k.contains('connectivity') || k.contains('wifi'))
+      return FontAwesomeIcons.wifi.data;
     if (k.contains('camera')) return FontAwesomeIcons.camera.data;
-    if (k.contains('type') || k.contains('category')) return FontAwesomeIcons.layerGroup.data;
+    if (k.contains('type') || k.contains('category'))
+      return FontAwesomeIcons.layerGroup.data;
     return FontAwesomeIcons.sliders.data;
   }
 
@@ -274,13 +332,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
             child: _isLoading
                 ? _buildLoadingState(accentColor)
                 : _sections.isEmpty
-                    ? _buildEmptyState(isDark)
-                    : Row(
-                        children: [
-                          _buildSidebar(isDark, accentColor),
-                          Expanded(child: _buildContent(isDark, accentColor)),
-                        ],
-                      ),
+                ? _buildEmptyState(isDark)
+                : Row(
+                    children: [
+                      _buildSidebar(isDark, accentColor),
+                      Expanded(child: _buildContent(isDark, accentColor)),
+                    ],
+                  ),
           ),
           _buildFooter(isDark, accentColor),
         ],
@@ -292,17 +350,36 @@ class _FilterDrawerState extends State<FilterDrawer> {
     final activeCount = _getActiveFilterCount();
 
     return Container(
-      padding: EdgeInsets.only(top: statusBarHeight + 10, bottom: 14, left: 16, right: 12),
+      padding: EdgeInsets.only(
+        top: statusBarHeight + 10,
+        bottom: 14,
+        left: 16,
+        right: 12,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [AppColors.primaryDark, AppColors.primaryDarker, AppColors.surfaceDark]
-              : [AppColors.primaryDark, AppColors.primary, AppColors.primaryLight],
+              ? [
+                  AppColors.primaryDark,
+                  AppColors.primaryDarker,
+                  AppColors.surfaceDark,
+                ]
+              : [
+                  AppColors.primaryDark,
+                  AppColors.primary,
+                  AppColors.primaryLight,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
-          BoxShadow(color: (isDark ? Colors.black : AppColors.primaryDark).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: (isDark ? Colors.black : AppColors.primaryDark).withValues(
+              alpha: 0.3,
+            ),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
@@ -314,18 +391,34 @@ class _FilterDrawerState extends State<FilterDrawer> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
-            child: Icon(FontAwesomeIcons.filter.data, color: Colors.white, size: 16),
+            child: Icon(
+              FontAwesomeIcons.filter.data,
+              color: Colors.white,
+              size: 16,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Filters', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Filters',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
-                  activeCount > 0 ? '$activeCount active' : '${_sections.length} available',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 12),
+                  activeCount > 0
+                      ? '$activeCount active'
+                      : '${_sections.length} available',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -334,18 +427,34 @@ class _FilterDrawerState extends State<FilterDrawer> {
             GestureDetector(
               onTap: _clearAllFilters,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.refresh_rounded, color: Colors.white.withValues(alpha: 0.9), size: 14),
+                    Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      size: 14,
+                    ),
                     const SizedBox(width: 4),
-                    Text('Reset', style: TextStyle(color: Colors.white.withValues(alpha: 0.95), fontSize: 12, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Reset',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.95),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -355,8 +464,15 @@ class _FilterDrawerState extends State<FilterDrawer> {
             onTap: () => Navigator.pop(context),
             child: Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-              child: const Icon(Icons.close_rounded, color: Colors.white, size: 20),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -369,7 +485,9 @@ class _FilterDrawerState extends State<FilterDrawer> {
       width: 80,
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : Colors.grey[50],
-        border: Border(right: BorderSide(color: isDark ? Colors.white10 : Colors.grey[200]!)),
+        border: Border(
+          right: BorderSide(color: isDark ? Colors.white10 : Colors.grey[200]!),
+        ),
       ),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -389,9 +507,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
               margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: isActive ? accentColor.withValues(alpha: isDark ? 0.2 : 0.1) : null,
+                color: isActive
+                    ? accentColor.withValues(alpha: isDark ? 0.2 : 0.1)
+                    : null,
                 borderRadius: BorderRadius.circular(10),
-                border: isActive ? Border.all(color: accentColor.withValues(alpha: 0.3)) : null,
+                border: isActive
+                    ? Border.all(color: accentColor.withValues(alpha: 0.3))
+                    : null,
               ),
               child: Column(
                 children: [
@@ -400,10 +522,20 @@ class _FilterDrawerState extends State<FilterDrawer> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: isActive ? accentColor.withValues(alpha: 0.2) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.08)),
+                          color: isActive
+                              ? accentColor.withValues(alpha: 0.2)
+                              : (isDark
+                                    ? Colors.white.withValues(alpha: 0.05)
+                                    : Colors.grey.withValues(alpha: 0.08)),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(section.icon, size: 14, color: isActive ? accentColor : (isDark ? Colors.white54 : Colors.grey[600])),
+                        child: Icon(
+                          section.icon,
+                          size: 14,
+                          color: isActive
+                              ? accentColor
+                              : (isDark ? Colors.white54 : Colors.grey[600]),
+                        ),
                       ),
                       if (hasSelection)
                         Positioned(
@@ -415,7 +547,12 @@ class _FilterDrawerState extends State<FilterDrawer> {
                             decoration: BoxDecoration(
                               color: Colors.green,
                               shape: BoxShape.circle,
-                              border: Border.all(color: isDark ? AppColors.surfaceDark : Colors.white, width: 1.5),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppColors.surfaceDark
+                                    : Colors.white,
+                                width: 1.5,
+                              ),
                             ),
                           ),
                         ),
@@ -428,7 +565,9 @@ class _FilterDrawerState extends State<FilterDrawer> {
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                      color: isActive ? accentColor : (isDark ? Colors.white60 : Colors.grey[600]),
+                      color: isActive
+                          ? accentColor
+                          : (isDark ? Colors.white60 : Colors.grey[600]),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -447,9 +586,19 @@ class _FilterDrawerState extends State<FilterDrawer> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(width: 32, height: 32, child: CircularProgressIndicator(strokeWidth: 3, valueColor: AlwaysStoppedAnimation(accentColor))),
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation(accentColor),
+            ),
+          ),
           const SizedBox(height: 12),
-          Text('Loading filters...', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+          Text(
+            'Loading filters...',
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+          ),
         ],
       ),
     );
@@ -460,9 +609,20 @@ class _FilterDrawerState extends State<FilterDrawer> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.filter_list_off_rounded, size: 48, color: Colors.grey[400]),
+          Icon(
+            Icons.filter_list_off_rounded,
+            size: 48,
+            color: Colors.grey[400],
+          ),
           const SizedBox(height: 12),
-          Text('No filters available', style: TextStyle(color: Colors.grey[500], fontSize: 14, fontWeight: FontWeight.w500)),
+          Text(
+            'No filters available',
+            style: TextStyle(
+              color: Colors.grey[500],
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -471,13 +631,16 @@ class _FilterDrawerState extends State<FilterDrawer> {
   bool _sectionHasSelection(_FilterSection section) {
     switch (section.type) {
       case _FilterType.price:
-        return _priceRange.start > _minProductPrice || _priceRange.end < _maxProductPrice;
+        return _priceRange.start > _minProductPrice ||
+            _priceRange.end < _maxProductPrice;
       case _FilterType.rating:
         return _selectedMinRating > 0;
       case _FilterType.discount:
         return _selectedMinDiscount > 0;
       case _FilterType.deals:
         return _dealsOnly;
+      case _FilterType.countryOfOrigin:
+        return _selectedCountryOrigin.isNotEmpty;
       case _FilterType.attribute:
         return _attributeFilters[section.attributeKey]?.isNotEmpty ?? false;
     }
@@ -508,7 +671,14 @@ class _FilterDrawerState extends State<FilterDrawer> {
                 children: [
                   Icon(section.icon, color: accentColor, size: 12),
                   const SizedBox(width: 6),
-                  Text(section.title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: isDark ? Colors.white : Colors.black87)),
+                  Text(
+                    section.title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -520,7 +690,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
     );
   }
 
-  Widget _buildSectionContent(_FilterSection section, bool isDark, Color accentColor) {
+  Widget _buildSectionContent(
+    _FilterSection section,
+    bool isDark,
+    Color accentColor,
+  ) {
     switch (section.type) {
       case _FilterType.price:
         return _buildPriceSection(isDark, accentColor);
@@ -530,24 +704,118 @@ class _FilterDrawerState extends State<FilterDrawer> {
         return _buildDiscountSection(isDark, accentColor);
       case _FilterType.deals:
         return _buildDealsSection(isDark, accentColor);
+      case _FilterType.countryOfOrigin:
+        return _buildCountryOriginSection(isDark, accentColor);
       case _FilterType.attribute:
         return _buildAttributeSection(section.attribute!, isDark, accentColor);
     }
   }
 
+  Widget _buildCountryOriginSection(bool isDark, Color accentColor) {
+    final sortedOrigins = widget.originOptions.toSet().toList()
+      ..sort(
+        (left, right) => left.toLowerCase().compareTo(right.toLowerCase()),
+      );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Country or region of origin',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Autocomplete<String>(
+          initialValue: TextEditingValue(text: _selectedCountryOrigin),
+          optionsBuilder: (value) {
+            final query = value.text.trim().toLowerCase();
+            if (query.isEmpty) return sortedOrigins;
+            return sortedOrigins.where(
+              (origin) => origin.toLowerCase().contains(query),
+            );
+          },
+          onSelected: (origin) =>
+              setState(() => _selectedCountryOrigin = origin),
+          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+            _originTextController = controller;
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              onSubmitted: (_) => onFieldSubmitted(),
+              onChanged: (value) {
+                if (value != _selectedCountryOrigin)
+                  setState(() => _selectedCountryOrigin = '');
+              },
+              decoration: InputDecoration(
+                hintText: sortedOrigins.isEmpty
+                    ? 'Origin options unavailable'
+                    : 'Search origins',
+                prefixIcon: const Icon(Icons.public_rounded),
+                suffixIcon: _selectedCountryOrigin.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: 'Clear origin',
+                        onPressed: () {
+                          controller.clear();
+                          setState(() => _selectedCountryOrigin = '');
+                        },
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+              helperText: widget.originOptionsLoading
+                  ? 'Loading approved listing origins…'
+                  : widget.originOptionsError
+                    ? 'Could not load origin filters.'
+                    : sortedOrigins.isEmpty
+                    ? 'No approved marketplace listings currently provide origin data.'
+                    : 'Choose a value from the sorted list.',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          },
+        ),
+        if (widget.originOptionsError && widget.onRetryOriginOptions != null)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: widget.originOptionsLoading ? null : widget.onRetryOriginOptions,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+            ),
+          ),
+        const SizedBox(height: 8),
+        if (_selectedCountryOrigin.isNotEmpty)
+          Chip(
+            label: Text(_selectedCountryOrigin),
+            onDeleted: () {
+              _originTextController?.clear();
+              setState(() => _selectedCountryOrigin = '');
+            },
+            avatar: Icon(Icons.public_rounded, size: 16, color: accentColor),
+          ),
+      ],
+    );
+  }
+
   Widget _buildPriceSection(bool isDark, Color accentColor) {
     // Ensure valid min/max
     final minPrice = _minProductPrice;
-    final maxPrice = _maxProductPrice > minPrice ? _maxProductPrice : minPrice + 1000;
-    
+    final maxPrice = _maxProductPrice > minPrice
+        ? _maxProductPrice
+        : minPrice + 1000;
+
     // Ensure price range is within bounds for RangeSlider
     final safeStart = _priceRange.start.clamp(minPrice, maxPrice);
     final safeEnd = _priceRange.end.clamp(minPrice, maxPrice);
     final safeRange = RangeValues(
-      safeStart, 
+      safeStart,
       safeEnd >= safeStart ? safeEnd : maxPrice,
     );
-    
+
     final priceChips = [
       ('Under ₹500', 0.0, 500.0),
       ('₹500 - ₹1K', 500.0, 1000.0),
@@ -563,9 +831,15 @@ class _FilterDrawerState extends State<FilterDrawer> {
           spacing: 6,
           runSpacing: 6,
           children: priceChips.map((chip) {
-            final isSelected = _priceRange.start == chip.$2 && _priceRange.end == chip.$3;
+            final isSelected =
+                _priceRange.start == chip.$2 && _priceRange.end == chip.$3;
             return _buildChip(chip.$1, isSelected, isDark, accentColor, () {
-              setState(() => _priceRange = RangeValues(chip.$2, chip.$3.clamp(minPrice, maxPrice)));
+              setState(
+                () => _priceRange = RangeValues(
+                  chip.$2,
+                  chip.$3.clamp(minPrice, maxPrice),
+                ),
+              );
             });
           }).toList(),
         ),
@@ -573,13 +847,22 @@ class _FilterDrawerState extends State<FilterDrawer> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey[100],
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.04)
+                : Colors.grey[100],
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Custom Range', style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white60 : Colors.grey[700], fontSize: 11)),
+              Text(
+                'Custom Range',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white60 : Colors.grey[700],
+                  fontSize: 11,
+                ),
+              ),
               const SizedBox(height: 10),
               RangeSlider(
                 values: safeRange,
@@ -588,14 +871,23 @@ class _FilterDrawerState extends State<FilterDrawer> {
                 divisions: 20,
                 activeColor: accentColor,
                 inactiveColor: accentColor.withValues(alpha: 0.2),
-                labels: RangeLabels('₹${safeRange.start.round()}', '₹${safeRange.end.round()}'),
+                labels: RangeLabels(
+                  '₹${safeRange.start.round()}',
+                  '₹${safeRange.end.round()}',
+                ),
                 onChanged: (values) => setState(() => _priceRange = values),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _priceLabel('₹${safeRange.start.round()}', accentColor),
-                  Text('to', style: TextStyle(color: isDark ? Colors.white38 : Colors.grey[500], fontSize: 11)),
+                  Text(
+                    'to',
+                    style: TextStyle(
+                      color: isDark ? Colors.white38 : Colors.grey[500],
+                      fontSize: 11,
+                    ),
+                  ),
                   _priceLabel('₹${safeRange.end.round()}', accentColor),
                 ],
               ),
@@ -609,8 +901,18 @@ class _FilterDrawerState extends State<FilterDrawer> {
   Widget _priceLabel(String text, Color accentColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: accentColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(6)),
-      child: Text(text, style: TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 11)),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: accentColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+        ),
+      ),
     );
   }
 
@@ -628,21 +930,43 @@ class _FilterDrawerState extends State<FilterDrawer> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             margin: const EdgeInsets.only(bottom: 6),
             decoration: BoxDecoration(
-              color: isSelected ? accentColor.withValues(alpha: 0.12) : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey[100]),
+              color: isSelected
+                  ? accentColor.withValues(alpha: 0.12)
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.grey[100]),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: isSelected ? accentColor : Colors.transparent),
+              border: Border.all(
+                color: isSelected ? accentColor : Colors.transparent,
+              ),
             ),
             child: Row(
               children: [
-                ...List.generate(5, (i) => Icon(
-                  i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
-                  color: Colors.amber,
-                  size: 18,
-                )),
+                ...List.generate(
+                  5,
+                  (i) => Icon(
+                    i < rating
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    color: Colors.amber,
+                    size: 18,
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Text('& Up', style: TextStyle(color: isDark ? Colors.white60 : Colors.grey[600], fontSize: 12)),
+                Text(
+                  '& Up',
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
                 const Spacer(),
-                if (isSelected) Icon(Icons.check_circle_rounded, color: accentColor, size: 18),
+                if (isSelected)
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: accentColor,
+                    size: 18,
+                  ),
               ],
             ),
           ),
@@ -653,16 +977,23 @@ class _FilterDrawerState extends State<FilterDrawer> {
 
   Widget _buildDiscountSection(bool isDark, Color accentColor) {
     // Sort available discounts descending
-    final sortedDiscounts = _availableDiscounts.toList()..sort((a, b) => b.compareTo(a));
+    final sortedDiscounts = _availableDiscounts.toList()
+      ..sort((a, b) => b.compareTo(a));
 
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: sortedDiscounts.map((discount) {
         final isSelected = _selectedMinDiscount == discount;
-        return _buildChip('$discount% off or more', isSelected, isDark, accentColor, () {
-          setState(() => _selectedMinDiscount = isSelected ? 0 : discount);
-        });
+        return _buildChip(
+          '$discount% off or more',
+          isSelected,
+          isDark,
+          accentColor,
+          () {
+            setState(() => _selectedMinDiscount = isSelected ? 0 : discount);
+          },
+        );
       }).toList(),
     );
   }
@@ -671,9 +1002,15 @@ class _FilterDrawerState extends State<FilterDrawer> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _dealsOnly ? AppColors.error.withValues(alpha: 0.1) : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey[100]),
+        color: _dealsOnly
+            ? AppColors.error.withValues(alpha: 0.1)
+            : (isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.grey[100]),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _dealsOnly ? AppColors.error : Colors.transparent),
+        border: Border.all(
+          color: _dealsOnly ? AppColors.error : Colors.transparent,
+        ),
       ),
       child: Row(
         children: [
@@ -681,9 +1018,12 @@ class _FilterDrawerState extends State<FilterDrawer> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: _dealsOnly 
+                colors: _dealsOnly
                     ? [AppColors.error, const Color(0xFFDC2626)]
-                    : [Colors.grey.withValues(alpha: 0.3), Colors.grey.withValues(alpha: 0.2)],
+                    : [
+                        Colors.grey.withValues(alpha: 0.3),
+                        Colors.grey.withValues(alpha: 0.2),
+                      ],
               ),
               borderRadius: BorderRadius.circular(10),
             ),
@@ -696,11 +1036,18 @@ class _FilterDrawerState extends State<FilterDrawer> {
               children: [
                 Text(
                   'Active Deals Only',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87, fontSize: 14),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
                 ),
                 Text(
                   'Show products with special deals',
-                  style: TextStyle(color: isDark ? Colors.white54 : Colors.grey[600], fontSize: 11),
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.grey[600],
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -719,11 +1066,16 @@ class _FilterDrawerState extends State<FilterDrawer> {
     );
   }
 
-  Widget _buildAttributeSection(AttributeField attr, bool isDark, Color accentColor) {
+  Widget _buildAttributeSection(
+    AttributeField attr,
+    bool isDark,
+    Color accentColor,
+  ) {
     final productValues = _attributeValueCounts[attr.key] ?? {};
     List<String> allOptions = [];
 
-    final sortedProductValues = productValues.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final sortedProductValues = productValues.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
     allOptions.addAll(sortedProductValues.map((e) => e.key));
 
     for (final opt in attr.options) {
@@ -737,7 +1089,10 @@ class _FilterDrawerState extends State<FilterDrawer> {
           children: [
             Icon(Icons.inbox_outlined, size: 36, color: Colors.grey[400]),
             const SizedBox(height: 8),
-            Text('No options available', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+            Text(
+              'No options available',
+              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+            ),
           ],
         ),
       );
@@ -751,20 +1106,33 @@ class _FilterDrawerState extends State<FilterDrawer> {
       children: allOptions.map((option) {
         final isSelected = _attributeFilters[attr.key]!.contains(option);
         final count = productValues[option] ?? 0;
-        return _buildChipWithCount(option, count, isSelected, isDark, accentColor, () {
-          setState(() {
-            if (isSelected) {
-              _attributeFilters[attr.key]!.remove(option);
-            } else {
-              _attributeFilters[attr.key]!.add(option);
-            }
-          });
-        });
+        return _buildChipWithCount(
+          option,
+          count,
+          isSelected,
+          isDark,
+          accentColor,
+          () {
+            setState(() {
+              if (isSelected) {
+                _attributeFilters[attr.key]!.remove(option);
+              } else {
+                _attributeFilters[attr.key]!.add(option);
+              }
+            });
+          },
+        );
       }).toList(),
     );
   }
 
-  Widget _buildChip(String label, bool isSelected, bool isDark, Color accentColor, VoidCallback onTap) {
+  Widget _buildChip(
+    String label,
+    bool isSelected,
+    bool isDark,
+    Color accentColor,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: () {
         onTap();
@@ -773,14 +1141,23 @@ class _FilterDrawerState extends State<FilterDrawer> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? accentColor.withValues(alpha: 0.15) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[100]),
+          color: isSelected
+              ? accentColor.withValues(alpha: 0.15)
+              : (isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey[100]),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: isSelected ? accentColor : Colors.transparent, width: 1.5),
+          border: Border.all(
+            color: isSelected ? accentColor : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? accentColor : (isDark ? Colors.white70 : Colors.grey[700]),
+            color: isSelected
+                ? accentColor
+                : (isDark ? Colors.white70 : Colors.grey[700]),
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             fontSize: 11,
           ),
@@ -789,7 +1166,14 @@ class _FilterDrawerState extends State<FilterDrawer> {
     );
   }
 
-  Widget _buildChipWithCount(String label, int count, bool isSelected, bool isDark, Color accentColor, VoidCallback onTap) {
+  Widget _buildChipWithCount(
+    String label,
+    int count,
+    bool isSelected,
+    bool isDark,
+    Color accentColor,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: () {
         onTap();
@@ -798,20 +1182,50 @@ class _FilterDrawerState extends State<FilterDrawer> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? accentColor.withValues(alpha: 0.15) : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[100]),
+          color: isSelected
+              ? accentColor.withValues(alpha: 0.15)
+              : (isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey[100]),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? accentColor : Colors.transparent, width: 1.5),
+          border: Border.all(
+            color: isSelected ? accentColor : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(label, style: TextStyle(color: isSelected ? accentColor : (isDark ? Colors.white70 : Colors.grey[700]), fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, fontSize: 11)),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected
+                    ? accentColor
+                    : (isDark ? Colors.white70 : Colors.grey[700]),
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                fontSize: 11,
+              ),
+            ),
             if (count > 0) ...[
               const SizedBox(width: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                decoration: BoxDecoration(color: isSelected ? accentColor.withValues(alpha: 0.3) : (isDark ? Colors.white10 : Colors.grey[200]), borderRadius: BorderRadius.circular(8)),
-                child: Text('$count', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: isSelected ? accentColor : (isDark ? Colors.white54 : Colors.grey))),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? accentColor.withValues(alpha: 0.3)
+                      : (isDark ? Colors.white10 : Colors.grey[200]),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected
+                        ? accentColor
+                        : (isDark ? Colors.white54 : Colors.grey),
+                  ),
+                ),
               ),
             ],
           ],
@@ -827,7 +1241,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, -4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -839,7 +1259,9 @@ class _FilterDrawerState extends State<FilterDrawer> {
               backgroundColor: accentColor,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -847,8 +1269,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
                 const Icon(Icons.check_rounded, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  activeCount > 0 ? 'Apply $activeCount Filter${activeCount > 1 ? 's' : ''}' : 'Apply Filters',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  activeCount > 0
+                      ? 'Apply $activeCount Filter${activeCount > 1 ? 's' : ''}'
+                      : 'Apply Filters',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -860,10 +1287,13 @@ class _FilterDrawerState extends State<FilterDrawer> {
 
   int _getActiveFilterCount() {
     int count = 0;
-    if (_priceRange.start > _minProductPrice || _priceRange.end < _maxProductPrice) count++;
+    if (_priceRange.start > _minProductPrice ||
+        _priceRange.end < _maxProductPrice)
+      count++;
     if (_selectedMinRating > 0) count++;
     if (_selectedMinDiscount > 0) count++;
     if (_dealsOnly) count++;
+    if (_selectedCountryOrigin.isNotEmpty) count++;
     for (final filters in _attributeFilters.values) {
       count += filters.length;
     }
@@ -876,8 +1306,10 @@ class _FilterDrawerState extends State<FilterDrawer> {
       _selectedMinRating = 0;
       _selectedMinDiscount = 0;
       _dealsOnly = false;
+      _selectedCountryOrigin = '';
       _attributeFilters.clear();
     });
+    _originTextController?.clear();
     HapticFeedback.mediumImpact();
   }
 
@@ -892,13 +1324,16 @@ class _FilterDrawerState extends State<FilterDrawer> {
       'minRating': _selectedMinRating,
       'minDiscount': _selectedMinDiscount,
       'dealsOnly': _dealsOnly,
+      'countryOfOrigin': _selectedCountryOrigin.isEmpty
+          ? null
+          : _selectedCountryOrigin,
       'attributeFilters': attrFilters,
     });
     Navigator.pop(context);
   }
 }
 
-enum _FilterType { price, rating, discount, deals, attribute }
+enum _FilterType { price, countryOfOrigin, rating, discount, deals, attribute }
 
 class _FilterSection {
   final String title;

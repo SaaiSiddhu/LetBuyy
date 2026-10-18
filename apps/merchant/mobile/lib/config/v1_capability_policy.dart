@@ -80,14 +80,7 @@ class V1CapabilityPolicy {
   };
 
   /// Capabilities that exist but are only usable on the desktop dashboard.
-  static const Map<AppRouteId, _GateCopy> _desktopOnly = {
-    AppRouteId.staff: _GateCopy(
-      title: 'Team management is on the desktop dashboard',
-      description:
-          'V1 stores are owner-only. Staff invitations and roles are not '
-          'enforced yet, so the screen is closed rather than misleading.',
-    ),
-  };
+  static const Map<AppRouteId, _GateCopy> _desktopOnly = {};
 
   /// The availability of the capability behind [id].
   ///

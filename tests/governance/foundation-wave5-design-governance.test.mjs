@@ -70,6 +70,7 @@ test('identity-platform stays light-only: the validator refuses an unforced layo
     mkdirSync(dirname(validator), { recursive: true });
     mkdirSync(dirname(pagePath), { recursive: true });
     copyFileSync(join(ROOT, 'scripts', 'validators', 'validate-design-system.mjs'), validator);
+    copyFileSync(join(ROOT, 'scripts', 'validators', 'governance-common.mjs'), join(dirname(validator), 'governance-common.mjs'));
     const committedLayout = readFileSync(join(ROOT, 'apps', 'platform', 'identity', 'src', 'app', 'layout.tsx'), 'utf8');
     const quietPage = 'export default function Login() { return null }\n';
     const lightOnlyFailures = (layout, page) => {

@@ -156,6 +156,14 @@ export function contrastRatio(hexA: string, hexB: string): number {
 
 const AA_CONTRAST_MINIMUM = 4.5;
 
+// Pure black and pure white are the endpoints the AA fallback chooses between. They come from the
+// token package's PRIMITIVES (fixed values that no theme ever overrides), not from a semantic or
+// themeable token, so an accessibility calculation can never drift with a palette. The ratio is
+// computed for the very same constant that is returned, so the colour handed back is always the
+// one whose contrast was measured.
+const CONTRAST_BLACK = letbuyyPrimitiveTokens.color.black;
+const CONTRAST_WHITE = letbuyyPrimitiveTokens.color.white;
+
 // If the merchant's chosen text/background pair fails AA, fall back to whichever of pure
 // black/white has the better contrast against that background — never render an unreadable
 // payment page because of a merchant's colour choice. Returns the resolved text colour and
@@ -164,9 +172,9 @@ export function resolveAccessibleTextColor(textHex: string, backgroundHex: strin
     if (contrastRatio(textHex, backgroundHex) >= AA_CONTRAST_MINIMUM) {
         return { color: textHex, fellBackToAA: false };
     }
-    const blackContrast = contrastRatio('#000000', backgroundHex);
-    const whiteContrast = contrastRatio('#FFFFFF', backgroundHex);
-    return { color: blackContrast >= whiteContrast ? '#000000' : '#FFFFFF', fellBackToAA: true };
+    const blackContrast = contrastRatio(CONTRAST_BLACK, backgroundHex);
+    const whiteContrast = contrastRatio(CONTRAST_WHITE, backgroundHex);
+    return { color: blackContrast >= whiteContrast ? CONTRAST_BLACK : CONTRAST_WHITE, fellBackToAA: true };
 }
 
 export interface SanitizedBranding {

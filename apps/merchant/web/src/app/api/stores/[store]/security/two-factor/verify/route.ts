@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { merchantApiFetch, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
 
 // POST /api/stores/:store/security/two-factor/verify → POST /2fa/totp/verify
 export async function POST(
@@ -8,19 +8,19 @@ export async function POST(
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+        const resolved = await merchantSecurityScope(request, params)
         if (resolved.error) return resolved.error
 
         const body = await request.json()
         const response = await merchantApiFetch('/2fa/totp/verify', {
             method: 'POST',
             requireSession: true,
+            headers: resolved.headers,
             body: JSON.stringify(body),
         })
         const payload = await response.json().catch(() => null)
-        return NextResponse.json(payload, { status: response.status })
+        return privateSecurityResponse(NextResponse.json(payload, { status: response.status }))
     } catch (err) {
-        return merchantApiErrorResponse(err, 'TOTP verification failed')
+        return privateSecurityResponse(merchantApiErrorResponse(err, 'TOTP verification failed'))
     }
 }

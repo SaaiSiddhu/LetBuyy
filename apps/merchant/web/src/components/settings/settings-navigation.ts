@@ -1,6 +1,7 @@
 import type { LucideIcon } from '@letbuyy/ui'
 import {
     AppWindow,
+    Award,
     Bell,
     CreditCard,
     FileJson,
@@ -99,6 +100,13 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     {
         title: 'Commerce operations',
         items: [
+            {
+                href: 'loyalty',
+                label: 'Loyalty',
+                description: 'Merchant-funded rewards, earning, redemption and point value.',
+                keywords: ['loyalty', 'rewards', 'points', 'earning', 'redemption'],
+                Icon: Award,
+            },
             {
                 href: 'payments',
                 label: 'Payments',

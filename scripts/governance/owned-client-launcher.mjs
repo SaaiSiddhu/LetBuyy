@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+// Client-process supervisor for the owned database lane. This is test infrastructure,
+// not an application/runtime authority. The existing fixture guard decides ownership.
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { lookup } from 'node:dns/promises';
+import { verifyOwnedFixture, OWNED_FIXTURE_ENV } from './owned-fixture-guard.mjs';
+
+const TYPES = new Set(['commerce-next', 'identity-next', 'merchant-next', 'console-next', 'commerce-next-production', 'identity-next-production', 'merchant-next-production', 'commerce-session-smoke', 'marketplace-flutter', 'buyer-orders-dart', 'lifecycle-probe', 'money-ledger-scheduled-probe']);
+const isNextKind = kind => kind.endsWith('-next') || kind.endsWith('-next-production');
+const [kind, parentText, rootText, portText] = process.argv.slice(2);
+let client;
+let closing = false;
+let watchdog;
+const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+const groupAlive = pid => alive(-pid);
+const delay = ms => new Promise(resolveDelay => setTimeout(resolveDelay, ms));
+const signalGroup = signal => { if (client?.pid) { try { process.kill(-client.pid, signal); } catch (e) { if (e.code !== 'ESRCH') throw e; } } };
+
+async function finish(code) {
+    if (closing) return;
+    closing = true;
+    clearInterval(watchdog);
+    if (client?.pid) {
+        signalGroup('SIGTERM');
+        const deadline = Date.now() + 4000;
+        while (groupAlive(client.pid) && Date.now() < deadline) await delay(40);
+        if (groupAlive(client.pid)) signalGroup('SIGKILL');
+        const hardDeadline = Date.now() + 1500;
+        while (groupAlive(client.pid) && Date.now() < hardDeadline) await delay(40);
+        if (groupAlive(client.pid)) {
+            process.stderr.write('owned client runtime: its process group did not stop\n');
+            code = 71;
+        }
+    }
+    process.exit(code);
+}
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(signal, () => { void finish(0); });
+process.on('disconnect', () => { void finish(97); });
+
+try {
+    if (!TYPES.has(kind)) throw new Error('unapproved client runtime kind');
+    if (process.platform === 'win32') throw new Error('owned client supervision requires POSIX process groups');
+    const parentPid = Number(parentText);
+    if (!Number.isInteger(parentPid) || parentPid <= 1 || parentPid !== process.ppid || !alive(parentPid)) throw new Error('client owner is not the launching process');
+    const root = resolve(rootText || '');
+    const port = Number(portText);
+    if (isNextKind(kind) && (!Number.isInteger(port) || port < 1024 || port > 65535)) throw new Error('invalid local Next port');
+    let input = '';
+    for await (const chunk of process.stdin) {
+        input += chunk;
+        if (Buffer.byteLength(input) > 65536) throw new Error('client environment payload exceeds limit');
+    }
+    const env = JSON.parse(input);
+    if (!env || Array.isArray(env) || typeof env !== 'object' || Object.values(env).some(v => typeof v !== 'string')) throw new Error('invalid explicit client environment');
+    const fixture = await verifyOwnedFixture();
+    if (closing || !alive(parentPid)) throw new Error('client owner stopped before launch');
+    // Never permit a real app .env file to supply an undeclared credential/fallback.
+    // Use an isolated candidate snapshot when the developer checkout contains one.
+    for (const appRoot of ['apps/commerce/web', 'apps/platform/identity', 'apps/merchant/web', 'apps/internal/console']) {
+        for (const file of ['.env', '.env.local', '.env.development', '.env.development.local', '.env.production', '.env.production.local']) {
+            if (existsSync(join(root, appRoot, file))) throw new Error('owned client runtime refuses app environment files; use an isolated candidate snapshot');
+        }
+    }
+    for (const name of ['LETBUYY_API_URL','LETBUYY_API_BASE_URL','PLATFORM_CONSOLE_API_BASE_URL','NEXT_PUBLIC_API_URL','NEXT_PUBLIC_API_BASE_URL','NEXT_PUBLIC_ACCOUNTS_URL','NEXT_PUBLIC_ADMIN_URL','CHECKOUT_ORIGIN','LETBUYY_SESSION_RUNTIME_GATEWAY_URL','LETBUYY_MARKETPLACE_OWNED_GATEWAY_URL']) {
+        if (!env[name]) continue;
+        const url = new URL(env[name]);
+        if (url.protocol !== 'http:' || !['127.0.0.1','localhost','[::1]'].includes(url.hostname) && !url.hostname.endsWith('.localhost') || url.username || url.password) throw new Error(`owned client runtime requires a loopback ${name}`);
+    }
+    // The database announcement is the fresh guard's result, never a caller override.
+    env.SUPABASE_URL = fixture.restUrl;
+    env.NEXT_PUBLIC_SUPABASE_URL = fixture.restUrl;
+    env.SUPABASE_SERVICE_ROLE_KEY = process.env.LETBUYY_OWNED_REST_SERVICE_KEY;
+    for (const name of Object.values(OWNED_FIXTURE_ENV)) env[name] = process.env[name];
+    delete env.DATABASE_URL;
+    for (const key of Object.keys(env)) if (/^PG/.test(key)) delete env[key];
+    env.LETBUYY_OWNED_CLIENT_RUNTIME = '1';
+    env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = 'localhost';
+    env.NEXT_TELEMETRY_DISABLED = '1';
+    env.CI = '1';
+    // NextURL normalizes 127.0.0.1 to localhost. Bind that same host to avoid
+    // turning internal rewrites into external self-proxies. DNS ordering keeps
+    // the existing IPv4 test adapters reachable; this fixed option is not a
+    // caller-controlled loader seam and affects only these disposable clients.
+    const addresses = await lookup('localhost', { all:true });
+    if (!addresses.length || addresses.some(a => a.address !== '127.0.0.1' && a.address !== '::1')) throw new Error('localhost must resolve only to loopback');
+    env.NODE_OPTIONS = '--dns-result-order=ipv4first';
+    let command = process.execPath;
+    let args;
+    let cwd = root;
+    if (['commerce-next-production','identity-next-production','merchant-next-production'].includes(kind)) {
+        cwd = join(root, { 'commerce-next-production':'apps/commerce/web','identity-next-production':'apps/platform/identity','merchant-next-production':'apps/merchant/web' }[kind]);
+        env.NODE_ENV = 'production';
+        env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR = `.next-session-runtime-${process.pid}-${kind}`;
+        args = [join(root, 'scripts/governance/owned-next-production.mjs'), String(port)];
+    } else if (kind.endsWith('-next')) {
+        const roots = { 'commerce-next':'apps/commerce/web', 'identity-next':'apps/platform/identity', 'merchant-next':'apps/merchant/web', 'console-next':'apps/internal/console' };
+        cwd = join(root, roots[kind]);
+        if (kind === 'console-next') env.NODE_ENV = 'development';
+        args = [join(cwd,'node_modules/next/dist/bin/next'),'dev','--webpack','--hostname','localhost','-p',String(port)];
+        env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR = `.next-session-runtime-${process.pid}-${kind}`;
+    } else if (kind === 'commerce-session-smoke') {
+        cwd = join(root,'apps/commerce/web');
+        args = ['--import','tsx','scripts/customer-session-runtime-smoke.mjs'];
+    } else if (kind === 'marketplace-flutter') {
+        command = 'flutter';
+        cwd = join(root,'apps/marketplace/mobile');
+        args = ['test','--no-pub','test/marketplace_checkout_owned_gateway_test.dart'];
+    } else if (kind === 'buyer-orders-dart') {
+        command = 'dart';
+        cwd = join(root, 'packages/dart/api_client');
+        args = ['test', 'owned_test/buyer_orders_owned_gateway_test.dart'];
+    } else if (kind === 'money-ledger-scheduled-probe') {
+        args = ['--import','tsx',join(root,'scripts/governance/owned-money-ledger-scheduled-probe.mjs')];
+    } else {
+        args = ['--import','tsx',join(root,'scripts/governance/owned-client-lifecycle-probe.mjs')];
+    }
+    client = spawn(command, args, { cwd, env, stdio:['ignore','pipe','pipe'], detached:true });
+    client.stdout.pipe(process.stdout);
+    client.stderr.pipe(process.stderr);
+    client.once('spawn', () => process.send?.({ type:'owned-client-started', pid:client.pid }));
+    client.once('error', () => { process.stderr.write('owned client runtime could not start its approved command\n'); void finish(70); });
+    client.once('exit', (code, signal) => { void finish(code ?? (signal ? 1 : 0)); });
+    watchdog = setInterval(() => { if (!alive(parentPid) || !alive(fixture.runnerPid)) void finish(97); }, 250);
+} catch (error) {
+    process.stderr.write(`owned client runtime refused: ${error.message}\n`);
+    await finish(70);
+}

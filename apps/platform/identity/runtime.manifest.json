@@ -4,13 +4,15 @@
   "runtimeRoot": "apps/platform/identity",
   "actorType": [
     "merchant",
-    "store-staff"
+    "store-staff",
+    "buyer",
+    "platform-operator"
   ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "identity-control-plane",
   "ownership": {
     "sourceAuthority": "apps/platform/identity",
-    "businessAuthority": "Merchant authentication, onboarding, password, OTP, OAuth callback, and store selection UI.",
+    "businessAuthority": "Canonical asymmetric identity issuance for merchant, buyer, storefront and platform operator realms; authentication UI and configured operator factor verification. Durable permissions, sessions, attempts, approvals and recovery execute through Gateway.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
       "docs/governance/runtime-governance.md",

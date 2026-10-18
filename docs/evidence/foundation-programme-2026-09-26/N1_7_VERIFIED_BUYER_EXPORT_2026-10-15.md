@@ -1,0 +1,44 @@
+# N1.7 restricted buyer export — current implementation and verification
+
+The owner accepted D05.2–3 in the active native Goal: current password verification within ten minutes, followed by an authenticated, buyer-bound, single-use in-app download expiring within ten minutes. D05.1's restricted fields remain the scope. Erasure, retention windows, deletion exceptions, holds, deletion approval and incident ownership remain separate unresolved requirements. This report does not close N1.7 or N1.
+
+## Canonical implementation
+
+Paired migration330 extends the existing `step_up_challenges` and encrypted `customer_dsr_exports` owners with explicitly constrained global buyer scope. Existing tenant scope remains separate. The existing buyer privacy `support_tickets` intake is retained; no duplicate privacy service, credential owner or identity-foundation shadow is activated.
+
+Gateway prepares the export only for the actual current buyer and a freshly signed Identity Accounts request. It checks the real current bcrypt password, binds proof to the exact canonical credential and session epoch, and enforces a durable five-attempt account quota over ten minutes. Private service-role RPCs recheck the credential witness, epoch, ownership, source digest and expiry at the relevant save/release boundaries. Ordinary database roles cannot invoke these RPCs, read private artifacts/proofs or forge fulfillment.
+
+The approved coherent snapshot contains profile fields, saved addresses including phone, the buyer's own authored support content and order commerce fields joined through canonical `buyer_order_links`. It excludes credentials, session state, internal/agent/merchant notes and provider payment references. Explicit cardinality/byte ceilings refuse an incomplete automatic export with413; success never silently truncates. Payloads and subject email use the existing KMS envelope interface; plaintext is not persisted in the artifact table.
+
+Download is an explicit authenticated POST. Gateway inspects, decrypts and verifies the exact saved bytes before atomically consuming the permission, recording a mandatory audit and fulfilling the same access intake. Failed key/integrity checks preserve the grant. Two concurrent releases have one winner. A lost server response after consumption requires a new password-verified grant; it never permits replaying the released bytes. The audit explicitly describes server release, not confirmed receipt on a device.
+
+Identity owns the normal password form and thin CSRF-protected Gateway proxy. The API client's opt-in exact-text response preserves whitespace, Unicode and decimal spelling while retaining normal HTTP/semantic error handling. It does not retry the one-use download. The page hides stale private results across focus/visibility/account changes. A buyer hint only rejects a mismatch and never authenticates or selects another buyer. Storefront Settings and Android's canonical buyer account link to that same Identity page. Password entry and file release stay in the system browser. No password/token/download capability is added to the URL or native app.
+
+## Observed defects and repairs
+
+- `689d8d3356db`: real valid intake201 followed by missing export handler401. The global fallback401 remains intact; the new explicitly authenticated route addresses the missing behavior.
+- Initial implementation exposed the actual pgcrypto schema mismatch (`extensions`, not `public`); repaired against the owned fully migrated schema.
+- `6656e2544fcd`: export and privacy behavior passed, but regenerated actual-role inventory discovered the pre-existing324 staff-invitation table lacked FORCE RLS. Separate paired331 enables FORCE without changing policies/grants. Its rollback refuses retained invitation credentials, and clean rollback/reapply preserves exact ACLs. The registry now includes303 scoped tables and the actual buyer/global scopes.
+- `974d886e9dc0`:24/26; two added cases reproduced an explicitly expired proof being revived while its timestamp remained future. Canonical330 now refuses explicit expired state at begin and snapshot.
+- `f7085c95ce6a`:26/26 export/race cases and the complete normal browser journey passed. This precedes the scoped layout and literal-loopback origin correction, so it is not the final visual/device verdict.
+- Screenshot review found global unlayered CSS overriding utility spacing; a page-scoped CSS module restores readable responsive layout and44px controls without changing other Identity pages. NextURL's normalization of literal IPv4 loopback was reproduced directly; exact HTTP Host/port is preserved only for that local case, while sibling/forwarded origins remain refused.
+- Later normal browser probes exposed test instrumentation defects (Next route-announcer ambiguity and Playwright's Secure-cookie URL filtering on literal HTTP loopback). The current test reads the actual Identity document CSRF exactly as the normal UI does. No positive auth result is fabricated.
+- `112d1f063da1`: Android completed normal PKCE sign-in, native account/data-access entry, real current-password preparation and server release, but Chrome reported a failed download. The controller's default CDP attachment applied a desktop temporary download path to remote Android. No device file existed, so the run is retained as incomplete. The controller now uses `noDefaults:true`; owned Chrome was restarted before a fresh run. The corrected device suite in `f494a31de5c9` subsequently passed with two real files read from Android Downloads; both digests and buyer scopes were independently checked against canonical database artifacts. Its aggregate retains an unrelated browser probe failure, so the aggregate is1/2, not globally green.
+
+## Current evidence and boundaries
+
+Evidence root: `Verification/LetBuyy-Codex-Continuous-Run-2026-10-14/N1.7/` in the workspace. `export-source-changes.json`, preserved before copies, `export-current-scoped.diff` and `export-current-source-hashes.json` identify32 current source paths. The original63/77/103 authorities remain unchanged.
+
+| Gate | Current observed result |
+|---|---|
+| Implementation | Restricted export integrated across canonical SQL/Gateway/Identity/API client/storefront/native entry; erasure/retention incomplete |
+| Database integration | `60cdef01fa15`:46/46 including original18 export cases,8 actual-role table checks,16 staff invitation cases and4 delivery cases; empty cleanup |
+| Added races and expiry | `f7085c95ce6a`:26/26 export cases, including password replacement before snapshot/save, epoch/password/expiry changes after inspect, explicit expired-state refusal, concurrency, mandatory-audit rollback and paired rollback guards |
+| Unit/static | Gateway1427/1427; exact-text client2/2; storefront auth/link5/5; privacy writer/route ownership/DB inventory22/22; Gateway/Identity/storefront/API-client types passed |
+| Dart/native build |27/27 shared Dart protocol/sign-in cases; focused Flutter analysis clean; exact debug APK `ba8a7c8cda0256d26b270efe04c4efd5f51eb42a34a0677230bd43e74fa582bf` built with explicit owned loopback endpoints |
+| Normal browser | Earlier full journey passed; current source's final complete normal browser1/1 passed in `580b417576d3` with actual browser authenticated cross-buyer/stale-hint denial probes, lost prepare/release recovery, exact file bytes and restart. Latest inspected desktop/mobile layout has no horizontal overflow in the actual412px Android viewport |
+| Android | Actual native sign-in/account entry/Identity preparation/release observed; corrected actual-device suite1/1 passed in `f494a31de5c9`: two normal PKCE actors, native entry, fresh-password exports, two real device files/exact DB digests, restart/released readback, stale-A hint refusal and B-only data. Sanitized artifacts/hashes are in `N1.7/export-native-evidence-f494a31de5c9/manifest.json`. Owned emulator and forward stopped after empty DB cleanup |
+| Provider | Official Turnstile test-key transport only; synthetic owned local KMS only. Live KMS, production anti-bot and any inbox delivery remain unverified |
+| Hosted/acceptance | No hosted migration/deploy/cutover. N1.7 and N1 remain open. Pending Resend access remains pending; it is not replaced by local console output |
+
+Current action: checkpoint the current source/evidence and continue the remaining dependency-ready N1.3 operator issuer work, preserving the already verified N1.6 durable session/MFA/recovery semantics. The complete final normal browser passed1/1 in `580b417576d3`; the actual Android suite passed1/1 within aggregate `f494a31de5c9` (whose separate older browser probe failure is retained). Current verification has no live owned resource left. Record D05.4–8's single outstanding owner request without executing deletion or inventing retention rules.

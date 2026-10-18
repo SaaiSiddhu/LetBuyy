@@ -1,0 +1,40 @@
+{
+  "recorded_on": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+  "owned_runner_id": "71fb3a4085b9",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts --jobs 1 --timeout 900",
+  "result": {
+    "suite_count": 1,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "duration_seconds": 54.8,
+    "postgres_image": "postgres:16-alpine",
+    "postgrest_image": "public.ecr.aws/supabase/postgrest:v16.2"
+  },
+  "journey": [
+    "creates a synthetic inventory product and location in the runner-owned database",
+    "opens the actual Merchant Inventory screen with the authenticated synthetic owner session",
+    "loads stock through the Merchant BFF and real Gateway/PostgREST path",
+    "adjusts available stock from 4 to 9 through POST /inventory/adjust",
+    "verifies the owned database contains quantity 9, one actor-attributed adjustment of +5, and one inventory.level.adjusted outbox event",
+    "reloads the Inventory screen and verifies the persisted available quantity"
+  ],
+  "cleanup": {
+    "suite_database_removed": true,
+    "postgrest_sidecar_removed": true,
+    "runner_resources_remaining": 0
+  },
+  "limits": [
+    "The merchant session and product are synthetic; normal merchant sign-in and a physical device were not exercised.",
+    "This verifies one local inventory correction journey; it does not close F5.5 or Phase 5.",
+    "The independent F6.2 browser attempt is not accepted: its tenant route requires pooled SQL, which this runner deliberately does not expose to the host."
+  ]
+}

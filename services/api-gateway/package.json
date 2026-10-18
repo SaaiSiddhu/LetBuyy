@@ -8,7 +8,8 @@
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit",
     "test:unit": "cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts",
-    "test": "pnpm run test:unit && tsx --test ../../tests/contracts/*.test.ts"
+    "test:db": "cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db",
+    "test": "pnpm run test:unit && pnpm run test:db && cd ../.. && tsx --test tests/contracts/*.test.ts"
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",
@@ -37,7 +38,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260524.1",
+    "@cloudflare/workers-types": "4.20260611.1",
+    "@letbuyy/api-client": "workspace:*",
+    "@playwright/test": "1.60.0",
     "tsx": "4.20.6",
     "typescript": "^5.7.0",
     "wrangler": "^4.100.0"

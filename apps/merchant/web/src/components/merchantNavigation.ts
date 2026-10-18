@@ -153,6 +153,7 @@ const storeNavigation: MerchantNavItem[] = [
         children: [
             { path: 'posts', label: 'Blog posts' },
             { path: 'comments', label: 'Comments' },
+            { path: 'content/reels', label: 'Product reels' },
         ],
     },
     { path: 'analytics', label: 'Analytics', icon: 'bar_chart', shortcut: 'g a' },

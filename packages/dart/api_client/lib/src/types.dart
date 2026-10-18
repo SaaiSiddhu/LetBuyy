@@ -7,8 +7,9 @@ typedef JsonDecoder<T> = T Function(Object? value);
 typedef ApiTokenProvider = FutureOr<String?> Function();
 typedef ApiStoreIdProvider = FutureOr<String?> Function();
 typedef RequestIdFactory = String Function();
-typedef ApiUnauthorizedHandler =
-    FutureOr<bool> Function(ApiException exception);
+typedef ApiUnauthorizedHandler = FutureOr<bool> Function(
+  ApiException exception,
+);
 
 enum HttpMethod {
   get('GET'),
@@ -34,6 +35,7 @@ class ApiRequestOptions {
     this.versioned = true,
     this.retryUnsafe = false,
     this.maxRetries,
+    this.expectedContextVersion,
   });
 
   final HttpMethod? method;
@@ -47,6 +49,9 @@ class ApiRequestOptions {
   final bool retryUnsafe;
   final int? maxRetries;
 
+  /// Freeze the account/store context captured before awaiting local work.
+  final Object? expectedContextVersion;
+
   ApiRequestOptions copyWith({
     HttpMethod? method,
     QueryParams? query,
@@ -58,6 +63,7 @@ class ApiRequestOptions {
     bool? versioned,
     bool? retryUnsafe,
     int? maxRetries,
+    Object? expectedContextVersion,
   }) {
     return ApiRequestOptions(
       method: method ?? this.method,
@@ -70,6 +76,8 @@ class ApiRequestOptions {
       versioned: versioned ?? this.versioned,
       retryUnsafe: retryUnsafe ?? this.retryUnsafe,
       maxRetries: maxRetries ?? this.maxRetries,
+      expectedContextVersion:
+          expectedContextVersion ?? this.expectedContextVersion,
     );
   }
 }

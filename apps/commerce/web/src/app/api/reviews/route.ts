@@ -5,9 +5,12 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
+import { STOREFRONT_BUYER_SESSION_COOKIE } from '@/lib/buyer-auth/flow';
+import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
 import { getUrbanKicksDemoReviews, URBAN_KICKS_DEMO_STORE_ID } from '@/lib/demo/urban-kicks-demo';
 import { getSession } from '@/lib/session';
-import { createStorefrontApiClient, StorefrontApiRequestError } from '@/lib/api/client';
+import { createStorefrontApiClient, storefrontApiFetch, StorefrontApiRequestError } from '@/lib/api/client';
+import { verifyExpectedBuyerIdentity } from '@/lib/buyer-auth/expected-buyer';
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -65,10 +68,68 @@ export async function GET(request: NextRequest) {
 // ── POST — Submit a new review ─────────────────────────────
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+        if (!body || Array.isArray(body)) return NextResponse.json({ error: 'A review is required.' }, { status: 400 });
         const { productId, storeId, rating, title, reviewBody } = body;
 
-        if (!productId || !storeId || !rating) {
+        // A canonical buyer session always takes precedence over the transitional per-store
+        // customer cookie. Store and identity fields are resolved from signed/server state.
+        if (request.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE)) {
+            const session = await resolveBuyerDataSession(request);
+            if ('response' in session) return session.response;
+            if (typeof storeId !== 'string' || storeId.toLowerCase() !== session.siteId.toLowerCase()) {
+                return NextResponse.json({ error: 'This review does not belong to the current store.' }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
+            }
+            // A product page can stay open while another tab replaces the shared host-only
+            // cookie. Bind its review draft to the buyer whose verified identity was rendered;
+            // this value is comparison-only and never forwarded as authority.
+            const identityFailure = await verifyExpectedBuyerIdentity(session, request.headers.get('x-letbuyy-expected-buyer-id'), {
+                missing: 'Reload your account before submitting this review.',
+                unavailable: 'Your account could not be checked before submitting this review.',
+                changed: 'Your account changed. Reload before submitting this review.',
+            });
+            if (identityFailure) return identityFailure;
+            if (typeof productId !== 'string' || !Number.isInteger(rating) || Number(rating) < 1 || Number(rating) > 5) {
+                return NextResponse.json({ error: 'A product and rating from 1 to 5 are required.' }, { status: 400, headers: { 'Cache-Control': 'no-store' } });
+            }
+            let result: Response;
+            try {
+                result = await storefrontApiFetch(`/storefront/buyer/reviews?store_id=${encodeURIComponent(session.siteId)}`, {
+                    method: 'POST',
+                    headers: session.headers,
+                    body: JSON.stringify({
+                        product_id: productId,
+                        rating,
+                        ...(typeof title === 'string' ? { title } : {}),
+                        ...(typeof reviewBody === 'string' ? { body: reviewBody } : {}),
+                        turnstile_token: body.turnstileToken ?? body.turnstile_token ?? null,
+                    }),
+                    cache: 'no-store',
+                });
+            } catch {
+                return NextResponse.json({ error: 'Reviews are unavailable right now.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+            }
+            const noStore = { 'Cache-Control': 'no-store' };
+            if (result.status === 401) return NextResponse.json({ error: 'Sign in to LetBuyy again to submit this review.' }, { status: 401, headers: noStore });
+            if (result.status === 403) return NextResponse.json({ error: 'Complete the security check and try again.' }, { status: 403, headers: noStore });
+            if (result.status === 409) {
+                const failure = await result.json().catch(() => null) as { error?: { code?: unknown } } | null;
+                const notLinked = failure?.error?.code === 'STORE_ACCOUNT_NOT_LINKED';
+                const unavailable = failure?.error?.code === 'STORE_ACCOUNT_UNAVAILABLE';
+                return NextResponse.json({ error: notLinked ? 'Connect this store account in your LetBuyy settings before submitting a review.' : unavailable ? 'This store account is unavailable for reviews. Contact the store for help.' : 'You have already reviewed this product.', ...(notLinked ? { code: 'STORE_ACCOUNT_NOT_LINKED' } : unavailable ? { code: 'STORE_ACCOUNT_UNAVAILABLE' } : {}) }, { status: 409, headers: noStore });
+            }
+            if (result.status === 400 || result.status === 404) {
+                const failure = await result.json().catch(() => null) as { error?: { message?: unknown } } | null;
+                const message = typeof failure?.error?.message === 'string' ? failure.error.message : 'This product is not accepting reviews.';
+                return NextResponse.json({ error: message }, { status: result.status, headers: noStore });
+            }
+            if (!result.ok) return NextResponse.json({ error: 'Reviews are unavailable right now.' }, { status: 503, headers: noStore });
+            const payload = await result.json().catch(() => null) as { data?: { review?: { id?: unknown }; message?: unknown } } | null;
+            if (typeof payload?.data?.review?.id !== 'string') return NextResponse.json({ error: 'Reviews are unavailable right now.' }, { status: 503, headers: noStore });
+            return NextResponse.json({ success: true, review: { id: payload.data.review.id, status: 'pending' }, message: typeof payload.data.message === 'string' ? payload.data.message : 'Review submitted for approval.' }, { status: 201, headers: noStore });
+        }
+
+        if (typeof productId !== 'string' || typeof storeId !== 'string' || typeof rating !== 'number' || !Number.isFinite(rating)) {
             return NextResponse.json(
                 { error: 'productId, storeId, and rating are required' },
                 { status: 400 }
@@ -81,8 +142,8 @@ export async function POST(request: NextRequest) {
 
         // Get customer info from session (if logged in)
         const session = await getSession();
-        const customerName = session?.name || body.customerName || 'Anonymous';
-        const customerEmail = session?.email || body.customerEmail || null;
+        const customerName = session?.name || (typeof body.customerName === 'string' ? body.customerName : 'Anonymous');
+        const customerEmail = session?.email || (typeof body.customerEmail === 'string' ? body.customerEmail : null);
 
         const payload = await createStorefrontApiClient().storefront.submitProductReview({
             store_id: storeId,
@@ -90,10 +151,10 @@ export async function POST(request: NextRequest) {
             customer_name: customerName,
             customer_email: customerEmail,
             rating,
-            title: title || null,
-            body: reviewBody || null,
+            title: typeof title === 'string' ? title : null,
+            body: typeof reviewBody === 'string' ? reviewBody : null,
             is_verified: !!session,
-            turnstile_token: body.turnstileToken || body.turnstile_token || null,
+            turnstile_token: typeof body.turnstileToken === 'string' ? body.turnstileToken : typeof body.turnstile_token === 'string' ? body.turnstile_token : null,
         });
 
         return NextResponse.json(payload, { status: 201 });

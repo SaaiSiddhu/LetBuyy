@@ -46,20 +46,35 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
 
   ProductModel _convertToProductModel() {
     final price = (widget.product['price'] ?? 0).toDouble();
-    final originalPrice = widget.product['originalPrice']?.toDouble();
+    final marketplaceListingId =
+        widget.product['marketplaceListingId'] as String?;
+    final rawStock = widget.product['stock'];
+    final stock = rawStock is num
+        ? rawStock.toInt()
+        : int.tryParse(rawStock?.toString() ?? '') ?? 0;
+    final stockKnown = widget.product['stockKnown'] is bool
+        ? widget.product['stockKnown'] as bool
+        : rawStock is num ||
+              (rawStock is String && int.tryParse(rawStock) != null);
+    final originalPrice = marketplaceListingId == null
+        ? null
+        : widget.product['originalPrice']?.toDouble();
     
     return ProductModel(
       id: widget.product['id'] ?? '',
+      marketplaceListingId: marketplaceListingId,
       name: widget.product['name'] ?? 'Product',
       description: widget.product['description'] ?? '',
       salePrice: price,
+      priceKnown: widget.product['priceKnown'] == true,
+      stock: stock,
+      stockKnown: stockKnown,
       originalPrice: originalPrice,
       categoryId: widget.product['categoryId'] ?? widget.product['category'] ?? '',
       sellerId: widget.product['sellerId'] ?? '',
       images: widget.product['images'] != null 
           ? List<String>.from(widget.product['images'])
           : (widget.product['imageUrl'] != null ? [widget.product['imageUrl']] : []),
-      stock: widget.product['stock'] ?? 100,
       rating: (widget.product['rating'] ?? 0.0).toDouble(),
       reviewCount: widget.product['reviews'] ?? 0,
       createdAt: DateTime.now(),
@@ -71,7 +86,6 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
   Widget build(BuildContext context) {
     final name = widget.product['name'] ?? 'Product';
     final price = widget.product['price'] ?? 0;
-    final originalPrice = widget.product['originalPrice'];
     final imageUrl = widget.product['imageUrl'] ?? 
                      (widget.product['images']?.isNotEmpty == true 
                          ? widget.product['images'][0] 
@@ -79,10 +93,10 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
     final rating = (widget.product['rating'] ?? 0.0).toDouble();
     final reviews = widget.product['reviews'] ?? 0;
     final description = widget.product['description'] ?? '';
-    final inStock = (widget.product['stock'] ?? 100) > 0;
-
     final product = _convertToProductModel();
-    final discountPercent = product.discount; // ✅ Use the getter
+    final hasReferencePrice = product.hasDisplayableReferencePrice;
+    final inStock = product.inStock;
+    final canPurchase = product.isPurchasable;
 
     return Consumer2<CartProvider, WishlistProvider>(
       builder: (context, cartProvider, wishlistProvider, child) {
@@ -154,7 +168,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                       ),
 
                       // Discount Badge
-                      if (discountPercent > 0)
+                      if (product.hasPriorThirtyDayLow)
                         Positioned(
                           top: 8,
                           left: 8,
@@ -177,7 +191,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                               ],
                             ),
                             child: Text(
-                              '-$discountPercent%',
+                              '30d low',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -223,7 +237,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                       ),
 
                       // Stock Status Overlay
-                      if (!inStock)
+                      if (product.stockKnown && !inStock)
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
@@ -324,11 +338,26 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                                   color: AppColors.primary,
                                 ),
                               ),
-                              if (originalPrice != null && originalPrice > price)
+                              if (!product.stockKnown) ...[
+                                const Spacer(),
+                                Flexible(
+                                  child: Text(
+                                    'Stock unknown',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              if (hasReferencePrice)
                                 Padding(
                                   padding: const EdgeInsets.only(left: 6),
                                   child: Text(
-                                    '₹$originalPrice',
+                                    '₹${product.originalPrice!.toStringAsFixed(0)}',
                                     style: TextStyle(
                                       decoration: TextDecoration.lineThrough,
                                       color: Colors.grey[500],
@@ -349,7 +378,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                                 child: SizedBox(
                                   height: 32,
                                   child: ElevatedButton(
-                                    onPressed: inStock
+                                    onPressed: canPurchase
                                         ? (isInCart
                                             ? null
                                             : () async {
@@ -399,7 +428,7 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                                 child: SizedBox(
                                   height: 32,
                                   child: ElevatedButton(
-                                    onPressed: inStock
+                                    onPressed: canPurchase
                                         ? () async {
                                             HapticFeedback.mediumImpact();
                                             if (!isInCart) {

@@ -1,8 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+
 import 'api_client.dart';
+import 'subscription_catalog.dart';
+export 'subscription_catalog.dart';
 
 class BillingHistoryEntry {
   const BillingHistoryEntry({
@@ -11,15 +19,30 @@ class BillingHistoryEntry {
     required this.status,
     required this.billingPeriod,
     required this.createdAt,
+    this.invoiceNumber,
+    this.taxAmount,
+    this.totalAmount,
   });
 
   factory BillingHistoryEntry.fromJson(Map<String, dynamic> json) {
+    if (json['currency'] != null && json['currency'] != 'INR')
+      throw const FormatException('Invoice currency is unavailable.');
     return BillingHistoryEntry(
       id: _stringValue(json['id']),
-      amountPaid: _numValue(json['amount_paid']),
-      status: _stringValue(json['status'], fallback: 'unknown'),
+      amountPaid: _invoiceMinor(json['amount'] ?? json['amount_paid']),
+      status: _stringValue(
+        json['payment_status'] ?? json['status'],
+        fallback: 'unknown',
+      ),
       billingPeriod: _stringValue(json['billing_period'], fallback: 'monthly'),
       createdAt: _stringValue(json['created_at']),
+      invoiceNumber: json['invoice_number'] as String?,
+      taxAmount: json['tax_amount'] == null
+          ? null
+          : _invoiceMinor(json['tax_amount']),
+      totalAmount: json['total_amount'] == null
+          ? null
+          : _invoiceMinor(json['total_amount']),
     );
   }
 
@@ -29,9 +52,18 @@ class BillingHistoryEntry {
   final String billingPeriod;
   final String createdAt;
 
-  String get amountLabel {
-    final rupees = amountPaid > 9999 ? amountPaid / 100 : amountPaid;
-    return 'INR ${rupees.toStringAsFixed(2)}';
+  final String? invoiceNumber;
+  final int? taxAmount, totalAmount;
+  String get amountLabel => 'INR ${(amountPaid / 100).toStringAsFixed(2)}';
+  static int _invoiceMinor(Object? value) {
+    if (value is! num ||
+        !value.isFinite ||
+        value < 0 ||
+        value != value.round() ||
+        value > 9007199254740991) {
+      throw const FormatException('Invoice amount is unavailable.');
+    }
+    return value.toInt();
   }
 }
 
@@ -41,7 +73,101 @@ class BillingHistoryEntry {
 class SubscriptionService {
   final ApiClient _api;
 
-  SubscriptionService({required ApiClient api}) : _api = api;
+  SubscriptionService({
+    required ApiClient api,
+    String? Function()? actorIdProvider,
+    FlutterSecureStorage storage = const FlutterSecureStorage(),
+  }) : _api = api,
+       _actorIdProvider = actorIdProvider,
+       _storage = storage;
+
+  final String? Function()? _actorIdProvider;
+  final FlutterSecureStorage _storage;
+  static Future<void> _mutationTail = Future<void>.value();
+
+  String _actor() {
+    final actor = _actorIdProvider?.call();
+    if (actor == null || actor.isEmpty)
+      throw StateError('Sign in again before continuing checkout.');
+    return actor;
+  }
+
+  Future<T> _serialized<T>(Future<T> Function() action) {
+    final result = Completer<T>();
+    _mutationTail = _mutationTail.then((_) async {
+      try {
+        result.complete(await action());
+      } catch (error, stack) {
+        result.completeError(error, stack);
+      }
+    });
+    return result.future;
+  }
+
+  String _storageKey(String actor) =>
+      'letbuyy.subscription.checkouts.v1:$actor';
+
+  Future<Map<String, dynamic>> _readIntents(String actor) async {
+    final raw = await _storage.read(key: _storageKey(actor));
+    return raw == null
+        ? <String, dynamic>{}
+        : Map<String, dynamic>.from(jsonDecode(raw) as Map);
+  }
+
+  Future<Map<String, dynamic>> _checkout(
+    String operation,
+    Map<String, dynamic> body,
+    Future<Map<String, dynamic>> Function(ApiRequestOptions) send,
+  ) => _serialized(() async {
+    final actor = _actor();
+    final pending = await _readIntents(actor);
+    if (_actor() != actor)
+      throw StateError('Account changed. Open checkout again.');
+    final intent = jsonEncode([operation, body]);
+    final retained = pending[intent] is Map
+        ? Map<String, dynamic>.from(pending[intent] as Map)
+        : <String, dynamic>{};
+    final key = retained['key'] is String
+        ? retained['key'] as String
+        : 'subscription-checkout:${const Uuid().v4()}';
+    pending[intent] = {...retained, 'key': key};
+    await _storage.write(key: _storageKey(actor), value: jsonEncode(pending));
+    if (_actor() != actor)
+      throw StateError('Account changed. Open checkout again.');
+    final value = await send(
+      ApiRequestOptions(
+        method: HttpMethod.post,
+        body: body,
+        idempotencyKey: key,
+      ),
+    );
+    if (_actor() != actor)
+      throw StateError('Account changed. Open checkout again.');
+    if (value['activated'] == true) {
+      pending.remove(intent);
+    } else {
+      pending[intent] = {
+        'key': key,
+        'reference':
+            value['razorpay_order_id'] ?? value['razorpay_subscription_id'],
+      };
+    }
+    await _storage.write(key: _storageKey(actor), value: jsonEncode(pending));
+    return value;
+  });
+
+  Future<void> _completeCheckout(String actor, String? reference) =>
+      _serialized(() async {
+        if (reference == null || reference.isEmpty) return;
+        final pending = await _readIntents(actor);
+        pending.removeWhere(
+          (_, receipt) => receipt is Map && receipt['reference'] == reference,
+        );
+        await _storage.write(
+          key: _storageKey(actor),
+          value: jsonEncode(pending),
+        );
+      });
 
   // ============================================================
   // CREATE SUBSCRIPTION
@@ -51,50 +177,50 @@ class SubscriptionService {
   Future<Map<String, dynamic>> createSubscription({
     required String storeId,
     required SubscriptionPlan plan,
-  }) async {
-    try {
-      return await _api.requestJson(
-        'payments/subscription/order',
-        options: ApiRequestOptions(
-          method: HttpMethod.post,
-          body: {
-            'store_id': storeId,
-            'site_type': 'store',
-            'plan_slug': _planSlug(plan),
-            'billing_period': 'monthly',
-          },
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error creating subscription: $e');
-      rethrow;
-    }
+  }) => createSubscriptionOrder(storeId: storeId, plan: plan);
+
+  Future<List<MerchantBillingPlan>> fetchPlans(String storeId) async {
+    final rows = await _api.payments.plans({
+      'site_type': 'store',
+      'store_id': storeId,
+    });
+    return rows.map(MerchantBillingPlan.fromJson).toList(growable: false);
   }
 
-  /// Start a subscription checkout order using the gateway billing contract.
+  Future<MerchantBillingState> fetchBillingState(String storeId) async =>
+      MerchantBillingState.fromJson(
+        await _api.requestJson(
+          'payments/subscription',
+          options: ApiRequestOptions(query: {'store_id': storeId}),
+        ),
+      );
+
+  Future<Map<String, dynamic>> createCatalogCheckout({
+    required String storeId,
+    required String planSlug,
+    String billingPeriod = 'monthly',
+  }) => _checkout(
+    'checkout',
+    {
+      'store_id': storeId,
+      'site_type': 'store',
+      'plan_slug': planSlug,
+      'billing_period': billingPeriod,
+    },
+    (options) =>
+        _api.requestJson('payments/subscription/order', options: options),
+  );
+
+  /// Retain the same logical intent through timeout, dismissal and app restart.
   Future<Map<String, dynamic>> createSubscriptionOrder({
     required String storeId,
     required SubscriptionPlan plan,
     String billingPeriod = 'monthly',
-  }) async {
-    try {
-      return await _api.requestJson(
-        'payments/subscription/order',
-        options: ApiRequestOptions(
-          method: HttpMethod.post,
-          body: {
-            'store_id': storeId,
-            'site_type': 'store',
-            'plan_slug': _planSlug(plan),
-            'billing_period': billingPeriod,
-          },
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error creating subscription order: $e');
-      rethrow;
-    }
-  }
+  }) => createCatalogCheckout(
+    storeId: storeId,
+    planSlug: _planSlug(plan),
+    billingPeriod: billingPeriod,
+  );
 
   /// Verify a Razorpay subscription payment and activate the plan.
   Future<Map<String, dynamic>> verifySubscriptionPayment({
@@ -105,16 +231,36 @@ class SubscriptionService {
     String? razorpayOrderId,
     String? razorpaySubscriptionId,
     String billingPeriod = 'monthly',
+  }) => verifyCatalogSubscriptionPayment(
+    storeId: storeId,
+    planSlug: _planSlug(plan),
+    razorpayPaymentId: razorpayPaymentId,
+    razorpaySignature: razorpaySignature,
+    razorpayOrderId: razorpayOrderId,
+    razorpaySubscriptionId: razorpaySubscriptionId,
+    billingPeriod: billingPeriod,
+  );
+
+  Future<Map<String, dynamic>> verifyCatalogSubscriptionPayment({
+    required String storeId,
+    required String planSlug,
+    required String razorpayPaymentId,
+    required String razorpaySignature,
+    String? razorpayOrderId,
+    String? razorpaySubscriptionId,
+    String billingPeriod = 'monthly',
   }) async {
+    final actor = _actor();
     try {
-      return await _api.requestJson(
+      final result = await _api.requestJson(
         'payments/subscription/verify',
         options: ApiRequestOptions(
           method: HttpMethod.post,
+          idempotencyKey: 'subscription-verify:$razorpayPaymentId',
           body: {
             'store_id': storeId,
             'site_type': 'store',
-            'plan_slug': _planSlug(plan),
+            'plan_slug': planSlug,
             'billing_period': billingPeriod,
             'razorpay_payment_id': razorpayPaymentId,
             'razorpay_signature': razorpaySignature,
@@ -124,6 +270,16 @@ class SubscriptionService {
           },
         ),
       );
+      if (_actor() != actor)
+        throw StateError('Account changed. Open billing again.');
+      // Verification already committed. Storage cleanup failure must not claim payment failure.
+      try {
+        await _completeCheckout(
+          actor,
+          razorpaySubscriptionId ?? razorpayOrderId,
+        );
+      } catch (_) {}
+      return result;
     } catch (e) {
       debugPrint('Error verifying subscription payment: $e');
       rethrow;
@@ -204,17 +360,17 @@ class SubscriptionService {
   Future<Map<String, dynamic>> recoverFailedPayment({
     required String storeId,
     String? billingPeriod,
-  }) async {
-    try {
-      return await _api.payments.subscription.recover({
-        'store_id': storeId,
-        if (billingPeriod != null) 'billing_period': billingPeriod,
-      });
-    } catch (e) {
-      debugPrint('Error recovering subscription payment: $e');
-      rethrow;
-    }
-  }
+  }) => _checkout(
+    'recover',
+    {
+      'store_id': storeId,
+      if (billingPeriod != null) 'billing_period': billingPeriod,
+    },
+    (options) => _api.payments.subscription.recover(
+      Map<String, dynamic>.from(options.body as Map),
+      options: options,
+    ),
+  );
 
   // ============================================================
   // CONNECT OWN RAZORPAY

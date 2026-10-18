@@ -1,0 +1,101 @@
+{
+  "runId": "e065d4584aae",
+  "suite": "marketplace-cart-origin.postgres",
+  "runtime": "production API Gateway worker + PostgREST + runner-owned PostgreSQL 16 + real Flutter MarketplaceCheckoutService/ApiClient",
+  "tests": 14,
+  "passed": 14,
+  "failed": 0,
+  "skipped": 0,
+  "todo": 0,
+  "cancelled": 0,
+  "responseLossJourney": {
+    "injection": "Drop the loopback HTTP response after the production Gateway returns a successful confirmation and the database contains its committed order",
+    "recovery": "Retry through the same mobile checkout service; it reads the real seller-scoped checkout-status route before issuing another cart or confirmation",
+    "assertions": [
+      "The secure checkout attempt survives the failed client confirmation",
+      "The retry returns the same cart token and committed order receipt",
+      "The retry recovers before validating the now-empty cart or changed invalid email",
+      "The retry uses the incremented local cart revision and reports that the receipt does not match the current cart",
+      "Exactly one additional seller order exists",
+      "Exactly one checkout session binds that order to the cart",
+      "The COD order remains pending_cod"
+    ]
+  },
+  "provider": "COD only; no payment provider request",
+  "environment": "Synthetic tenant and buyer data in runner-owned disposable containers; no hosted or restored data",
+  "cleanup": "Governed runner-owned fixture cleanup passed",
+  "localMobileTests": {
+    "command": "flutter test --no-pub --timeout=120s -d emulator-5556 test/marketplace_checkout_service_test.dart test/marketplace_cod_checkout_ui_test.dart",
+    "passed": 7,
+    "failed": 0,
+    "device": "Android emulator sdk_gphone64_arm64",
+    "note": "Flutter service/widget tests use fake API responses and in-memory session/checkout-attempt stores; this is emulator test-harness evidence, not physical-device or live-Gateway acceptance."
+  },
+  "recoveryUiJourney": {
+    "client": "Flutter PaymentMethodScreen using a fake ApiClient and in-memory attempt store",
+    "afterResponseLoss": ["local cart emptied", "email changed to invalid value"],
+    "retryOutcome": "Committed order receipt recovered without a second confirmation"
+  },
+  "buyerSwitchUiJourney": {
+    "interleaving": "Buyer one's stored session changes to buyer two and is reverified while checkout-status is pending",
+    "assertions": [
+      "Buyer one's completed receipt is not displayed after buyer two's session is restored",
+      "Buyer two remains the active canonical account after the fake account-API refresh",
+      "The active cart remains intact",
+      "Buyer-scoped secure checkout attempts for both buyers are preserved"
+    ],
+    "scope": "Flutter widget and BuyerSignInController with fake account/status API responses and in-memory session/attempt stores; sign-in initiation is not covered"
+  },
+  "targetedFlutterAnalysis": "Passed with no issues",
+  "androidSecureStorageIntegration": {
+    "prepareCommand": "flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=prepare --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+    "preparePassed": 1,
+    "prepareFailed": 0,
+    "processRestart": "adb -s emulator-5556 shell am force-stop com.letbuyy.letbuyy; shared preferences remain installed",
+    "recoveryCommand": "flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=recover --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+    "recoveryPassed": 1,
+    "recoveryFailed": 0,
+    "device": "Android emulator sdk_gphone64_arm64",
+    "store": "MarketplaceCheckoutService production-default FlutterSecureStorage adapter; synthetic buyer namespace and cart token",
+    "journey": "A first service instance persists an attempt while returning a COD shipping review; a recreated service reads it and recovers a synthetic completed receipt before validating changed empty-cart input",
+    "assertions": [
+      "The plugin-backed buyer-scoped attempt contains the original cart token",
+      "The recreated service returns the same synthetic order receipt and cart token",
+      "The retry makes exactly one checkout-status request and no new cart or confirmation request"
+    ],
+    "scope": "Native Android plugin integration against mocked HTTP; no Gateway, database, payment provider, live order or user data",
+    "limit": "Emulator app-process restart only; physical-device verification remains open",
+    "pendingRetryJourney": {
+      "prepareCommand": "flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=prepare --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+      "preparePassed": 1,
+      "restart": "adb -s emulator-5556 shell am force-stop com.letbuyy.letbuyy; app data remains installed",
+      "retryCommand": "flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=retryPending --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+      "retryPassed": 1,
+      "failure": "Synthetic seller-scoped checkout-status 404 means no committed receipt is available yet",
+      "assertions": [
+        "The service recreates the pending seller cart with the original stored cart token",
+        "Exactly one checkout-status request and one marketplace-cart request occur",
+        "No confirmation request is sent before the buyer reviews the refreshed cart",
+        "The secure attempt remains unchanged through the pending retry"
+      ],
+      "scope": "Emulator native secure storage with mocked HTTP; no Gateway, database, provider or live order"
+    },
+    "buyerSwitchJourney": {
+      "prepareCommand": "/Users/saai_mithra/development/flutter/bin/flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=prepareBuyerSwitch --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+      "preparePassed": 1,
+      "restart": "adb -s emulator-5556 shell am force-stop com.letbuyy.letbuyy; app data remains installed",
+      "recoveryCommand": "/Users/saai_mithra/development/flutter/bin/flutter drive --no-pub --keep-app-running --dart-define=LETBUYY_SECURE_STORAGE_STAGE=buyerTwoAfterRestart --driver=test_driver/integration_test.dart --target=integration_test/marketplace_checkout_attempt_storage_test.dart -d emulator-5556",
+      "recoveryPassed": 1,
+      "device": "Android emulator sdk_gphone64_arm64",
+      "flutterSdk": "Flutter 3.47.5, matching the workspace package configuration",
+      "journey": "Buyer one persists a synthetic checkout attempt; after app-process restart, buyer two enters the empty-cart path using a separate canonical namespace",
+      "assertions": [
+        "Buyer two receives CHECKOUT_CART_EMPTY before any HTTP request",
+        "Buyer one's attempt remains unchanged after the second buyer recovery check",
+        "No attempt is created in buyer two's secure-storage namespace",
+        "Recovery-stage teardown removes both dedicated synthetic buyer keys"
+      ],
+      "scope": "Native Android FlutterSecureStorage plugin with mocked HTTP; verifies client namespace isolation only, not sign-in or server authorization"
+    }
+  }
+}

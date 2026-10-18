@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payment-refund-reconciliation.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "dd69ef5a5c00",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "anon cannot execute reconcile_cod_remittance_with_ledger",
+    "authenticated cannot execute reconcile_cod_remittance_with_ledger",
+    "app_tenant cannot execute reconcile_cod_remittance_with_ledger",
+    "PUBLIC has no execute grant on the COD financial writer",
+    "database rejects direct calls from all three API roles",
+    "service_role retains execute after migration and paired rollback",
+    "real Gateway payment/refund canonical ledger journey remains passing"
+  ],
+  "cleanup": "runner completed without cleanup warnings; disposable database resources removed",
+  "externalProviderOrLiveMoney": false
+}

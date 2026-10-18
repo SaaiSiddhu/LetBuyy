@@ -18,6 +18,7 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../../index';
 import { dbFailureBody, decodeListCursor, encodeListCursor, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { getStorefrontBuyerSession, requireStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerOrderSummaryRow {
@@ -35,15 +36,39 @@ export interface BuyerOrderSummaryRow {
 }
 
 export interface BuyerOrderRoutesDeps {
+    loadBuyerOrderDetail: (c: AppContext, buyerAccountId: string, siteId: string | undefined, orderId: string) => Promise<{ data: Record<string, unknown> | null; error: unknown }>;
     listBuyerOrders: (
         c: AppContext,
         buyerAccountId: string,
-        input: { limit: number; before?: string | number | boolean | null },
+        input: { limit: number; before?: string | number | boolean | null; beforeId?: string; siteId?: string },
     ) => Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }>;
 }
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+
+export async function loadBuyerOrderDetailFromDatabase(
+    db: SupabaseClient, buyerAccountId: string, siteId: string | undefined, orderId: string, relationalItems: boolean,
+): Promise<{ data: Record<string, unknown> | null; error: unknown }> {
+    const ownedLink = db.from('buyer_order_links').select('order_id,site_id')
+        .eq('buyer_account_id', buyerAccountId).eq('order_id', orderId);
+    // Storefront credentials remain bound to their signed site. A platform buyer
+    // has cross-store scope, but its site must come from this exact owned link.
+    if (siteId !== undefined) ownedLink.eq('site_id', siteId);
+    const link = await ownedLink.maybeSingle();
+    if (link.error || !link.data) return { data: null, error: link.error };
+    const linkedSiteId = link.data.site_id;
+    if (typeof linkedSiteId !== 'string' || !UUID.test(linkedSiteId)) {
+        return { data: null, error: new Error('Order ownership link is unavailable') };
+    }
+    // Same view fields used by the existing storefront detail renderer; no
+    // payment provider metadata, internal notes or customer-email authorization.
+    const columns = 'id,site_id,store_id,order_number,status,total,tax,gst_invoice_number,created_at,subtotal,discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
+    return db.from('orders').select(relationalItems ? columns : `${columns},items`)
+        .eq('id', orderId).eq('site_id', linkedSiteId).maybeSingle();
+}
 
 /// The actual query, shared by production wiring (buyer-realm-wiring.ts, given the request's real
 /// admin client) and tests (given a client pointed at a fake PostgREST) -- so the tenant-guard
@@ -54,7 +79,7 @@ const MAX_LIMIT = 50;
 export async function listBuyerOrdersFromDatabase(
     db: SupabaseClient,
     buyerAccountId: string,
-    { limit, before }: { limit: number; before?: string | number | boolean | null },
+    { limit, before, beforeId, siteId }: { limit: number; before?: string | number | boolean | null; beforeId?: string; siteId?: string },
 ): Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }> {
     let linksQuery = db
         .from('buyer_order_links')
@@ -62,8 +87,15 @@ export async function listBuyerOrdersFromDatabase(
         .eq('buyer_account_id', buyerAccountId)
         .order('linked_at', { ascending: false })
         .order('order_id', { ascending: false });
+    if (siteId) linksQuery = linksQuery.eq('site_id', siteId);
     if (before !== null && before !== undefined) {
-        linksQuery = linksQuery.lt('linked_at', before as string);
+        if (beforeId) {
+            if (!UUID.test(beforeId) || typeof before !== 'string' || !TIMESTAMP.test(before) || !Number.isFinite(Date.parse(before))) {
+                return { data: null, error: new Error('Invalid order cursor'), hasMore: false };
+            }
+            // Same ordering tuple as ORDER BY. A timestamp alone loses tied rows.
+            linksQuery = linksQuery.or(`linked_at.lt.${before},and(linked_at.eq.${before},order_id.lt.${beforeId})`);
+        } else linksQuery = linksQuery.lt('linked_at', before as string);
     }
 
     const { data: links, error: linksError } = await linksQuery.limit(limit + 1);
@@ -87,7 +119,8 @@ export async function listBuyerOrdersFromDatabase(
     const siteById = new Map((sitesResult.data ?? []).map((row) => [row.id as string, row]));
 
     const rows: BuyerOrderSummaryRow[] = pageLinks.map((link) => {
-        const order = orderById.get(link.order_id) as Record<string, unknown> | undefined;
+        const candidate = orderById.get(link.order_id) as Record<string, unknown> | undefined;
+        const order = candidate?.site_id === link.site_id ? candidate : undefined;
         const site = siteById.get(link.site_id) as Record<string, unknown> | undefined;
         return {
             id: link.order_id,
@@ -109,19 +142,22 @@ export function registerBuyerOrderRoutes(
     router: Hono<{ Bindings: Env }>,
     deps: BuyerOrderRoutesDeps,
 ): void {
-    const { listBuyerOrders } = deps;
+    const { listBuyerOrders, loadBuyerOrderDetail } = deps;
 
-    router.get('/buyer/orders', requireBuyerSession, async (c) => {
-        const session = getBuyerSession(c);
-        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
-
+    async function readOrders(c: AppContext, buyerAccountId: string, siteId?: string) {
         const requested = Number.parseInt(c.req.query('limit') || '', 10);
         const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, MAX_LIMIT) : DEFAULT_LIMIT;
-        const cursor = decodeListCursor(c.req.query('cursor') || undefined);
+        const rawCursor = c.req.query('cursor');
+        const cursor = decodeListCursor(rawCursor || undefined);
+        if (rawCursor && (!cursor || !UUID.test(cursor.id) || typeof cursor.value !== 'string' || !TIMESTAMP.test(cursor.value) || !Number.isFinite(Date.parse(cursor.value)))) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order cursor.' } }, 400);
+        }
 
-        const { data, error, hasMore } = await listBuyerOrders(c, session.buyerAccountId, {
+        const { data, error, hasMore } = await listBuyerOrders(c, buyerAccountId, {
             limit,
             before: cursor?.value ?? null,
+            beforeId: cursor?.id,
+            siteId,
         });
         if (error) return c.json(dbFailureBody(), 500);
 
@@ -131,5 +167,41 @@ export function registerBuyerOrderRoutes(
             : null;
 
         return c.json(success({ orders, next_cursor: nextCursor, has_more: hasMore }));
+    }
+
+    router.get('/buyer/orders', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        return readOrders(c, session.buyerAccountId);
+    });
+
+    router.get('/buyer/orders/:orderId', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        const orderId = c.req.param('orderId');
+        if (!UUID.test(orderId)) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order id.' } }, 400);
+        const { data, error } = await loadBuyerOrderDetail(c, session.buyerAccountId, undefined, orderId);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found.' } }, 404);
+        return c.json(success({ order: data }));
+    });
+
+    // A storefront's token is authorized only at its signed site, with the same
+    // canonical verified-link query. Never translate its email into legacy reads.
+    router.get('/buyer/storefront-orders', requireStorefrontBuyerSession, async (c) => {
+        const session = getStorefrontBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+        return readOrders(c, session.buyerAccountId, session.siteId);
+    });
+
+    router.get('/buyer/storefront-orders/:orderId', requireStorefrontBuyerSession, async (c) => {
+        const session = getStorefrontBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+        const orderId = c.req.param('orderId');
+        if (!UUID.test(orderId)) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order id.' } }, 400);
+        const { data, error } = await loadBuyerOrderDetail(c, session.buyerAccountId, session.siteId, orderId);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found.' } }, 404);
+        return c.json(success({ order: data }));
     });
 }

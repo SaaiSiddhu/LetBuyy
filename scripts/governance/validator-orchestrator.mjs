@@ -32,6 +32,7 @@
 import { execFileSync, spawnSync as nodeSpawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { isNextSessionRuntimeDirectoryName } from "../validators/governance-common.mjs";
 
 export const STATUS = Object.freeze({
   PASS: "PASS",
@@ -473,6 +474,8 @@ export const GENERATED_DIRECTORY_NAMES = Object.freeze(
 );
 
 const NEVER_WALK = new Set([".git"]);
+const isGeneratedDirectoryName = (name, names = GENERATED_DIRECTORY_NAMES) =>
+  names.has(name) || (names === GENERATED_DIRECTORY_NAMES && isNextSessionRuntimeDirectoryName(name));
 
 /** Minimum depth (segments below repoRoot) a deletion target must sit at. */
 const MINIMUM_TARGET_DEPTH = 2;
@@ -562,7 +565,7 @@ export function planGeneratedArtifactCleanup({
       // Symlinks are NEVER followed and NEVER deleted: a symlink named
       // `node_modules` could point anywhere on the machine.
       if (entry.isSymbolicLink()) {
-        if (generatedNames.has(entry.name)) {
+        if (isGeneratedDirectoryName(entry.name, generatedNames)) {
           refusals.push({ relPath, reason: "symlink — never followed and never deleted" });
         }
         continue;
@@ -570,7 +573,7 @@ export function planGeneratedArtifactCleanup({
       if (!entry.isDirectory()) continue;
       if (NEVER_WALK.has(entry.name)) continue;
 
-      if (!generatedNames.has(entry.name)) {
+      if (!isGeneratedDirectoryName(entry.name, generatedNames)) {
         walk(absPath);
         continue;
       }
@@ -634,7 +637,7 @@ export function executeGeneratedArtifactCleanup(plan, { repoRoot, fsImpl = fs, l
       errors.push({ relPath: target.relPath, reason: "refused at execution time: outside the repository root" });
       continue;
     }
-    if (!GENERATED_DIRECTORY_NAMES.has(path.basename(target.absPath))) {
+    if (!isGeneratedDirectoryName(path.basename(target.absPath))) {
       errors.push({ relPath: target.relPath, reason: "refused at execution time: basename is not a generated artifact directory" });
       continue;
     }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
+import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
@@ -74,6 +75,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
 function LoginContent() {
     const searchParams = useSearchParams()
+    const returnTo = safePlatformReturnTo(searchParams.get('return_to'))
     const redirectTo = searchParams.get('redirect') || searchParams.get('return_to') || ''
 
     const [lang, setLang] = useState<Lang>('en')
@@ -102,14 +104,14 @@ function LoginContent() {
                 const res = await fetch('/api/auth/session')
                 const data = await res.json()
                 if (data.authenticated) {
-                    window.location.href = '/select'
+                    window.location.href = returnTo || '/select'
                 }
             } catch {
                 // Not authenticated — stay on login page
             }
         }
         checkSession()
-    }, [])
+    }, [returnTo])
 
     const cycleLang = () => {
         const langs: Lang[] = ['en', 'hi', 'ta']
@@ -137,16 +139,16 @@ function LoginContent() {
             if (data.exists && data.hasPassword) {
                 setShowPasswordField(true)
             } else if (data.exists && !data.hasPassword) {
-                window.location.href = `/set-password?email=${encodeURIComponent(email.trim())}`
+                window.location.href = authPathWithReturnTo(`/set-password?email=${encodeURIComponent(email.trim())}`, returnTo)
             } else {
-                window.location.href = `/signup?email=${encodeURIComponent(email.trim())}`
+                window.location.href = authPathWithReturnTo(`/signup?email=${encodeURIComponent(email.trim())}`, returnTo)
             }
         } catch {
             setError('Something went wrong. Please try again.')
         } finally {
             setLoading(false)
         }
-    }, [email])
+    }, [email, returnTo])
 
     const handleLogin = useCallback(async (e: React.FormEvent) => {
         e.preventDefault()
@@ -175,7 +177,7 @@ function LoginContent() {
             const data = await res.json()
 
             if (data.success) {
-                window.location.href = data.redirectTo || '/select'
+                window.location.href = returnTo || data.redirectTo || '/select'
             } else {
                 setError(data.error || t.invalidCredentials)
                 turnstileRef.current?.reset()
@@ -190,7 +192,7 @@ function LoginContent() {
         } finally {
             setLoading(false)
         }
-    }, [email, password, redirectTo, t.invalidCredentials, turnstileEnabled])
+    }, [email, password, redirectTo, returnTo, t.invalidCredentials, turnstileEnabled])
 
     const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
         setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
@@ -272,7 +274,7 @@ function LoginContent() {
 
                         <div className="auth-bottom-link">
                             <span>{t.newToLetBuyy}</span>{' '}
-                            <a href="/signup">{t.getStarted} →</a>
+                            <a href={authPathWithReturnTo('/signup', returnTo)}>{t.getStarted} →</a>
                         </div>
                     </>
                 )}

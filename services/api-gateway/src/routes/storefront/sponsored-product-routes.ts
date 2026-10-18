@@ -60,6 +60,8 @@ export function registerSponsoredProductRoutes(
         const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, MAX_SPONSORED) : 10;
 
         const key = await storefrontRequestCacheKey(c, 'marketplace:sponsored');
+        // Paid discovery must re-check the canonical listing fence on each request; stale placement
+        // rows can otherwise survive a rejection, takedown, or material revision.
         const cached = await cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const { data, error } = await loadSponsored(c, limit);
             // An empty list is a real answer — nobody is advertising right now. A 500 for an outage
@@ -69,7 +71,7 @@ export function registerSponsoredProductRoutes(
                 body: success((data || []).map((row) => ({ ...row, sponsored: true as const }))),
                 tags: ['marketplace:sponsored'],
             };
-        });
+        }, { bypassCache: true });
 
         // Tokens are minted HERE, on the response, and never inside the cached body above. The rows
         // are shared across every buyer who hits this TTL; a token in there would be shared too, and
@@ -93,7 +95,10 @@ export function registerSponsoredProductRoutes(
                 siteId: row.site_id, campaignId: row.campaign_id, productId: row.product_id,
             }),
         })));
-        return c.json({ ...payload, data: withTokens });
+        return new Response(JSON.stringify({ ...payload, data: withTokens }), {
+            status: cached.status,
+            headers: cached.headers,
+        });
     });
 
     // POST /storefront/ads/event — the only path that turns a placement into a charge.

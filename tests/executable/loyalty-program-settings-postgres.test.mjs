@@ -31,6 +31,7 @@ import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.m
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
 const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_loy5_program';
+const historicalDatabase = `${databaseName.slice(0,44)}_at_237`;
 const SHARED_DATABASE = 'letbuyy_executable';
 const runnable = databaseName !== SHARED_DATABASE;
 const skip = runnable
@@ -65,7 +66,7 @@ function psqlExpectingFailure(sql) {
 
 const sqlString = (v) => `'${String(v).replaceAll("'", "''")}'`;
 const stripUnsupportedPg17Guc = (sql) => sql.replace(/^SET transaction_timeout = 0;\s*$/m, '');
-const applySqlFile = (relativePath) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')));
+const applySqlFile = (relativePath, targetDatabase=databaseName) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')),targetDatabase);
 
 function listMigrations() {
     return readdirSync(join(repoRoot, 'database/supabase/migrations'))
@@ -90,6 +91,7 @@ function bootstrapDatabase() {
         const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8'));
         try {
             psql(sql);
+            if(parseInt(name,10)===237)psql(`DROP DATABASE IF EXISTS "${historicalDatabase}";CREATE DATABASE "${historicalDatabase}" TEMPLATE "${databaseName}";`,'postgres');
         } catch (error) {
             throw new Error(`migration ${name} failed to apply: ${error.message}`);
         }
@@ -101,6 +103,8 @@ function seedFixtures() {
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published)
     VALUES (${sqlString(SITE_ID)}::uuid, 'Loyalty Store', 'Loyalty Store', 'store', 'loyalty-store', true);
 
+    INSERT INTO public.users_custom(id,email,email_verified)VALUES(${sqlString(ACTOR_ID)}::uuid,'syn-loy-owner@example.invalid',true);
+    UPDATE public.sites SET custom_user_id=${sqlString(ACTOR_ID)}::uuid WHERE id=${sqlString(SITE_ID)}::uuid;
     INSERT INTO public.buyer_accounts (id, email, email_verified)
     VALUES (${sqlString(BUYER_ID)}::uuid, 'loyal-buyer@example.com', true);
 
@@ -108,6 +112,8 @@ function seedFixtures() {
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(ORDER_ID)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'LOY-0001', 'loyal-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 1000, 1000, 'paid');
+    INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
+    VALUES (${sqlString(ORDER_ID)}::uuid,${sqlString(BUYER_ID)}::uuid,${sqlString(SITE_ID)}::uuid,'authenticated_checkout');
   `);
 }
 
@@ -127,9 +133,8 @@ after(() => {
     if (!runnable) return;
     try {
         psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`, 'postgres');
-    } catch {
-        // A cleanup failure must not fail an otherwise passing suite.
-    }
+    } catch { /* owned cluster cleanup reports residue */ }
+    try{psql(`DROP DATABASE IF EXISTS "${historicalDatabase}" WITH(FORCE);`,'postgres');}catch{ /* owned cluster cleanup reports residue */ }
 });
 
 before(() => {
@@ -215,19 +220,21 @@ test('the settings path reaches the money path: activate, earn, redeem', { skip 
     assert.match(redeemed, /"redeemed"\s*:\s*true/, redeemed);
 });
 
-test('a revaluation is recorded with its size, signed, in paise', { skip }, () => {
+test('owner-approved policy refuses a decrease with outstanding points and audits an allowed increase', { skip }, () => {
     const outstandingBefore = Number(psql(`SELECT public.loyalty_outstanding_points(${sqlString(SITE_ID)}::uuid);`));
     assert.ok(outstandingBefore > 0, 'the site must hold points for the revaluation to mean anything');
 
-    setProgram(`${sqlString(SITE_ID)}::uuid, p_point_value_minor => 50, p_actor_id => ${sqlString(ACTOR_ID)}::uuid`);
+    const refused=psqlExpectingFailure(`SELECT set_loyalty_program(${sqlString(SITE_ID)}::uuid,p_point_value_minor=>50);`);
+    assert.match(refused,/LOYALTY_VALUE_DECREASE_BLOCKED/);
+    setProgram(`${sqlString(SITE_ID)}::uuid, p_point_value_minor => 150, p_actor_id => ${sqlString(ACTOR_ID)}::uuid`);
 
     assert.equal(latestAudit("metadata->>'point_value_minor_before'"), '100');
-    assert.equal(latestAudit("metadata->>'point_value_minor_after'"), '50');
+    assert.equal(latestAudit("metadata->>'point_value_minor_after'"), '150');
     assert.equal(latestAudit("metadata->>'outstanding_points'"), String(outstandingBefore));
     assert.equal(
         latestAudit("metadata->>'liability_delta_minor'"),
-        String(outstandingBefore * (50 - 100)),
-        'halving the point value must record the negative swing, not merely the two rates',
+        String(outstandingBefore * (150 - 100)),
+        'the permitted increase records its signed liability swing',
     );
 });
 
@@ -252,7 +259,7 @@ ROLLBACK;`);
     const ok = psqlExpectingFailure(`BEGIN;
 SELECT set_config('app.site_id', ${sqlString(SITE_ID)}, true);
 SET LOCAL ROLE app_tenant;
-SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_redeem_cap_bps => 3000);
+SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_redeem_cap_bps => 3000,p_actor_id=>${sqlString(ACTOR_ID)}::uuid);
 ROLLBACK;`);
     assert.equal(ok, null, `the merchant's own site must still be writable inside the tenant transaction: ${ok}`);
 
@@ -309,20 +316,15 @@ test('AFTER: the queue worker\'s own filter now returns the store', { skip }, ()
     );
 });
 
-test('the rollback removes both functions and the migration re-applies', { skip }, () => {
-    applySqlFile(ROLLBACK);
-    assert.equal(
-        psql(`SELECT count(*) FROM pg_proc WHERE proname IN ('set_loyalty_program', 'loyalty_outstanding_points');`),
-        '0',
-        'the rollback drops both',
-    );
-    // The settings the merchant already saved survive: 237 changes no table.
-    assert.equal(psql(`SELECT count(*) FROM public.loyalty_programs;`), '1');
-
-    applySqlFile(MIGRATION);
-    assert.equal(
-        psql(`SELECT count(*) FROM pg_proc WHERE proname IN ('set_loyalty_program', 'loyalty_outstanding_points');`),
-        '2',
-    );
-    applySqlFile(MIGRATION);
+test('237 rollback/reapply runs at its historical point and leaves current authority intact', { skip }, () => {
+    const head=psql("SELECT md5(pg_get_functiondef('public.set_loyalty_program(uuid,boolean,integer,integer,bigint,uuid,text,text,text)'::regprocedure));");
+    psql(`INSERT INTO sites(id,name,store_name,site_type,subdomain,published)VALUES(${sqlString(SITE_ID)},'Synthetic Historical','Synthetic Historical','store','syn-historical-loyalty',true);
+      SELECT set_loyalty_program(${sqlString(SITE_ID)},p_is_active=>true);`,historicalDatabase);
+    applySqlFile(ROLLBACK,historicalDatabase);
+    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname IN('set_loyalty_program','loyalty_outstanding_points');`,historicalDatabase),'0');
+    assert.equal(psql('SELECT count(*) FROM loyalty_programs;',historicalDatabase),'1');
+    applySqlFile(MIGRATION,historicalDatabase);
+    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname IN('set_loyalty_program','loyalty_outstanding_points');`,historicalDatabase),'2');
+    applySqlFile(MIGRATION,historicalDatabase);
+    assert.equal(psql("SELECT md5(pg_get_functiondef('public.set_loyalty_program(uuid,boolean,integer,integer,bigint,uuid,text,text,text)'::regprocedure));"),head);
 });

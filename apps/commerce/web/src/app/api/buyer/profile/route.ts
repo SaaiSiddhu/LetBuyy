@@ -1,33 +1,24 @@
 // GET/PATCH /api/buyer/profile — the signed-in buyer's own cross-store profile (D1, SUSTAINED-J).
 //
-// A thin gateway proxy (Constitution: "New app API routes are gateway proxies") — every decision
-// about who the buyer is and what full_name/phone means to the account happens at the gateway's
-// GET/PATCH /storefront/buyer/profile, gated by requireBuyerSession alone (no internal-app
-// signature: the buyer's own token, read from the SAME __Host-lb_store_buyer cookie the existing
-// buyer-auth session route already reads, is sufficient authorization for the buyer's own data).
-// Never the store_customers-scoped /api/customer/profile: that is a separate, already-complete,
-// per-store realm (D-ONE-BUYER), left untouched by this file.
+// The host-only storefront cookie is forwarded under its storefront audience, with
+// the host-resolved site. The gateway validates the signed site and live account,
+// then reads the same canonical buyer profile used by the marketplace.
 import { NextRequest, NextResponse } from 'next/server';
-import { LETBUYY_BUYER_SESSION_HEADER } from '@letbuyy/auth-core';
 import { storefrontApiFetch } from '@/lib/api/client';
-import { STOREFRONT_BUYER_SESSION_COOKIE, decodeSession } from '@/lib/buyer-auth/flow';
+import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
+import { verifyExpectedBuyerIdentity } from '@/lib/buyer-auth/expected-buyer';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
-function buyerToken(request: NextRequest): string | null {
-    const cookie = request.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE)?.value;
-    return decodeSession(cookie)?.token ?? null;
-}
-
 export async function GET(request: NextRequest) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
     let res: Response;
     try {
-        res = await storefrontApiFetch('/storefront/buyer/profile', {
+        res = await storefrontApiFetch(`/storefront/buyer/profile?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'GET',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             cache: 'no-store',
         });
     } catch {
@@ -41,12 +32,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
-    const body = await request.json().catch(() => null) as { fullName?: unknown; phone?: unknown } | null;
+    const body = await request.json().catch(() => null) as { fullName?: unknown; phone?: unknown; expectedBuyerId?: unknown } | null;
     if (!body) return NextResponse.json({ error: 'A JSON body is required' }, { status: 400, headers: NO_STORE });
-
     // Allowlisted here too, not just at the gateway: defence in depth, and it keeps this file's
     // own contract explicit about what a caller of THIS route may change.
     const update: Record<string, unknown> = {};
@@ -55,12 +45,21 @@ export async function PATCH(request: NextRequest) {
     if (Object.keys(update).length === 0) {
         return NextResponse.json({ error: 'fullName or phone is required' }, { status: 400, headers: NO_STORE });
     }
+    // Bind this write to the principal whose profile the form displayed. A same-origin
+    // tab can change the shared host-only cookie between rendering/submission, so the
+    // ID from the body is only a compare value: read the current principal using the
+    // captured signed token and refuse a mismatch before forwarding any mutation.
+    const identityFailure = await verifyExpectedBuyerIdentity(session, body.expectedBuyerId, {
+        missing: 'Reload your account before saving profile changes.',
+        unavailable: 'Your profile could not be checked right now.',
+    });
+    if (identityFailure) return identityFailure;
 
     let res: Response;
     try {
-        res = await storefrontApiFetch('/storefront/buyer/profile', {
+        res = await storefrontApiFetch(`/storefront/buyer/profile?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'PATCH',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             body: JSON.stringify(update),
             cache: 'no-store',
         });
@@ -70,7 +69,10 @@ export async function PATCH(request: NextRequest) {
     if (res.status === 401) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
     if (!res.ok) {
         const failure = await res.json().catch(() => null) as { error?: { message?: string } } | null;
-        return NextResponse.json({ error: failure?.error?.message ?? 'Your profile could not be updated right now.' }, { status: res.status === 400 ? 400 : 503, headers: NO_STORE });
+        // The gateway's message is user-facing for a client error. A 5xx body is the gateway's own failure: the status
+        // is already generalised to 503 below, and so is the message, so nothing internal can reach the browser.
+        const relayed = res.status < 500 ? failure?.error?.message : undefined;
+        return NextResponse.json({ error: relayed ?? 'Your profile could not be updated right now.' }, { status: res.status === 400 ? 400 : 503, headers: NO_STORE });
     }
 
     const payload = await res.json().catch(() => null) as { data?: { buyer?: unknown } } | null;

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
+
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
 import '../../services/subscription_service.dart';
@@ -28,7 +31,11 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   StoreModel? _store;
+  MerchantBillingState? _billing;
   bool _isLoading = true;
+  int _loadVersion = 0;
+  int? _loadedEpoch;
+  String? _loadError;
 
   @override
   void initState() {
@@ -37,14 +44,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadStore() async {
-    setState(() => _isLoading = true);
+    final version = ++_loadVersion;
+    final storeContext = context.read<StoreContext>(),
+        epoch = storeContext.requestContextVersion;
+    setState(() {
+      _isLoading = true;
+      _billing = null;
+      _store = null;
+      _loadedEpoch = null;
+      _loadError = null;
+    });
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
-      setState(() => _store = store);
+      final store = await storeContext.ensureSelectedStore();
+      MerchantBillingState? billing;
+      if (store != null) {
+        try {
+          billing = await context.read<SubscriptionService>().fetchBillingState(
+            store.id,
+          );
+        } catch (_) {}
+      }
+      if (!mounted || version != _loadVersion) return;
+      if (epoch != storeContext.requestContextVersion ||
+          storeContext.selectedStoreId != store?.id)
+        throw StateError('Store changed');
+      setState(() {
+        _loadedEpoch = epoch;
+        _store = store;
+        _billing = billing;
+      });
     } catch (e) {
       debugPrint('Error loading store: $e');
+      if (mounted && version == _loadVersion)
+        setState(() => _loadError = 'Store details could not load. Try again.');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted && version == _loadVersion)
+        setState(() => _isLoading = false);
     }
   }
 
@@ -74,8 +109,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     final themeProvider = context.watch<ThemeProvider>();
+    final storeContext = context.watch<StoreContext>();
+    if (_loadError != null)
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(_loadError!),
+                FilledButton(
+                  onPressed: _loadStore,
+                  child: const Text('Retry store details'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    final stale =
+        _loadedEpoch != null &&
+        (_loadedEpoch != storeContext.requestContextVersion ||
+            _store?.id != storeContext.selectedStoreId);
+    if (stale && !_isLoading)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_isLoading) _loadStore();
+      });
 
-    if (_isLoading) {
+    if (_isLoading || stale) {
       return Scaffold(
         backgroundColor: colors.bgStart,
         body: Container(
@@ -144,6 +205,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
 
+                  SettingsSection(
+                    title: 'Account security',
+                    children: [
+                      SettingsTile(
+                        icon: Icons.security_outlined,
+                        title: 'Authenticator',
+                        subtitle:
+                            'Two-factor authentication and recovery codes',
+                        trailing: Icon(
+                          Icons.chevron_right_rounded,
+                          color: colors.textTertiary,
+                          size: 20,
+                        ),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.twoFactor),
+                      ),
+                    ],
+                  ),
+
                   // Store Settings Section
                   SettingsSection(
                     title: 'Store Settings',
@@ -155,6 +235,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           context,
                           AppRoutes.storeDetails,
                         ),
+                      ),
+                      SettingsTile(
+                        icon: Icons.loyalty_outlined,
+                        title: 'Loyalty',
+                        subtitle: 'Customer points and reward settings',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.loyalty),
+                      ),
+                      SettingsTile(
+                        icon: Icons.group_outlined,
+                        title: 'Users & Permissions',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.staff),
                       ),
                       SettingsTile(
                         icon: Icons.health_and_safety_outlined,
@@ -251,13 +344,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _buildCurrentPlanTile(),
                       _buildProductUsageTile(colors),
                       SettingsTile(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'Billing and invoices',
+                        onTap: () async {
+                          await Navigator.pushNamed(context, AppRoutes.billing);
+                          if (mounted) await _loadStore();
+                        },
+                      ),
+                      SettingsTile(
                         icon: Icons.rocket_launch_outlined,
                         title: 'View All Plans',
                         subtitle: 'Compare features & upgrade',
                         iconColor:
                             mobile_tokens.LetbuyyColorTokens.brandPrimary,
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.pricing),
+                        onTap: () async {
+                          await Navigator.pushNamed(context, AppRoutes.pricing);
+                          if (mounted) await _loadStore();
+                        },
                       ),
                       if (_store?.subscriptionPlan ==
                           SubscriptionPlan.professional)
@@ -437,40 +540,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Build current plan tile with subscription info
   Widget _buildCurrentPlanTile() {
-    final plan = _store?.subscriptionPlan ?? SubscriptionPlan.trial;
-    final planInfo = SubscriptionService.getPlanInfo(plan);
-    final color = Color(planInfo['color'] as int);
-    final isTrial = plan == SubscriptionPlan.trial;
-    final daysLeft = _store?.daysLeftInTrial ?? 0;
-
+    final color = AppThemeColors.of(context).accent;
+    final billing = context.watch<StoreContext>().selectedStoreId == _store?.id
+        ? _billing
+        : null;
     return SettingsTile(
       icon: Icons.diamond_outlined,
       iconColor: color,
       title: 'Current Plan',
-      subtitle: isTrial && daysLeft > 0
-          ? '${planInfo['name']} • $daysLeft days left'
-          : planInfo['name'] as String,
-      trailing: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          planInfo['badge'] as String,
-          style: TextStyle(color: color, fontSize: 14),
-        ),
-      ),
+      subtitle: billing == null
+          ? 'Billing unavailable'
+          : '${billing.planName} • ${billing.status.replaceAll('_', ' ')}',
       showArrow: false,
     );
   }
 
   /// Build product usage tile
   Widget _buildProductUsageTile(AppThemeColors colors) {
-    final limit = _store?.effectiveProductLimit ?? 50;
-    final used = _store?.currentProductCount ?? 0;
-    final percent = limit == -1 ? 0.0 : (used / limit * 100).clamp(0.0, 100.0);
-    final isUnlimited = limit == -1;
+    final billing = context.watch<StoreContext>().selectedStoreId == _store?.id
+        ? _billing
+        : null;
+    final percent = (billing?.productUsageFraction ?? 0) * 100;
+    final isUnlimited =
+        billing?.productLimitKnown == true && billing?.productLimit == null;
 
     Color progressColor;
     if (isUnlimited) {
@@ -486,9 +578,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return SettingsTile(
       icon: Icons.inventory_2_outlined,
       title: 'Product Usage',
-      subtitle: isUnlimited
-          ? '$used products (Unlimited)'
-          : '$used / $limit products',
+      subtitle: billing?.productUsageLabel ?? 'Product usage unavailable',
       trailing: SizedBox(
         width: 60,
         child: Column(
@@ -496,7 +586,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              isUnlimited ? '∞' : '${percent.toInt()}%',
+              billing?.productUsageFraction == null
+                  ? '—'
+                  : isUnlimited
+                  ? '∞'
+                  : '${percent.toInt()}%',
               style: TextStyle(
                 color: progressColor,
                 fontWeight: FontWeight.bold,

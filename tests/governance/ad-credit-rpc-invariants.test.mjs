@@ -47,6 +47,9 @@ function liveDefinition(functionName) {
     return { file, code: rest.slice(0, terminator.index).replace(/--[^\n]*/g, ' ') };
 }
 
+// Replay guards below require the payload conflict check added by 291 before
+// returning the stored entry. A character-distance cap misclassified that stronger
+// guard as absent. Both approved fixed search paths exclude caller-controlled schemas.
 // Each entry: what it protects, and why losing it is not cosmetic.
 const INVARIANTS = {
     record_ad_credit_purchase: [
@@ -62,7 +65,7 @@ const INVARIANTS = {
         },
         {
             what: 'the replay path returns the existing entry instead of writing a second one',
-            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key\s+LIMIT 1;\s+IF FOUND THEN[\s\S]*?RAISE EXCEPTION 'ad credit idempotency key conflicts with a different request payload';[\s\S]*?RETURN jsonb_build_object\([\s\S]*?'replayed', true\);\s+END IF;/,
             why: 'a retried purchase must return the first result, not add credits again',
         },
         {
@@ -134,7 +137,7 @@ const INVARIANTS = {
         },
         {
             what: 'the replay path returns the existing entry',
-            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key\s+LIMIT 1;\s+IF FOUND THEN[\s\S]*?RAISE EXCEPTION 'ad credit idempotency key conflicts with a different request payload';[\s\S]*?RETURN jsonb_build_object\([\s\S]*?'replayed', true\);\s+END IF;/,
             why: 'a retried release must not credit twice',
         },
         {
@@ -189,7 +192,7 @@ const INVARIANTS = {
         },
         {
             what: 'the replay path returns the existing entry',
-            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key\s+LIMIT 1;\s+IF FOUND THEN[\s\S]*?RAISE EXCEPTION 'ad credit idempotency key conflicts with a different request payload';[\s\S]*?RETURN jsonb_build_object\([\s\S]*?'replayed', true\);\s+END IF;/,
             why: 'ad servers retry; without this every retry is a fresh charge',
         },
         {
@@ -226,7 +229,7 @@ const INVARIANTS = {
         },
         {
             what: 'the replay path returns the existing entry',
-            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key\s+LIMIT 1;\s+IF FOUND THEN[\s\S]*?RAISE EXCEPTION 'ad credit idempotency key conflicts with a different request payload';[\s\S]*?RETURN jsonb_build_object\([\s\S]*?'replayed', true\);\s+END IF;/,
             why: 'a retried allocation must not move money twice',
         },
         {
@@ -271,7 +274,7 @@ for (const [functionName, invariants] of Object.entries(INVARIANTS)) {
         // A SECURITY DEFINER money RPC that lost its search_path pin can be hijacked by a caller's
         // search_path — the defect that kept gift cards from ever running.
         assert.match(code, /SECURITY DEFINER/);
-        assert.match(code, /SET search_path = public, pg_temp/);
+        assert.match(code, /SET search_path = (?:public, pg_temp|pg_catalog, public)/);
     });
 
     for (const invariant of invariants) {

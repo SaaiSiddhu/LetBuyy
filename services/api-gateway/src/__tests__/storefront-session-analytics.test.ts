@@ -35,7 +35,7 @@ test('storefront public beacon enqueues real analytics jobs without activating a
 
 test('merchant traffic-source report reads rollups and stays tenant checked', () => {
     assert.match(analyticsRoute, /router\.get\('\/traffic-sources'/);
-    assert.match(analyticsRoute, /canAccessStore\(db,\s*auth\.user,\s*storeId\)/);
+    assert.match(analyticsRoute, /assertStoreReportAccess\(c,\s*auth\.user,\s*storeId\)/);
     assert.match(analyticsRoute, /TRAFFIC_SOURCE_METRICS/);
     assert.match(analyticsRoute, /storefront\.traffic\.source/);
     assert.match(analyticsRoute, /storefront\.sessions\.started/);

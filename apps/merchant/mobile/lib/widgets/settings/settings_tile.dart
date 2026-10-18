@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../theme/app_theme_colors.dart';
 import '../shared/accessible_tap_region.dart';
 
@@ -39,15 +40,25 @@ class SettingsTile extends StatelessWidget {
           Icon(icon, color: effectiveColor, size: 22),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 15,
-                color: isDestructive
-                    ? const Color(0xFFEF4444)
-                    : colors.textPrimary,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 15,
+                    color: isDestructive
+                        ? const Color(0xFFEF4444)
+                        : colors.textPrimary,
+                  ),
+                ),
+                if (trailing != null && subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: TextStyle(fontSize: 13, color: colors.textTertiary),
+                  ),
+              ],
             ),
           ),
           if (trailing != null)
@@ -72,19 +83,17 @@ class SettingsTile extends StatelessWidget {
     }
 
     final semanticsLabel = subtitle == null ? title : '$title, $subtitle';
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap?.call();
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AccessibleTapRegion(
-        label: semanticsLabel,
-        hint: 'Open $title',
-        onTap: onTap,
-        excludeChildSemantics: true,
-        child: tile,
-      ),
+    void activate() {
+      HapticFeedback.selectionClick();
+      onTap?.call();
+    }
+
+    return AccessibleTapRegion(
+      label: semanticsLabel,
+      hint: 'Open $title',
+      onTap: activate,
+      excludeChildSemantics: true,
+      child: InkWell(excludeFromSemantics: true, onTap: activate, child: tile),
     );
   }
 }

@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { classifyAppApiRoute, listAppApiRoutes } from '../../scripts/validators/app-api-route-inventory.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
@@ -125,9 +126,19 @@ test('LB-11: merchant UI reveals the code once, shows projected balance + fraud 
   assert.match(mcpItemRoute, /giftCards\.setStatus/);
 });
 
-test('LB-11: route inventory lockstep is 188 and the rollback drops every new function', () => {
-  const validator = read('scripts/validators/domain-boundary-validator.mjs');
-  assert.match(validator, /appApiRoutes\.length === 188/);
+// LB-11 added the gift-card lifecycle proxies. What matters about them is ownership, not a route count
+// (the count is the validator's ratchet, kept in scripts/validators/app-api-route-inventory.mjs and
+// checked in tests/federation/app-api-route-ownership.test.mjs): they must be inventoried and be plain
+// gateway proxies, because every gift-card balance change goes through the canonical gateway RPCs.
+test('LB-11: the gift-card proxy routes are inventoried as gateway-proxy, and the rollback drops every new function', () => {
+  const inventory = listAppApiRoutes();
+  for (const route of [
+    'apps/merchant/web/src/app/api/stores/[store]/gift-cards/route.ts',
+    'apps/merchant/web/src/app/api/stores/[store]/gift-cards/[id]/route.ts',
+  ]) {
+    assert.ok(inventory.includes(route), `${route} must be in the app-local API route inventory`);
+    assert.equal(classifyAppApiRoute(route), 'gateway-proxy', `${route} must be a gateway proxy, never app-local commerce logic`);
+  }
   for (const fn of [
     'gift_card_transactions',
     'set_gift_card_status',

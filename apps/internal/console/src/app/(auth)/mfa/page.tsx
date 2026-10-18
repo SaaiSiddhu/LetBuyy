@@ -1,5 +1,6 @@
 import { Button, Input, KeyRound, ShieldAlert } from '@letbuyy/ui';
 import { requireConsoleSession } from '@/lib/console-auth-server';
+import { consoleStepUpReturnPath } from '@/lib/console-step-up';
 
 type MfaSearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -9,10 +10,18 @@ function firstParam(value: string | string[] | undefined) {
 
 function errorMessage(code: string | undefined) {
     switch (code) {
+        case 'mfa_not_configured':
+            return 'Authenticator verification is not configured for this account. Contact your platform administrator.';
+        case 'administrator_reset_required':
+            return 'Administrator recovery and a newly configured authenticator are required. Contact your platform administrator.';
         case 'invalid_code':
             return 'Enter a valid authenticator code.';
         case 'session_secret_not_configured':
             return 'Console session signing is not configured.';
+        case 'session_unavailable':
+            return 'Your session could not be saved. Retry with a new authenticator code when service is restored.';
+        case 'too_many_attempts':
+            return 'Too many attempts. Wait before trying a new authenticator code.';
         default:
             return null;
     }
@@ -22,6 +31,8 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
     await requireConsoleSession();
     const params = await searchParams;
     const error = errorMessage(firstParam(params.error));
+    const stepUp = firstParam(params.step_up) === '1';
+    const returnTo = consoleStepUpReturnPath(firstParam(params.return_to));
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-zinc-950">
@@ -43,6 +54,11 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
                 )}
 
                 <form action="/api/console-auth/mfa" method="post" className="space-y-4">
+                    {stepUp && <>
+                        <input type="hidden" name="step_up" value="1" />
+                        <input type="hidden" name="return_to" value={returnTo} />
+                        <p className="text-sm text-zinc-300">Verify a new code for this protected action. Requests tied to your earlier sign-in will need a new approval request.</p>
+                    </>}
                     <div>
                         <label htmlFor="code" className="block text-sm font-medium text-zinc-300">
                             Authenticator code

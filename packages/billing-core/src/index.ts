@@ -28,9 +28,20 @@ export const StoreSubscriptionQuerySchema = z.object({
 });
 
 export const PlanListQuerySchema = z.object({
+  store_id: z.string().uuid().optional(),
   site_type: z.string().min(1),
   slug: z.string().min(1).optional(),
 });
+
+// Private verified-provider notification transport. Commercial quote/pricing
+// remains server-owned; caller identity is rechecked by the activation RPC.
+export const InternalSubscriptionActivationSchema=z.object({
+  storeId:z.string().uuid(),planSlug:z.string().trim().min(1).max(120),siteType:z.string().trim().min(1).max(80).nullish(),
+  userId:z.string().uuid().nullish(),provider:z.enum(['razorpay','stripe']),billingPeriod:z.enum(['monthly','yearly']).default('monthly'),
+  providerOrderId:z.string().trim().min(1).max(200).nullish(),providerPaymentId:z.string().trim().min(1).max(200).nullish(),
+  externalSubscriptionId:z.string().trim().min(1).max(200).nullish(),
+  amountPaid:z.union([z.number(),z.string().trim().regex(/^\d+$/).transform(Number)]).pipe(z.number().int().safe().nonnegative()).nullish(),
+}).strict();
 
 export const CancelSubscriptionSchema = z.object({
   store_id: z.string().uuid(),

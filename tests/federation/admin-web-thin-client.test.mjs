@@ -17,8 +17,8 @@ test('admin-web auth routes do not own a Supabase auth client', () => {
   }
 
   assert.match(authServer, /readConsoleSession/);
-  assert.match(loginRoute, /createConsoleMagicLinkToken/);
-  assert.match(callbackRoute, /readConsoleMagicLinkToken/);
+  assert.match(loginRoute, /requestConsoleIdentity/);
+  assert.match(callbackRoute, /requestConsoleIdentity/);
 });
 
 test('admin-web depends on auth-core without runtime-composition', () => {
@@ -40,4 +40,6 @@ test('admin-web depends on auth-core without runtime-composition', () => {
 
   const session = read('apps/internal/console/src/lib/console-session.ts');
   assert.match(session, /@letbuyy\/auth-core/);
+  assert.match(session, /verifyIdentityPlatformSession/);
+  assert.doesNotMatch(session, /createLetbuyyPlatform|PLATFORM_CONSOLE_SESSION_SECRET/);
 });

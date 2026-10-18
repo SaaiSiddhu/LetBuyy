@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-04",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/operator-overview-tenant-guard.postgres.test.ts",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/operator-overview-tenant-guard.postgres.test.ts --kind gateway-db --jobs 1",
+  "runner_id": "8bd2e30c3a08",
+  "result": {
+    "status": "pass",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "route_coverage": [
+    "GET /v1/operations/outbox: allowlisted super-admin 200, non-allowlisted 403",
+    "GET /v1/operations/outbox/dead-letters: allowlisted super-admin 200, non-allowlisted 403",
+    "GET /v1/operations/risk/overview: allowlisted super-admin 200, non-allowlisted 403",
+    "GET /v1/operations/trust-safety/overview: allowlisted super-admin 200, non-allowlisted 403",
+    "each route returns its seeded synthetic event, dead-letter, risk-score or Trust & Safety case",
+    "risk and Trust & Safety sensitive-read audit records are persisted"
+  ],
+  "tenant_guard_reproduction": {
+    "runner_id": "399cab96d17b",
+    "routes": {
+      "risk": "500 Tenant table risk_scores requires a tenant/owner predicate before execution",
+      "trust_safety": "500 Tenant table ts_cases requires a tenant/owner predicate before execution",
+      "outbox": "500 Tenant table outbox_events requires a tenant/owner predicate before execution"
+    }
+  },
+  "resource_ownership": "verified by the executable-suite runner before start",
+  "cleanup": {
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0,
+    "owned_database": "discarded",
+    "failures": []
+  },
+  "limits": [
+    "owned database uses service-role PostgREST and does not prove runtime-role RLS",
+    "synthetic identities and data only",
+    "no browser, hosted environment or deployment was used"
+  ]
+}

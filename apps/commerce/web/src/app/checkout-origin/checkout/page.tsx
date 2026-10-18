@@ -59,7 +59,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
             className="flex min-h-screen items-center justify-center px-4"
             style={brandingCssVariables(neutral)}
         >
-            <div className="w-full max-w-md rounded-2xl border border-[var(--lb-color-border,#e5e7eb)] bg-surface p-8 text-center shadow-xl">
+            <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-8 text-center shadow-xl">
                 <h1 className="mb-2 text-xl font-bold text-theme">This checkout link isn&apos;t valid</h1>
                 <p className="text-sm text-theme-secondary">{reason}</p>
                 <p className="mt-4 text-xs text-theme-muted">Nothing was created. Go back to the store and try checking out again.</p>
@@ -69,7 +69,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
 }
 
 async function verifyHandoff(params: CheckoutSearchParams): Promise<
-    | { ok: true; siteId: string; subdomain: string; lines: VerifiedHandoffLine[] }
+    | { ok: true; siteId: string; cartId: string; subdomain: string; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
     | { ok: false; status: number; reason: string }
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
@@ -97,12 +97,20 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         };
     }
 
-    const body = await response.json().catch(() => null) as { data?: { site_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
+    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
     const siteId = body?.data?.site_id;
     const subdomain = body?.data?.subdomain;
-    if (!siteId || !subdomain) return { ok: false, status: 502, reason: 'This store is no longer available.' };
+    const verifiedCartId = body?.data?.cart_id;
+    if (!siteId || !subdomain || verifiedCartId !== cartId) return { ok: false, status: 502, reason: 'This store is no longer available.' };
 
-    return { ok: true, siteId, subdomain, lines: Array.isArray(body?.data?.lines) ? body.data.lines : [] };
+    return {
+        ok: true,
+        siteId,
+        cartId,
+        subdomain,
+        lines: Array.isArray(body?.data?.lines) ? body.data.lines : [],
+        handoff: Object.fromEntries(query.entries()),
+    };
 }
 
 async function loadBranding(storeId: string): Promise<Partial<StoreBrandingInput> | null> {
@@ -154,7 +162,7 @@ export default async function CheckoutOriginPage({
 
     return (
         <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
-            <header className="border-b border-[var(--lb-color-border,#e5e7eb)] px-4 py-3">
+            <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a
                         href={resolveStorefrontOriginUrl(store.subdomain)}
@@ -181,6 +189,8 @@ export default async function CheckoutOriginPage({
                 checkoutOrigin={{
                     storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
                     cartLines,
+                    cartId: verified.cartId,
+                    handoff: verified.handoff,
                 }}
             />
         </div>

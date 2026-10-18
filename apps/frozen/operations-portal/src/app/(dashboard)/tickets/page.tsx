@@ -36,6 +36,14 @@ function paramValue(value: SearchParamValue): string {
     return Array.isArray(value) ? value[0] || '' : value || '';
 }
 
+// Each rendered form represents one logical action. Its hidden key survives repeat submission,
+// while createPlatformOperationsApiClient obtains a fresh signed credential on every attempt.
+function supportMutationOptions(formData: FormData) {
+    const key = String(formData.get('idempotency_key') || '').trim();
+    if (key.length < 8 || key.length > 200) throw new Error('Reload this support form before submitting.');
+    return { idempotencyKey: key };
+}
+
 async function createSupportTicket(formData: FormData) {
     'use server';
 
@@ -54,7 +62,7 @@ async function createSupportTicket(formData: FormData) {
         topic: String(formData.get('topic') || 'general') as SupportTicketTopic,
         priority: String(formData.get('priority') || 'normal') as SupportTicketPriority,
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -76,7 +84,7 @@ async function replySupportTicket(formData: FormData) {
         status: status ? status as SupportTicketStatus : undefined,
         macro_id: macroId || null,
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -92,7 +100,7 @@ async function assignSupportTicket(formData: FormData) {
     await api.operations.assignSupportTicket(ticketId, {
         assignee_id: String(formData.get('assignee_id') || '').trim() || null,
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -109,7 +117,7 @@ async function escalateSupportTicket(formData: FormData) {
         target: String(formData.get('target') || 'trust_safety') as SupportTicketEscalationTarget,
         linked_incident_id: String(formData.get('linked_incident_id') || '').trim() || null,
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -125,7 +133,7 @@ async function resolveSupportTicket(formData: FormData) {
     await api.operations.resolveSupportTicket(ticketId, {
         reason,
         resolution_note: String(formData.get('resolution_note') || '').trim() || undefined,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -143,7 +151,7 @@ async function recordSupportCsat(formData: FormData) {
         score,
         comment: String(formData.get('comment') || '').trim() || null,
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -163,7 +171,7 @@ async function createSupportMacro(formData: FormData) {
         topic: String(formData.get('topic') || 'general') as SupportTicketTopic,
         description: String(formData.get('description') || '').trim(),
         reason,
-    });
+    }, supportMutationOptions(formData));
 
     revalidatePath('/tickets');
 }
@@ -224,6 +232,7 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
                     <div className="grid content-start gap-[var(--lb-space-5)]">
                         <Panel title="Create Ticket" description="Open a support ticket with an initial customer-visible message.">
                             <form action={createSupportTicket} className="grid gap-[var(--lb-space-3)]">
+                                <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                                     <TextInput name="site_id" label="Site ID" placeholder="Optional site UUID" />
                                     <TextInput name="requester_email" label="Requester email" placeholder="merchant@example.com" />
@@ -242,6 +251,7 @@ export default async function TicketsPage({ searchParams }: TicketsPageProps) {
 
                         <Panel title="Macros" description={`${macros.length} active macro${macros.length === 1 ? '' : 's'} loaded.`}>
                             <form action={createSupportMacro} className="grid gap-[var(--lb-space-3)]">
+                                <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                                 <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                                     <TextInput name="name" label="Name" required placeholder="Payment verification reply" />
                                     <SelectField name="topic" label="Topic" values={['general', 'billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps']} />
@@ -345,6 +355,7 @@ function TicketDetail({ detail, macros }: { detail: InternalSupportTicketDetail;
 
                 <section className="grid gap-[var(--lb-space-4)] xl:grid-cols-2">
                     <form action={replySupportTicket} className="grid gap-[var(--lb-space-3)]">
+                        <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                         <Input unstyled type="hidden" name="ticket_id" value={ticket.id} />
                         <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
                             <SelectField name="visibility" label="Visibility" values={['public', 'internal']} />
@@ -364,6 +375,7 @@ function TicketDetail({ detail, macros }: { detail: InternalSupportTicketDetail;
 
                     <div className="grid gap-[var(--lb-space-4)]">
                         <form action={assignSupportTicket} className="grid gap-[var(--lb-space-3)]">
+                            <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                             <Input unstyled type="hidden" name="ticket_id" value={ticket.id} />
                             <TextInput name="assignee_id" label="Assignee ID" placeholder="Employee UUID or blank" />
                             <TextAreaField name="reason" label="Assignment reason" />
@@ -371,6 +383,7 @@ function TicketDetail({ detail, macros }: { detail: InternalSupportTicketDetail;
                         </form>
 
                         <form action={escalateSupportTicket} className="grid gap-[var(--lb-space-3)]">
+                            <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                             <Input unstyled type="hidden" name="ticket_id" value={ticket.id} />
                             <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                                 <SelectField name="target" label="Target" values={['trust_safety', 'risk', 'incident', 'finance', 'engineering']} />
@@ -381,6 +394,7 @@ function TicketDetail({ detail, macros }: { detail: InternalSupportTicketDetail;
                         </form>
 
                         <form action={resolveSupportTicket} className="grid gap-[var(--lb-space-3)]">
+                            <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                             <Input unstyled type="hidden" name="ticket_id" value={ticket.id} />
                             <TextAreaField name="resolution_note" label="Resolution note" minLength={0} />
                             <TextAreaField name="reason" label="Resolution reason" />
@@ -388,6 +402,7 @@ function TicketDetail({ detail, macros }: { detail: InternalSupportTicketDetail;
                         </form>
 
                         <form action={recordSupportCsat} className="grid gap-[var(--lb-space-3)]">
+                            <input type="hidden" name="idempotency_key" value={crypto.randomUUID()} />
                             <Input unstyled type="hidden" name="ticket_id" value={ticket.id} />
                             <label className="grid gap-[var(--lb-space-2)]">
                                 <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">CSAT score</span>

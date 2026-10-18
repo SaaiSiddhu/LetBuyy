@@ -105,11 +105,13 @@ export async function enqueueOrderConfirmationEmail(
     const order = orderData as OrderRow | null;
     if (!order?.customer_email) return;
 
-    const { data: itemData } = await db
+    const { data: itemData, error: itemError } = await db
         .from('order_items')
-        .select('title, name, product_name, quantity, unit_price, price, total')
+        .select('title, name, quantity, unit_price, price, total')
+        .eq('store_id', input.storeId)
         .eq('order_id', input.orderId)
         .order('created_at', { ascending: true });
+    if (itemError) throw new Error('Order confirmation item lookup failed');
     const email = buildOrderConfirmationEmail(order, Array.isArray(itemData) ? itemData as OrderItemRow[] : []);
     if (!email) return;
 

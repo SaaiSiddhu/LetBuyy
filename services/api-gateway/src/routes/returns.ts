@@ -1,4 +1,10 @@
-import { Hono } from 'hono';
+import { verifyMerchantStepUp } from '../lib/merchant-step-up';
+import {tryRestoreGiftCardForReversedOrder} from '../lib/gift-card-refund-recovery';
+import {stepUpErrorBody} from '../lib/security-controls';
+import {tryRestoreRedeemedLoyalty} from '../lib/loyalty-refund-recovery';
+import {resolveTenantContextForOwnedSite} from '../lib/tenant-context';
+import { Hono, type Context } from 'hono';
+import {resolveReturnScope} from '../lib/return-scope';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
@@ -17,12 +23,6 @@ import {
 } from '../schemas/return.schema';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type DatabaseErrorLike = {
-    message?: string;
-    details?: string;
-    hint?: string;
-} | null | undefined;
 
 type ReturnRow = {
     id: string;
@@ -49,19 +49,6 @@ type ReturnRow = {
     return_lines?: Array<Record<string, unknown>> | null;
     refunds?: Array<Record<string, unknown>> | null;
 };
-
-function databaseErrorText(error: DatabaseErrorLike): string {
-    return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
-}
-
-function isMissingDeletedAtError(error: DatabaseErrorLike): boolean {
-    const text = databaseErrorText(error);
-    return text.includes('deleted_at') && (
-        text.includes('does not exist') ||
-        text.includes('schema cache') ||
-        text.includes('could not find')
-    );
-}
 
 function recordValue(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
@@ -101,31 +88,18 @@ function normalizeReturn(row: ReturnRow) {
 }
 
 async function loadOwnedReturn(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    returnId: string,
-    customUserId: string,
-    sessionStoreId?: string,
+    c: Context<{ Bindings: Env }>, returnId: string, customUserId: string,
 ) {
-    const selectReturn = (includeDeletedAtFilter: boolean) => {
-        let request = db
-            .from('returns')
-            .select('*, orders(order_number, customer_name, total, currency), return_lines(*), refunds(id, amount, currency, status, provider_refund_id)')
-            .eq('id', returnId);
-
-        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
-        return request.maybeSingle();
-    };
-
-    let { data, error } = await selectReturn(true);
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await selectReturn(false));
-    }
-    if (error) throw new Error('Return lookup failed');
-    const row = data as ReturnRow | null;
-    if (!row?.site_id || !(await verifySiteOwnership(db, row.site_id, customUserId, sessionStoreId))) {
-        return null;
-    }
-    return row;
+    const scope=await resolveReturnScope(c,returnId,customUserId);
+    if(!scope)return null;
+    const {data,error}=await getSupabaseAdmin(c).from('returns')
+        .select('*, orders(order_number, customer_name, total, currency), return_lines(*), refunds(id, amount, currency, status, provider_refund_id)')
+        .eq('id',returnId).eq('site_id',scope.siteId).eq('order_id',scope.orderId)
+        .eq('refunds.site_id',scope.siteId).eq('refunds.order_id',scope.orderId).is('refunds.deleted_at',null)
+        .eq('return_lines.site_id',scope.siteId).eq('return_lines.order_id',scope.orderId).is('return_lines.deleted_at',null)
+        .is('deleted_at',null).maybeSingle();
+    if(error)throw new Error('Return lookup failed');
+    return data as ReturnRow|null;
 }
 
 router.get('/', validate('query', ListReturnsQuery), async (c) => {
@@ -142,13 +116,13 @@ router.get('/', validate('query', ListReturnsQuery), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const selectReturns = (includeDeletedAtFilter: boolean) => {
+    const selectReturns = () => {
         let request = db
             .from('returns')
             .select('*, orders(order_number, customer_name, total, currency), return_lines(*), refunds(id, amount, currency, status, provider_refund_id)', { count: 'exact' })
-            .eq('site_id', query.store_id);
+            .eq('site_id', query.store_id).is('deleted_at',null)
+            .eq('orders.store_id',query.store_id).eq('refunds.site_id',query.store_id).eq('return_lines.site_id',query.store_id);
 
-        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
         if (query.status !== 'all') request = request.eq('status', query.status);
         if (query.order_id) request = request.eq('order_id', query.order_id);
         return request
@@ -156,10 +130,7 @@ router.get('/', validate('query', ListReturnsQuery), async (c) => {
             .range(offset, offset + query.limit - 1);
     };
 
-    let { data, error, count } = await selectReturns(true);
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error, count } = await selectReturns(false));
-    }
+    const { data, error, count } = await selectReturns();
     if (error) {
         return c.json({ success: false, error: { code: 'RETURNS_UNAVAILABLE', message: 'Returns are temporarily unavailable.' } }, 503);
     }
@@ -176,7 +147,7 @@ router.get('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const row = await loadOwnedReturn(c, returnId, customUser.id);
     if (!row) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
@@ -207,7 +178,7 @@ router.post('/', validate('json', CreateReturnSchema), async (c) => {
     if (!customUser) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const row = await loadOwnedReturn(db, returnId, customUser.id, c.get('auth').user.storeId);
+    const row = await loadOwnedReturn(c, returnId, customUser.id);
     return c.json(success(row ? normalizeReturn(row) : { id: returnId, order_id: body.order_id }), 201);
 });
 
@@ -221,7 +192,7 @@ router.patch('/:id', validate('json', UpdateReturnStatusSchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const existing = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const existing = await loadOwnedReturn(c, returnId, customUser.id);
     if (!existing) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
@@ -252,7 +223,7 @@ router.patch('/:id', validate('json', UpdateReturnStatusSchema), async (c) => {
         return c.json({ success: false, error: { code: 'RETURN_UPDATE_FAILED', message: 'Unable to update return.' } }, 503);
     }
 
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const row = await loadOwnedReturn(c, returnId, customUser.id);
     return c.json(success(row ? normalizeReturn(row) : { id: returnId, status: body.status }));
 });
 
@@ -266,30 +237,26 @@ router.post('/:id/refund/complete', validate('json', CompleteReturnRefundSchema)
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const existing = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const existing = await loadOwnedReturn(c, returnId, customUser.id);
     if (!existing) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
 
-    const refundId = body.refund_id || (recordValue((existing.refunds || [])[0]).id as string | undefined);
-    if (!refundId) {
-        return c.json({ success: false, error: { code: 'REFUND_NOT_FOUND', message: 'Refund not found for this return.' } }, 404);
-    }
-
-    const { error } = await db.rpc('complete_order_refund', {
-        p_refund_id: refundId,
-        p_provider_refund_id: body.provider_refund_id || null,
-        p_provider_event_id: body.provider_event_id || null,
-        p_actor_id: customUser.id,
-        p_request_id: c.req.header('X-Request-ID') || crypto.randomUUID(),
-        p_idempotency_key: body.idempotency_key,
-    });
-    if (error) {
-        return c.json({ success: false, error: { code: 'REFUND_COMPLETE_FAILED', message: 'Unable to complete refund.' } }, 503);
-    }
-
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
-    return c.json(success(row ? normalizeReturn(row) : { id: returnId, status: 'refunded' }));
+    const tenant=await resolveTenantContextForOwnedSite(c,existing.site_id);
+    const approval=await verifyMerchantStepUp(db, {action:'refund.approve',actorId:tenant.userId,siteId:tenant.siteId,
+        token:c.req.header('X-Step-Up-Token'),verifiedAt:c.req.header('X-Step-Up-Verified-At'),signingSecret:c.env.STEP_UP_SIGNING_SECRET});
+    if(!approval.ok)return c.json(stepUpErrorBody(approval),428);
+    const service=new OrderExecutionAdapter(db);
+    const completed=await service.completeReturnRefund(existing.order_id,returnId,tenant,body,approval.metadata);
+    await tryRestoreGiftCardForReversedOrder(db,{...tenant,orderId:existing.order_id},recordValue(completed).order);
+    await tryRestoreRedeemedLoyalty(db,{...tenant,orderId:existing.order_id});
+    const row=await loadOwnedReturn(c,returnId,customUser.id);
+    if(!row)return c.json({success:false,error:{code:'RETURN_READBACK_UNAVAILABLE',message:'Refund completed; retry to reload this return.'}},503);
+    const refund=recordValue(recordValue(completed).refund);
+    // Completion responds with the selected source, not the arbitrary first
+    // embedded refund when a return has more than one partial refund intent.
+    return c.json(success({...normalizeReturn(row),refund_id:refund.id,refund_status:refund.status,
+        refund_amount:refund.amount,currency:refund.currency||'INR'}));
 });
 
 export default router;

@@ -1,0 +1,38 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+  "owned_runner_id": "f229408e551b",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --kind gateway-db --jobs 1 --timeout 300",
+  "result": {
+    "suite_count": 1,
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 105,
+    "wall_seconds": 107.3,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining_runner_resources": 0,
+    "result": "runner exited 0 after its run-id-scoped cleanup check"
+  },
+  "journey": [
+    "Checks customer-profile ownership, disabled/soft-deleted state, malformed cookies, GraphQL error handling and cross-store denials against the real Gateway/PostgREST fixture.",
+    "Exercises both signed HS256 session formats under all six verifier policies across profile, wishlist, address and order consumers, including rollback to dual-format.",
+    "Exercises the active Gateway password-login issuer, real Next Commerce login and a host-only shopper session through normal Gateway profile reads.",
+    "Verifies the atomic buyer-support-intake rollback path when the first complaint insert fails."
+  ],
+  "limits": [
+    "Synthetic users, sessions and data in a runner-owned disposable Postgres database only.",
+    "No session lifetime, issuer, verifier default, hosted configuration or account behavior was changed.",
+    "Does not establish real credential/email/OTP delivery, deployed telemetry or external-consumer drain, hosted rollback, issuer retirement, or owner authorization for a transition."
+  ]
+}

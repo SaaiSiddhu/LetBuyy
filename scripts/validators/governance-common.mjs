@@ -54,6 +54,14 @@ export const ignoredDirectoryNames = new Set([
   "temp",
 ]);
 
+// Both maintained Next configs admit this exact per-run distDir shape. It is
+// generated output just like .next, not application source. Keep other similarly
+// named directories visible so this exclusion cannot hide ordinary source.
+export const isNextSessionRuntimeDirectoryName = name => /^\.next-session-runtime-[a-zA-Z0-9-]+$/.test(name);
+export function isIgnoredDirectoryName(name) {
+  return ignoredDirectoryNames.has(name) || isNextSessionRuntimeDirectoryName(name);
+}
+
 // Constitution Amendment 3 (2026-09-24, D-APP-LAYOUT, decisions.md §2g): application roots live
 // under GROUPING CONTAINERS. A container is never an application root and holds nothing but its
 // approved roots (see appGroupContainers below). Phase M's flat six-app paths (2026-09-02) and the
@@ -278,13 +286,16 @@ export const deprecatedTrackedPrefixes = [
 ];
 
 export const generatedArtifactPattern =
-  /(^|\/)(\.next|dist|build|coverage|\.turbo|\.cache|node_modules|\.dart_tool|\.wrangler|\.vercel|Pods|\.symlinks)(\/|$)|(^|\/)tsconfig\.tsbuildinfo$|\.tsbuildinfo$|(^|\/)\.DS_Store$|\.dill$|\.track\.dill$|\.apk$|\.aab$|\.ipa$|\.tar\.zst$/;
+  /(^|\/)(\.next(?:-session-runtime-[a-zA-Z0-9-]+)?|dist|build|coverage|\.turbo|\.cache|node_modules|\.dart_tool|\.wrangler|\.vercel|Pods|\.symlinks)(\/|$)|(^|\/)tsconfig\.tsbuildinfo$|\.tsbuildinfo$|(^|\/)\.DS_Store$|\.dill$|\.track\.dill$|\.apk$|\.aab$|\.ipa$|\.tar\.zst$/;
 
 export const debugArtifactPattern =
   /(^|\/)(firebase-debug|firestore-debug|ui-debug|storage-debug|pubsub-debug)\.log$|(^|\/)[^/]*debug[^/]*\.log$|\.trace(\.json)?$|^docs\/architecture\/validation(\/|$)/;
 
 export function execGit(args) {
-  return execFileSync("git", args, { cwd: root }).toString("utf8");
+  // Installed candidates can have several MiB of genuine untracked paths.
+  // Keep the complete inventory and propagate failures; never classify a
+  // truncated listing as an empty/clean repository.
+  return execFileSync("git", args, { cwd: root, maxBuffer: 256 * 1024 * 1024 }).toString("utf8");
 }
 
 export function getTrackedFiles() {
@@ -345,9 +356,10 @@ export function listWorkspaceFiles(startDirs = [
 
   function walk(absDir, relDir) {
     if (!fs.existsSync(absDir)) return;
+    if (fs.lstatSync(absDir).isSymbolicLink()) return;
 
     for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
-      if (ignoredDirectoryNames.has(entry.name)) continue;
+      if (isIgnoredDirectoryName(entry.name)) continue;
 
       const relPath = relDir ? `${relDir}/${entry.name}` : entry.name;
       const absPath = path.join(absDir, entry.name);
@@ -379,6 +391,7 @@ export function listWorkspaceDirectories(startDirs = [
 
   function walk(absDir, relDir) {
     if (!fs.existsSync(absDir)) return;
+    if (fs.lstatSync(absDir).isSymbolicLink()) return;
 
     for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
       const relPath = relDir ? `${relDir}/${entry.name}` : entry.name;
@@ -386,7 +399,7 @@ export function listWorkspaceDirectories(startDirs = [
 
       if (entry.isDirectory()) {
         directories.push(normalizePath(relPath));
-        if (!ignoredDirectoryNames.has(entry.name)) walk(absPath, relPath);
+        if (!isIgnoredDirectoryName(entry.name)) walk(absPath, relPath);
       }
     }
   }
@@ -412,7 +425,7 @@ export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "s
   ]);
 
   return listWorkspaceDirectories(startDirs).filter((dir) =>
-    dir.split("/").some((segment) => artifactDirectoryNames.has(segment)),
+    dir.split("/").some((segment) => artifactDirectoryNames.has(segment) || isNextSessionRuntimeDirectoryName(segment)),
   );
 }
 
@@ -427,11 +440,17 @@ const staleBackupArtifactPattern = /\.broken$/;
 export function collectStaleArtifactOffenders() {
   const untracked = getUntrackedFiles();
   const workspace = listWorkspaceFiles();
+  const artifactDirectories = listLocalArtifactDirectories();
   return {
     untrackedScanned: untracked.length,
     workspaceScanned: workspace.length,
-    untrackedFiles: untracked.filter((file) => generatedArtifactPattern.test(file) || localScanArtifactPattern.test(file)),
-    artifactDirectories: listLocalArtifactDirectories(),
+    // Report a generated tree once, at its root. The cleanup planner still has
+    // to prove that root removable; tracked content or links remain refusals.
+    // Stray generated files outside those trees retain their own finding.
+    untrackedFiles: untracked.filter((file) =>
+      (generatedArtifactPattern.test(file) || localScanArtifactPattern.test(file)) &&
+      !artifactDirectories.some((dir) => file.startsWith(`${dir}/`))),
+    artifactDirectories,
     workspaceFiles: workspace.filter(
       (file) =>
         debugArtifactPattern.test(file) ||

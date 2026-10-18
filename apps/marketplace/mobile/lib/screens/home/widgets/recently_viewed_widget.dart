@@ -19,7 +19,7 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
     with TickerProviderStateMixin {
   late AnimationController _shimmerController;
   final DealService _dealService = DealService();
-  
+
   // Cache deals for products to avoid repeated API calls
   final Map<String, DealModel?> _productDealsCache = {};
   bool _dealsLoaded = false;
@@ -43,15 +43,19 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
   Future<void> _loadDealsForProducts(List<ProductModel> products) async {
     if (_dealsLoaded || products.isEmpty) return;
     _dealsLoaded = true; // Set early to prevent multiple calls
-    
-    debugPrint('🔥 Loading deals for ${products.length} recently viewed products...');
-    
+
+    debugPrint(
+      '🔥 Loading deals for ${products.length} recently viewed products...',
+    );
+
     for (final product in products.take(10)) {
       if (!_productDealsCache.containsKey(product.id)) {
         try {
           final deal = await _dealService.getActiveDealForProduct(product.id);
           if (deal != null) {
-            debugPrint('✅ Found active deal for product: ${product.name} - ${deal.discountLabel}');
+            debugPrint(
+              '✅ Found active deal for product: ${product.name} - ${deal.discountLabel}',
+            );
           }
           if (mounted) {
             setState(() {
@@ -64,7 +68,9 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
         }
       }
     }
-    debugPrint('🔥 Deals loading complete. Cache size: ${_productDealsCache.length}');
+    debugPrint(
+      '🔥 Deals loading complete. Cache size: ${_productDealsCache.length}',
+    );
   }
 
   @override
@@ -107,15 +113,18 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemCount: recentlyViewed.length > 10 ? 10 : recentlyViewed.length,
+                itemCount: recentlyViewed.length > 10
+                    ? 10
+                    : recentlyViewed.length,
                 itemBuilder: (context, index) {
                   final product = recentlyViewed[index];
                   // Get deal from cache - already filtered for active deals
                   final deal = _productDealsCache[product.id];
-                  
+
                   return _RecentlyViewedProductCard(
                     product: product,
-                    deal: deal, // Pass deal directly, card will handle null check
+                    deal:
+                        deal, // Pass deal directly, card will handle null check
                     isDark: isDark,
                   );
                 },
@@ -162,7 +171,9 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
                 boxShadow: [
                   BoxShadow(
                     color: (isDark ? AppColors.primaryLight : AppColors.primary)
-                        .withValues(alpha: 0.4 + (_shimmerController.value * 0.2)),
+                        .withValues(
+                          alpha: 0.4 + (_shimmerController.value * 0.2),
+                        ),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -217,7 +228,9 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? AppColors.primaryLight : AppColors.primary,
+                        color: isDark
+                            ? AppColors.primaryLight
+                            : AppColors.primary,
                       ),
                     ),
                   ),
@@ -241,7 +254,9 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
             onSeeAll();
           },
           style: TextButton.styleFrom(
-            foregroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
+            foregroundColor: isDark
+                ? AppColors.primaryLight
+                : AppColors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -250,10 +265,7 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget>
             children: const [
               Text(
                 'See All',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
               SizedBox(width: 4),
               Icon(Icons.arrow_forward_ios_rounded, size: 12),
@@ -280,7 +292,7 @@ class _RecentlyViewedProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasDeal = deal != null;
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -296,30 +308,30 @@ class _RecentlyViewedProductCard extends StatelessWidget {
         decoration: BoxDecoration(
           // Use red tint for deals, primary tint otherwise
           color: hasDeal
-              ? (isDark 
-                  ? const Color(0xFF450A0A).withValues(alpha: 0.3) 
-                  : const Color(0xFFFEF2F2))
-              : (isDark 
-                  ? AppColors.primaryDark.withValues(alpha: 0.15)
-                  : AppColors.primary.withValues(alpha: 0.05)),
+              ? (isDark
+                    ? const Color(0xFF450A0A).withValues(alpha: 0.3)
+                    : const Color(0xFFFEF2F2))
+              : (isDark
+                    ? AppColors.primaryDark.withValues(alpha: 0.15)
+                    : AppColors.primary.withValues(alpha: 0.05)),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: hasDeal
-                ? (isDark 
-                    ? AppColors.error.withValues(alpha: 0.3) 
-                    : const Color(0xFFFECACA))
-                : (isDark 
-                    ? AppColors.primaryLight.withValues(alpha: 0.1)
-                    : AppColors.primary.withValues(alpha: 0.08)),
+                ? (isDark
+                      ? AppColors.error.withValues(alpha: 0.3)
+                      : const Color(0xFFFECACA))
+                : (isDark
+                      ? AppColors.primaryLight.withValues(alpha: 0.1)
+                      : AppColors.primary.withValues(alpha: 0.08)),
             width: hasDeal ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: hasDeal
                   ? AppColors.error.withValues(alpha: isDark ? 0.2 : 0.1)
-                  : (isDark 
-                      ? AppColors.primary.withValues(alpha: 0.15)
-                      : AppColors.primary.withValues(alpha: 0.08)),
+                  : (isDark
+                        ? AppColors.primary.withValues(alpha: 0.15)
+                        : AppColors.primary.withValues(alpha: 0.08)),
               blurRadius: 15,
               offset: const Offset(0, 4),
             ),
@@ -335,39 +347,60 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: product.images.first,
-                    height: 130,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: isDark ? Colors.grey[800] : AppColors.lightGrey,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: hasDeal 
-                              ? AppColors.error 
-                              : (isDark ? AppColors.primaryLight : AppColors.primary),
+                  child: product.images.isNotEmpty &&
+                          product.images.first.trim().isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: product.images.first,
+                          height: 130,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: isDark
+                                ? Colors.grey[800]
+                                : AppColors.lightGrey,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: hasDeal
+                                    ? AppColors.error
+                                    : (isDark
+                                          ? AppColors.primaryLight
+                                          : AppColors.primary),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: isDark
+                                ? Colors.grey[800]
+                                : AppColors.lightGrey,
+                            child: Icon(
+                              Icons.shopping_bag_outlined,
+                              size: 40,
+                              color: isDark ? Colors.grey[600] : AppColors.grey,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          height: 130,
+                          width: double.infinity,
+                          color: isDark ? Colors.grey[800] : AppColors.lightGrey,
+                          child: Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 40,
+                            color: isDark ? Colors.grey[600] : AppColors.grey,
+                          ),
                         ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: isDark ? Colors.grey[800] : AppColors.lightGrey,
-                      child: Icon(
-                        Icons.shopping_bag_outlined,
-                        size: 40,
-                        color: isDark ? Colors.grey[600] : AppColors.grey,
-                      ),
-                    ),
-                  ),
                 ),
-                
+
                 // DEAL Badge (top-left) - only show if has active deal
                 if (hasDeal)
                   Positioned(
                     top: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [AppColors.error, const Color(0xFFDC2626)],
@@ -398,24 +431,27 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                
+
                 // Discount Badge (top-right) - show deal discount or regular discount
-                if (hasDeal || product.discount > 0)
+                if (hasDeal ||
+                    (product.discount > 0 &&
+                        product.marketplaceListingId == null))
                   Positioned(
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: hasDeal 
+                        color: hasDeal
                             ? Colors.black.withValues(alpha: 0.75)
                             : AppColors.primary.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        hasDeal 
-                            ? deal!.discountLabel 
-                            : '${product.discount}% OFF',
+                        hasDeal ? deal!.discountLabel : product.discountLabel,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 9,
@@ -426,7 +462,7 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                   ),
               ],
             ),
-            
+
             // Product Details
             Expanded(
               child: Padding(
@@ -445,7 +481,7 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    
+
                     // Price display - different for deals vs regular
                     if (hasDeal) ...[
                       // Deal price row
@@ -473,24 +509,32 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                       ),
                     ] else ...[
                       // Regular price display
-                      if (product.originalPrice != null && product.originalPrice! > product.salePrice)
+                      if (product.hasDisplayableReferencePrice)
                         Row(
                           children: [
                             Text(
                               '₹${product.salePrice.toStringAsFixed(0)}',
                               style: AppTextStyles.titleMedium.copyWith(
-                                color: isDark ? AppColors.primaryLight : AppColors.primary,
+                                color: isDark
+                                    ? AppColors.primaryLight
+                                    : AppColors.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              '₹${product.originalPrice!.toStringAsFixed(0)}',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? Colors.white38 : Colors.grey[500],
-                                decoration: TextDecoration.lineThrough,
+                            Flexible(
+                              child: Text(
+                                '${product.hasPriorThirtyDayLow ? '30-day low ' : 'M.R.P. '}₹${product.originalPrice!.toStringAsFixed(0)}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark
+                                      ? Colors.white38
+                                      : Colors.grey[500],
+                                  decoration: TextDecoration.lineThrough,
+                                ),
                               ),
                             ),
                           ],
@@ -499,7 +543,9 @@ class _RecentlyViewedProductCard extends StatelessWidget {
                         Text(
                           '₹${product.price.toStringAsFixed(0)}',
                           style: AppTextStyles.titleMedium.copyWith(
-                            color: isDark ? AppColors.primaryLight : AppColors.primary,
+                            color: isDark
+                                ? AppColors.primaryLight
+                                : AppColors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

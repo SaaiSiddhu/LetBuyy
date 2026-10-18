@@ -34,9 +34,13 @@ test('E1: the canonical refund/complete path restores gift-card balance', () => 
 });
 
 test('I-1: shippingRateId flows storefront proxy -> api-client type -> gateway resolver', () => {
-  assert.match(proxy, /shippingRateId: body\.shippingRateId \|\| body\.shipping_rate_id \|\| null/);
+  assert.match(proxy, /StorefrontCreateOrderSchema\.safeParse\(body\)/);
+  assert.match(proxy, /shippingRateId: orderInput\.shippingRateId \|\| null/);
   assert.match(apiClient, /shippingRateId\?: string \| null;/);
-  assert.match(gatewayCheckout, /resolveShippingRate\(db, store\.id, body\.shippingRateId/);
+  assert.match(gatewayCheckout, /listStorefrontShippingRates\(db, store\.id,/);
+  assert.match(gatewayCheckout, /options\.find\(\(option\) => option\.id === body\.shippingRateId\)/);
+  assert.match(gatewayCheckout, /selected\.amount_minor !== body\.shippingAmountMinor/,
+    'the current server rate must still match the amount reviewed by the buyer');
 });
 
 test('hardening uses canonical db.rpc (no direct money-table writes introduced)', () => {

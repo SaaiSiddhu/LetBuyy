@@ -53,6 +53,7 @@ class _WebHeaderState extends State<WebHeader> {
     _searchFocusNode.addListener(() {
       if (_searchFocusNode.hasFocus) {
         _showOverlay();
+        _revalidateSearchFeed();
       } else {
         _removeOverlay();
       }
@@ -151,6 +152,13 @@ class _WebHeaderState extends State<WebHeader> {
 
     setState(() => _searchResults = results);
     _overlayEntry?.markNeedsBuild();
+  }
+
+  Future<void> _revalidateSearchFeed() async {
+    final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    await productProvider.loadProducts(forceReload: true);
+    if (!mounted || !_searchFocusNode.hasFocus) return;
+    _updateSearchResults(_searchController.text);
   }
 
   void _submitSearch() {
@@ -595,11 +603,23 @@ class _WebHeaderState extends State<WebHeader> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: CachedNetworkImage(
-                  imageUrl: product.images.first,
-                  height: 40, width: 40, fit: BoxFit.cover,
-                  errorWidget: (_,__,___) => const Icon(Icons.image),
-                ),
+                child: product.images.isEmpty
+                    ? Container(
+                        height: 40,
+                        width: 40,
+                        color: hoverColor,
+                        child: Icon(
+                          Icons.image_outlined,
+                          color: textColor.withValues(alpha: 0.6),
+                        ),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: product.images.first,
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => const Icon(Icons.image),
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(

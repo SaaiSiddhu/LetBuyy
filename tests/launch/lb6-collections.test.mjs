@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { classifyAppApiRoute, listAppApiRoutes } from '../../scripts/validators/app-api-route-inventory.mjs';
 
 // LB-6: collections end-to-end structural tests
 
@@ -111,12 +112,13 @@ test('(e) categoryGrid links to /collections/ not /shop?category=', () => {
         'categoryGrid must not link to /shop?category= for collection cards');
 });
 
-test('(P4-4) domain-boundary-validator expects 188 routes', () => {
-    // P4-4 inventory updated to 188 with comprehensive app API route classifications.
-    // This downstream count assertion is updated in lockstep with domain-boundary-validator.mjs
-    const validator = readFileSync(path.join(repoRoot, 'scripts/validators/domain-boundary-validator.mjs'), 'utf8');
-    assert.match(validator, /appApiRoutes\.length === 188/,
-        'domain-boundary-validator must be updated to 188 routes');
+// P4-4 classifies every app-local API route. The count is the validator's ratchet
+// (scripts/validators/app-api-route-inventory.mjs); this test owns the collection-products proxy:
+// inventoried, and a plain gateway proxy to /v1/products/collections/:id/products.
+test('(P4-4) the collection-products proxy is inventoried as gateway-proxy', () => {
+    const route = 'apps/merchant/web/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts';
+    assert.ok(listAppApiRoutes().includes(route), `${route} must be in the app-local API route inventory`);
+    assert.equal(classifyAppApiRoute(route), 'gateway-proxy');
 });
 
 test('(P4-4) governance doc records the new proxy route', () => {

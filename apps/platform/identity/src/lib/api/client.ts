@@ -16,6 +16,7 @@ import { getSessionCookie } from '../auth/cookies'
 interface IdentityApiRequestInit extends RequestInit {
     requireSession?: boolean
     sessionToken?: string
+    responseType?: 'json' | 'text'
 }
 
 interface IdentityApiErrorPayload {
@@ -30,6 +31,7 @@ interface IdentityApiResponse<T = unknown> {
     status: number
     statusText: string
     json(): Promise<T | null>
+    text(): Promise<string>
 }
 
 function responseFromPayload<T>(input: {
@@ -44,6 +46,9 @@ function responseFromPayload<T>(input: {
         statusText: input.statusText,
         async json() {
             return input.payload
+        },
+        async text() {
+            return typeof input.payload === 'string' ? input.payload : JSON.stringify(input.payload)
         },
     }
 }
@@ -162,6 +167,7 @@ export async function identityApiRequest<T = unknown>(
         method: init.method as HttpMethod | undefined,
         body: parseRequestBody(init.body),
         signal: init.signal || undefined,
+        responseType: init.responseType,
     }
 
     try {

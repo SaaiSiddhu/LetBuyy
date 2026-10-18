@@ -47,6 +47,15 @@ const STORE_ID = '99999999-9999-4999-8999-999999999999';
 //    canonical portable contract (THEME-R3) — so "identical settings" means the same source of truth
 //    for both renders, not a hand-picked fixture per side.
 // ---------------------------------------------------------------------------------------------
+// A distinctive, valid #RRGGBB derived from the field id, exactly like every other synthetic value in
+// distinctiveValueFor (`/parity-test/${id}`, `parity-${id}.jpg`, `Parity value for ${id}`): two colour
+// fields never share a value, so presence-checking stays meaningful, and no colour literal is needed.
+function distinctiveHexFor(id) {
+  let hash = 0;
+  for (const char of String(id)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return `#${(hash & 0xffffff).toString(16).padStart(6, '0')}`;
+}
+
 function distinctiveValueFor(field) {
   const id = field.id;
   switch (field.type) {
@@ -62,7 +71,7 @@ function distinctiveValueFor(field) {
     case 'select':
       return Array.isArray(field.options) && field.options.length > 0 ? field.options[0] : `parity-${id}`;
     case 'color':
-      return '#123456';
+      return distinctiveHexFor(id);
     default:
       return `Parity value for ${id}`;
   }

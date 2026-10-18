@@ -4,15 +4,17 @@ import { z } from 'zod';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser } from '../lib/auth-user';
-import { KmsHumanRequiredError, decryptTextAesGcm, encryptFieldWithKms, resolveKmsProviderFromEnv, sha256Hex } from '../lib/crypto';
+import { KmsHumanRequiredError, decryptTextAesGcm, encryptTextAesGcm, encryptFieldWithKms, resolveKmsProviderFromEnv, sha256Hex } from '../lib/crypto';
 import { createManualDataSubjectRequest, updateDataSubjectRequest } from '../lib/internal-compliance';
 import { signSensitiveActionStepUp, stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { verifyTotpCode } from '../lib/totp';
 import { validate } from '../middleware/validation';
+import { AppError } from '../lib/errors';
 
 const router = new Hono<{ Bindings: Env }>();
+router.use('*', async (c, next) => { c.header('Cache-Control', 'no-store'); await next(); });
 
 const DsrSchema = z.object({
     store_id: z.string().uuid(),
@@ -179,74 +181,35 @@ router.post('/step-up/challenges', validate('json', StepUpChallengeSchema), asyn
     const accepted = await verifyTotpCode({ secret: totpSecret, code: body.code });
     if (!accepted) return c.json({ error: { code: 'STEP_UP_CODE_INVALID', message: 'Step-up verification code is invalid.' } }, 400);
 
-    const existing = await db
-        .from('step_up_challenges')
-        .select('id')
-        .eq('site_id', tenant.siteId)
-        .eq('idempotency_key', body.idempotency_key)
-        .is('deleted_at', null)
-        .maybeSingle();
-    if (existing.error) throw new Error(`Step-up challenge lookup failed: ${existing.error.message}`);
-
-    const challengeId = String((existing.data as { id?: string } | null)?.id || crypto.randomUUID());
+    const challengeId = crypto.randomUUID();
     const signed = await signSensitiveActionStepUp({
-        action: body.action,
-        actorId: customUser.id,
-        siteId: tenant.siteId,
-        challengeId,
-        signingSecret,
+        action: body.action, actorId: customUser.id, siteId: tenant.siteId, challengeId, signingSecret,
     });
-    const values = {
-        site_id: tenant.siteId,
-        actor_id: customUser.id,
-        action: body.action,
-        status: 'verified',
-        challenge_token_hash: await sha256Hex(signed.token),
-        verified_at: signed.verifiedAt,
-        expires_at: signed.expiresAt,
-        idempotency_key: body.idempotency_key,
-        metadata: {
-            mode: 'crypto',
-            method: 'totp',
-            step_up_crypto: 'hmac-sha256',
-            factor_id: factor.id,
-            jti: signed.jti,
-        },
-        created_by: tenant.userId,
-        updated_by: tenant.userId,
+    const resultCiphertext = await encryptTextAesGcm(totpEncryptionSecret, JSON.stringify({
+        actor: customUser.id, site: tenant.siteId, factor: factor.id, action: body.action, key: body.idempotency_key,
+        challengeId, step_up_token: signed.token, verified_at: signed.verifiedAt, expires_at: signed.expiresAt,
+    }));
+    const { data, error } = await db.rpc('issue_merchant_step_up_v1', {
+        p_site: tenant.siteId, p_actor: customUser.id, p_factor: factor.id, p_action: body.action, p_key: body.idempotency_key,
+        p_factor_sha256: await sha256Hex(factor.secret_ciphertext),
+        p_proof: { id: challengeId, token_sha256: await sha256Hex(signed.token), verified_at: signed.verifiedAt,
+            expires_at: signed.expiresAt, jti: signed.jti, result_ciphertext: resultCiphertext, request_id: c.req.header('X-Request-ID') || null },
+    });
+    if (error || !data || typeof data !== 'object') throw new AppError('Approval could not be saved. Retry the same request.', 503, 'STEP_UP_STATE_UNAVAILABLE');
+    const result = data as { accepted: boolean; code?: string; challenge: { id: string }; result_ciphertext: string };
+    if (!result.accepted) {
+        const code = result.code || 'STEP_UP_INVALID';
+        throw new AppError('Approval changed or expired. Verify your authenticator again.',
+            code === 'STEP_UP_OWNER_REQUIRED' ? 403 : ['STEP_UP_FACTOR_REQUIRED', 'STEP_UP_EXPIRED'].includes(code) ? 428 : 409, code);
+    }
+    const recovered = JSON.parse(await decryptTextAesGcm(totpEncryptionSecret, result.result_ciphertext)) as {
+        actor: string; site: string; factor: string; action: string; key: string; challengeId: string;
+        step_up_token: string; verified_at: string; expires_at: string;
     };
-    const result = existing.data
-        ? await db
-            .from('step_up_challenges')
-            .update(values)
-            .eq('id', challengeId)
-            .select('id, site_id, action, status, verified_at, expires_at')
-            .single()
-        : await db
-            .from('step_up_challenges')
-            .insert({ id: challengeId, ...values })
-            .select('id, site_id, action, status, verified_at, expires_at')
-            .single();
-
-    const { data, error } = result;
-    if (error || !data) throw new Error(`Step-up challenge create failed: ${error?.message || 'unknown error'}`);
-    await new EventExecutionAdapter(db).emitDomainEvent({
-        storeId: tenant.siteId,
-        aggregateType: 'auth',
-        aggregateId: data.id,
-        eventType: 'auth.stepup',
-        idempotencyKey: `auth.stepup:${data.id}`,
-        actorId: customUser.id,
-        requestId: c.req.header('X-Request-ID') || null,
-        payload: { site_id: tenant.siteId, action: body.action, status: 'verified', method: 'totp' },
-    });
-
-    return c.json(success({
-        challenge: data,
-        step_up_token: signed.token,
-        verified_at: signed.verifiedAt,
-        expires_at: signed.expiresAt,
-    }), 201);
+    if (recovered.actor !== customUser.id || recovered.site !== tenant.siteId || recovered.factor !== factor.id
+        || recovered.action !== body.action || recovered.key !== body.idempotency_key || recovered.challengeId !== result.challenge.id) throw new Error('Challenge retry binding mismatch');
+    return c.json(success({ challenge: result.challenge, step_up_token: recovered.step_up_token,
+        verified_at: recovered.verified_at, expires_at: recovered.expires_at }), 201);
 });
 
 router.post('/dsr/export', validate('json', DsrSchema), async (c) => {
@@ -324,58 +287,17 @@ router.post('/dsr/erase', validate('json', DsrSchema), async (c) => {
     });
     if (!stepUp.ok) return c.json(stepUpErrorBody(stepUp), 428);
 
-    const request = await createManualDataSubjectRequest(db, {
-        site_id: tenant.siteId,
-        request_type: 'erasure',
-        subject_type: 'customer',
-        subject_email: email,
-        source: 'manual',
-        reason: body.reason,
-        idempotency_key: body.idempotency_key,
-        actor_id: customUser?.id || auth.user.id,
-        actor_email: auth.user.email,
-        actor_type: 'system',
-        request_id: c.req.header('X-Request-ID') || null,
-        metadata: stepUp.metadata,
+    // Retention, deletion exceptions and approval ownership remain undecided.
+    // The request, audit and requested-event commit together, with no PII write.
+    const { data, error } = await db.rpc('request_merchant_erasure_review_v1', {
+        p_site: tenant.siteId, p_actor: customUser?.id || auth.user.id,
+        p_email: email, p_reason: body.reason, p_key: body.idempotency_key,
+        p_request_id: c.req.header('X-Request-ID') || null,
     });
-    const redactedAt = new Date().toISOString();
-    const redactedEmail = `redacted-${await sha256Hex(`${tenant.siteId}:${email}`)}@redacted.invalid`;
-    await Promise.all([
-        db.from('store_customers').update({
-            email: redactedEmail,
-            full_name: null,
-            phone: null,
-            status: 'disabled',
-            accepts_marketing: false,
-            tags: [],
-            notes: null,
-            deleted_at: redactedAt,
-        }).eq('store_id', tenant.siteId).eq('email', email),
-        db.from('customer_addresses').delete().eq('store_id', tenant.siteId).eq('customer_email', email),
-        db.from('customer_credentials').delete().eq('store_id', tenant.siteId).eq('email_or_phone', email),
-        db.from('orders').update({ customer_email: redactedEmail, customer_name: 'Redacted customer', customer_phone: null }).eq('store_id', tenant.siteId).eq('customer_email', email),
-    ]);
-    await updateDataSubjectRequest(db, String(request.id), {
-        status: 'fulfilled',
-        reason: body.reason,
-        fulfillment_summary: 'Customer PII erased from customer, address, credential, and order contact fields.',
-        actor_id: customUser?.id || auth.user.id,
-        actor_email: auth.user.email,
-        actor_type: 'system',
-        request_id: c.req.header('X-Request-ID') || null,
-        metadata: stepUp.metadata,
-    });
-    await emitCustomerDsrEvent(db, {
-        siteId: tenant.siteId,
-        requestId: String(request.id),
-        subjectEmail: email,
-        requestType: 'erasure',
-        idempotencyKey: `customer.dsr_requested:${request.id}`,
-        actorId: customUser?.id || auth.user.id,
-        traceId: c.req.header('X-Request-ID') || null,
-    });
-
-    return c.json(success({ request_id: request.id, erased: true, redacted_at: redactedAt }));
+    if (error || !data || typeof data !== 'object') throw new AppError('The review request could not be saved. Retry the same request.', 503, 'DSR_REVIEW_UNAVAILABLE');
+    const result = data as { accepted: boolean; code?: string };
+    if (!result.accepted) throw new AppError('The request needs review. No erasure was performed.', result.code === 'DSR_NOT_FOUND' ? 404 : 409, result.code || 'DSR_REVIEW_REQUIRED');
+    return c.json(success(data), 202);
 });
 
 export default router;

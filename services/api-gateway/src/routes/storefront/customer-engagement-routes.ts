@@ -4,8 +4,10 @@ import type { Env } from '../../index';
 import { hmacSha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { verifyInternalAppRequest } from '../../lib/internal-auth';
+import { chooseCustomerPasswordResetUrl } from '../../lib/customer-password-reset-url';
+import { resolveCustomerResetSiteByHost } from '../../lib/customer-reset-store-by-host';
 import { validate } from '../../middleware/validation';
-import { getCustomerSession } from '../../middleware/customer-session';
+import { getCustomerSession, recordCustomerSessionIssued } from '../../middleware/customer-session';
 import { enforceCustomerAuthRateLimit } from '../../middleware/rateLimit';
 import { CreateStorefrontProductReviewSchema, type CreateStorefrontProductReviewInput } from '../../schemas/review.schema';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
@@ -126,6 +128,8 @@ async function getVerifiedStoreCustomer(c: AppContext, storeId: string, customer
         .select('id, store_id, email')
         .eq('id', customerId)
         .eq('store_id', storeId)
+        .eq('status', 'active')
+        .is('deleted_at', null)
         .single<VerifiedStoreCustomer>();
 
     return data || null;
@@ -279,8 +283,14 @@ function customerPasswordResetBaseUrl(c: AppContext): string {
         || 'https://store.letbuyy.com/account/reset-password';
 }
 
-function customerPasswordResetUrl(c: AppContext, storeId: string, email: string, token: string, requestedUrl?: string | null): string {
-    const base = requestedUrl || customerPasswordResetBaseUrl(c);
+async function customerPasswordResetUrl(c: AppContext, storeId: string, email: string, token: string, requestedUrl?: string | null): Promise<string> {
+    const base = await chooseCustomerPasswordResetUrl({
+        storeId,
+        requestedUrl,
+        fallbackUrl: customerPasswordResetBaseUrl(c),
+        storeRootDomain: c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+        resolveSiteByHost: (host, rootDomain) => resolveCustomerResetSiteByHost(c, host, rootDomain),
+    });
 
     try {
         const url = new URL(base);
@@ -373,72 +383,77 @@ export function registerStorefrontCustomerEngagementRoutes(
         requireValidTurnstile,
     } = dependencies;
 
-    router.post('/customer/find-or-create', async (c) => {
+    // Guest checkout may ask the CRM to materialize an order contact, but the browser must not
+    // choose that contact. Use the order as the source of truth and constrain the lookup by both
+    // the supplied tenant scope and globally unique order id before writing the profile.
+    router.post('/customer/from-order', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
         if (unauthorized) return unauthorized;
 
-        const body = await c.req.json() as CustomerLifecycleBody;
+        const body = await c.req.json() as { store_id?: unknown; order_id?: unknown };
+        if (typeof body.store_id !== 'string' || !body.store_id.trim()
+            || typeof body.order_id !== 'string' || !body.order_id.trim()) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and order_id are required' } }, 400);
+        }
 
-        if (!body.store_id || !body.email) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and email are required' } }, 400);
+        const storeId = body.store_id.trim();
+        const orderId = body.order_id.trim();
+        if (storeId.length > 100 || orderId.length > 100) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and order_id are invalid' } }, 400);
         }
 
         const db = getSupabaseAdmin(c);
-        const email = normalizeEmail(body.email);
+        const { data: order, error: orderError } = await db
+            .from('orders')
+            .select('id, store_id, customer_email, customer_name, customer_phone')
+            .eq('id', orderId)
+            .eq('store_id', storeId)
+            .maybeSingle<{ id: string; store_id: string; customer_email: string | null; customer_name: string | null; customer_phone: string | null }>();
+
+        if (orderError) return c.json(dbFailureBody(), 500);
+        if (!order?.customer_email) {
+            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
+        }
+
+        const email = normalizeEmail(order.customer_email);
         const { data: existing, error: existingError } = await db
             .from('store_customers')
             .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
-            .eq('store_id', body.store_id)
+            .eq('store_id', order.store_id)
             .eq('email', email)
             .maybeSingle<StoreCustomerAuthRow>();
 
-        if (existingError) {
-            return c.json(dbFailureBody(), 500);
-        }
-
+        if (existingError) return c.json(dbFailureBody(), 500);
         if (existing) {
             const updates: Record<string, unknown> = {};
-            if (body.full_name && !existing.full_name) updates.full_name = body.full_name;
-            if (body.phone && !existing.phone) updates.phone = body.phone;
-
-            if (!Object.keys(updates).length) {
-                return c.json(success({ customer: publicCustomerProfile(existing), created: false }));
+            if (order.customer_name && !existing.full_name) updates.full_name = order.customer_name;
+            if (order.customer_phone && !existing.phone) updates.phone = order.customer_phone;
+            if (Object.keys(updates).length) {
+                const { error } = await db.from('store_customers')
+                    .update(updates)
+                    .eq('id', existing.id)
+                    .eq('store_id', order.store_id);
+                if (error) return c.json(dbFailureBody(), 500);
             }
-
-            const { data: updated, error } = await db
-                .from('store_customers')
-                .update(updates)
-                .eq('id', existing.id)
-                .eq('store_id', body.store_id)
-                .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
-                .single<StoreCustomerAuthRow>();
-
-            if (error) {
-                return c.json(dbFailureBody(), 500);
-            }
-
-            return c.json(success({ customer: publicCustomerProfile(updated), created: false }));
+            return c.json(success({ created: false }));
         }
 
-        const { data: created, error } = await db
+        const { data: created, error: createError } = await db
             .from('store_customers')
             .insert({
-                store_id: body.store_id,
+                store_id: order.store_id,
                 email,
-                full_name: body.full_name || null,
-                phone: body.phone || null,
+                full_name: order.customer_name || null,
+                phone: order.customer_phone || null,
                 status: 'active',
                 password_hash: null,
             })
-            .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
-            .single<StoreCustomerAuthRow>();
+            .select('id')
+            .single<{ id: string }>();
 
-        if (error) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        await insertCustomerActivity(c, created.id, body.store_id, 'account_created', { source: 'checkout' });
-        return c.json(success({ customer: publicCustomerProfile(created), created: true }), 201);
+        if (createError) return c.json(dbFailureBody(), 500);
+        await insertCustomerActivity(c, created.id, order.store_id, 'account_created', { source: 'checkout' });
+        return c.json(success({ created: true }), 201);
     });
 
     router.post('/customer/password', async (c) => {
@@ -525,6 +540,7 @@ export function registerStorefrontCustomerEngagementRoutes(
             .select('id, store_id, email, full_name, status')
             .eq('store_id', body.store_id)
             .eq('email', email)
+            .is('deleted_at', null)
             .maybeSingle<StoreCustomerAuthRow>();
 
         if (customerError) {
@@ -559,7 +575,7 @@ export function registerStorefrontCustomerEngagementRoutes(
         await sendCustomerPasswordResetEmail(c, {
             email,
             fullName: customer.full_name,
-            resetUrl: customerPasswordResetUrl(c, body.store_id, email, token, body.reset_url),
+            resetUrl: await customerPasswordResetUrl(c, body.store_id, email, token, body.reset_url),
             expiresAt,
         });
 
@@ -602,54 +618,18 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const email = normalizeEmail(body.email);
         const tokenHash = await hashCustomerPasswordResetToken(c.env.CUSTOMER_SESSION_SECRET, body.store_id, email, resetToken);
-        const now = new Date().toISOString();
-        const { data: credential, error: credentialError } = await db
-            .from('customer_credentials')
-            .select('id')
-            .eq('store_id', body.store_id)
-            .eq('email_or_phone', email)
-            .eq('reset_token_hash', tokenHash)
-            .is('reset_used_at', null)
-            .gt('reset_expires_at', now)
-            .maybeSingle<{ id: string }>();
-
-        if (credentialError) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        if (!credential) {
-            return c.json({ success: false, error: { code: 'INVALID_RESET_TOKEN', message: 'Reset token is invalid or expired' } }, 400);
-        }
-
         const passwordHash = await bcrypt.hash(body.password, 10);
-        const { data: customer, error: customerError } = await db
-            .from('store_customers')
-            .update({
-                password_hash: passwordHash,
-                status: 'active',
-            })
-            .eq('store_id', body.store_id)
-            .eq('email', email)
-            .neq('status', 'disabled')
-            .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
-            .single<StoreCustomerAuthRow>();
+        const { data: customerData, error: resetError } = await db.rpc('confirm_customer_password_reset', {
+            p_store_id: body.store_id,
+            p_email: email,
+            p_reset_token_hash: tokenHash,
+            p_password_hash: passwordHash,
+        });
 
-        if (customerError || !customer) {
+        if (resetError) return c.json(dbFailureBody(), 500);
+        const customer = customerData as StoreCustomerAuthRow | null;
+        if (!customer?.id || customer.store_id !== body.store_id || customer.email !== email || customer.status !== 'active') {
             return c.json({ success: false, error: { code: 'INVALID_RESET_TOKEN', message: 'Reset token is invalid or expired' } }, 400);
-        }
-
-        const { error: consumeError } = await db
-            .from('customer_credentials')
-            .update({
-                password_hash: passwordHash,
-                reset_token_hash: null,
-                reset_used_at: now,
-            })
-            .eq('id', credential.id)
-            .eq('store_id', body.store_id);
-
-        if (consumeError) {
-            return c.json(dbFailureBody(), 500);
         }
 
         await insertCustomerActivity(c, customer.id, body.store_id, 'password_reset_completed', {});
@@ -662,6 +642,7 @@ export function registerStorefrontCustomerEngagementRoutes(
             },
             c.env.CUSTOMER_SESSION_SECRET,
         );
+        recordCustomerSessionIssued(c, 'password_reset');
         const csrfToken = randomCsrfToken();
         const response = c.json(responseBody);
         response.headers.append(
@@ -704,44 +685,7 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ customer: publicCustomerProfile(data) }));
     });
 
-    router.get('/customer/status', async (c) => {
-        const unauthorized = await requireStorefrontInternal(c);
-        if (unauthorized) return unauthorized;
-
-        const storeId = c.req.query('store_id');
-        const email = c.req.query('email');
-
-        if (!storeId || !email) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and email are required' } }, 400);
-        }
-
-        const db = getSupabaseAdmin(c);
-        const { data } = await db
-            .from('store_customers')
-            .select('id, status')
-            .eq('store_id', storeId)
-            .eq('email', normalizeEmail(email))
-            .single();
-
-        if (!data) {
-            return c.json(success({ exists: false, hasPassword: false, status: 'none' }));
-        }
-
-        const { data: credential } = await db
-            .from('customer_credentials')
-            .select('id')
-            .eq('store_id', storeId)
-            .eq('email_or_phone', normalizeEmail(email))
-            .maybeSingle();
-
-        return c.json(success({
-            exists: true,
-            hasPassword: Boolean(credential?.id),
-            status: data.status || 'active',
-        }));
-    });
-
-    registerCustomerRegistrationRoute(router, { requireValidTurnstile, normalizeEmail, publicCustomerProfile, buildCookie, randomCsrfToken, insertCustomerActivity });
+    registerCustomerRegistrationRoute(router);
 
     router.post('/customer/login', async (c) => {
         const body = await c.req.json() as CustomerLifecycleBody;
@@ -822,6 +766,7 @@ export function registerStorefrontCustomerEngagementRoutes(
             },
             c.env.CUSTOMER_SESSION_SECRET,
         );
+        recordCustomerSessionIssued(c, 'password_login');
         const csrfToken = randomCsrfToken();
         const response = c.json(responseBody);
         response.headers.append(
@@ -1270,6 +1215,25 @@ export function registerStorefrontCustomerEngagementRoutes(
         return c.json(success({ logged: true }));
     });
 
+    router.get('/customer/profile', async (c) => {
+        const session = getCustomerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'CUSTOMER_SESSION_REQUIRED', message: 'A valid customer session is required' } }, 401);
+
+        const db = getSupabaseAdmin(c);
+        const { data, error } = await db
+            .from('store_customers')
+            .select('id, email, full_name, phone, accepts_marketing')
+            .eq('id', session.customerId)
+            .eq('store_id', session.storeId)
+            .eq('status', 'active')
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!data) return c.json({ success: false, error: { code: 'CUSTOMER_NOT_FOUND', message: 'Customer account is unavailable' } }, 404);
+        return c.json(success({ customer: data }));
+    });
+
     router.patch('/customer/profile', async (c) => {
         const body = await c.req.json() as CustomerProfileBody;
 
@@ -1318,6 +1282,7 @@ export function registerStorefrontCustomerEngagementRoutes(
             .select('id, store_id, is_active, status')
             .eq('id', body.product_id)
             .eq('store_id', body.store_id)
+            .is('deleted_at', null)
             .maybeSingle();
 
         if (productError) {
@@ -1333,14 +1298,38 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json({ success: false, error: { code: 'PRODUCT_UNAVAILABLE', message: 'This product is not accepting reviews' } }, 400);
         }
 
-        if (body.customer_email) {
+        // A verified badge and authenticated reviewer identity come only from the signed
+        // customer session plus the matching active store_customer row. Never trust these fields
+        // from an anonymous request body.
+        const session = getCustomerSession(c);
+        let verifiedCustomer: { email: string; full_name: string | null } | null = null;
+        if (session) {
+            if (session.storeId !== body.store_id) {
+                return c.json({ success: false, error: { code: 'CUSTOMER_SESSION_REQUIRED', message: 'A valid customer session is required' } }, 401);
+            }
+            const { data: customer, error: customerError } = await db
+                .from('store_customers')
+                .select('email, full_name, status, deleted_at')
+                .eq('id', session.customerId)
+                .eq('store_id', session.storeId)
+                .maybeSingle();
+            if (customerError) return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to validate customer session' } }, 500);
+            if (!customer || (customer as { status?: string; deleted_at?: string | null }).status !== 'active' || (customer as { deleted_at?: string | null }).deleted_at != null) {
+                return c.json({ success: false, error: { code: 'CUSTOMER_SESSION_REQUIRED', message: 'A valid customer session is required' } }, 401);
+            }
+            verifiedCustomer = customer as { email: string; full_name: string | null };
+        }
+
+        const customerEmail = verifiedCustomer?.email ?? body.customer_email ?? null;
+
+        if (customerEmail) {
             const buildDuplicateQuery = (includeDeletedAtFilter: boolean) => {
                 let request = db
                     .from('product_reviews')
                     .select('id')
                     .eq('product_id', body.product_id)
                     .eq('store_id', body.store_id)
-                    .eq('customer_email', body.customer_email!)
+                    .eq('customer_email', customerEmail)
                     .limit(1);
 
                 if (includeDeletedAtFilter) request = request.is('deleted_at', null);
@@ -1368,12 +1357,12 @@ export function registerStorefrontCustomerEngagementRoutes(
         const reviewPayload = {
             store_id: body.store_id,
             product_id: body.product_id,
-            customer_name: body.customer_name || 'Anonymous',
-            customer_email: body.customer_email || null,
+            customer_name: verifiedCustomer?.full_name || body.customer_name || 'Anonymous',
+            customer_email: customerEmail,
             rating: body.rating,
             title: body.title || null,
             body: body.body || null,
-            is_verified: Boolean(body.is_verified),
+            is_verified: Boolean(verifiedCustomer),
             is_approved: false,
         };
 
@@ -1402,8 +1391,9 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to submit review' } }, 500);
         }
 
+        const savedReview = data as { id?: string | null; status?: string | null } | null;
         return c.json(success({
-            review: data,
+            review: { id: savedReview?.id ?? null, status: savedReview?.status ?? 'pending' },
             message: 'Review submitted! It will appear after approval.',
         }), 201);
     });
@@ -1420,6 +1410,6 @@ export function registerStorefrontCustomerEngagementRoutes(
     // CAP-FB-* (D-8/D-9): the buyer realm's wiring lives in its own module. It shares nothing
     // with the per-store customer lifecycle above -- a buyer is platform-level and carries no
     // store_id -- and keeping it here pushed this file past the 1500-line budget twice.
-    registerBuyerRealmRoutes(router, { normalizeEmail });
+    registerBuyerRealmRoutes(router, { normalizeEmail, hydrateStorefrontOrderItems, orderItemsRelationalReadsEnabled, requireValidTurnstile });
 
 }

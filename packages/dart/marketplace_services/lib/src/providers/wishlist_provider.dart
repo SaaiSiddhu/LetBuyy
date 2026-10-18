@@ -43,6 +43,7 @@ class WishlistProvider with ChangeNotifier {
   /// derived from a session token or an email address -- see CartProvider._activeBuyerId's own
   /// doc comment for why.
   String? _activeBuyerId;
+  int _identityGeneration = 0;
 
   late Future<void> _ready;
 
@@ -61,6 +62,8 @@ class WishlistProvider with ChangeNotifier {
 
   WishlistModel? get wishlist => _wishlist;
   bool get isLoading => _isLoading;
+  /// Local UI continuation guard; never authentication or backend authority.
+  int get identityRevision => _identityGeneration;
   String? get error => _error;
 
   int get itemCount => _wishlist.totalItems;
@@ -92,26 +95,36 @@ class WishlistProvider with ChangeNotifier {
   void updateUserId(String? buyerId) {
     if (buyerId == _activeBuyerId) return;
     _activeBuyerId = buyerId;
+    _identityGeneration++;
+    // Consumers such as badges/product cards read getters without isLoading.
+    // Clear the prior buyer immediately, before notifying the new identity.
+    _wishlist = _empty();
+    _error = null;
     _isLoading = true;
     _notify();
     _ready = _enqueue(_loadActive);
   }
 
   Future<void> _loadActive() async {
+    final buyerId = _activeBuyerId;
+    final generation = _identityGeneration;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_keyFor(_activeBuyerId));
+      final jsonString = prefs.getString(_keyFor(buyerId));
+      if (generation != _identityGeneration) return;
       _wishlist = jsonString != null
           ? WishlistModel.fromMap(jsonDecode(jsonString) as Map<String, dynamic>, _localWishlistId)
           : _empty();
       _error = null;
     } catch (e) {
-      debugPrint('❌ WishlistProvider: error loading local wishlist: $e');
+      if (generation != _identityGeneration) return;
       _wishlist = _empty();
-      _error = e.toString();
+      _error = 'Could not load your wishlist on this device.';
     } finally {
-      _isLoading = false;
-      _notify();
+      if (generation == _identityGeneration) {
+        _isLoading = false;
+        _notify();
+      }
     }
   }
 
@@ -132,11 +145,25 @@ class WishlistProvider with ChangeNotifier {
   /// See CartProvider._mutate's own doc comment for the full reasoning -- identical pattern, this
   /// wishlist's own disk key.
   Future<bool> _mutate(WishlistModel Function(WishlistModel current) transform) {
+    // Bind at submission, not when an earlier queued write happens to finish.
+    final buyerId = _activeBuyerId;
+    final generation = _identityGeneration;
+    bool currentIdentity() =>
+        generation == _identityGeneration && buyerId == _activeBuyerId;
     return _enqueue(() async {
+      if (!currentIdentity()) return false;
       final candidate = transform(_wishlist);
       try {
         final prefs = await SharedPreferences.getInstance();
-        final persisted = await prefs.setString(_keyFor(_activeBuyerId), jsonEncode(candidate.toMap()));
+        if (!currentIdentity()) return false;
+        final persisted = await prefs.setString(
+          _keyFor(buyerId),
+          jsonEncode(candidate.toMap()),
+        );
+        // A write already handed to the platform may finish after logout. Its
+        // captured storage key stays with its original buyer; its late result
+        // must never repopulate or report success in the replacement identity.
+        if (!currentIdentity()) return false;
         if (persisted) {
           _wishlist = candidate;
           _error = null;
@@ -147,9 +174,10 @@ class WishlistProvider with ChangeNotifier {
         _notify();
         return false;
       } catch (e) {
-        debugPrint('❌ WishlistProvider: error saving local wishlist: $e');
-        _error = e.toString();
-        _notify();
+        if (currentIdentity()) {
+          _error = 'Could not save your wishlist on this device.';
+          _notify();
+        }
         return false;
       }
     });

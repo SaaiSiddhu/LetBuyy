@@ -12,6 +12,7 @@ import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
 import { resolveCredentialedCorsOrigin } from './lib/cors';
+import type { RazorpayOrderSearchResult } from '@letbuyy/infrastructure/razorpay-adapter';
 import storesRouter from './routes/stores';
 import productsRouter from './routes/products';
 import channelListingsRouter from './routes/channel-listings';
@@ -74,6 +75,8 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import operationsMarketplaceReviewsRouter from './routes/operations/marketplace-reviews';
 import operationsMarketplaceListingsRouter from './routes/operations/marketplace-listings';
+import reelsRouter from './routes/reels';
+import operationsReelsRouter from './routes/operations/reels';
 import operationsBuyerLinksRouter from './routes/operations/buyer-links';
 import operationsMarketplaceCategoriesRouter from './routes/operations/marketplace-categories';
 import operationsMarketplaceBannersRouter from './routes/operations/marketplace-banners';
@@ -84,6 +87,7 @@ import operationsRiskRouter from './routes/operations/risk';
 import operationsSupportRouter from './routes/operations/support';
 import operationsTrustSafetyRouter from './routes/operations/trust-safety';
 import internalConsoleRouter from './routes/internal-console';
+import internalOperatorIdentityRouter from './routes/internal-operator-identity';
 import internalBillingRouter from './routes/internal-billing';
 import internalEventsRouter from './routes/internal-events';
 import domainsRouter from './routes/domains';
@@ -103,7 +107,15 @@ import {
 } from './execution/cloudflare-queue-triggers';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
 import { writeRuntimeTelemetryDataPoint } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
+import type { PaymentCreateIntentInput, PaymentIntentResult } from '@letbuyy/payments';
+import type { RazorpayPaymentFetchResult } from '@letbuyy/infrastructure/razorpay-adapter';
 export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
+
+export interface HostedRazorpayTestAdapter {
+    createIntent(input: PaymentCreateIntentInput): Promise<PaymentIntentResult>;
+    fetchOrdersByReceipt(receipt: string): Promise<RazorpayOrderSearchResult>;
+    fetchPayment(paymentId: string): Promise<RazorpayPaymentFetchResult>;
+}
 
 // Environment bindings
 export interface Env {
@@ -115,6 +127,8 @@ export interface Env {
     SUPABASE_DB_URL?: string;
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
+    /** Owned-worker test injection only; no Wrangler or deployed environment binds this value. */
+    HOSTED_RAZORPAY_TEST_ADAPTER?: HostedRazorpayTestAdapter;
     // F-ADS-1c. OPTIONAL on purpose: without it no placement tokens are issued and the ad event
     // endpoint answers 503, so a deployment that has not set it degrades instead of failing to boot.
     // A required secret is how MEDIA_UPLOAD_SIGNING_SECRET made production deploys hard-fail.
@@ -129,6 +143,7 @@ export interface Env {
     RAZORPAY_ROUTE_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_ACCOUNT_ID?: string;
     RAZORPAY_ROUTE_KEY_SECRET?: string;
+    RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE?: string;
     KYC_PROVIDER_MODE?: 'sandbox' | 'live';
     KYC_PROVIDER?: 'signzy' | 'hyperverge' | 'manual';
     KYC_PROVIDER_API_KEY?: string;
@@ -163,7 +178,10 @@ export interface Env {
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     CUSTOMER_SESSION_SECRET?: string;
+    /** Explicit legacy transition policy; absent preserves current dual-format behavior. */
+    CUSTOMER_SESSION_COMPATIBILITY?: 'both' | 'gateway_hs256_v1' | 'shopper_hs256_legacy' | 'disabled';
     STEP_UP_SIGNING_SECRET?: string;
+    STAFF_INVITATION_SIGNING_SECRET?: string;
     LETBUYY_IDENTITY_ISSUER?: string;
     LETBUYY_IDENTITY_PUBLIC_JWKS?: string;
     CUSTOMER_PASSWORD_RESET_URL?: string;
@@ -211,6 +229,7 @@ export interface Env {
     WORKER_INTERNAL_API_SECRET?: string;
     INTERNAL_GATEWAY_IP_ALLOWLIST?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
+    PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
@@ -778,7 +797,11 @@ api.route('/', demoRequestsPublicRouter);
 // a per-email throttle stand in for the session that does not exist.
 api.route('/', contactPublicRouter);
 api.use('/internal/*', internalPerimeter);
+api.route('/internal/identity/operator', internalOperatorIdentityRouter);
 api.route('/internal/console', internalConsoleRouter);
+// Inherits the canonical Console perimeter/token middleware; the adapter also
+// verifies the bound human session and current permission inside the transaction.
+api.route('/internal/console/reels', operationsReelsRouter);
 api.route('/internal/billing', internalBillingRouter);
 api.route('/internal/founding', internalFoundingRouter);
 api.route('/internal/events', internalEventsRouter);
@@ -806,6 +829,7 @@ api.route('/custom', customDomainsRouter);
 api.route('/store-access', storeAccessRouter);
 api.route('/products', productsRouter);
 api.route('/channel-listings', channelListingsRouter);
+api.route('/reels', reelsRouter);
 api.route('/loyalty', loyaltyRouter);
 api.route('/ads', adsRouter);
 api.route('/orders', ordersRouter);
@@ -855,12 +879,21 @@ api.route('/reviews', reviewsRouter);
 api.route('/form-submissions', formSubmissionsRouter);
 api.route('/pages', pagesRouter);
 api.route('/operations/rbac', operationsRbacRouter);
+// MOUNT ORDER IS AN ACCESS DECISION. incident-command's router registers `use('*', requireRoleCategory('ops'), requireSuperAdmin)`;
+// mounted at '/operations' it guards every route under /operations registered AFTER this point -- its own routes and the routers
+// below, several of which (buyer-links, marketplace-categories, -banners) have no gate of their own and rely on it.
+// The support router is mounted BEFORE it, deliberately (owner decision O1, 2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE):
+// its own gate, requirePlatformOperator({ admittedTiers: viewer, operator, lead }) plus a requirePermission on every route, is
+// what decides the queue. Moving it after this line closes the queue to everyone but super admins; moving any other router
+// above it removes that router's inherited gate. operator-queue-correctness.postgres.test.ts (A, G) fails on either.
+api.route('/operations/support', operationsSupportRouter);
+// Marketplace listing review has its own active-platform tier gate and route scopes, so mount it
+// before incident-command's broad super-admin gate as well.
+api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);
 api.route('/operations', operationsIncidentCommandRouter);
 api.route('/operations/risk', operationsRiskRouter);
-api.route('/operations/support', operationsSupportRouter);
 api.route('/operations/trust-safety', operationsTrustSafetyRouter);
 api.route('/operations/marketplace-reviews', operationsMarketplaceReviewsRouter);
-api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);
 api.route('/operations/buyer-links', operationsBuyerLinksRouter);
 api.route('/operations/marketplace-categories', operationsMarketplaceCategoriesRouter);
 api.route('/operations/marketplace-banners', operationsMarketplaceBannersRouter);

@@ -40,32 +40,6 @@ export type StoreCustomerAddress = Pick<CustomerAddress, 'id' | 'city' | 'state'
 };
 
 // ============================================================
-// FIND OR CREATE CUSTOMER (Guest Checkout Auto-Creation)
-// ============================================================
-
-export async function findOrCreateCustomer(
-    storeId: string,
-    email: string,
-    fullName?: string,
-    phone?: string
-): Promise<StoreCustomer> {
-    const data = await createStorefrontApiClient()
-        .storefront
-        .findOrCreateCustomer({
-            store_id: storeId,
-            email,
-            full_name: fullName || null,
-            phone: phone || null,
-        });
-
-    if (!data.customer) {
-        throw new Error('Worker response did not include customer');
-    }
-
-    return mapRow(data.customer);
-}
-
-// ============================================================
 // GET CUSTOMER BY EMAIL
 // ============================================================
 
@@ -77,19 +51,6 @@ export async function getCustomerByEmail(
         .storefront
         .customerByEmail({ store_id: storeId, email });
     return customer ? mapRow(customer) : null;
-}
-
-// ============================================================
-// CHECK CUSTOMER STATUS (for account bottom sheet flow)
-// ============================================================
-
-export async function checkCustomerStatus(
-    storeId: string,
-    email: string
-): Promise<{ exists: boolean; hasPassword: boolean; status: string }> {
-    return createStorefrontApiClient()
-        .storefront
-        .customerStatus({ store_id: storeId, email });
 }
 
 // ============================================================

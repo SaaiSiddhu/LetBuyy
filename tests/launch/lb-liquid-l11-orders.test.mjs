@@ -13,7 +13,10 @@ const renderer = read('packages/theme-engine/src/theme-renderer.ts');
 test('L11: fixture ships order-history + order-detail templates', () => {
   assert.match(bundle, /'customers\/orders'/);
   assert.match(bundle, /'customers\/order'/);
-  assert.match(bundle, /for order in customer\.orders/);
+  assert.match(bundle, /for order in buyer\.orders/);
+  assert.doesNotMatch(bundle, /for order in customer\.orders/,
+    'private order history uses verified buyer-order links, not a store-customer email relationship');
+  assert.match(bundle,/buyer_unavailable[\s\S]*role="alert"/);
   assert.match(bundle, /for item in order\.line_items/);
 });
 

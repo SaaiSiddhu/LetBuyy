@@ -35,7 +35,7 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   Future<void> _checkForDeal() async {
     if (_hasCheckedDeal) return;
     _hasCheckedDeal = true;
-    
+
     try {
       final dealService = DealService();
       final deal = await dealService.getActiveDealForProduct(widget.product.id);
@@ -54,7 +54,7 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -86,7 +86,9 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
               const Spacer(),
               Consumer<WishlistProvider>(
                 builder: (context, wishlistProvider, child) {
-                  final isInWishlist = wishlistProvider.isInWishlist(widget.product.id);
+                  final isInWishlist = wishlistProvider.isInWishlist(
+                    widget.product.id,
+                  );
                   return IconButton(
                     onPressed: () async {
                       HapticFeedback.mediumImpact();
@@ -159,14 +161,18 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
             children: [
               Icon(
                 widget.product.inStock ? Icons.check_circle : Icons.cancel,
-                color: widget.product.inStock ? AppColors.success : AppColors.error,
+                color: widget.product.inStock
+                    ? AppColors.success
+                    : AppColors.error,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
                 widget.product.inStock ? 'In Stock' : 'Out of Stock',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: widget.product.inStock ? AppColors.success : AppColors.error,
+                  color: widget.product.inStock
+                      ? AppColors.success
+                      : AppColors.error,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -198,7 +204,7 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   // 🔥 DEAL BANNER
   Widget _buildDealBanner(bool isDark) {
     final timeRemaining = _deal!.timeRemaining;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -212,8 +218,8 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark 
-              ? const Color(0xFF991B1B).withValues(alpha: 0.5) 
+          color: isDark
+              ? const Color(0xFF991B1B).withValues(alpha: 0.5)
               : const Color(0xFFFECACA),
           width: 2,
         ),
@@ -251,12 +257,17 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : const Color(0xFF991B1B),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF991B1B),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.error,
                             borderRadius: BorderRadius.circular(6),
@@ -284,7 +295,10 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
               ),
               // Discount Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.error, const Color(0xFFDC2626)],
@@ -310,13 +324,13 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Countdown Timer
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark 
-                  ? Colors.black.withValues(alpha: 0.3) 
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.3)
                   : Colors.white.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
@@ -352,13 +366,19 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   // Price Section with Deal Support
   Widget _buildPriceSection(bool isDark) {
     final displayPrice = _hasDeal ? _deal!.dealPrice : widget.product.price;
-    final originalPrice = _hasDeal ? _deal!.originalPrice : widget.product.originalPrice;
-    final hasDiscount = originalPrice != null && originalPrice > displayPrice;
-    final discountLabel = _hasDeal 
+    final originalPrice = _hasDeal
+        ? _deal!.originalPrice
+        : widget.product.originalPrice;
+    final hasDiscount = _hasDeal
+        ? originalPrice != null && originalPrice > displayPrice
+        : widget.product.hasDisplayableReferencePrice;
+    final discountLabel = _hasDeal
         ? _deal!.discountLabel
-        : '${widget.product.discount}% OFF';
+        : widget.product.discountLabel;
 
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 8,
       children: [
         Text(
           '₹${displayPrice.toStringAsFixed(0)}',
@@ -368,9 +388,10 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
           ),
         ),
         if (hasDiscount) ...[
-          const SizedBox(width: 12),
           Text(
-            '₹${originalPrice.toStringAsFixed(0)}',
+            _hasDeal
+                ? 'M.R.P. ₹${originalPrice!.toStringAsFixed(0)}'
+                : '${widget.product.referencePriceLabel}: ₹${originalPrice!.toStringAsFixed(0)}',
             style: AppTextStyles.titleMedium.copyWith(
               decoration: TextDecoration.lineThrough,
               color: AppColors.textSecondary,
@@ -378,13 +399,10 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
           ),
           const SizedBox(width: 12),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 4,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _hasDeal 
-                  ? AppColors.error 
+              color: _hasDeal
+                  ? AppColors.error
                   : AppColors.error.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),

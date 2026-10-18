@@ -12,6 +12,7 @@ import {
     verifyLetbuyyInternalSessionHeaders,
     verifyLetbuyySignedPayload,
 } from '@letbuyy/auth-core';
+import { claimInternalAuthReplayJti } from './supabase';
 
 export function getInternalAuthSecret(env: Env): string | undefined {
     return getLetbuyyInternalAuthSecret(env);
@@ -76,31 +77,19 @@ export async function verifySignedPayload(env: Env, payload: string, signature: 
     return false;
 }
 
-const consumedInternalJtis = new Map<string, number>();
-
-function consumeInternalJti(input: {
+async function consumeInternalJti(input: {
+    env: Env;
     kind: string;
     jti: string | null | undefined;
     signature: string | null | undefined;
-    nowMs?: number;
     maxAgeMs?: number;
-}): boolean {
-    if (!isSafeLetbuyyInternalJti(input.jti) || !input.signature) return false;
-
-    const now = input.nowMs ?? Date.now();
-    const maxAgeMs = input.maxAgeMs ?? 5 * 60_000;
-    for (const [key, expiresAt] of consumedInternalJtis.entries()) {
-        if (expiresAt <= now) consumedInternalJtis.delete(key);
-    }
-
-    const key = `${input.kind}:${input.jti}:${input.signature}`;
-    if (consumedInternalJtis.has(key)) return false;
-    consumedInternalJtis.set(key, now + maxAgeMs);
-    return true;
-}
-
-export function _testResetInternalAuthReplayCache(): void {
-    consumedInternalJtis.clear();
+}): Promise<'claimed' | 'replayed' | 'unavailable'> {
+    if (!isSafeLetbuyyInternalJti(input.jti) || !input.signature) return 'replayed';
+    return claimInternalAuthReplayJti(input.env, {
+        kind: input.kind,
+        jti: input.jti,
+        ttlSeconds: Math.max(1, Math.ceil((input.maxAgeMs ?? 5 * 60_000) / 1000)),
+    });
 }
 
 export async function verifyInternalSessionHeaders(
@@ -120,16 +109,20 @@ export async function verifyInternalSessionHeaders(
             secret,
         });
         if (verification.accepted) {
-            if (!consumeInternalJti({
+            const claim = await consumeInternalJti({
+                env,
                 kind: 'session',
                 jti: input.jti,
                 signature: input.signature,
-            })) {
+            });
+            if (claim !== 'claimed') {
                 return {
                     accepted: false,
-                    status: 'replayed' as const,
+                    status: claim === 'replayed' ? 'replayed' as const : 'misconfigured' as const,
                     kind: 'merchant' as const,
-                    reason: 'Internal session signature replay was rejected',
+                    reason: claim === 'replayed'
+                        ? 'Internal session signature replay was rejected'
+                        : 'Internal session replay protection is unavailable',
                 };
             }
             return verification;
@@ -159,7 +152,7 @@ export async function verifyInternalAppRequest(c: Context<{ Bindings: Env }>, ex
     const signingPayload = internalAppSigningPayload(app, String(timestamp), jti);
     for (const secret of getSecretsForCaller(c.env, callerId)) {
         if (await verifyLetbuyySignedPayload(secret, signingPayload, signature)) {
-            return consumeInternalJti({ kind: `app:${app}`, jti, signature });
+            return await consumeInternalJti({ env: c.env, kind: `app:${app}`, jti, signature }) === 'claimed';
         }
     }
     return false;
@@ -188,5 +181,5 @@ export async function verifyInternalIdentityPayload(
         input.jti,
     );
     const signed = await verifySignedPayload(env, payload, input.signature);
-    return signed && consumeInternalJti({ kind: 'identity', jti: input.jti, signature: input.signature });
+    return signed && await consumeInternalJti({ env, kind: 'identity', jti: input.jti, signature: input.signature }) === 'claimed';
 }

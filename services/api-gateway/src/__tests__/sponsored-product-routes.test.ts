@@ -40,6 +40,48 @@ test('every sponsored row is DISCLOSED as sponsored', async () => {
     assert.equal(body.data[0].sponsored, true, 'a paid placement must never be indistinguishable from an organic result');
 });
 
+test('eligibility-sensitive sponsored reads bypass stale cache and return no-store', async () => {
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'caches');
+    let cacheLookups = 0;
+    const fakeCache = {
+        match: async () => {
+            cacheLookups += 1;
+            return new Response(JSON.stringify({ success: true, data: [{ ...ROW, product_id: 'stale-approved-product' }] }));
+        },
+        put: async () => { throw new Error('eligibility-sensitive reads must not populate cache'); },
+        delete: async () => true,
+    };
+    Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        value: { default: fakeCache },
+    });
+    try {
+        const res = await harness().app.request('/storefront/marketplace/sponsored-products', undefined,
+            { ENVIRONMENT: 'test', STOREFRONT_CACHE: 'on', AD_PLACEMENT_SIGNING_SECRET: 'local-test-signing-secret' } as unknown as Env);
+        assert.equal(res.status, 200);
+        assert.equal(res.headers.get('Cache-Control'), 'no-store');
+        assert.equal(res.headers.get('X-Storefront-Cache'), 'BYPASS');
+        assert.equal(cacheLookups, 0, 'the previous approved response must not be consulted');
+        const approved = await res.json() as { data: Array<{ product_id: string; sponsored: boolean; placement_token?: string }> };
+        assert.deepEqual(approved.data.map((row) => row.sponsored), [true]);
+        assert.equal(approved.data[0].product_id, ROW.product_id, 'the canonical producer, not the stale listing, supplies the row');
+        assert.ok(approved.data[0].placement_token, 'per-response placement tokens remain present');
+
+        // The canonical query now reflects a takedown. The cache still offers its old approved
+        // response, but the next request must observe the empty eligible set instead.
+        const revoked = await harness({ data: [] }).app.request(
+            '/storefront/marketplace/sponsored-products', undefined,
+            { ENVIRONMENT: 'test', STOREFRONT_CACHE: 'on', AD_PLACEMENT_SIGNING_SECRET: 'local-test-signing-secret' } as unknown as Env,
+        );
+        assert.equal(revoked.headers.get('Cache-Control'), 'no-store');
+        assert.deepEqual((await revoked.json() as { data: unknown[] }).data, []);
+        assert.equal(cacheLookups, 0, 'revoked listings cannot be restored from a stale cache entry');
+    } finally {
+        if (original) Object.defineProperty(globalThis, 'caches', original);
+        else Reflect.deleteProperty(globalThis, 'caches');
+    }
+});
+
 test('no advertisers is an empty strip, not an error', async () => {
     const res = await harness({ data: [] }).app.request('/storefront/marketplace/sponsored-products', undefined, env());
     assert.equal(res.status, 200);
@@ -74,6 +116,9 @@ const migrationRaw = readFileSync(join(SRC, '../../../database/supabase/migratio
 // Comments stripped before every absence assertion: 232 documents D-5 at length and names the very
 // words some of these assertions look for.
 const migration = migrationRaw.replace(/--[^\n]*/g, ' ');
+const approvalMigrationRaw = readFileSync(join(SRC, '../../../database/supabase/migrations/274_sponsored_marketplace_approval_fence.sql'), 'utf8');
+const approvalMigration = approvalMigrationRaw.replace(/--[^\n]*/g, ' ');
+const approvalRollback = readFileSync(join(SRC, '../../../database/supabase/rollback/274_sponsored_marketplace_approval_fence.rollback.sql'), 'utf8');
 
 test('SOURCE: the cross-tenant read goes through the SECURITY DEFINER function', () => {
     const at = wiring.indexOf('registerSponsoredProductRoutes(router');
@@ -96,6 +141,20 @@ test('SOURCE: the function fences campaign, product AND seller visibility', () =
     assert.match(body, /s\.status = 'published'/, "an unpublished seller's ad must not show");
     // No cost or stock columns: the allowlist is a subset of the public storefront projection.
     assert.doesNotMatch(body, /cost_price|cost_per_item|\bsku\b|barcode|inventory_qty/);
+});
+
+test('SOURCE: sponsored marketplace discovery requires an approved, public marketplace listing', () => {
+    const at = approvalMigration.indexOf('CREATE OR REPLACE FUNCTION public.marketplace_sponsored_products');
+    const body = approvalMigration.slice(at, approvalMigration.indexOf('$$;', at));
+    assert.match(body, /JOIN public\.channel_listings cl/);
+    assert.match(body, /cl\.channel = 'marketplace'/);
+    assert.match(body, /cl\.status = 'approved'/);
+    assert.match(body, /cl\.visibility = 'public'/);
+    assert.match(body, /public\.ad_campaign_remaining_minor\(c\.id\) > 0/);
+    assert.match(body, /public\.ad_campaign_spent_today_minor\(c\.id, NULL\) < c\.daily_budget_minor/);
+    assert.match(body, /ORDER BY c\.bid_minor DESC, pl\.position ASC, pl\.created_at ASC/);
+    assert.match(approvalRollback, /DROP FUNCTION IF EXISTS public\.marketplace_sponsored_products\(integer\)/,
+        'rollback disables the paid feed instead of restoring its unapproved-product behavior');
 });
 
 test('SOURCE: D-5 is enforced by constraints, not by comments', () => {

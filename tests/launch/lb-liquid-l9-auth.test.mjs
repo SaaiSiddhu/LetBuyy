@@ -15,7 +15,10 @@ test('L9: bundle ships customers/login + customers/register templates', () => {
   assert.match(bundle, /'customers\/login'/);
   assert.match(bundle, /'customers\/register'/);
   assert.match(bundle, /action="\/api\/customer\/login"/);
-  assert.match(bundle, /action="\/api\/customer\/register"/);
+  const registerSection = bundle.slice(bundle.indexOf("'customer-register': createLiquidSectionFile"),bundle.indexOf("'customer-settings': createLiquidSectionFile"));
+  assert.match(registerSection,/\/api\/buyer-auth\/start\?return_to=\{\{ routes\.account_url \}\}/);
+  assert.doesNotMatch(registerSection,/action="\/api\/customer\/register"|name="password"/,
+    'new accounts use canonical Identity; the compatibility login stays available for linking');
 });
 
 test('L9: the LB-12 register-backend blocker is recorded with the HS256 issuer constraint', () => {

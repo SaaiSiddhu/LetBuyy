@@ -237,6 +237,8 @@ export function extractMobileSessionToken(request: Request): string | null {
 function isAllowedPath(pathname: string): boolean {
   return pathname === '/v1/health'
     || pathname === '/health'
+    || pathname === '/v1/loyalty/program'
+    || pathname === '/v1/security/step-up/challenges'
     || ALLOWED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
@@ -373,20 +375,28 @@ async function mobileDashboard(request: Request, env: Env): Promise<Response> {
     }, 400);
   }
 
-  const headers = new Headers();
-  headers.set('Accept', 'application/json');
-  headers.set('X-Client', 'mobile-bff-composite');
-  headers.set('X-Request-ID', request.headers.get('X-Request-ID') || crypto.randomUUID());
-  Object.entries(signedHeaders).forEach(([key, value]) => headers.set(key, value));
-
-  const results = await Promise.all([
-    gatewayJson(env, 'analytics_dashboard', '/v1/analytics/dashboard', { store_id: storeId, period }, headers),
-    gatewayJson(env, 'analytics_orders', '/v1/analytics/orders', { store_id: storeId }, headers),
-    gatewayJson(env, 'analytics_revenue', '/v1/analytics/revenue', { store_id: storeId, period }, headers),
-    gatewayJson(env, 'analytics_top_products', '/v1/analytics/top-products', { store_id: storeId, limit: 5 }, headers),
-    gatewayJson(env, 'analytics_traffic_sources', '/v1/analytics/traffic-sources', { store_id: storeId, period, limit: 5 }, headers),
-    gatewayJson(env, 'payout_summary', '/v1/payouts/summary', { store_id: storeId }, headers),
-  ]);
+  const requestId = request.headers.get('X-Request-ID') || crypto.randomUUID();
+  const targets: { key: string; pathname: string; query: Record<string, string | number> }[] = [
+    { key: 'analytics_dashboard', pathname: '/v1/analytics/dashboard', query: { store_id: storeId, period } },
+    { key: 'analytics_orders', pathname: '/v1/analytics/orders', query: { store_id: storeId } },
+    { key: 'analytics_revenue', pathname: '/v1/analytics/revenue', query: { store_id: storeId, period } },
+    { key: 'analytics_top_products', pathname: '/v1/analytics/top-products', query: { store_id: storeId, limit: 5 } },
+    { key: 'analytics_traffic_sources', pathname: '/v1/analytics/traffic-sources', query: { store_id: storeId, period, limit: 5 } },
+    { key: 'payout_summary', pathname: '/v1/payouts/summary', query: { store_id: storeId } },
+  ];
+  const results = await Promise.all(targets.map(async (target, index): Promise<GatewayFanInResult> => {
+    // Gateway consumes each signed envelope once. Correlation can be shared;
+    // credentials cannot, including between concurrent requests for one session.
+    const envelope = index === 0 ? signedHeaders : await signHeadersForSession(token, env);
+    if (envelope instanceof Response) {
+      return { ok: false, key: target.key, status: envelope.status, error: await envelope.json().catch(() => null) };
+    }
+    const headers = new Headers(envelope);
+    headers.set('Accept', 'application/json');
+    headers.set('X-Client', 'mobile-bff-composite');
+    headers.set('X-Request-ID', requestId);
+    return gatewayJson(env, target.key, target.pathname, target.query, headers);
+  }));
 
   const failures = results.filter((result): result is Extract<GatewayFanInResult, { ok: false }> => !result.ok);
   const dataByKey = Object.fromEntries(
@@ -462,11 +472,13 @@ async function proxyToGateway(request: Request, env: Env): Promise<Response> {
   }
 
   const gatewayOrigin = env.API_GATEWAY_SERVICE ? 'https://api-gateway.internal' : 'http://localhost:9010';
-  const gatewayRequest = new Request(`${gatewayOrigin}${gatewayPathFromRequest(request)}`, {
-    method: request.method,
-    headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : request.body,
-  });
+  // Clone the incoming Request to preserve its stream/platform body metadata
+  // when rewriting the destination. Then replace headers with the sanitized,
+  // translated credentials; never reattach the mobile Bearer/cookie headers.
+  const gatewayRequest = new Request(
+    new Request(`${gatewayOrigin}${gatewayPathFromRequest(request)}`, request),
+    { headers },
+  );
 
   if (env.API_GATEWAY_SERVICE) {
     return env.API_GATEWAY_SERVICE.fetch(gatewayRequest);

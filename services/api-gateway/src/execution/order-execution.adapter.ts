@@ -8,16 +8,19 @@ import {
     CHECKOUT_EXECUTION_PIPELINES,
     defineRuntimeBridge,
 } from '@letbuyy/shared-types';
-import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
+import { AppError, NotFoundError, ForbiddenError, ValidationError, ConflictError } from '../lib/errors';
 import type { TenantContext } from '../lib/tenant-context';
-import { SaasExecutionAdapter } from './saas-execution.adapter';
+import { SaasExecutionAdapter, assertResolvedCreationEntitlements } from './saas-execution.adapter';
 import {
     planOrderStatusTransition,
     type CompleteRefundCommand,
+    type CompleteReturnRefundInput,
     type CreateCheckoutOrderCommand,
     type FulfillOrderCommand,
     type RefundOrderCommand,
 } from '@letbuyy/checkout-core';
+
+type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
 interface OrderRow {
     id: string;
@@ -58,9 +61,13 @@ export class OrderExecutionAdapter {
     async createOrder(
         input: CreateCheckoutOrderCommand & {
             shipping_rate_id?: string | null;
+            expected_shipping_amount?: number | null;
             tax_amount?: number | null;
             place_of_supply_state?: string | null;
             tax_lines?: Array<{ title: string; rate: number; amount: number; jurisdiction?: Record<string, unknown> }> | null;
+            /** Set only from a currently verified site-bound buyer session, never from request JSON. */
+            buyer_account_id?: string | null;
+            buyer_session_epoch?: number | null;
         },
         tenant: TenantContext,
         options: CreateOrderOptions = {},
@@ -69,7 +76,7 @@ export class OrderExecutionAdapter {
         const shippingAddress = { ...(input.shipping_address || {}) };
         if (input.customer_gstin) shippingAddress.gstin = input.customer_gstin;
 
-        const { data, error } = await this.db.rpc('create_checkout_order', {
+        const checkoutArgs = {
             p_store_id: tenant.siteId,
             p_customer_name: input.customer_name,
             p_customer_email: input.customer_email,
@@ -92,10 +99,73 @@ export class OrderExecutionAdapter {
             // creation (place_of_supply_state directly on orders; tax_lines into order_tax_lines).
             p_place_of_supply_state: input.place_of_supply_state ?? null,
             p_tax_lines: input.tax_lines && input.tax_lines.length > 0 ? input.tax_lines : null,
-        });
+        };
+        const { data, error } = input.sales_origin === 'marketplace'
+            ? typeof input.expected_shipping_amount === 'number'
+                ? await this.db.rpc('create_marketplace_checkout_order_with_delivery_rate', {
+                    ...checkoutArgs,
+                    p_buyer_account_id: input.buyer_account_id ?? null,
+                    p_buyer_session_epoch: input.buyer_session_epoch ?? null,
+                    p_expected_shipping_amount: input.expected_shipping_amount,
+                })
+                : await this.db.rpc('create_marketplace_checkout_order', {
+                    ...checkoutArgs,
+                    p_buyer_account_id: input.buyer_account_id ?? null,
+                    p_buyer_session_epoch: input.buyer_session_epoch ?? null,
+                })
+            : typeof input.expected_shipping_amount === 'number'
+            ? await this.db.rpc('create_storefront_checkout_order_with_delivery_rate', {
+                ...checkoutArgs,
+                p_buyer_account_id: input.buyer_account_id ?? null,
+                p_buyer_session_epoch: input.buyer_session_epoch ?? null,
+                p_expected_shipping_amount: input.expected_shipping_amount,
+            })
+            : input.buyer_account_id
+            ? await this.db.rpc('create_checkout_order_for_buyer', {
+                ...checkoutArgs,
+                p_buyer_account_id: input.buyer_account_id,
+                p_buyer_session_epoch: input.buyer_session_epoch,
+                p_loyalty_points: null,
+            })
+            : await this.db.rpc('create_checkout_order', checkoutArgs);
 
         if (error) {
             const message = error.message || 'Order creation failed';
+            if (message.includes('INSUFFICIENT_INVENTORY')) {
+                throw new AppError(
+                    'One or more items are no longer available in the requested quantity. Review your cart and try again.',
+                    409,
+                    'INSUFFICIENT_INVENTORY',
+                );
+            }
+            if (message.includes('marketplace listing revision')) {
+                throw new AppError(
+                    'A marketplace listing changed after review. Review the current seller total before trying again.',
+                    409,
+                    'MARKETPLACE_LISTING_CHANGED',
+                );
+            }
+            if (message.includes('marketplace listing is unavailable')) {
+                throw new AppError(
+                    'A marketplace listing became unavailable before order creation. Review your cart and try again.',
+                    409,
+                    'MARKETPLACE_LISTING_UNAVAILABLE',
+                );
+            }
+            if (message.includes('marketplace delivery rate quote changed') || message.includes('marketplace delivery rate is no longer available') || message.includes('marketplace delivery rate does not cover')
+                || message.includes('storefront delivery rate quote changed') || message.includes('storefront delivery rate is no longer available') || message.includes('storefront delivery rate does not cover')
+                || message.includes('storefront delivery rate subtotal range changed') || message.includes('storefront delivery rate does not support COD')) {
+                throw new AppError('The delivery option changed before order creation. Review delivery options and try again.', 409, 'CHECKOUT_SHIPPING_CHANGED');
+            }
+            if (message.includes('marketplace checkout') || message.includes('marketplace order listing identity')) {
+                throw new ConflictError('Marketplace checkout could not safely bind this order. Refresh the marketplace cart and try again.');
+            }
+            if (message.includes('buyer session is no longer active')) {
+                throw new AppError('A storefront sign-in is required.', 401, 'UNAUTHORIZED');
+            }
+            if (message.includes('checkout idempotency key is already bound') || message.includes('checkout order ownership conflicts')) {
+                throw new ConflictError('This checkout key is already associated with another checkout. Start checkout again.');
+            }
             if (this.isMissingOrderRpc(message)) {
                 throw new Error(
                     'Order creation requires migrations 032_inventory_reservations_order_commit.sql and 046_checkout_payment_inventory_ledgers.sql. ' +
@@ -181,6 +251,7 @@ export class OrderExecutionAdapter {
 
     private async assertOrderQuota(siteId: string): Promise<void> {
         const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(siteId);
+        assertResolvedCreationEntitlements(entitlements);
         const rawLimit = entitlements.limits.orders_monthly;
         if (rawLimit === null || rawLimit === undefined) return;
 
@@ -309,26 +380,48 @@ export class OrderExecutionAdapter {
         return data;
     }
 
-    async completeRefund(orderId: string, tenant: TenantContext, input: CompleteRefundCommand) {
-        const { data, error } = await this.db.rpc('complete_order_refund', {
-            p_refund_id: input.refund_id,
-            p_provider_refund_id: input.provider_refund_id || null,
-            p_provider_event_id: input.provider_event_id || null,
-            p_actor_id: tenant.userId,
-            p_request_id: tenant.requestId,
-            p_idempotency_key: input.idempotency_key,
+    async completeRefund(orderId: string, tenant: TenantContext, input: CompleteRefundCommand, proof: Record<string, unknown>) {
+        return this.completeOwnedRefund(orderId, tenant, input, proof);
+    }
+
+    async completeReturnRefund(orderId: string, returnId: string, tenant: TenantContext, input: CompleteReturnRefundInput, proof: Record<string, unknown>) {
+        return (await this.completeOwnedRefund(orderId, tenant, input, proof, returnId)).data;
+    }
+
+    private async completeOwnedRefund(orderId: string, tenant: TenantContext,
+        input: { idempotency_key: string; refund_id?: string; provider_refund_id?: string; provider_event_id?: string; notes?: string },
+        proof: Record<string, unknown>, returnId?: string) {
+        if (input.refund_id) {
+            let query = this.db.from('refunds').select('id').eq('id', input.refund_id)
+                .eq('order_id', orderId).eq('site_id', tenant.siteId).is('deleted_at', null);
+            if (returnId) query = query.eq('return_id', returnId);
+            const { data: refund, error: refundError } = await query.maybeSingle();
+            if (refundError) throw new Error('Refund scope lookup failed');
+            if (!refund) throw new NotFoundError('Refund not found');
+        }
+        // The SQL boundary rechecks/locks live ownership and all source FKs, and
+        // commits its receipt in the same transaction as complete_order_refund.
+        const { data: outcome, error } = await this.db.rpc('complete_owned_order_refund_v1', {
+            p_site_id: tenant.siteId, p_order_id: orderId, p_return_id: returnId ?? null,
+            p_actor_id: tenant.userId, p_intent: { ...input, _step_up: proof }, p_request_id: tenant.requestId,
         });
-
-        if (error) {
-            throw new Error(`Refund completion failed: ${error.message}`);
-        }
-
-        const order = data && typeof data === 'object' && 'order' in data ? (data as { order?: OrderRow }).order : null;
-        if (order?.store_id && order.store_id !== tenant.siteId) {
-            throw new ForbiddenError('Not authorized to complete this refund');
-        }
-
-        return data;
+        if (error?.code === '22023') throw new ConflictError('Refund provider reference conflicts with its committed source');
+        if (error?.message?.includes('refund amount exceeds captured order total')) throw new ConflictError('The refundable order amount has already been used. Refresh the return.');
+        if (error?.message?.includes('succeeded refund requires its matching canonical posting') || error?.message?.includes('refund source already posted; reconciliation is required'))
+            throw new AppError('This refund needs review before it can be completed.', 409, 'REFUND_REVIEW_REQUIRED');
+        if (error) throw new Error('Refund completion failed');
+        const result = outcome as { status?: number; error?: string; data?: Record<string, JsonValue>; replayed?: boolean; source_replayed?: boolean } | null;
+        if (result?.status === 404) throw new NotFoundError('Refund not found');
+        if (result?.status === 403) throw new ForbiddenError('Not authorized to complete this refund');
+        if (result?.status === 428) throw new AppError('Approval changed or expired. Verify again.', 428, result.error || 'STEP_UP_INVALID');
+        if (result?.status === 400) throw new ValidationError('Invalid refund completion');
+        if (result?.error === 'REFUND_REVIEW_REQUIRED') throw new AppError('This refund needs review before it can be completed.', 409, 'REFUND_REVIEW_REQUIRED');
+        if (result?.status === 409) throw new AppError(result.error === 'REFUND_SELECTION_REQUIRED'
+            ? 'Choose the refund to complete.' : 'This refund request conflicts with its saved receipt.', 409, result.error || 'REFUND_CONFLICT');
+        const order = result?.data?.order;
+        if (result?.status !== 200 || !order || typeof order !== 'object' || Array.isArray(order) || order.id !== orderId || order.store_id !== tenant.siteId)
+            throw new AppError('Refund completion is temporarily unavailable.', 503, 'REFUND_COMPLETE_UNAVAILABLE');
+        return {data: result.data!, replayed: result.replayed === true || result.source_replayed === true};
     }
 
     /**

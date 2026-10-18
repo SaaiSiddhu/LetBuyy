@@ -65,6 +65,7 @@ function declaredDependencyNames(manifest, includeDev) {
 function isDevOnlySource(file) {
   const base = path.posix.basename(file);
   return (
+    file.includes("/__tests__/") ||
     file.includes("/test/") ||
     file.includes("/tests/") ||
     file.startsWith("tests/") ||

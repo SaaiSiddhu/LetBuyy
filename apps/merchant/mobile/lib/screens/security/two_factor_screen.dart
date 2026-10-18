@@ -1,404 +1,417 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
+import '../../app/store_context.dart';
 import '../../services/two_factor_service.dart';
+import '../../services/security_command_store.dart';
+import '../../services/api_client.dart';
 import '../../theme/app_theme_colors.dart';
 
 class TwoFactorScreen extends StatefulWidget {
-  const TwoFactorScreen({super.key});
-
+  const TwoFactorScreen({super.key, this.approvalAction});
+  final String? approvalAction;
+  static Future<MerchantStepUpProof?> approve(
+    BuildContext context, {
+    String action = 'refund.approve',
+  }) => Navigator.of(context).push<MerchantStepUpProof>(
+    MaterialPageRoute(builder: (_) => TwoFactorScreen(approvalAction: action)),
+  );
   @override
   State<TwoFactorScreen> createState() => _TwoFactorScreenState();
 }
 
 class _TwoFactorScreenState extends State<TwoFactorScreen> {
-  String? _error;
-  bool _loading = true;
-
+  final _code = TextEditingController();
+  MerchantSecurityContext? _context;
+  JsonMap? _enrollment;
+  List<String> _codes = [];
+  String? _activeId, _recoverId, _error;
+  bool _loading = true,
+      _working = false,
+      _blocked = false,
+      _disable = false,
+      _useRecovery = false;
+  String _challengeKey = const Uuid().v4();
+  int _generation = 0;
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.watch<StoreContext>();
+    final security = context.read<TwoFactorService>();
+    if (_context != null && !security.isCurrent(_context!)) {
+      _generation++;
+      _enrollment = null;
+      _codes = [];
+      _activeId = null;
+      _recoverId = null;
+      _code.clear();
+      _blocked = true;
+      _loading = false;
+      _working = false;
+      _error = 'The account or store changed. Close this screen and reopen it.';
+    } else if (_context == null) {
+      try {
+        _context = security.capture();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _load();
+        });
+      } catch (_) {
+        _blocked = true;
+        _loading = false;
+        _error = 'Sign in and select a store before changing security.';
+      }
+    }
   }
 
+  bool _current(int generation) =>
+      mounted &&
+      ModalRoute.of(context)?.isCurrent == true &&
+      !_blocked &&
+      _generation == generation &&
+      _context != null &&
+      context.read<TwoFactorService>().isCurrent(_context!);
   Future<void> _load() async {
+    if (_blocked || _context == null || _working) return;
+    final generation = ++_generation;
     setState(() {
       _loading = true;
       _error = null;
+      _enrollment = null;
+      _codes = [];
     });
     try {
-      await context.read<TwoFactorService>().fetchOverview();
-    } catch (_) {
-      _error = 'Security settings are temporarily unavailable.';
+      final data = await context.read<TwoFactorService>().fetchOverview(
+        expectedContext: _context!.version,
+      );
+      if (!_current(generation)) return;
+      final active = (data['factors'] as List)
+          .whereType<Map>()
+          .where(
+            (factor) =>
+                factor['factor_type'] == 'totp' && factor['status'] == 'active',
+          )
+          .firstOrNull;
+      setState(() {
+        _activeId = active?['id']?.toString();
+        _recoverId = data['pending_activation_factor_id']?.toString();
+      });
+    } catch (error) {
+      if (_current(generation)) setState(() => _error = error.toString());
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (_current(generation)) setState(() => _loading = false);
     }
   }
 
-  Future<void> _startEnrollment() async {
+  Future<void> _run(
+    Future<void> Function(TwoFactorService security, int generation) action,
+  ) async {
+    if (_working || _blocked || _loading || _context == null) return;
+    final generation = _generation;
+    setState(() {
+      _working = true;
+      _error = null;
+    });
     try {
-      final result = await context.read<TwoFactorService>().enrollTotp();
-      if (!mounted) return;
-      await _showVerifySheet(result);
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Two-factor setup is unavailable right now.'),
-        ),
-      );
+      await action(context.read<TwoFactorService>(), generation);
+    } catch (error) {
+      if (_current(generation)) setState(() => _error = error.toString());
+    } finally {
+      if (_current(generation)) setState(() => _working = false);
     }
   }
 
-  Future<void> _showVerifySheet(Map<String, dynamic> enrollment) async {
-    final factor = enrollment['factor'];
-    if (factor is! Map || factor['id'] == null) return;
-    final factorId = factor['id'].toString();
-    final secret = enrollment['secret']?.toString() ?? '';
-    final uri = enrollment['otpauth_uri']?.toString() ?? '';
-    final controller = TextEditingController();
-    var submitting = false;
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          Future<void> verify() async {
-            if (submitting) return;
-            setSheetState(() => submitting = true);
-            try {
-              final result = await context.read<TwoFactorService>().verifyTotp(
-                factorId: factorId,
-                code: controller.text.trim(),
-              );
-              if (!mounted) return;
-              Navigator.pop(sheetContext);
-              await _showRecoveryCodes(result['recovery_codes']);
-            } catch (_) {
-              if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Verification code is invalid.')),
-              );
-            } finally {
-              if (mounted) setSheetState(() => submitting = false);
-            }
-          }
-
-          return SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Set up authenticator',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 12),
-                  SelectableText(secret),
-                  const SizedBox(height: 8),
-                  Text(
-                    uri.isEmpty
-                        ? 'Add this key in your authenticator app.'
-                        : 'Use this setup URI in your authenticator app.',
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: controller,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: '6-digit code',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: submitting ? null : verify,
-                      icon: const Icon(Icons.verified_user_outlined),
-                      label: const Text('Verify and enable'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+  Future<void> _enroll() => _run((security, generation) async {
+    final data = await security.enrollTotp(expectedContext: _context!.version);
+    if (!_current(generation)) return;
+    setState(() {
+      _enrollment = data;
+      _code.clear();
+    });
+  });
+  Future<void> _activate() => _run((security, generation) async {
+    final id = _enrollment == null
+        ? _recoverId
+        : asJsonMap(_enrollment!['factor'])['id']?.toString();
+    if (id == null) return;
+    final data = await security.verifyTotp(
+      factorId: id,
+      code: _code.text.trim(),
+      expectedContext: _context!.version,
     );
-  }
-
-  Future<void> _showRecoveryCodes(Object? rawCodes) async {
-    final codes = rawCodes is List
-        ? rawCodes.map((value) => value.toString()).toList(growable: false)
-        : const <String>[];
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Recovery codes'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Store these codes somewhere safe.'),
-            const SizedBox(height: 12),
-            ...codes.map((code) => SelectableText(code)),
+    if (!_current(generation)) return;
+    setState(() {
+      _activeId = id;
+      _enrollment = null;
+      _recoverId = null;
+      _codes = List<String>.from(data['recovery_codes']);
+      _code.clear();
+    });
+  });
+  Future<void> _acknowledge() => _run((security, generation) async {
+    await security.acknowledgeRecovery(
+      _activeId!,
+      expectedContext: _context!.version,
+    );
+    if (!_current(generation)) return;
+    setState(() => _codes = []);
+  });
+  Future<void> _disableFactor() => _run((security, generation) async {
+    await security.disable(
+      factorId: _activeId!,
+      code: _useRecovery ? null : _code.text.trim(),
+      recoveryCode: _useRecovery ? _code.text.trim() : null,
+      expectedContext: _context!.version,
+    );
+    if (!_current(generation)) return;
+    setState(() {
+      _activeId = null;
+      _disable = false;
+      _code.clear();
+    });
+  });
+  Future<void> _approve() => _run((security, generation) async {
+    final proof = await security.challenge(
+      action: widget.approvalAction!,
+      factorId: _activeId!,
+      code: _code.text.trim(),
+      idempotencyKey: _challengeKey,
+      expectedContext: _context!.version,
+    );
+    if (!_current(generation)) return;
+    _code.clear();
+    Navigator.of(context).pop(proof);
+  });
+  Widget _input(String label, {bool recovery = false}) => TextField(
+    controller: _code,
+    obscureText: recovery,
+    autocorrect: false,
+    enableSuggestions: false,
+    keyboardType: recovery ? TextInputType.text : TextInputType.number,
+    inputFormatters: recovery
+        ? null
+        : [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(6),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _disable(Map<String, dynamic> factor) async {
-    final controller = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Turn off two-factor'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: '6-digit code',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Disable'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
-    try {
-      await context.read<TwoFactorService>().disable(
-        factorId: factor['id'].toString(),
-        code: controller.text.trim(),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Two-factor authentication disabled.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not disable two-factor.')),
-      );
-    }
-  }
-
+    autofillHints: recovery ? null : const [AutofillHints.oneTimeCode],
+    decoration: InputDecoration(
+      labelText: label,
+      border: const OutlineInputBorder(),
+    ),
+  );
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-
+    final security = context.watch<TwoFactorService>();
     return Scaffold(
       backgroundColor: colors.card,
       appBar: AppBar(
-        title: const Text('Two-factor authentication'),
+        title: Text(
+          widget.approvalAction == null
+              ? 'Two-factor authentication'
+              : 'Verify refund approval',
+        ),
         backgroundColor: colors.card,
         foregroundColor: colors.textPrimary,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: _load,
-            icon: const Icon(Icons.refresh_outlined),
-            tooltip: 'Refresh',
-          ),
-        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? _EmptyState(message: _error!, actionLabel: 'Retry', onTap: _load)
-          : Consumer<TwoFactorService>(
-              builder: (context, security, _) {
-                final factors = security.factors;
-                final sessions = security.sessions;
-                return RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      _StatusPanel(enabled: security.isEnabled),
-                      const SizedBox(height: 16),
-                      FilledButton.icon(
-                        onPressed: security.isEnabled ? null : _startEnrollment,
-                        icon: const Icon(Icons.add_moderator_outlined),
-                        label: const Text('Set up authenticator app'),
-                      ),
-                      const SizedBox(height: 20),
-                      const _SectionTitle('Factors'),
-                      if (factors.isEmpty)
-                        const _EmptyState(
-                          message: 'No factors enrolled yet.',
-                          detail:
-                              'Add an authenticator app to protect sign-in.',
-                        )
-                      else
-                        ...factors.map(
-                          (factor) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.security_outlined),
-                            title: Text(factor['label']?.toString() ?? 'TOTP'),
-                            subtitle: Text(factor['status']?.toString() ?? ''),
-                            trailing: factor['status'] == 'active'
-                                ? TextButton(
-                                    onPressed: () => _disable(factor),
-                                    child: const Text('Disable'),
-                                  )
-                                : null,
-                          ),
-                        ),
-                      const SizedBox(height: 20),
-                      const _SectionTitle('Active sessions'),
-                      if (sessions.isEmpty)
-                        const _EmptyState(message: 'No active sessions found.')
-                      else
-                        ...sessions.map(
-                          (session) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.devices_outlined),
-                            title: Text(
-                              session['device_id']?.toString() ??
-                                  'Current device',
-                            ),
-                            subtitle: Text(
-                              'Last active ${session['last_active'] ?? 'recently'}',
-                            ),
-                          ),
-                        ),
-                    ],
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                if (_error != null) ...[
+                  Text(
+                    _error!,
+                    key: const Key('security-error'),
+                    style: TextStyle(color: colors.error),
                   ),
-                );
-              },
+                  const SizedBox(height: 16),
+                ],
+                if (_blocked)
+                  const Text('Account or store access changed')
+                else if (_codes.isNotEmpty) ...[
+                  const Text(
+                    'Save your recovery codes',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Store these codes somewhere safe. Each can disable this authenticator while you are signed in. They cannot replace your password or recover a signed-out account.',
+                  ),
+                  const SizedBox(height: 12),
+                  for (final code in _codes) SelectableText(code),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: _working ? null : _acknowledge,
+                    child: const Text('I saved my recovery codes'),
+                  ),
+                ] else if (_enrollment != null || _recoverId != null) ...[
+                  Text(
+                    _recoverId == null
+                        ? 'Set up authenticator'
+                        : 'Recover your activation result',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_enrollment != null)
+                    SelectableText(
+                      _enrollment!['secret'] as String,
+                      semanticsLabel: 'Authenticator secret',
+                    )
+                  else
+                    const Text(
+                      'Enter a current authenticator code to recover the original recovery codes within 10 minutes. If that window has expired, continue without recovered codes, then disable and set up the authenticator again for new codes.',
+                    ),
+                  const SizedBox(height: 16),
+                  _input('6-digit code'),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: _working ? null : _activate,
+                    child: const Text('Verify and enable'),
+                  ),
+                  if (_recoverId != null && _error != null)
+                    TextButton(
+                      onPressed: _working
+                          ? null
+                          : () => _run((security, generation) async {
+                              await security.acknowledgeRecovery(
+                                _recoverId!,
+                                expectedContext: _context!.version,
+                              );
+                              if (_current(generation))
+                                setState(() => _recoverId = null);
+                            }),
+                      child: const Text('Continue without recovered codes'),
+                    ),
+                ] else if (_activeId != null) ...[
+                  const Text(
+                    'Authenticator app active',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 16),
+                  if (widget.approvalAction != null) ...[
+                    _input('Authenticator code'),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: _working ? null : _approve,
+                      child: const Text('Verify approval'),
+                    ),
+                    if (_error != null)
+                      TextButton(
+                        onPressed: _working
+                            ? null
+                            : () {
+                                setState(() {
+                                  _challengeKey = const Uuid().v4();
+                                  _code.clear();
+                                  _error = null;
+                                });
+                              },
+                        child: const Text('Start a new verification'),
+                      ),
+                  ] else if (!_disable)
+                    OutlinedButton(
+                      onPressed: _working
+                          ? null
+                          : () => setState(() => _disable = true),
+                      child: const Text('Disable authenticator'),
+                    )
+                  else ...[
+                    CheckboxListTile(
+                      value: _useRecovery,
+                      onChanged: _working
+                          ? null
+                          : (value) => setState(() {
+                              _useRecovery = value ?? false;
+                              _code.clear();
+                            }),
+                      title: const Text('Use a recovery code'),
+                    ),
+                    _input(
+                      _useRecovery ? 'Recovery code' : 'Authenticator code',
+                      recovery: _useRecovery,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: _working ? null : _disableFactor,
+                      child: const Text('Confirm disable'),
+                    ),
+                  ],
+                ] else if (_error != null)
+                  FilledButton(
+                    onPressed: _working ? null : _load,
+                    child: const Text('Retry loading security'),
+                  )
+                else ...[
+                  const Text('No authenticator configured'),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: _working ? null : _enroll,
+                    child: const Text('Set up authenticator app'),
+                  ),
+                ],
+                if (!_blocked &&
+                    widget.approvalAction == null &&
+                    !_loading &&
+                    _enrollment == null &&
+                    _codes.isEmpty &&
+                    _recoverId == null) ...[
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Factors',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  for (final factor in security.factors)
+                    ListTile(
+                      leading: const Icon(Icons.security_outlined),
+                      title: Text(factor['label']?.toString() ?? 'TOTP'),
+                      subtitle: Text(factor['status']?.toString() ?? ''),
+                    ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Active sessions',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  if (security.sessions.isEmpty)
+                    const Text('No active sessions found.'),
+                  for (final session in security.sessions)
+                    ListTile(
+                      leading: const Icon(Icons.devices_outlined),
+                      title: Text(
+                        session['device_id']?.toString() ?? 'Current device',
+                      ),
+                      subtitle: Text(
+                        'Last active ${session['last_active'] ?? 'recently'}',
+                      ),
+                    ),
+                ],
+                if (_working)
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close security'),
+                ),
+              ],
             ),
     );
   }
-}
-
-class _StatusPanel extends StatelessWidget {
-  const _StatusPanel({required this.enabled});
-
-  final bool enabled;
 
   @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.glassLight,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.glassMediumBorder),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            enabled ? Icons.verified_user_outlined : Icons.shield_outlined,
-            color: enabled ? const Color(0xFF047857) : colors.textSecondary,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              enabled
-                  ? 'Two-factor authentication is enabled.'
-                  : 'Add an authenticator app for stronger account protection.',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.title);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({
-    required this.message,
-    this.detail,
-    this.actionLabel,
-    this.onTap,
-  });
-
-  final String message;
-  final String? detail;
-  final String? actionLabel;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Column(
-        children: [
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          if (detail != null) ...[
-            const SizedBox(height: 6),
-            Text(
-              detail!,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary),
-            ),
-          ],
-          if (actionLabel != null && onTap != null) ...[
-            const SizedBox(height: 12),
-            OutlinedButton(onPressed: onTap, child: Text(actionLabel!)),
-          ],
-        ],
-      ),
-    );
+  void dispose() {
+    _generation++;
+    _enrollment = null;
+    _codes = [];
+    _code.clear();
+    _code.dispose();
+    super.dispose();
   }
 }

@@ -1,9 +1,10 @@
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
+import { z } from 'zod';
+import { ConsoleApprovalForm } from '@/components/ConsoleApprovalForm';
 import type {
     InternalMerchantImpersonationResult,
     InternalMerchantImpersonationSession,
-    InternalMerchantModerationResult,
     InternalMerchantOverview,
 } from '@letbuyy/api-client';
 import { Button, Input, Textarea } from '@letbuyy/ui';
@@ -18,6 +19,7 @@ import {
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import {
     fetchConsoleApi,
+    readSearchParam,
     formatDateTime,
     formatMoneyFromPaise,
     type ConsoleDataResponse,
@@ -26,6 +28,7 @@ import { requireConsoleSession } from '@/lib/console-auth-server';
 
 type PageProps = {
     params: Promise<{ id: string }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 function requireActorId(actorId: string | null | undefined): string {
@@ -101,42 +104,12 @@ async function endMerchantImpersonation(formData: FormData) {
     revalidatePath(`/merchants/${merchantId}`);
 }
 
-async function moderateMerchant(formData: FormData) {
-    'use server';
-
-    const session = await requireConsoleSession({ mfa: true });
-    const merchantId = String(formData.get('merchant_id') || '').trim();
-    const action = String(formData.get('action') || '').trim();
-    const secondaryApproverId = String(formData.get('secondary_approver_id') || '').trim();
-    const reason = String(formData.get('reason') || '').trim();
-
-    if (!merchantId || !['suspend', 'restore'].includes(action) || !secondaryApproverId || reason.length < 8) {
-        throw new Error('Merchant moderation requires an action, a second approver, and a clear reason.');
-    }
-
-    const result = await fetchConsoleApi<ConsoleDataResponse<InternalMerchantModerationResult>>(
-        `/internal/console/merchants/${merchantId}/moderation`,
-        {
-            method: 'POST',
-            body: {
-                actor_id: requireActorId(session.userId),
-                actor_email: session.email,
-                action,
-                secondary_approver_id: secondaryApproverId,
-                reason,
-            },
-        }
-    );
-
-    if (result.error) {
-        throw new Error(result.error);
-    }
-
-    revalidatePath(`/merchants/${merchantId}`);
-}
-
-export default async function MerchantDetailPage({ params }: PageProps) {
+export default async function MerchantDetailPage({ params, searchParams }: PageProps) {
     const { id } = await params;
+    const query = await searchParams;
+    const formError = readSearchParam(query, 'error').slice(0, 400);
+    const retryKey = z.string().uuid().safeParse(readSearchParam(query, 'request_key'));
+    const retryAction = readSearchParam(query, 'action');
     const session = await requireConsoleSession({ mfa: true });
     const result = await fetchConsoleApi<ConsoleDataResponse<InternalMerchantOverview>>(
         `/internal/console/merchants/${id}/overview`,
@@ -323,24 +296,26 @@ export default async function MerchantDetailPage({ params }: PageProps) {
                             </div>
                         </Panel>
 
+                        {formError && <p role="alert">{formError}</p>}
                         <Panel title="Merchant Moderation" description="Suspend or restore the merchant with dual-control approval.">
-                            <form action={moderateMerchant} className="grid gap-[var(--lb-space-3)]">
+                            <ConsoleApprovalForm action="/api/approvals/request" className="grid gap-[var(--lb-space-3)]">
                                 <Input unstyled type="hidden" name="merchant_id" value={site.id} />
                                 <label className="grid gap-[var(--lb-space-1)] text-sm text-[var(--lb-color-text)]">
                                     Action
                                     <select
                                         name="action"
-                                        defaultValue={site.status === 'suspended' ? 'restore' : 'suspend'}
+                                        defaultValue={retryKey.success && ['restore', 'suspend'].includes(retryAction) ? retryAction : site.status === 'suspended' ? 'restore' : 'suspend'}
                                         className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none focus:border-[var(--lb-color-primary)]"
                                     >
                                         <option value="suspend">Suspend merchant</option>
                                         <option value="restore">Restore merchant</option>
                                     </select>
                                 </label>
-                                <Input name="secondary_approver_id" label="Second approver employee id" required />
+                                <input type="hidden" name="request_key" value={retryKey.success ? retryKey.data : crypto.randomUUID()} />
+                                <p className="text-sm">A different active platform super admin must review and approve the exact request before you can execute it.</p>
                                 <Textarea name="reason" label="Reason" minLength={8} required placeholder="Record the evidence and expected merchant impact." />
-                                <Button type="submit">Submit moderation action</Button>
-                            </form>
+                                <Button type="submit">Request independent approval</Button>
+                            </ConsoleApprovalForm>
                         </Panel>
                     </section>
                 </>

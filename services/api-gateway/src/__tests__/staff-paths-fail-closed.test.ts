@@ -81,6 +81,7 @@ function installFakePostgrest(tables: Record<string, Row[]>, failing: Set<string
         requests.push({ method, table, query: url.search });
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
         if (failing.has(table)) return json({ code: 'XX000', message: 'database unavailable' }, 500);
+        if (table === 'rpc/consume_internal_auth_replay_jti') return json(true);
 
         const rows = (tables[table] ?? []).filter((row) => matches(row, url.searchParams));
         if (method === 'PATCH') {
@@ -238,7 +239,7 @@ test("through the real auth and permission layers, a store admin is refused an o
     t.after(fake.restore);
     const res = await operatorGateway().request('/operations/marketplace-listings', { headers: await identity(STORE_ADMIN, 'admin@shop.test') });
     assert.equal(res.status, 403);
-    assert.equal(((await res.json()) as { error: { code: string } }).error.code, 'PERMISSION_SCOPE_DENIED');
+    assert.equal(((await res.json()) as { error: { code: string } }).error.code, 'FORBIDDEN');
     assert.ok(!fake.requests.some((r) => r.table === 'channel_listings'), 'nothing is read for a refused caller');
 });
 
@@ -276,9 +277,16 @@ test('an owner deletes a product from a session that names no store: the staff c
         const res = await productGateway(OWNER).request(`/products/${PRODUCT}`, init);
         const body = await res.text();
         assert.ok(!body.includes('STAFF_PERMISSION'), `${method}: the owner is not refused by the staff check: ${res.status} ${body.slice(0, 160)}`);
+        // D03 permission equivalence follow-up (2026-09-28): PATCH/DELETE now resolve the product's own
+        // store the same way GET /:id already did (loadProductByIdUnguarded -- an id-only bootstrap
+        // lookup on the unguarded client, re-verified by assertStaffPermission next), not by searching
+        // the caller's OWNED stores first (the former `resolveOwnedStoreIds` -> `.in('store_id', ...)`
+        // shape, which threw for a real, permitted staff member before assertStaffPermission ever ran --
+        // see routes/products.ts's "routing note" and
+        // docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md Section D).
         const lookups = fake.requests.slice(before).filter((r) => r.method === 'GET' && r.table === 'products').map((r) => r.query);
-        assert.ok(lookups.some((q) => q.includes(`id=eq.${PRODUCT}`) && /store_id=in\./.test(q)),
-            `${method}: the staff check was given the product's own store, found among the caller's stores`);
+        assert.ok(lookups.some((q) => q.includes(`id=eq.${PRODUCT}`)),
+            `${method}: the staff check was given the product's own store, resolved from the product row itself`);
     }
     // What the adapter does next is not this phase's: its own lookup and write by product id alone are
     // refused by the tenant query guard on develop too (APPID-P5b evidence, fixed in its own phase).

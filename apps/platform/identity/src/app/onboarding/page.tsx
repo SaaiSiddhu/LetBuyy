@@ -2,12 +2,12 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminSelectPlanUrl, getPlatformRootDomain, getStorefrontHost } from '@/lib/config/urls'
-import { Button, Input, Select } from '@letbuyy/ui'
+import { Button, Checkbox, Input, Select } from '@letbuyy/ui'
 
 interface SessionUser {
     id: string
@@ -17,6 +17,7 @@ interface SessionUser {
 }
 
 type SiteType = 'store' | 'portfolio' | 'resume' | 'landing' | 'blog'
+type SalesChannel = 'online' | 'retail' | 'social' | 'marketplace' | 'events'
 type Lang = 'en' | 'hi' | 'ta'
 
 interface ValidationResult {
@@ -64,6 +65,15 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmTitle: 'Review & Create',
         confirmDesc: 'Everything looks good? Create the site.',
         siteTypeLabel: 'Site Type',
+        accountEmail: 'Account email',
+        salesChannels: 'Where do you sell, or plan to sell?',
+        channelsNote: 'These choices guide setup only. They do not activate integrations or Marketplace access; Marketplace selling needs a separate review.',
+        salesOnline: 'Online store',
+        salesRetail: 'In-person retail',
+        salesSocial: 'Social media',
+        salesMarketplace: 'Online marketplaces',
+        salesEvents: 'Events and pop-ups',
+        channelsLabel: 'Sales channels',
         subdomainLabel: 'URL',
         confirm: 'Create My Site',
         whatsIncluded: "What's included",
@@ -72,6 +82,10 @@ const translations: Record<Lang, Record<string, string>> = {
         feat3: 'Razorpay Payments',
         feat4: 'GST Invoicing',
         feat5: 'Custom Domain',
+        draftSaved: 'Progress is saved on this browser.',
+        draftRestored: 'Your saved progress has been restored.',
+        draftSaving: 'Saving your progress…',
+        draftUnavailable: 'Setup progress could not sync. You can continue, but it may not be available on another device.',
     },
     hi: {
         whatBuild: 'आप क्या बनाना चाहते हैं?',
@@ -111,6 +125,15 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmTitle: 'समीक्षा करें और बनाएं',
         confirmDesc: 'सब ठीक लग रहा है?',
         siteTypeLabel: 'साइट प्रकार',
+        accountEmail: 'खाते का ईमेल',
+        salesChannels: 'आप कहाँ बेचते हैं या बेचने की योजना है?',
+        channelsNote: 'ये विकल्प केवल सेटअप को बेहतर बनाते हैं। ये इंटीग्रेशन या Marketplace पहुँच चालू नहीं करते; Marketplace बिक्री के लिए अलग समीक्षा ज़रूरी है।',
+        salesOnline: 'ऑनलाइन स्टोर',
+        salesRetail: 'दुकान पर आमने-सामने',
+        salesSocial: 'सोशल मीडिया',
+        salesMarketplace: 'ऑनलाइन मार्केटप्लेस',
+        salesEvents: 'इवेंट और पॉप-अप',
+        channelsLabel: 'बिक्री चैनल',
         subdomainLabel: 'URL',
         confirm: 'मेरी साइट बनाएं',
         whatsIncluded: 'क्या शामिल है',
@@ -119,6 +142,10 @@ const translations: Record<Lang, Record<string, string>> = {
         feat3: 'Razorpay पेमेंट',
         feat4: 'GST इनवॉइसिंग',
         feat5: 'कस्टम डोमेन',
+        draftSaved: 'आपकी प्रगति इस ब्राउज़र में सहेजी गई है।',
+        draftRestored: 'आपकी सहेजी गई प्रगति वापस लाई गई है।',
+        draftSaving: 'आपकी प्रगति सहेजी जा रही है…',
+        draftUnavailable: 'सेटअप प्रगति सिंक नहीं हो सकी। आप आगे बढ़ सकते हैं, लेकिन यह दूसरे डिवाइस पर उपलब्ध नहीं हो सकती।',
     },
     ta: {
         whatBuild: 'நீங்கள் என்ன உருவாக்க விரும்புகிறீர்கள்?',
@@ -158,6 +185,15 @@ const translations: Record<Lang, Record<string, string>> = {
         confirmTitle: 'சரிபார்க்கவும் மற்றும் உருவாக்கவும்',
         confirmDesc: 'எல்லாம் சரியாக உள்ளதா?',
         siteTypeLabel: 'தள வகை',
+        accountEmail: 'கணக்கு மின்னஞ்சல்',
+        salesChannels: 'நீங்கள் எங்கு விற்கிறீர்கள் அல்லது விற்கத் திட்டமிடுகிறீர்கள்?',
+        channelsNote: 'இந்தத் தேர்வுகள் அமைப்பை வழிநடத்தும். ஒருங்கிணைப்புகளையோ Marketplace அணுகலையோ செயல்படுத்தாது; Marketplace விற்பனைக்கு தனி மதிப்பாய்வு தேவை.',
+        salesOnline: 'ஆன்லைன் கடை',
+        salesRetail: 'நேரடி சில்லறை விற்பனை',
+        salesSocial: 'சமூக ஊடகம்',
+        salesMarketplace: 'ஆன்லைன் சந்தைகள்',
+        salesEvents: 'நிகழ்வுகள் மற்றும் பாப்-அப் கடைகள்',
+        channelsLabel: 'விற்பனை வழிகள்',
         subdomainLabel: 'URL',
         confirm: 'என் தளத்தை உருவாக்கு',
         whatsIncluded: 'என்ன சேர்க்கப்பட்டுள்ளது',
@@ -166,6 +202,10 @@ const translations: Record<Lang, Record<string, string>> = {
         feat3: 'Razorpay பேமெண்ட்',
         feat4: 'GST இன்வாய்ஸ்',
         feat5: 'தனிப்பயன் டொமைன்',
+        draftSaved: 'உங்கள் முன்னேற்றம் இந்த உலாவியில் சேமிக்கப்பட்டது.',
+        draftRestored: 'சேமித்த முன்னேற்றம் மீட்டமைக்கப்பட்டது.',
+        draftSaving: 'உங்கள் முன்னேற்றம் சேமிக்கப்படுகிறது…',
+        draftUnavailable: 'அமைப்பு முன்னேற்றத்தை ஒத்திசைக்க முடியவில்லை. தொடரலாம்; வேறு சாதனத்தில் இது கிடைக்காமல் போகலாம்.',
     },
 }
 
@@ -211,6 +251,14 @@ const ONBOARDING_INDUSTRIES = [
     { id: 'general', label: 'General / Multi-category', experience: 'Summit' },
 ] as const
 
+const ONBOARDING_CHANNELS: { id: SalesChannel; labelKey: keyof typeof translations.en }[] = [
+    { id: 'online', labelKey: 'salesOnline' },
+    { id: 'retail', labelKey: 'salesRetail' },
+    { id: 'social', labelKey: 'salesSocial' },
+    { id: 'marketplace', labelKey: 'salesMarketplace' },
+    { id: 'events', labelKey: 'salesEvents' },
+]
+
 function isSiteTypeAvailable(type: SiteTypeOption) {
     return type.availability === 'available'
 }
@@ -221,6 +269,7 @@ export default function OnboardingPage() {
     const [subdomain, setSubdomain] = useState('')
     const [storeName, setStoreName] = useState('')
     const [industry, setIndustry] = useState<string>('general')
+    const [channels, setChannels] = useState<SalesChannel[]>(['online'])
     const [validation, setValidation] = useState<ValidationResult | null>(null)
     const [validating, setValidating] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -230,8 +279,60 @@ export default function OnboardingPage() {
     const [authLoading, setAuthLoading] = useState(true)
     const [lang, setLang] = useState<Lang>('en')
     const [showUserMenu, setShowUserMenu] = useState(false)
+    const [draftReady, setDraftReady] = useState(false)
+    const [draftOwnerId, setDraftOwnerId] = useState<string | null>(null)
+    const [draftRestored, setDraftRestored] = useState(false)
+    const [draftSaved, setDraftSaved] = useState(false)
+    const [draftSaving, setDraftSaving] = useState(false)
+    const [draftUnavailable, setDraftUnavailable] = useState(false)
+    const [draftAttemptId, setDraftAttemptId] = useState<string | null>(null)
+    const draftSaveQueue = useRef<Promise<string | null>>(Promise.resolve(null))
 
     const t = translations[lang]
+    const userId = user?.id ?? null
+    const stepHeadingRef = useRef<HTMLHeadingElement>(null)
+
+    useEffect(() => {
+        if (authLoading || !user || !draftReady || draftOwnerId !== user.id) return
+        const frame = window.requestAnimationFrame(() => stepHeadingRef.current?.focus({ preventScroll: true }))
+        return () => window.cancelAnimationFrame(frame)
+    }, [step, authLoading, user, success, draftReady, draftOwnerId])
+
+    const persistOnboardingDraft = useCallback((draft: {
+        step: number
+        store_name: string
+        subdomain: string
+        industry: string
+        channels: SalesChannel[]
+    }): Promise<string | null> => {
+        const pending = draftSaveQueue.current.catch(() => null).then(async () => {
+            setDraftSaving(true)
+            try {
+                const response = await fetch('/api/auth/create-store', {
+                    method: 'PUT',
+                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify(draft),
+                })
+                const payload = await response.json() as {
+                    data?: { attempt_id?: string }
+                }
+                if (!response.ok || !payload.data?.attempt_id) throw new Error('Unable to save onboarding draft')
+                setDraftAttemptId(payload.data.attempt_id)
+                setDraftSaved(true)
+                setDraftUnavailable(false)
+                setDraftRestored(false)
+                return payload.data.attempt_id
+            } catch {
+                setDraftSaved(false)
+                setDraftUnavailable(true)
+                throw new Error('Unable to save onboarding draft')
+            } finally {
+                setDraftSaving(false)
+            }
+        })
+        draftSaveQueue.current = pending
+        return pending
+    }, [])
 
     useEffect(() => {
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
@@ -247,6 +348,80 @@ export default function OnboardingPage() {
             .catch(() => setUser(null))
             .finally(() => setAuthLoading(false))
     }, [])
+
+    useEffect(() => {
+        let active = true
+        setDraftReady(false)
+        setDraftOwnerId(null)
+        setDraftRestored(false)
+        setDraftSaved(false)
+        setDraftUnavailable(false)
+        setDraftAttemptId(null)
+        if (!userId) return () => { active = false }
+
+        fetch('/api/auth/create-store', { cache: 'no-store' })
+            .then(async (response) => {
+                const payload = await response.json() as {
+                    data?: {
+                        attempt?: { attempt_id: string; current_step: number; draft: { version: number; store_name: string; subdomain: string; industry: string }; channels?: SalesChannel[] } | null
+                        completed_store?: { id: string; subdomain: string }
+                    }
+                }
+                if (!response.ok) throw new Error('Draft could not be loaded')
+                if (!active) return
+                const attempt = payload.data?.attempt
+                if (payload.data?.completed_store?.subdomain) {
+                    setSiteType('store')
+                    setSubdomain(payload.data.completed_store.subdomain)
+                    setSuccess(true)
+                } else if (attempt?.draft?.version === 1) {
+                    const draft = attempt.draft
+                    setDraftAttemptId(attempt.attempt_id)
+                    setStep(Math.min(3, Math.max(1, attempt.current_step)) as 1 | 2 | 3)
+                    setSiteType('store')
+                    setStoreName(draft.store_name)
+                    setSubdomain(draft.subdomain)
+                    setIndustry(draft.industry)
+                    setChannels(attempt.channels ?? ['online'])
+                    setDraftRestored(true)
+                    if (draft.subdomain) {
+                        fetch(`/api/auth/validate-subdomain?subdomain=${encodeURIComponent(draft.subdomain)}`)
+                            .then((response) => response.json())
+                            .then((result: ValidationResult) => { if (active) setValidation(result) })
+                            .catch(() => { if (active) setValidation({ valid: false, reason: 'error', message: 'Unable to check' }) })
+                    }
+                } else {
+                    setStep(1)
+                    setSiteType(null)
+                    setStoreName('')
+                    setSubdomain('')
+                    setIndustry('general')
+                    setChannels(['online'])
+                    setValidation(null)
+                }
+                if (active) {
+                    setDraftOwnerId(userId)
+                    setDraftReady(true)
+                }
+            })
+            .catch(() => {
+                if (active) {
+                    setDraftUnavailable(true)
+                    setDraftOwnerId(userId)
+                    setDraftReady(true)
+                }
+            })
+        return () => { active = false }
+    }, [userId])
+
+    useEffect(() => {
+        if (!userId || !draftReady || draftOwnerId !== userId || success || loading) return
+        if (step === 1 && !siteType && !storeName && !subdomain) return
+        const timer = window.setTimeout(() => {
+            void persistOnboardingDraft({ step, store_name: storeName, subdomain, industry, channels }).catch(() => undefined)
+        }, 400)
+        return () => window.clearTimeout(timer)
+    }, [userId, draftReady, draftOwnerId, success, loading, step, siteType, storeName, subdomain, industry, channels, persistOnboardingDraft])
 
     useEffect(() => {
         if (!showUserMenu) return
@@ -304,10 +479,24 @@ export default function OnboardingPage() {
         setError(null)
         try {
             const name = storeName.trim() || subdomain
+            const savedAttemptId = await persistOnboardingDraft({
+                step: 3,
+                store_name: name,
+                subdomain,
+                industry,
+                channels,
+            }).catch(() => null)
             const res = await fetch('/api/auth/create-store', {
                 method: 'POST',
                 headers: getAuthHeaders(),
-                body: JSON.stringify({ siteType, storeName: name, subdomain, templateId: 'modern', survey: { industry } }),
+                body: JSON.stringify({
+                    siteType,
+                    storeName: name,
+                    subdomain,
+                    templateId: 'modern',
+                    survey: { industry },
+                    attemptId: savedAttemptId || draftAttemptId,
+                }),
             })
             const data = await res.json()
             if (!res.ok) {
@@ -323,7 +512,7 @@ export default function OnboardingPage() {
         }
     }
 
-    if (authLoading) {
+    if (authLoading || (user && (!draftReady || draftOwnerId !== user.id))) {
         return (
             <div className="auth-container">
                 <div className="auth-card onboard-card">
@@ -363,9 +552,13 @@ export default function OnboardingPage() {
                         <div className="onboard-success-icon">
                             <AuthIcon name="check_circle" size={28} style={{ color: 'var(--lb-color-success)' }} />
                         </div>
-                        <h1 className="auth-title">{t.successTitle}</h1>
+                        <h1 ref={stepHeadingRef} tabIndex={-1} className="auth-title">{t.successTitle}</h1>
                         <p className="auth-subtitle">{t.successDesc}</p>
                         <div className="onboard-review-rows">
+                            <div className="onboard-review-row">
+                                <span>{t.accountEmail}</span>
+                                <strong>{user?.email || '—'}</strong>
+                            </div>
                             <div className="onboard-review-row">
                                 <span>{t.siteTypeLabel}</span>
                                 <strong>{selectedSiteType ? t[selectedSiteType.nameKey] : '—'}</strong>
@@ -408,10 +601,16 @@ export default function OnboardingPage() {
                     </div>
                 )}
 
+                {(draftRestored || draftSaved || draftSaving || draftUnavailable) && (
+                    <p className="auth-subtitle" role="status" aria-live="polite">
+                        {draftUnavailable ? t.draftUnavailable : draftSaving ? t.draftSaving : draftRestored ? t.draftRestored : t.draftSaved}
+                    </p>
+                )}
+
                 {/* STEP 1: Choose type */}
                 {step === 1 && (
                     <>
-                        <h1 className="auth-title">{t.whatBuild}</h1>
+                        <h1 ref={stepHeadingRef} tabIndex={-1} className="auth-title">{t.whatBuild}</h1>
                         <p className="auth-subtitle">{t.chooseSite}</p>
                         <div className="onboard-bento-grid">
                             {ACQUISITION_SITE_TYPES.map((type) => (
@@ -455,7 +654,7 @@ export default function OnboardingPage() {
                 {/* STEP 2: Name & subdomain */}
                 {step === 2 && (
                     <>
-                        <h1 className="auth-title">{t.nameSite}</h1>
+                        <h1 ref={stepHeadingRef} tabIndex={-1} className="auth-title">{t.nameSite}</h1>
                         <p className="auth-subtitle">{t.storeUrl}</p>
 
 
@@ -471,21 +670,30 @@ export default function OnboardingPage() {
                                 />
                             </div>
 
-                            <div className="auth-field">
-                                <label className="auth-field label">{t.subdomain}</label>
-                                <div className={`onboard-subdomain-wrapper${validation ? (validation.valid ? ' valid' : ' invalid') : ''}`}>
-                                    <Input unstyled
-                                        type="text"
-                                        className="onboard-subdomain-input"
-                                        placeholder={t.subdomainPlaceholder}
-                                        value={subdomain}
-                                        onChange={(e) => onSubdomainChange(e.target.value)}
-                                        maxLength={63}
-                                        autoFocus
-                                    />
-                                    <span className="onboard-subdomain-suffix">.{getPlatformRootDomain()}</span>
-                                </div>
-                                <div className={`onboard-validation${validating ? ' checking' : validation ? (validation.valid ? ' valid' : (validation.reason === 'reserved' ? ' reserved' : ' invalid')) : ''}`}>
+                        <div className="auth-field">
+                            <label htmlFor="store-subdomain" className="auth-field label">{t.subdomain}</label>
+                            <div className={`onboard-subdomain-wrapper${validation ? (validation.valid ? ' valid' : ' invalid') : ''}`}>
+                                <Input unstyled
+                                    id="store-subdomain"
+                                    type="text"
+                                    className="onboard-subdomain-input"
+                                    placeholder={t.subdomainPlaceholder}
+                                    value={subdomain}
+                                    onChange={(e) => onSubdomainChange(e.target.value)}
+                                    maxLength={63}
+                                    aria-describedby="subdomain-host-suffix subdomain-validation"
+                                    aria-invalid={validation && !validation.valid ? true : undefined}
+                                    autoFocus
+                                />
+                                <span id="subdomain-host-suffix" className="onboard-subdomain-suffix">.{getPlatformRootDomain()}</span>
+                            </div>
+                            <div
+                                id="subdomain-validation"
+                                role="status"
+                                aria-live="polite"
+                                aria-atomic="true"
+                                className={`onboard-validation${validating ? ' checking' : validation ? (validation.valid ? ' valid' : (validation.reason === 'reserved' ? ' reserved' : ' invalid')) : ''}`}
+                            >
                                     {validating ? (
                                         <><span className="onboard-spinner" />Checking availability…</>
                                     ) : validation ? (
@@ -493,6 +701,26 @@ export default function OnboardingPage() {
                                     ) : null}
                                 </div>
                             </div>
+
+                            <fieldset className="auth-field" style={{ border: 0, margin: 0, padding: 0 }}>
+                                <legend className="auth-field label">{t.salesChannels}</legend>
+                                <p className="auth-subtitle" id="sales-channel-note">{t.channelsNote}</p>
+                                <div className="auth-form" style={{ gap: 8 }}>
+                                    {ONBOARDING_CHANNELS.map((channel) => (
+                                        <Checkbox
+                                            key={channel.id}
+                                            label={t[channel.labelKey]}
+                                            checked={channels.includes(channel.id)}
+                                            name="sales-channels"
+                                            value={channel.id}
+                                            aria-describedby="sales-channel-note"
+                                            onChange={(event) => setChannels((current) => event.target.checked
+                                                ? [...current, channel.id]
+                                                : current.filter((value) => value !== channel.id))}
+                                        />
+                                    ))}
+                                </div>
+                            </fieldset>
                         </div>
 
                         <div className="onboard-btn-row">
@@ -511,13 +739,24 @@ export default function OnboardingPage() {
                 {/* STEP 3: Review & create */}
                 {step === 3 && (
                     <>
-                        <h1 className="auth-title">{t.confirmTitle}</h1>
+                        <h1 ref={stepHeadingRef} tabIndex={-1} className="auth-title">{t.confirmTitle}</h1>
                         <p className="auth-subtitle">{t.confirmDesc}</p>
 
                         <div className="onboard-review-rows">
                             <div className="onboard-review-row">
                                 <span>{t.siteTypeLabel}</span>
                                 <strong>{siteType ? t[ACQUISITION_SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}</strong>
+                            </div>
+                            <div className="onboard-review-row">
+                                <span>{t.accountEmail}</span>
+                                <strong>{user?.email || '—'}</strong>
+                            </div>
+                            <div className="onboard-review-row">
+                                <span>{t.channelsLabel}</span>
+                                <strong>{channels.length ? channels.map((id) => {
+                                    const channel = ONBOARDING_CHANNELS.find((option) => option.id === id)
+                                    return channel ? t[channel.labelKey] : id
+                                }).join(', ') : '—'}</strong>
                             </div>
                             <div className="onboard-review-row">
                                 <span>{t.displayName}</span>

@@ -22,6 +22,7 @@ import 'package:letbuyy_store/services/money_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
+import 'package:letbuyy_store/services/staff_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_provider.dart';
@@ -139,6 +140,7 @@ List<SingleChildWidget> _providers(
     ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
     ChangeNotifierProvider<StoreService>.value(value: storeService),
     ChangeNotifierProvider<StoreAuthService>.value(value: authService),
+    ChangeNotifierProvider(create: (_) => StaffService(api: api)),
     ChangeNotifierProvider<StoreContext>(
       create: (_) => StoreContext(storeService: storeService),
     ),

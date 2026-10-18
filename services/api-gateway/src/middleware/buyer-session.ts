@@ -20,6 +20,7 @@ import { getSupabaseAdmin } from '../lib/supabase';
 
 export interface BuyerSessionContext {
     buyerAccountId: string;
+    sessionEpoch?: number;
 }
 
 export interface BuyerSessionState {
@@ -58,12 +59,14 @@ export function getBuyerSession(c: Context): BuyerSessionContext | null {
     return c.get('buyerSession') || null;
 }
 
-function readBuyerToken(c: Context<{ Bindings: Env }>): string | null {
+export function readBuyerToken(c: Context<{ Bindings: Env }>): string | null {
     const cookieHeader = c.req.header('cookie');
     if (cookieHeader) {
         for (const part of cookieHeader.split(';')) {
             const [name, ...rest] = part.trim().split('=');
-            if (name === LETBUYY_BUYER_SESSION_COOKIE) return decodeURIComponent(rest.join('='));
+            if (name === LETBUYY_BUYER_SESSION_COOKIE) {
+                try { return decodeURIComponent(rest.join('=')); } catch { return null; }
+            }
         }
     }
     return c.req.header(LETBUYY_BUYER_SESSION_HEADER) || null;
@@ -100,6 +103,6 @@ export const requireBuyerSession = createMiddleware<{ Bindings: Env }>(async (c,
         return c.json({ success: false, error: { code: 'BUYER_DISABLED', message: 'Account is disabled.' } }, 403);
     }
 
-    c.set('buyerSession', { buyerAccountId: resolved.buyerAccountId });
+    c.set('buyerSession', { buyerAccountId: resolved.buyerAccountId, sessionEpoch: resolved.sessionEpoch });
     await next();
 });

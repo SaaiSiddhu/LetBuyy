@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { InternalTrustSafetyCase, InternalTrustSafetyOverview } from '@letbuyy/api-client';
 import {
     ConsoleWorkspace,
@@ -11,7 +12,7 @@ import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatDateTime, type ConsoleDataResponse } from '@/lib/console-api';
 
 export default async function TrustSafetyPage() {
-    const result = await fetchConsoleApi<ConsoleDataResponse<InternalTrustSafetyOverview>>('/operations/trust-safety/overview');
+    const result = await fetchConsoleApi<ConsoleDataResponse<InternalTrustSafetyOverview>>('/internal/console/trust-safety/overview');
     const overview = result.data?.data;
     const recentCases = overview?.recent_cases || [];
     const activeTakedowns = overview?.active_takedowns || [];
@@ -27,15 +28,15 @@ export default async function TrustSafetyPage() {
             {result.error ? <ConsoleApiErrorPanel title="Trust & Safety API unavailable" message={result.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Open cases" value={String(overview?.counts.open_cases || 0)} tone={(overview?.counts.open_cases || 0) > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="Active takedowns" value={String(overview?.counts.active_takedowns || 0)} tone={(overview?.counts.active_takedowns || 0) > 0 ? 'critical' : 'success'} />
-                <LeadershipMetric label="Pending appeals" value={String(overview?.counts.pending_appeals || 0)} tone={(overview?.counts.pending_appeals || 0) > 0 ? 'warning' : 'success'} />
-                <LeadershipMetric label="Case sample" value={String(overview?.counts.total_cases_sampled || 0)} />
+                <LeadershipMetric label="Open cases" value={overview ? String(overview.counts.open_cases) : 'Unavailable'} tone={(overview?.counts.open_cases || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Active takedowns" value={overview ? String(overview.counts.active_takedowns) : 'Unavailable'} tone={(overview?.counts.active_takedowns || 0) > 0 ? 'critical' : 'success'} />
+                <LeadershipMetric label="Pending appeals" value={overview ? String(overview.counts.pending_appeals) : 'Unavailable'} tone={(overview?.counts.pending_appeals || 0) > 0 ? 'warning' : 'success'} />
+                <LeadershipMetric label="Case sample" value={overview ? String(overview.counts.total_cases_sampled) : 'Unavailable'} />
             </MetricGrid>
 
             <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-[1.2fr_0.8fr]">
                 <Panel title="Recent Cases" description="Latest Trust & Safety cases from the system of record.">
-                    {recentCases.length === 0 ? (
+                    {!overview ? <p>Case data unavailable. Retry the review.</p> : recentCases.length === 0 ? (
                         <EmptyDataState message="No Trust & Safety cases have been opened yet." />
                     ) : (
                         <div className="divide-y divide-[var(--lb-color-border)]">
@@ -45,7 +46,7 @@ export default async function TrustSafetyPage() {
                 </Panel>
 
                 <Panel title="Active Policies" description="Versioned default policies currently available to case reviewers.">
-                    {policies.length === 0 ? (
+                    {!overview ? <p>Policy data unavailable. Retry the review.</p> : policies.length === 0 ? (
                         <EmptyDataState message="No active Trust & Safety policies returned." />
                     ) : (
                         <div className="grid gap-[var(--lb-space-3)]">
@@ -64,7 +65,7 @@ export default async function TrustSafetyPage() {
 
             <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
                 <Panel title="Active Takedowns" description="Enforcement records retained for audit and appeal review.">
-                    {activeTakedowns.length === 0 ? (
+                    {!overview ? <p>Enforcement data unavailable. Retry the review.</p> : activeTakedowns.length === 0 ? (
                         <EmptyDataState message="No active takedowns or suspensions." />
                     ) : (
                         <div className="divide-y divide-[var(--lb-color-border)]">
@@ -84,7 +85,7 @@ export default async function TrustSafetyPage() {
                 </Panel>
 
                 <Panel title="Appeals" description="Filed appeals and due dates requiring independent review.">
-                    {appeals.length === 0 ? (
+                    {!overview ? <p>Appeal data unavailable. Retry the review.</p> : appeals.length === 0 ? (
                         <EmptyDataState message="No appeals have been filed." />
                     ) : (
                         <div className="divide-y divide-[var(--lb-color-border)]">
@@ -113,7 +114,7 @@ function CaseRow({ caseRow }: { caseRow: InternalTrustSafetyCase }) {
     return (
         <div className="grid gap-[var(--lb-space-2)] py-[var(--lb-space-3)] md:grid-cols-[1fr_auto_auto] md:items-center">
             <div className="min-w-0">
-                <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]">{caseRow.title}</p>
+                <p className="m-0 truncate text-sm font-medium text-[var(--lb-color-text)]"><Link className="underline" href={'/trust-safety/' + caseRow.id}>{caseRow.title}</Link></p>
                 <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
                     {caseRow.subject_type}:{caseRow.subject_id} · {formatDateTime(caseRow.created_at)}
                 </p>

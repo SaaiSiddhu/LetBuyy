@@ -10,7 +10,13 @@
     <button type="submit">Sign in</button>
   </form>
   <a href="{{ routes.customer_register_url }}">Create an account</a>
-  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start">Continue with LetBuyy</a></p>
+  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start?return_to={{ routes.account_url }}">Continue with LetBuyy</a></p>
+  <p>Have an older store account? Connect it with your verified LetBuyy account.</p>
+  <form class="lb-auth__link-store" method="post" action="/api/buyer-auth/start">
+    <input type="hidden" name="intent" value="link_store_customer">
+    <input type="hidden" name="return_to" value="{{ routes.account_url }}">
+    <button type="submit">Connect my store account</button>
+  </form>
 </section>
 {% schema %}
 {

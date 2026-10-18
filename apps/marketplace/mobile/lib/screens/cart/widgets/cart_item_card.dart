@@ -23,7 +23,8 @@ class CartItemCard extends StatefulWidget {
   State<CartItemCard> createState() => _CartItemCardState();
 }
 
-class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderStateMixin {
+class _CartItemCardState extends State<CartItemCard>
+    with SingleTickerProviderStateMixin {
   bool _isRemoving = false;
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
@@ -36,11 +37,12 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-    
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(-0.3, 0),
       end: Offset.zero,
@@ -57,9 +59,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
 
   Future<void> _handleRemove() async {
     HapticFeedback.mediumImpact();
-    
+
     final isDark = context.read<ThemeProvider>().isDarkMode;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -73,7 +75,11 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
                 color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: FaIcon(FontAwesomeIcons.triangleExclamation, color: AppColors.error, size: 20),
+              child: FaIcon(
+                FontAwesomeIcons.triangleExclamation,
+                color: AppColors.error,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Text(
@@ -91,7 +97,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Cancel',
-              style: TextStyle(color: isDark ? Colors.grey[400] : AppColors.textSecondary),
+              style: TextStyle(
+                color: isDark ? Colors.grey[400] : AppColors.textSecondary,
+              ),
             ),
           ),
           ElevatedButton(
@@ -124,7 +132,7 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDarkMode;
     final accentColor = isDark ? AppColors.primaryLight : AppColors.primary;
-    
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SlideTransition(
@@ -159,7 +167,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.7),
+                    color: (isDark ? Colors.black : Colors.white).withValues(
+                      alpha: 0.7,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
@@ -206,7 +216,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
               child: Center(
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(accentColor.withValues(alpha: 0.5)),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    accentColor.withValues(alpha: 0.5),
+                  ),
                 ),
               ),
             ),
@@ -261,10 +273,14 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (widget.item.variant != null && widget.item.variant!.isNotEmpty) ...[
+                  if (widget.item.variant != null &&
+                      widget.item.variant!.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: isDark ? Colors.grey[800] : Colors.grey[100],
                         borderRadius: BorderRadius.circular(6),
@@ -286,7 +302,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.grey[300] : Colors.grey[700],
+                              color: isDark
+                                  ? Colors.grey[300]
+                                  : Colors.grey[700],
                             ),
                           ),
                         ],
@@ -319,10 +337,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
   }
 
   Widget _buildPriceInfo(bool isDark, Color accentColor) {
-    final hasDiscount = widget.item.originalPrice != null && 
-                        widget.item.originalPrice! > widget.item.price;
-    final savings = hasDiscount 
-        ? widget.item.originalPrice! - widget.item.price 
+    final hasDiscount = widget.item.hasDisplayableReferencePrice;
+    final savings = hasDiscount
+        ? widget.item.originalPrice! - widget.item.price
         : 0.0;
 
     return Column(
@@ -342,7 +359,7 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
             if (hasDiscount) ...[
               const SizedBox(width: 8),
               Text(
-                '₹${widget.item.originalPrice!.toStringAsFixed(0)}',
+                '${widget.item.hasPriorThirtyDayLow ? '30d low' : 'M.R.P.'} ₹${widget.item.originalPrice!.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 13,
                   decoration: TextDecoration.lineThrough,
@@ -375,7 +392,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${widget.item.discountPercentage.toStringAsFixed(0)}% OFF',
+                      widget.item.hasPriorThirtyDayLow
+                          ? '${widget.item.discountPercentage.toStringAsFixed(0)}% below prior 30-day low'
+                          : '${widget.item.discountPercentage.toStringAsFixed(0)}% OFF',
                       style: const TextStyle(
                         fontSize: 10,
                         color: Colors.white,
@@ -394,7 +413,9 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
               ),
               const SizedBox(width: 4),
               Text(
-                'Save ₹${savings.toStringAsFixed(0)}',
+                widget.item.hasPriorThirtyDayLow
+                    ? '₹${savings.toStringAsFixed(0)} below prior 30-day low'
+                    : 'Save ₹${savings.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.success,
@@ -476,8 +497,8 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
         children: [
           _buildQuantityButton(
             icon: FontAwesomeIcons.minus,
-            onPressed: isMinQuantity 
-                ? null 
+            onPressed: isMinQuantity
+                ? null
                 : () => _handleQuantityChange(widget.item.quantity - 1),
             isEnabled: !isMinQuantity,
             isDark: isDark,
@@ -508,8 +529,8 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
           ),
           _buildQuantityButton(
             icon: FontAwesomeIcons.plus,
-            onPressed: isMaxQuantity 
-                ? null 
+            onPressed: isMaxQuantity
+                ? null
                 : () => _handleQuantityChange(widget.item.quantity + 1),
             isEnabled: !isMaxQuantity,
             isDark: isDark,
@@ -537,8 +558,8 @@ class _CartItemCardState extends State<CartItemCard> with SingleTickerProviderSt
           child: FaIcon(
             icon,
             size: 14,
-            color: isEnabled 
-                ? accentColor 
+            color: isEnabled
+                ? accentColor
                 : (isDark ? Colors.grey[700] : Colors.grey[400]),
           ),
         ),

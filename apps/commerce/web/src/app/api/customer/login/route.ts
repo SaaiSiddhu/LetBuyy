@@ -5,7 +5,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createStorefrontApiClient } from '@/lib/api/client';
+import { isSameOriginRequest } from '@/lib/buyer-auth/flow';
+import { customerSessionMatchesRequestStore } from '@/lib/customer-session-store-scope';
 import { createSession } from '@/lib/session';
+import { resolveStorefrontAccessContext } from '@/lib/storefront-access';
 
 function stringValue(value: unknown): string {
     return typeof value === 'string' ? value : '';
@@ -51,6 +54,13 @@ function accountRedirectUrl(request: NextRequest): URL {
 
 export async function POST(request: NextRequest) {
     const formPost = isFormPost(request);
+    if (!isSameOriginRequest(request.headers, request.url)) {
+        return NextResponse.json({ error: 'This request could not be verified.' }, {
+            status: 403,
+            headers: { 'Cache-Control': 'no-store' },
+        });
+    }
+
     try {
         let raw: unknown;
         if (formPost) {
@@ -75,6 +85,23 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 { error: 'Email, password, and storeId are required' },
                 { status: 400 }
+            );
+        }
+
+        const storeMatchesHost = await customerSessionMatchesRequestStore({
+            headers: request.headers,
+            storeId,
+            resolveStoreIdForHost: async host => (await resolveStorefrontAccessContext(host))?.site_id ?? null,
+        });
+        if (!storeMatchesHost) {
+            if (formPost) {
+                const response = formRedirect(request, { error: 'login_failed' });
+                response.headers.set('Cache-Control', 'no-store');
+                return response;
+            }
+            return NextResponse.json(
+                { error: 'This request could not be verified for this store.' },
+                { status: 403, headers: { 'Cache-Control': 'no-store' } },
             );
         }
 

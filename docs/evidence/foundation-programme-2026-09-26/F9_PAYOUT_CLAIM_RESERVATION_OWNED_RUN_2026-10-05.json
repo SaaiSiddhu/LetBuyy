@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "worktree": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "scope": "Phase 9 payout claim payable reservation regression and migration 294",
+  "runs": [
+    {
+      "runId": "a7474b64bb46",
+      "runner": "executable-owned-postgresql",
+      "result": "expected_failure_confirmed",
+      "suite": "tests/executable/foundation-wave1-money-postgres.test.mjs",
+      "failedAssertion": "The existing claim RPC accepted a second statement even though an earlier statement was processing and their combined amount exceeded payable.",
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "eebb8c1e246b",
+      "runner": "executable-owned-postgresql",
+      "result": "expected_failure_confirmed",
+      "suite": "tests/executable/foundation-wave1-money-postgres.test.mjs",
+      "failedAssertion": "The existing claim RPC accepted a second statement even though an earlier statement was processing and their combined amount exceeded payable.",
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    },
+    {
+      "runId": "ac9f43edc3d0",
+      "runner": "executable-owned-postgresql",
+      "result": "passed",
+      "suite": "tests/executable/foundation-wave1-money-postgres.test.mjs",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "coverage": [
+        "exact claim replay",
+        "changed release key denial",
+        "pending processing payable reservation",
+        "two concurrent distinct claims with one affordable result",
+        "insufficient canonical payable denial",
+        "paired migration 294 rollback and migration 160 rollback"
+      ],
+      "cleanup": {
+        "failures": [],
+        "remainingContainers": [],
+        "remainingNetworks": [],
+        "remainingVolumes": []
+      }
+    }
+  ],
+  "providerBoundary": {
+    "adapterPath": "POST /v1/transfers",
+    "observation": "The source sends linked account and amount without payment/order source identity. Official Razorpay Route material distinguishes Direct Transfers from payment-sourced transfers and describes Direct Transfers as requiring provider activation.",
+    "sourceReviewOnly": true,
+    "noProviderOrHostedCall": true
+  },
+  "limitations": [
+    "Owned disposable PostgreSQL only; no hosted database or provider sandbox was used.",
+    "No production payout or other live money movement was executed.",
+    "This closes only the cross-statement payable reservation defect; Phase 9 and F3.7 remain open."
+  ]
+}

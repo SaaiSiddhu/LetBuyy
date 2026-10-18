@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
+import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
@@ -71,6 +72,7 @@ const translations: Record<Lang, Record<string, string>> = {
 
 function SetPasswordContent() {
     const searchParams = useSearchParams()
+    const returnTo = safePlatformReturnTo(searchParams.get('return_to'))
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -103,11 +105,11 @@ function SetPasswordContent() {
                         setUserEmail(data.user.email)
                         setUserId(data.user.id)
                     } else {
-                        window.location.href = '/lookup'
+                        window.location.href = authPathWithReturnTo('/lookup', returnTo)
                     }
                 })
                 .catch(() => {
-                    window.location.href = '/lookup'
+                    window.location.href = authPathWithReturnTo('/lookup', returnTo)
                 })
         }
     }, [searchParams])
@@ -159,7 +161,7 @@ function SetPasswordContent() {
             }
 
             if (data.success) {
-                window.location.href = data.redirectTo
+                window.location.href = returnTo || data.redirectTo
             }
         } catch {
             setError(t.genericError)
@@ -169,7 +171,7 @@ function SetPasswordContent() {
     }
 
     const handleSkip = () => {
-        window.location.href = '/onboarding'
+        window.location.href = returnTo || '/onboarding'
     }
 
     return (

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './lib/console-session';
+import { isConsoleEmailAllowed } from './lib/console-access-allowlist';
+import { readCurrentConsoleSession } from './lib/console-live-session';
 
 const protectedPrefixes = [
     '/dashboard',
@@ -18,6 +20,8 @@ const protectedPrefixes = [
     '/analytics',
     '/settings',
     '/audit-logs',
+    '/approvals',
+    '/money-reconciliation',
 ];
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
@@ -49,20 +53,43 @@ function getAccountsUrl(requestUrl: string): string {
     return `${requestOrigin.protocol}//accounts.${platformRoot}`;
 }
 
+// Phase 2 auth hardening (Section 6): the session JWT's signature and `exp` are self-contained and
+// say nothing about whether this email is STILL on the allowlist right now. Without this re-check, an
+// operator removed from PLATFORM_CONSOLE_ALLOWED_EMAILS keeps full console access with their existing
+// cookie until it naturally expires (CONSOLE_SESSION_MAX_AGE_SECONDS = 8 hours) -- this is the
+// confirmed defect this mandate names. isConsoleEmailAllowed reads the CURRENT env value on every
+// call, so revocation takes effect on the very next request after redeploy, regardless of how old the
+// session cookie is. This function clears the cookie on the way out so the browser stops resending a
+// dead credential; the check itself does not depend on that cleanup succeeding.
+function redirectRevoked(request: NextRequest, destination: string) {
+    const response = NextResponse.redirect(new URL(destination, request.url));
+    response.cookies.delete(CONSOLE_SESSION_COOKIE);
+    return response;
+}
+
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
+    const value = request.cookies.get(CONSOLE_SESSION_COOKIE)?.value;
+    const signedSession = await readConsoleSession(value);
+    const sessionRevoked = signedSession !== null && !isConsoleEmailAllowed(signedSession.email);
+    const session = signedSession && !sessionRevoked ? await readCurrentConsoleSession(value) : signedSession;
     const merchantSession = verifyLetbuyySessionCookieValue(
         'merchant',
         request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
     );
 
     if (pathname === '/login') {
-        if (session?.mfaVerified) {
+        if (session?.mfaVerified && !sessionRevoked) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
 
         return NextResponse.next();
+    }
+
+    if (signedSession && !session && (pathname === '/mfa' || isProtectedPath(pathname))) {
+        // Storage unavailability is not durable logout. Keep the signed cookie
+        // for retry; every protected request remains denied by the live check.
+        return NextResponse.redirect(new URL('/login?error=session_unavailable', request.url));
     }
 
     if (pathname === '/mfa') {
@@ -70,7 +97,11 @@ export async function proxy(request: NextRequest) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
 
-        if (session.mfaVerified) {
+        if (sessionRevoked) {
+            return redirectRevoked(request, '/login?error=access_revoked');
+        }
+
+        if (session.mfaVerified && request.nextUrl.searchParams.get('step_up') !== '1') {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
 
@@ -89,6 +120,10 @@ export async function proxy(request: NextRequest) {
         }
 
         return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    if (sessionRevoked) {
+        return redirectRevoked(request, '/login?error=access_revoked');
     }
 
     if (!session.mfaVerified) {
@@ -116,5 +151,7 @@ export const config = {
         '/analytics/:path*',
         '/settings/:path*',
         '/audit-logs/:path*',
+        '/approvals/:path*',
+        '/money-reconciliation/:path*',
     ],
 };

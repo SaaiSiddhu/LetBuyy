@@ -9,6 +9,14 @@ export interface CachedJsonProducerResult {
     tags?: string[];
 }
 
+export interface CachedJsonOptions {
+    /**
+     * Eligibility-sensitive reads must re-check the canonical approval fence on every request.
+     * A CDN/browser cache can otherwise outlive a rejection, revocation, or material revision.
+     */
+    bypassCache?: boolean;
+}
+
 export const STOREFRONT_CACHE_TTL_SECONDS = 60;
 export const STOREFRONT_CACHE_SWR_SECONDS = 300;
 export const STOREFRONT_CACHE_VERSION_PREFIX = 'storefront-cache-version';
@@ -110,9 +118,10 @@ export async function cachedJson(
     ttlSeconds: number,
     swrSeconds: number,
     producer: () => Promise<CachedJsonProducerResult>,
+    options: CachedJsonOptions = {},
 ): Promise<Response> {
-    const cache = cacheApi();
-    if (!isStorefrontCacheEnabled(c.env) || !cache) {
+    const cache = options.bypassCache ? null : cacheApi();
+    if (options.bypassCache || !isStorefrontCacheEnabled(c.env) || !cache) {
         const produced = await producer();
         return jsonResponse(produced.body, produced.status || 200, ttlSeconds, swrSeconds, 'BYPASS', produced.tags);
     }

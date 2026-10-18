@@ -1366,7 +1366,35 @@ auth.post('/custom/tokens/validate', async (c) => {
         return c.json({ data: null });
     }
 
-    await db.from('verification_tokens').update({ used: true }).eq('id', data.id);
+    // Atomic consume (Mandate: Phase 2 auth hardening, Section 5). The SELECT above is a fast-path
+    // rejection only -- token/type/email/expiry/used are already known-bad there, so no write is
+    // needed. The actual single-use guarantee is this UPDATE's WHERE clause: `used = false` (and,
+    // defensively, `expires_at > now` again) is re-checked by Postgres AT THE MOMENT OF THE WRITE,
+    // not from the state read a moment ago. Two concurrent requests racing the same row serialize on
+    // Postgres's row lock -- the first to commit flips `used` to true; the second's WHERE clause then
+    // matches zero rows (not an error), so `.select().maybeSingle()` returns null and this handler
+    // correctly reports failure, exactly as if the token had already been used. This closes the
+    // previous read-then-blind-write gap, where the UPDATE had no condition at all and always
+    // "succeeded" regardless of which request read the row first.
+    const { data: consumed, error: consumeError } = await db
+        .from('verification_tokens')
+        .update({ used: true })
+        .eq('id', data.id)
+        .eq('used', false)
+        .gt('expires_at', new Date().toISOString())
+        .select('id')
+        .maybeSingle();
+
+    if (consumeError) {
+        // Fail closed: a storage failure at the consume step must never be reported as a successful
+        // redemption -- the caller (email verification, magic-link login, password reset) would then
+        // proceed to mutate a session or account on an unconfirmed consumption.
+        return c.json(dbErrorBody(), 500);
+    }
+    if (!consumed) {
+        return c.json({ data: null });
+    }
+
     return c.json({ data: { email: data.email, user_id: data.user_id } });
 });
 

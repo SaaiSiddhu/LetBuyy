@@ -4,16 +4,18 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import type { CustomerAddress } from '@letbuyy/shared-types';
 import { Banner, Button, Input,
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
 } from '@letbuyy/ui';
 import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
+import { useWishlist } from '@/context/wishlist-context';
 
 type AddressRow = Pick<CustomerAddress, 'id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code' | 'country' | 'is_default'> &
     Partial<Pick<CustomerAddress, 'label' | 'address_line2' | 'landmark'>> & {
         customer_phone?: string | null;
+        phone?: string | null;
     };
 
 const EMPTY_FORM = {
@@ -37,6 +39,7 @@ const LABEL_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function AddressesPageClient() {
+    const { buyerSessionEmail, buyerSessionReady, buyerSessionRevision, buyerSessionUnavailable } = useWishlist();
     const [addresses, setAddresses] = useState<AddressRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -51,7 +54,14 @@ export default function AddressesPageClient() {
     const [loadError, setLoadError] = useState<string | null>(null);
     /** A failed WRITE (save/delete/set-default). Shown next to the action that failed. */
     const [actionError, setActionError] = useState<string | null>(null);
+    const [buyerMode, setBuyerMode] = useState<boolean | null>(null);
+    const [loadedSessionRevision, setLoadedSessionRevision] = useState<number | null>(null);
+    const addressRequestId = useRef(0);
+    const priorBuyerId = useRef<string | null | undefined>(undefined);
     const pinCodeComplete = form.postal_code.length === 6;
+    const buyerWriteHeaders = (): Record<string, string> | null => priorBuyerId.current
+        ? { 'Content-Type': 'application/json', 'X-LetBuyy-Expected-Buyer-Id': priorBuyerId.current }
+        : null;
 
     /** Pull the server's safe message, falling back to something a shopper can act on. */
     const messageFrom = async (res: Response, fallback: string): Promise<string> => {
@@ -64,10 +74,12 @@ export default function AddressesPageClient() {
         }
     };
 
-    const fetchAddresses = useCallback(async (): Promise<void> => {
+    const fetchAddresses = useCallback(async (isBuyer: boolean, signal?: AbortSignal): Promise<void> => {
+        const requestId = ++addressRequestId.current;
         setLoadError(null);
         try {
-            const res = await fetch('/api/customer/addresses');
+            const res = await fetch(isBuyer ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store', signal });
+            if (signal?.aborted || requestId !== addressRequestId.current) return;
             if (!res.ok) {
                 // A non-2xx must NOT fall through to `addresses: []`. An expired
                 // session (401) previously rendered as an empty address book.
@@ -76,16 +88,84 @@ export default function AddressesPageClient() {
                     : 'We could not load your addresses.');
                 return;
             }
-            const data = await res.json();
+            const data = await res.json() as { addresses?: AddressRow[] };
+            if (signal?.aborted || requestId !== addressRequestId.current) return;
             setAddresses(data.addresses || []);
         } catch {
+            if (signal?.aborted || requestId !== addressRequestId.current) return;
             setLoadError('We could not reach the server. Check your connection and try again.');
         } finally {
-            setLoading(false);
+            if (!signal?.aborted && requestId === addressRequestId.current) {
+                setLoading(false);
+                setLoadedSessionRevision(buyerSessionRevision);
+            }
         }
-    }, []);
+    }, [buyerSessionRevision]);
 
-    useEffect(() => { fetchAddresses(); }, [fetchAddresses]);
+    const reloadAddresses = useCallback(async (signal?: AbortSignal): Promise<void> => {
+        const isBuyer = Boolean(buyerSessionEmail);
+        try {
+            if (isBuyer) {
+                const profileResponse = await fetch('/api/buyer/profile', { cache: 'no-store', signal });
+                const payload = await profileResponse.json() as { buyer?: { id?: unknown }; error?: string };
+                if (!profileResponse.ok || typeof payload.buyer?.id !== 'string') {
+                    throw new Error(payload.error || 'We could not verify your account. Please try again.');
+                }
+                if (signal?.aborted) return;
+                if (priorBuyerId.current !== undefined && priorBuyerId.current !== payload.buyer.id) {
+                    // Email can remain unchanged across account generations. Use the
+                    // canonical buyer ID to avoid carrying an address draft between them.
+                    setShowForm(false);
+                    setEditingId(null);
+                    setForm(EMPTY_FORM);
+                    setActionError(null);
+                }
+                priorBuyerId.current = payload.buyer.id;
+            } else {
+                if (priorBuyerId.current) {
+                    setShowForm(false);
+                    setEditingId(null);
+                    setForm(EMPTY_FORM);
+                    setActionError(null);
+                }
+                priorBuyerId.current = null;
+            }
+            if (signal?.aborted) return;
+            setBuyerMode(isBuyer);
+            await fetchAddresses(isBuyer, signal);
+        } catch (reason) {
+            if (signal?.aborted) return;
+            setShowForm(false);
+            setEditingId(null);
+            setForm(EMPTY_FORM);
+            setActionError(null);
+            setLoadError(reason instanceof Error ? reason.message : 'We could not verify your account. Please try again.');
+            setLoading(false);
+            setLoadedSessionRevision(buyerSessionRevision);
+        }
+    }, [buyerSessionEmail, buyerSessionRevision, fetchAddresses]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        setAddresses([]);
+        setBuyerMode(buyerSessionReady && !buyerSessionUnavailable ? Boolean(buyerSessionEmail) : null);
+        setLoading(true);
+        setLoadedSessionRevision(null);
+        if (buyerSessionReady) {
+            if (buyerSessionUnavailable) {
+                setShowForm(false);
+                setEditingId(null);
+                setForm(EMPTY_FORM);
+                setActionError(null);
+                setLoadError('We could not verify your account. Please try again.');
+                setLoading(false);
+                setLoadedSessionRevision(buyerSessionRevision);
+            } else {
+                void reloadAddresses(controller.signal);
+            }
+        }
+        return () => controller.abort();
+    }, [buyerSessionEmail, buyerSessionReady, buyerSessionRevision, buyerSessionUnavailable, reloadAddresses]);
 
     const openAdd = () => {
         setForm(EMPTY_FORM);
@@ -104,7 +184,7 @@ export default function AddressesPageClient() {
             postal_code: addr.postal_code,
             country: addr.country,
             landmark: addr.landmark || '',
-            phone: addr.customer_phone || '',
+            phone: addr.phone || addr.customer_phone || '',
             is_default: addr.is_default,
         });
         setEditingId(addr.id);
@@ -114,16 +194,24 @@ export default function AddressesPageClient() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (saving) return;
+        const expectedBuyerHeaders = buyerMode ? buyerWriteHeaders() : null;
+        if (buyerMode && !expectedBuyerHeaders) {
+            setActionError('Reload your account before changing saved addresses.');
+            return;
+        }
         setSaving(true);
         setActionError(null);
         try {
-            const method = editingId ? 'PUT' : 'POST';
-            const body = editingId ? { id: editingId, ...form } : form;
-
-            const res = await fetch('/api/customer/addresses', {
-                method,
+            const res = buyerMode
+                ? await fetch(editingId ? `/api/buyer/addresses/${encodeURIComponent(editingId)}` : '/api/buyer/addresses', {
+                    method: editingId ? 'PATCH' : 'POST',
+                    headers: expectedBuyerHeaders!,
+                    body: JSON.stringify(form),
+                })
+                : await fetch('/api/customer/addresses', {
+                method: editingId ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
+                body: JSON.stringify(editingId ? { id: editingId, ...form } : form),
             });
 
             if (!res.ok) {
@@ -135,7 +223,7 @@ export default function AddressesPageClient() {
 
             setShowForm(false);
             setEditingId(null);
-            await fetchAddresses();
+            await fetchAddresses(Boolean(buyerMode));
         } catch {
             setActionError('We could not reach the server. Your address was not saved.');
         } finally {
@@ -145,10 +233,17 @@ export default function AddressesPageClient() {
 
     const handleDelete = async (id: string) => {
         if (deletingId) return;
+        const expectedBuyerHeaders = buyerMode ? buyerWriteHeaders() : null;
+        if (buyerMode && !expectedBuyerHeaders) {
+            setActionError('Reload your account before changing saved addresses.');
+            return;
+        }
         setDeletingId(id);
         setActionError(null);
         try {
-            const res = await fetch('/api/customer/addresses', {
+            const res = buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE', headers: expectedBuyerHeaders! })
+                : await fetch('/api/customer/addresses', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id }),
@@ -171,10 +266,19 @@ export default function AddressesPageClient() {
 
     const setDefault = async (id: string) => {
         if (defaultingId) return;
+        const expectedBuyerHeaders = buyerMode ? buyerWriteHeaders() : null;
+        if (buyerMode && !expectedBuyerHeaders) {
+            setActionError('Reload your account before changing saved addresses.');
+            return;
+        }
         setDefaultingId(id);
         setActionError(null);
         try {
-            const res = await fetch('/api/customer/addresses', {
+            const res = buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, {
+                    method: 'PATCH', headers: expectedBuyerHeaders!, body: JSON.stringify({ is_default: true }),
+                })
+                : await fetch('/api/customer/addresses', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, is_default: true }),
@@ -185,7 +289,7 @@ export default function AddressesPageClient() {
                 return;
             }
 
-            await fetchAddresses();
+            await fetchAddresses(Boolean(buyerMode));
         } catch {
             setActionError('We could not reach the server. The default address is unchanged.');
         } finally {
@@ -193,7 +297,7 @@ export default function AddressesPageClient() {
         }
     };
 
-    if (loading) {
+    if (loading || !buyerSessionReady || loadedSessionRevision !== buyerSessionRevision) {
         return <StorefrontListLoadingState rows={3} />;
     }
 
@@ -231,7 +335,14 @@ export default function AddressesPageClient() {
                     action={(
                         <Button
                             variant="secondary"
-                            onClick={() => { setLoading(true); void fetchAddresses(); }}
+                            onClick={() => {
+                                if (buyerSessionUnavailable) {
+                                    window.location.reload();
+                                    return;
+                                }
+                                setLoading(true);
+                                void reloadAddresses();
+                            }}
                         >
                             Try again
                         </Button>

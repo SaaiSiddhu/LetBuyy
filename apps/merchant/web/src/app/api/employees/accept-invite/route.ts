@@ -1,18 +1,22 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
+import { validateStaffMutationRequest } from '@/lib/staff/request-origin'
 
-// Phase N3: the gateway endpoint this proxy forwarded to
-// (POST /v1/employees/auth/accept-invite) is removed -- it never had a
-// working completion path (see the Phase N3 report). Fails closed with an
-// explicit, honest response rather than proxying to a route that no longer
-// exists (ANTI-R9: a stub must never read as success).
-export async function POST() {
-    return NextResponse.json(
-        {
-            error: {
-                code: 'STAFF_INVITE_UNAVAILABLE',
-                message: 'Staff self-service invite activation is not available.',
-            },
-        },
-        { status: 503 },
-    )
+// Thin authenticated proxy: account, token, expiry, grants, consent and atomic
+// effects remain owned by the canonical Gateway/database invitation flow.
+export async function POST(request: NextRequest) {
+    const originDenied = validateStaffMutationRequest(request, false)
+    if (originDenied) return originDenied
+    try {
+        const body = await request.json().catch(() => null)
+        if (!body || typeof body.token !== 'string' || !['preview', 'accept'].includes(body.action)) {
+            return NextResponse.json({ error: { code: 'VALIDATION', message: 'A valid invitation and action are required.' } }, { status: 400 })
+        }
+        const client = createMerchantApiClient()
+        if (body.action === 'preview') return NextResponse.json({ data: await client.employees.previewInvite({ token: body.token }) })
+        const denied = validateStaffMutationRequest(request)
+        if (denied) return denied
+        const data = await client.employees.acceptInvite({ token: body.token }, { idempotencyKey: request.headers.get('X-Idempotency-Key') || '' })
+        return NextResponse.json({ data })
+    } catch (error) { return merchantApiErrorResponse(error, 'Unable to process this staff invitation') }
 }

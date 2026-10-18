@@ -3,13 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../config/app_config.dart';
 import '../../services/order_service.dart';
+import '../../services/two_factor_service.dart';
+import '../../services/api_client.dart';
+import '../../app/store_context.dart';
+import '../security/two_factor_screen.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../widgets/shared/provider_mode_badge.dart';
@@ -35,6 +39,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   String? _error;
 
   late AppThemeColors colors;
+  Object? _observedContext;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.watch<StoreContext>();
+    final current = context.read<OrderService>().requestContext;
+    if (_observedContext != null && current != _observedContext) {
+      _order = null;
+      _isLoading = false;
+      _isMutating = false;
+      _error = 'Account or store access changed. Reload this order.';
+    }
+    _observedContext = current;
+  }
 
   @override
   void initState() {
@@ -44,6 +62,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Future<void> _loadOrder({bool preferCached = false}) async {
+    final captured = context.read<OrderService>().requestContext;
     if (widget.orderId.trim().isEmpty) {
       setState(() {
         _isLoading = false;
@@ -55,7 +74,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final service = context.read<OrderService>();
     if (preferCached) {
       final cached = _order ?? service.cachedOrder(widget.orderId);
-      if (cached != null) {
+      if (cached != null &&
+          cached.storeId == context.read<StoreContext>().selectedStoreId) {
         setState(() {
           _order = cached;
           _isLoading = false;
@@ -72,7 +92,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     try {
       final order = await service.fetchOrder(widget.orderId);
-      if (mounted) {
+      if (mounted && service.requestContext == captured) {
         setState(() {
           _order = order;
           _isLoading = false;
@@ -90,21 +110,31 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Future<void> _issueRefund() async {
     final order = _order;
-    if (order == null) return;
-
-    final request = await _showRefundDialog(order);
-    if (request == null) return;
-
-    setState(() => _isMutating = true);
+    if (order == null || _isMutating) return;
     try {
+      final captured = context.read<TwoFactorService>().capture();
+      final pending = await context.read<OrderService>().pendingRefundRequest(
+        order.id,
+        captured,
+      );
+      if (!mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      final request = await _showRefundDialog(order, pending: pending);
+      if (request == null || !mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      setState(() => _isMutating = true);
       final updated = await context.read<OrderService>().refundOrder(
         order.id,
-        amount: request.amount,
+        context: captured,
+        lines: request.lines,
         reason: request.reason,
       );
-      if (mounted) {
+      if (mounted && context.read<TwoFactorService>().isCurrent(captured)) {
         setState(() => _order = updated);
-        _showSnackBar('Refund requested for ${_money(request.amount)}');
+        _showSnackBar(
+          'Refund request saved. Payment completion is still required.',
+        );
+        await _loadOrder();
       }
     } catch (error) {
       if (mounted) _showSnackBar(error.toString(), isError: true);
@@ -115,20 +145,30 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Future<void> _completeRefund() async {
     final order = _order;
-    if (order == null) return;
-
-    final request = await _showCompleteRefundDialog();
-    if (request == null) return;
-
-    setState(() => _isMutating = true);
+    if (order == null || _isMutating) return;
     try {
+      final captured = context.read<TwoFactorService>().capture();
+      final pending = await context
+          .read<OrderService>()
+          .pendingRefundCompletion(order.id, captured);
+      if (!mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      final request = await _showCompleteRefundDialog(pending: pending);
+      if (request == null || !mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      final proof = await TwoFactorScreen.approve(context);
+      if (proof == null || !mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      if (proof.context != captured) throw TwoFactorService.changed();
+      setState(() => _isMutating = true);
       final updated = await context.read<OrderService>().completeRefund(
         order.id,
+        approval: proof,
         refundId: request.refundId,
         providerRefundId: request.providerRefundId,
         notes: request.notes,
       );
-      if (mounted) {
+      if (mounted && context.read<TwoFactorService>().isCurrent(captured)) {
         setState(() => _order = updated);
         _showSnackBar('Refund completed');
       }
@@ -969,74 +1009,100 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Future<_RefundRequest?> _showRefundDialog(OrderContract order) async {
-    final amountController = TextEditingController(
-      text: _orderTotal(order).toStringAsFixed(0),
-    );
-    final reasonController = TextEditingController();
-
+  Future<_RefundRequest?> _showRefundDialog(
+    OrderContract order, {
+    JsonMap? pending,
+  }) async {
+    final savedLines = asJsonList(pending?['lines']).map(asJsonMap);
+    final quantities = {
+      for (final line in savedLines) line['order_item_id']: line['quantity'],
+    };
+    final controllers = <LineItemContract, TextEditingController>{
+      for (final item in order.lineItems)
+        if (item.id.isNotEmpty)
+          item: TextEditingController(
+            text: quantities[item.id]?.toString() ?? '0',
+          ),
+    };
+    final reason = TextEditingController(text: pending?['reason']?.toString());
     return showDialog<_RefundRequest>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: colors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Issue refund',
-          style: TextStyle(color: colors.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: amountController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+        title: const Text('Request item refund'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Choose the quantity to return for each item. Refundable quantities and the final refund amount are checked by the server.',
               ),
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Amount',
-                prefixText: 'INR ',
-                labelStyle: TextStyle(color: colors.textSecondary),
+              if (controllers.isEmpty)
+                const Text(
+                  'Order lines are unavailable. Reload this order before requesting a refund.',
+                ),
+              for (final entry in controllers.entries)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: TextField(
+                    controller: entry.value,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Return quantity: ${entry.key.name}',
+                      helperText: 'Ordered: ${entry.key.quantity}',
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reason,
+                decoration: const InputDecoration(labelText: 'Reason'),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: reasonController,
-              minLines: 2,
-              maxLines: 3,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                labelText: 'Reason',
-                hintText: 'Customer request, damaged item, duplicate order...',
-                labelStyle: TextStyle(color: colors.textSecondary),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: colors.textSecondary),
-            ),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () {
-              final amount = double.tryParse(amountController.text.trim());
-              if (amount == null || amount <= 0) {
-                _showSnackBar('Enter a valid refund amount', isError: true);
-                return;
-              }
-              Navigator.pop(
-                context,
-                _RefundRequest(
-                  amount: amount,
-                  reason: reasonController.text.trim(),
-                ),
-              );
-            },
-            child: Text('Refund', style: TextStyle(color: colors.error)),
+          FilledButton(
+            onPressed: controllers.isEmpty
+                ? null
+                : () {
+                    final lines = <JsonMap>[];
+                    for (final entry in controllers.entries) {
+                      final quantity = int.tryParse(entry.value.text.trim());
+                      if (quantity == null ||
+                          quantity < 0 ||
+                          quantity > entry.key.quantity) {
+                        _showSnackBar(
+                          'Enter a return quantity between 0 and the ordered quantity.',
+                          isError: true,
+                        );
+                        return;
+                      }
+                      if (quantity > 0)
+                        lines.add({
+                          'order_item_id': entry.key.id,
+                          'quantity': quantity,
+                        });
+                    }
+                    if (lines.isEmpty) {
+                      _showSnackBar(
+                        'Choose at least one item to return.',
+                        isError: true,
+                      );
+                      return;
+                    }
+                    Navigator.pop(
+                      dialogContext,
+                      _RefundRequest(lines: lines, reason: reason.text.trim()),
+                    );
+                  },
+            child: Text(
+              pending == null ? 'Request refund' : 'Retry original request',
+            ),
           ),
         ],
       ),
@@ -1110,9 +1176,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Future<_CompleteRefundRequest?> _showCompleteRefundDialog() async {
-    final refundIdController = TextEditingController();
-    final providerRefundIdController = TextEditingController();
+  Future<_CompleteRefundRequest?> _showCompleteRefundDialog({
+    JsonMap? pending,
+  }) async {
+    final refundIdController = TextEditingController(
+      text:
+          pending?['refund_id']?.toString() ??
+          _order?.toJson()['refund_id']?.toString(),
+    );
+    final providerRefundIdController = TextEditingController(
+      text: pending?['provider_refund_id']?.toString(),
+    );
     final notesController = TextEditingController();
 
     return showDialog<_CompleteRefundRequest>(
@@ -1147,11 +1221,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: notesController,
+              readOnly: true,
               minLines: 2,
               maxLines: 3,
               style: TextStyle(color: colors.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Notes',
+                helperText: 'Add completion notes on the return.',
                 labelStyle: TextStyle(color: colors.textSecondary),
               ),
             ),
@@ -1677,9 +1753,9 @@ class _TimelineEntry {
 }
 
 class _RefundRequest {
-  const _RefundRequest({required this.amount, required this.reason});
+  const _RefundRequest({required this.lines, required this.reason});
 
-  final double amount;
+  final List<JsonMap> lines;
   final String reason;
 }
 

@@ -1,0 +1,52 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payout-statement-replay.postgres.test.ts",
+  "owned_runner_id": "c0dce10c9acc",
+  "command": "node scripts/governance/run-executable-suites.mjs --kind gateway-db --suite services/api-gateway/src/__tests__/owned-db/payout-statement-replay.postgres.test.ts --jobs 1 --timeout 300 --log-dir /private/tmp/letbuyy-payout-lineage-multiple-final2-20261007 --json-out /private/tmp/letbuyy-payout-lineage-multiple-final2-20261007.json",
+  "result": {
+    "suite_count": 1,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 28.5,
+    "wall_seconds": 30.6,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "lineage_case": {
+    "order_gross_minor": 10000,
+    "payment_capture_delta_minor": 10000,
+    "succeeded_partial_refund_delta_minor": -2500,
+    "summed_canonical_merchant_payable_delta_minor": 7500,
+    "origin_transaction_count": 1,
+    "canonical_transaction_count": 2,
+    "lineage_status": "linked",
+    "tenant_scoped_detail_readback": true,
+    "same_tenant_decoy_capture_for_other_order_excluded": true
+  },
+  "runner_observations": {
+    "gateway_requests_forwarded": 325,
+    "gateway_requests_refused": 0,
+    "proxy_upstream_errors": 1
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "limits": [
+    "Synthetic owned database rows and the production Gateway worker path only.",
+    "This verifies lineage capture/readback, not payout eligibility or changes to gross-based statement calculation.",
+    "No provider refund, payout transfer, live money movement or hosted database was used.",
+    "Missing-lineage, partial-refund, operator-review and provider-reversal policies remain unresolved."
+  ]
+}

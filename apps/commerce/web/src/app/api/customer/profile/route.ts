@@ -2,6 +2,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
 import { createStorefrontApiClient } from '@/lib/api/client';
+import { customerProfileResponse } from './response';
+
+const NO_STORE = { 'Cache-Control': 'no-store' };
+
+export async function GET() {
+    return customerProfileResponse();
+}
 
 export async function PATCH(request: NextRequest) {
     try {
@@ -25,12 +32,12 @@ export async function PATCH(request: NextRequest) {
             accepts_marketing: updates.accepts_marketing as boolean | undefined,
         });
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true }, { headers: NO_STORE });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {
-            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
         }
         console.error('[API] /customer/profile error:', error);
-        return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to update profile' }, { status: 500, headers: NO_STORE });
     }
 }

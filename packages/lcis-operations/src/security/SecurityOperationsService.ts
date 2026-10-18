@@ -1,6 +1,6 @@
 /**
  * SecurityOperationsService — LCOS security area. Observes and reports on the structural
- * security posture (11 controls, two-issuer auth, 20 cross-tenant candidates, dangerous
+ * security posture (11 controls, canonical identity plus legacy session bridge, 20 cross-tenant candidates, dangerous
  * policies, missing RLS, public mutations) and surfaces honest NOT_CONNECTED placeholders
  * for every live signal (auth failure rate, abuse signals, credential events, security spikes).
  *
@@ -58,7 +58,8 @@ export class SecurityOperationsService {
   // ── 1. detectAuthAnomalies ──────────────────────────────────────────────────
   /**
    * Live auth-failure rate: NOT_CONNECTED — value=null, confidence=0.
-   * Structural two-issuer model: CONNECTED from security artifact.
+   * Structural identity posture: canonical asymmetric identity-platform sessions plus
+   * a separate transitional legacy store-customer HS256 bridge.
    */
   detectAuthAnomalies(): OperationalFinding[] {
     const findings: OperationalFinding[] = [];
@@ -74,7 +75,8 @@ export class SecurityOperationsService {
         detail:
           'Live authentication failure rate is NOT CONNECTED. ' +
           'Source: Supabase auth logs (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY required). ' +
-          'Structural two-issuer model (HS256 customer / ES256 merchant) is confirmed.',
+          'Source review identifies identity-platform as the canonical asymmetric user-session issuer; ' +
+          'Gateway and Commerce still retain a separate legacy store-customer HS256 bridge.',
         status: 'NOT_CONNECTED',
         confidence: 0,
         evidence: [
@@ -84,32 +86,31 @@ export class SecurityOperationsService {
       }),
     );
 
-    // Structural: two-issuer model — CONNECTED from security intelligence artifact
-    const secArtifact = this.store.security() as Record<string, unknown> | null;
-
-    if (secArtifact !== null) {
-      findings.push(
-        this.fb.build({
-          area: 'security',
-          kind: 'two-issuer-auth-model',
-          severity: 'info',
-          subject: 'jwt-issuers',
-          title: 'Two-issuer auth model structurally confirmed (HS256 + ES256)',
-          detail:
-            'Structural analysis confirms the two-issuer model: customer sessions use HS256 ' +
-            '(CUSTOMER_SESSION_SECRET) and merchant sessions use ES256 ' +
-            '(LETBUYY_IDENTITY_PUBLIC_JWKS). Both issuers are structurally present in the ' +
-            'security-intelligence-v5 artifact. Live key presence requires Cloudflare Workers ' +
-            'secrets API — NOT CONNECTED.',
-          status: 'CONNECTED',
-          confidence: 0.9,
-          evidence: [
-            this.eb.artifact('security-intelligence-v5', 'controls.jwt', 'HS256 customer + ES256 merchant two-issuer model'),
-            this.eb.artifact('security-intelligence-v5', 'base.identity.issuers', 'two-issuer issuers array structurally present'),
-          ],
-        }),
-      );
-    }
+    // Structural identity posture is source/governance cited. Older generated
+    // security artifacts encoded a false two-issuer model and are not authority.
+    findings.push(
+      this.fb.build({
+        area: 'security',
+        kind: 'canonical-identity-legacy-session-bridge',
+        severity: 'info',
+        subject: 'identity-session-posture',
+        title: 'Canonical identity issuer with transitional legacy customer sessions',
+        detail:
+          'The Constitution names identity-platform as the sole asymmetric user-session issuer ' +
+          'for all three realms. Current source still has Gateway and Commerce HS256 ' +
+          'store-customer session issuance/acceptance paths. Legacy usage telemetry is ' +
+          'instrumented locally; hosted observation, migration and retirement remain open. ' +
+          'No hosted key presence or deployment is asserted.',
+        status: 'CONNECTED',
+        confidence: 0.9,
+        evidence: [
+          this.eb.doc('ART-05 / R-14', 'identity-platform is the sole asymmetric user-session issuer for all realms', 'GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md'),
+          this.eb.doc('identity-issued-session.ts', 'canonical asymmetric merchant, buyer and storefront session signing', 'apps/platform/identity/src/lib/auth/identity-issued-session.ts'),
+          this.eb.doc('customer-session.ts', 'Gateway accepts the transitional HS256 store-customer formats', 'services/api-gateway/src/middleware/customer-session.ts'),
+          this.eb.doc('session.ts', 'Commerce retains a legacy HS256 store-customer signer', 'apps/commerce/web/src/lib/session.ts'),
+        ],
+      }),
+    );
 
     // Structural: 11 controls all present
     findings.push(

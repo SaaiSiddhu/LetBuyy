@@ -33,7 +33,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
     let plan: SubscriptionPlan | null = null
     if (planSlug) {
         try {
-            const plans = await createMerchantApiClient().payments.plans({ site_type: siteType, slug: planSlug })
+            const plans = await createMerchantApiClient().payments.plans({ site_type: siteType, slug: planSlug, store_id: storeData.id })
             plan = plans[0] || null
         } catch {
             plan = null
@@ -53,6 +53,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
             storeName={storeData.name || storeData.store_name || store}
             storeSlug={store}
             siteType={siteType}
+            userId={user.id}
             userEmail={user.email}
             userName={user.fullName || ''}
         />

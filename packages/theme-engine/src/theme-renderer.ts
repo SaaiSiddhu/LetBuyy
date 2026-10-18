@@ -87,6 +87,11 @@ export interface LiquidCommerceDrops {
   collections?: unknown;
   cart?: unknown;
   customer?: unknown;
+  /** Canonical LetBuyy buyer identity, separate from the store-customer principal. */
+  buyer?: unknown;
+  /** Store-scoped wishlist state resolved through the buyer's verified store relationship. */
+  buyer_wishlist?: unknown;
+  buyer_unavailable?: boolean;
   search?: unknown;
   order?: unknown;
   // D1-A: LANE-B populates this from StoreModel.navigation via navToLinklists() in composition-engine.tsx.
@@ -1357,6 +1362,9 @@ function buildLiquidScope(
     collections: commerceDrops.collections,
     cart: commerceDrops.cart,
     customer: commerceDrops.customer,
+    buyer: commerceDrops.buyer,
+    buyer_wishlist: commerceDrops.buyer_wishlist,
+    buyer_unavailable: commerceDrops.buyer_unavailable,
     search: commerceDrops.search,
     order: commerceDrops.order,
     // D1-A: linklists drop (Shopify convention). Populated by LANE-B (composition-engine.tsx).
@@ -1412,6 +1420,9 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
   collections: unknown[];
   cart: Record<string, unknown>;
   customer: unknown;
+  buyer: unknown;
+  buyer_wishlist: unknown;
+  buyer_unavailable: boolean;
   search: unknown;
   order: unknown;
 } {
@@ -1430,6 +1441,9 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
       currency: 'INR',
     },
     customer: toLiquidDrop(context?.customer) || null,
+    buyer: toLiquidDrop(context?.buyer) || null,
+    buyer_wishlist: toLiquidDrop(context?.buyer_wishlist) || null,
+    buyer_unavailable: context?.buyer_unavailable === true,
     search: toLiquidDrop(context?.search) || null,
     order: toLiquidDrop(context?.order) || null,
   };

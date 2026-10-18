@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-04",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts --kind gateway-db --jobs 1",
+  "runner_id": "7c762caa7657",
+  "result": {
+    "status": "pass",
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "recovery_coverage": [
+    "Razorpay order create commits a provider order and then loses the synthetic response",
+    "foreign-receipt lookup is rejected without a second provider-order create",
+    "exact receipt, tenant, checkout, server-order, amount, currency and idempotency notes are required before binding",
+    "recovered provider order is attached to the canonical buyer order and checkout session",
+    "captured-payment amount checks, buyer ownership, one ledger capture and callback replay remain intact"
+  ],
+  "resource_ownership": "verified by the executable-suite runner before start",
+  "cleanup": {
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0,
+    "owned_database": "discarded",
+    "failures": []
+  },
+  "limits": [
+    "owned database uses service-role PostgREST and does not prove runtime-role RLS",
+    "provider adapter is synthetic; no external Razorpay sandbox transaction was run",
+    "no hosted browser/device journey or deployment was performed"
+  ]
+}

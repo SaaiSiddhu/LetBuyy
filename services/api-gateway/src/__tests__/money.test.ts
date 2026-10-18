@@ -36,10 +36,11 @@ test('payout route creates tenant-scoped statements and settles through the adap
     assert.match(payoutsSource, /router\.post\('\/:id\/settle'/);
     assert.match(payoutsSource, /resolveTenantContextForOwnedSite\(c,\s*body\.store_id\)/);
     assert.match(payoutsSource, /\.from\('orders'\)[\s\S]*\.eq\('payment_status',\s*'paid'\)/);
-    assert.match(payoutsSource, /\.from\('payout_statements'\)[\s\S]*\.insert/);
+    assert.match(payoutsSource, /rpc\('create_payout_statement_with_effects'/);
     assert.match(payoutsSource, /\.from\('wallet_ledger_entries'\)[\s\S]*\.insert/);
     assert.match(payoutsSource, /createPayoutTransferAdapter/);
     assert.match(payoutsSource, /createRazorpayRoutePayoutProviderClient/);
+    assert.match(payoutsSource, /isLivePASplitProviderReady\('razorpay_route'/);
     assert.match(payoutsSource, /provider:\s*payoutProviderClient\(statement\.rail\)/);
     assert.doesNotMatch(payoutsSource, /S-018|backend contract|SKIP-NEEDS-BACKEND/);
 });
@@ -110,7 +111,7 @@ test('payout transfer adapter is provider-gated and cannot fabricate release pro
     assert.match(adapterSource, /export function createRazorpayRoutePayoutProviderClient/);
     assert.match(adapterSource, /PayoutProviderUnavailable/);
     assert.match(adapterSource, /provider client is not configured/);
-    assert.match(adapterSource, /'Idempotency-Key': input\.idempotencyKey/);
+    assert.match(adapterSource, /'X-Transfer-Idempotency': transferIdempotencyKey/);
     assert.match(adapterSource, /providerReference: stringValue\(payload\.id\)/);
     assert.doesNotMatch(adapterSource, /UTR\$\{/);
 });

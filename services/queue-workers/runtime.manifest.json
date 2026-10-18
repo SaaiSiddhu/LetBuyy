@@ -29,11 +29,12 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "@letbuyy/auth-core",
       "@letbuyy/billing-core",
       "@letbuyy/event-core",
+      "@letbuyy/infrastructure",
       "@letbuyy/notification-core",
-      "@letbuyy/shared-types",
-      "@letbuyy/infrastructure"
+      "@letbuyy/shared-types"
     ],
     "runtimeImports": []
   },

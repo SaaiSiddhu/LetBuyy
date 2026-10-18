@@ -3,6 +3,8 @@ import type { Context } from 'hono';
 import { z } from 'zod';
 import {
     TRUST_SAFETY_DEFAULT_APPEAL_WINDOW_BUSINESS_DAYS,
+    InternalTrustReinstatementExecuteSchema,
+    InternalTrustSiteEnforcementSchema,
     TrustSafetyAppealStatusSchema,
     TrustSafetyCaseCategorySchema,
     TrustSafetyCaseStatusSchema,
@@ -12,14 +14,14 @@ import {
     TrustSafetySubjectTypeSchema,
 } from '@letbuyy/shared-types';
 import type { Env } from '../../index';
-import { ValidationError } from '../../lib/errors';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
+import { AppError, ValidationError } from '../../lib/errors';
+import { consoleApprovalRpc, credentialArguments, requireConsolePermission } from '../../identity-foundation/console-approval-repository';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
 import {
     checkSegregationOfDuty,
     logSensitiveRead,
     requirePermission,
-    requireRoleCategory,
-    requireSuperAdmin,
+    requirePlatformOperator,
     validateSensitiveReason,
 } from '../../middleware/rbac';
 
@@ -29,7 +31,7 @@ type AppContext = Context<{ Bindings: Env }>;
 type Db = ReturnType<typeof getSupabaseAdmin>;
 type JsonRecord = Record<string, unknown>;
 
-router.use('*', requireRoleCategory('ops'), requireSuperAdmin);
+router.use('*',async(c,next)=>{ if(c.get('auth')?.user.storeId) throw new AppError('A platform operator realm is required.',403,'OPERATOR_REALM_REQUIRED'); await next(); },requirePlatformOperator());
 
 const ListCasesQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
@@ -108,12 +110,6 @@ const FileAppealSchema = z.object({
 const DecideAppealSchema = z.object({
     status: TrustSafetyAppealStatusSchema.extract(['upheld', 'overturned', 'rejected']),
     reason: z.string().trim().min(8).max(1000),
-    metadata: z.record(z.string(), z.unknown()).default({}),
-});
-
-const ReinstateSchema = z.object({
-    reason: z.string().trim().min(8).max(1000),
-    secondary_approver_id: z.string().uuid(),
     metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
@@ -304,36 +300,19 @@ async function createCase(
 }
 
 router.get('/overview', requirePermission('ts:view'), async (c) => {
-    const db = getSupabaseAdmin(c);
-    const [casesResult, appealsResult, takedownsResult, policiesResult] = await Promise.all([
-        db.from('ts_cases').select('id, status, severity, category, subject_type, subject_id, created_at', { count: 'exact' }).is('deleted_at', null).order('created_at', { ascending: false }).limit(25),
-        db.from('ts_appeals').select('id, status, due_at', { count: 'exact' }).is('deleted_at', null).order('due_at', { ascending: true }).limit(25),
-        db.from('ts_takedowns').select('id, status, action_type, site_id, created_at', { count: 'exact' }).eq('status', 'active').is('deleted_at', null).order('created_at', { ascending: false }).limit(25),
+    // This permission-gated platform dashboard intentionally aggregates across sites. Keep the
+    // default tenant guard for every tenant-scoped operation; bypass it only for this bounded read.
+    const db = getSupabaseAdminForOperatorRead(c);
+    const [casesResult, appealsResult, takedownsResult, policiesResult, openResult, pendingResult] = await Promise.all([
+        db.from('ts_cases').select('id, site_id, title, status, severity, category, subject_type, subject_id, created_at', { count: 'exact' }).is('deleted_at', null).order('created_at', { ascending: false }).limit(25),
+        db.from('ts_appeals').select('id, case_id, status, due_at', { count: 'exact' }).is('deleted_at', null).order('due_at', { ascending: true }).limit(25),
+        db.from('ts_takedowns').select('id, case_id, status, action_type, subject_type, subject_id, site_id, created_at', { count: 'exact' }).eq('status', 'active').is('deleted_at', null).order('created_at', { ascending: false }).limit(25),
         db.from('ts_policies').select('id, policy_key, version, title, active, appeal_window_business_days, severe_violation_ineligible').eq('active', true).is('deleted_at', null).order('policy_key', { ascending: true }).limit(25),
+        db.from('ts_cases').select('id', { count: 'exact', head: true }).is('deleted_at', null).in('status', ['open', 'under_review']),
+        db.from('ts_appeals').select('id', { count: 'exact', head: true }).is('deleted_at', null).in('status', ['filed', 'under_review']),
     ]);
 
-    if (casesResult.error || appealsResult.error || takedownsResult.error || policiesResult.error) {
-        const error = casesResult.error || appealsResult.error || takedownsResult.error || policiesResult.error;
-        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
-            return c.json(success({
-                counts: {
-                    total_cases_sampled: 0,
-                    total_cases: 0,
-                    open_cases: 0,
-                    active_takedowns: 0,
-                    pending_appeals: 0,
-                },
-                by_status: {},
-                by_severity: {},
-                recent_cases: [],
-                active_takedowns: [],
-                appeals: [],
-                policies: [],
-                defaults: { appeal_window_business_days: TRUST_SAFETY_DEFAULT_APPEAL_WINDOW_BUSINESS_DAYS },
-            }));
-        }
-        throw new Error('T&S overview lookup failed');
-    }
+    if (casesResult.error || appealsResult.error || takedownsResult.error || policiesResult.error || openResult.error || pendingResult.error) throw new AppError('Trust and Safety is unavailable. Retry this review.',503,'TRUST_SAFETY_UNAVAILABLE');
 
     const cases = (casesResult.data || []) as JsonRecord[];
     const byStatus: Record<string, number> = {};
@@ -354,9 +333,9 @@ router.get('/overview', requirePermission('ts:view'), async (c) => {
         counts: {
             total_cases_sampled: cases.length,
             total_cases: casesResult.count || 0,
-            open_cases: cases.filter((row) => row.status === 'open' || row.status === 'under_review').length,
+            open_cases: openResult.count || 0,
             active_takedowns: takedownsResult.count || 0,
-            pending_appeals: (appealsResult.data || []).filter((row: JsonRecord) => row.status === 'filed' || row.status === 'under_review').length,
+            pending_appeals: pendingResult.count || 0,
         },
         by_status: byStatus,
         by_severity: bySeverity,
@@ -421,7 +400,7 @@ router.get('/cases', requirePermission('ts:view'), async (c) => {
 });
 
 router.get('/cases/:id', requirePermission('ts:view'), async (c) => {
-    const db = getSupabaseAdmin(c);
+    const db = getSupabaseAdminForOperatorRead(c);
     const caseId = c.req.param('id');
     const caseRow = await fetchCase(db, caseId);
     if (!caseRow) return c.json({ error: { code: 'NOT_FOUND', message: 'T&S case not found' } }, 404);
@@ -566,80 +545,17 @@ router.post('/cases/:id/decide', requirePermission('ts:enforce'), async (c) => {
     return c.json(success({ case: data }));
 });
 
-router.post('/cases/:id/enforce', requirePermission('ts:enforce'), async (c) => {
-    const parsed = EnforceCaseSchema.safeParse(await readJson(c));
-    if (!parsed.success) throw new ValidationError('Invalid T&S enforcement payload', parsed.error.flatten());
-    const reason = validateSensitiveReason(parsed.data.reason);
-    if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required.' } }, 400);
-
-    const auth = c.get('auth');
-    const actorId = auth.user.id;
-    const db = getSupabaseAdmin(c);
-    const caseId = c.req.param('id');
-    const caseRow = await fetchCase(db, caseId);
-    if (!caseRow) return c.json({ error: { code: 'NOT_FOUND', message: 'T&S case not found' } }, 404);
-
-    let previousSiteStatus: string | null = null;
-    if (parsed.data.action === 'suspend_site' && typeof caseRow.site_id === 'string') {
-        const { data: site } = await db.from('sites').select('status').eq('id', caseRow.site_id).maybeSingle();
-        previousSiteStatus = typeof site?.status === 'string' ? site.status : null;
-        await db.from('sites').update({ status: 'suspended', updated_by: actorId }).eq('id', caseRow.site_id);
-    }
-
-    const { data: takedown, error: takedownError } = await db
-        .from('ts_takedowns')
-        .insert({
-            case_id: caseId,
-            site_id: caseRow.site_id || null,
-            subject_type: caseRow.subject_type,
-            subject_id: caseRow.subject_id,
-            action_type: parsed.data.action,
-            status: 'active',
-            reason,
-            enforced_by: actorUserId(c),
-            metadata: { ...parsed.data.metadata, previous_site_status: previousSiteStatus },
-            created_by: actorUserId(c),
-        })
-        .select('*')
-        .single();
-    if (takedownError || !takedown) throw new Error('T&S takedown create failed');
-
-    const { data: updatedCase, error: caseError } = await db
-        .from('ts_cases')
-        .update({
-            status: 'actioned',
-            enforcement_action: parsed.data.action,
-            enforced_by: actorUserId(c),
-            decision: 'violation',
-            decision_reason: reason,
-            updated_by: actorUserId(c),
-        })
-        .eq('id', caseId)
-        .select('*')
-        .single();
-    if (caseError || !updatedCase) throw new Error('T&S case enforcement update failed');
-
-    await appendCaseEvent(db, { caseId, eventType: 'enforcement_applied', actorId: actorUserId(c), reason, metadata: { action: parsed.data.action, takedown_id: takedown.id } });
-    if (parsed.data.notify_subject) {
-        await appendCaseEvent(db, {
-            caseId,
-            eventType: 'subject_notified',
-            actorType: 'system',
-            reason: 'Subject notification recorded on dry-run path pending final policy wording.',
-            metadata: { notification_mode: 'dry_run', appeal_due_at: updatedCase.appeal_due_at },
-        });
-    }
-    await writeAudit(db, {
-        actorId: actorUserId(c),
-        actorEmail: actorEmail(c),
-        action: 'trust_safety.case.enforce',
-        resourceType: 'ts_case',
-        resourceId: caseId,
-        reason,
-        metadata: { action: parsed.data.action, takedown_id: takedown.id },
+router.post('/cases/:id/enforce', requirePermission('ts:enforce'), async(c)=>{
+    const parsed=InternalTrustSiteEnforcementSchema.safeParse(await readJson(c)),id=z.string().uuid().safeParse(c.req.param('id'));
+    if(!parsed.success||!id.success) throw new ValidationError('Invalid T&S enforcement payload.');
+    const {credential,state,witness}=await requireConsolePermission(c,'ts:enforce');
+    if(c.get('auth').user.id!==state.actor_id || c.get('auth').user.storeId) throw new AppError('The operator session does not match this action.',403,'ACTOR_MISMATCH');
+    if(!parsed.data.idempotency_key) throw new AppError('A stable enforcement request key is required.',428,'IDEMPOTENCY_KEY_REQUIRED');
+    const result=await consoleApprovalRpc(c,'enforce_console_trust_site_v1',{
+      ...credentialArguments(credential),p_permission_hash:witness,p_case_id:id.data,p_action:parsed.data.action,p_reason:parsed.data.reason,
+      p_request_key:parsed.data.idempotency_key,p_note_metadata:parsed.data.metadata,p_notify_subject:parsed.data.notify_subject,
     });
-
-    return c.json(success({ case: updatedCase, takedown }));
+    return c.json(success(result.result));
 });
 
 router.post('/cases/:id/appeals', requirePermission('ts:appeal'), async (c) => {
@@ -747,80 +663,15 @@ router.post('/appeals/:id/decide', requirePermission('ts:appeal'), async (c) => 
 });
 
 router.post('/cases/:id/reinstate', requirePermission('ts:enforce'), async (c) => {
-    const parsed = ReinstateSchema.safeParse(await readJson(c));
-    if (!parsed.success) throw new ValidationError('Invalid T&S reinstatement payload', parsed.error.flatten());
-    const reason = validateSensitiveReason(parsed.data.reason);
-    if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required.' } }, 400);
-
-    const auth = c.get('auth');
-    const actorId = auth.user.id;
-    const sod = checkSegregationOfDuty({
-        actorId,
-        targetAction: 'ts.reinstate',
-        secondaryApproverId: parsed.data.secondary_approver_id,
+    const parsed=InternalTrustReinstatementExecuteSchema.safeParse(await readJson(c)), id=z.string().uuid().safeParse(c.req.param('id'));
+    if(!parsed.success||!id.success) throw new ValidationError('Invalid T&S reinstatement payload.');
+    const {credential,state,witness}=await requireConsolePermission(c,'ts:enforce');
+    if(c.get('auth').user.id!==state.actor_id || c.get('auth').user.storeId) throw new AppError('The operator session does not match this action.',403,'ACTOR_MISMATCH');
+    if(!parsed.data.approval_id) throw new AppError('An independently approved request is required before reinstatement.',428,'INDEPENDENT_APPROVAL_REQUIRED');
+    const result=await consoleApprovalRpc(c,'execute_console_trust_reinstatement_v1',{
+        ...credentialArguments(credential),p_permission_hash:witness,p_id:parsed.data.approval_id,p_case_id:id.data,
+        p_reason:parsed.data.reason,p_note_metadata:parsed.data.metadata,
     });
-    if (!sod.ok) return c.json({ error: { code: sod.code, message: sod.message } }, 403);
-
-    const db = getSupabaseAdmin(c);
-    const caseId = c.req.param('id');
-    const caseRow = await fetchCase(db, caseId);
-    if (!caseRow) return c.json({ error: { code: 'NOT_FOUND', message: 'T&S case not found' } }, 404);
-
-    const { data: takedowns, error: takedownLookupError } = await db
-        .from('ts_takedowns')
-        .select('*')
-        .eq('case_id', caseId)
-        .eq('status', 'active')
-        .is('deleted_at', null);
-    if (takedownLookupError) throw new Error('T&S takedown lookup failed');
-
-    for (const takedown of takedowns || []) {
-        if (takedown.action_type === 'suspend_site' && takedown.site_id) {
-            const previous = typeof takedown.metadata?.previous_site_status === 'string' ? takedown.metadata.previous_site_status : 'published';
-            await db.from('sites').update({ status: previous, updated_by: actorId }).eq('id', takedown.site_id);
-        }
-        await db
-            .from('ts_takedowns')
-            .update({
-                status: 'reversed',
-                reversed_by: actorUserId(c),
-                reversed_at: new Date().toISOString(),
-                updated_by: actorUserId(c),
-            })
-            .eq('id', takedown.id);
-    }
-
-    const { data: updatedCase, error } = await db
-        .from('ts_cases')
-        .update({
-            status: 'reinstated',
-            closed_at: new Date().toISOString(),
-            updated_by: actorUserId(c),
-            metadata: { ...caseRow.metadata as JsonRecord, ...parsed.data.metadata, secondary_approver_id: parsed.data.secondary_approver_id },
-        })
-        .eq('id', caseId)
-        .select('*')
-        .single();
-    if (error || !updatedCase) throw new Error('T&S reinstatement failed');
-
-    await appendCaseEvent(db, {
-        caseId,
-        eventType: 'reinstated',
-        actorId: actorUserId(c),
-        reason,
-        metadata: { secondary_approver_id: parsed.data.secondary_approver_id, reversed_takedowns: (takedowns || []).map((row: JsonRecord) => row.id) },
-    });
-    await writeAudit(db, {
-        actorId: actorUserId(c),
-        actorEmail: actorEmail(c),
-        action: 'trust_safety.case.reinstate',
-        resourceType: 'ts_case',
-        resourceId: caseId,
-        reason,
-        metadata: { secondary_approver_id: parsed.data.secondary_approver_id },
-    });
-
-    return c.json(success({ case: updatedCase }));
+    return c.json(success(result.result));
 });
-
 export default router;

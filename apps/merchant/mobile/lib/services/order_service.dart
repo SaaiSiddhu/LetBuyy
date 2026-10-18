@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 
 import 'app_badge_service.dart';
 import 'api_client.dart';
 import 'cache_service.dart';
+import 'security_command_store.dart';
+import 'two_factor_service.dart';
 
 /// Service for managing orders via the LetBuyy API.
 ///
@@ -17,9 +19,35 @@ class OrderService extends ChangeNotifier {
     required ApiClient api,
     CacheService? cache,
     AppBadgeService? appBadgeService,
+    SecurityCommandStore? securityCommands,
   }) : _api = api,
        _cache = cache,
-       _appBadgeService = appBadgeService;
+       _appBadgeService = appBadgeService,
+       _securityCommands = securityCommands ?? SecurityCommandStore();
+
+  final SecurityCommandStore _securityCommands;
+  Object? get requestContext => _api.captureRequestContext();
+  void _checkSecurity(MerchantSecurityContext c) {
+    if (c.version == null || requestContext != c.version)
+      throw TwoFactorService.changed();
+  }
+
+  Future<JsonMap?> pendingRefundCompletion(
+    String id,
+    MerchantSecurityContext c,
+  ) async => (await _securityCommands.read(
+    c,
+    'complete-order:$id',
+    check: () => _checkSecurity(c),
+  ))?.intent;
+  Future<JsonMap?> pendingRefundRequest(
+    String id,
+    MerchantSecurityContext c,
+  ) async => (await _securityCommands.read(
+    c,
+    'request-order-refund:$id',
+    check: () => _checkSecurity(c),
+  ))?.intent;
 
   // ── Cached state ─────────────────────────────────────────
 
@@ -382,49 +410,118 @@ class OrderService extends ChangeNotifier {
 
   // ── Refund / Cancel ──────────────────────────────────────
 
-  /// Cancel and refund an order.
+  /// Creates the canonical return/refund intent. Quantities and money are
+  /// resolved by the server; an arbitrary display amount is never submitted.
   Future<OrderContract> refundOrder(
     String id, {
+    required MerchantSecurityContext context,
+    required List<JsonMap> lines,
     String? reason,
-    double? amount,
-    String? idempotencyKey,
-  }) async {
-    final refundIdempotencyKey =
-        idempotencyKey ??
-        'mobile-refund-$id-${DateTime.now().microsecondsSinceEpoch}';
-    final updated = OrderContract.fromJson(
-      await _api.orders.refund(id, {
-        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
-        if (amount != null) 'amount': amount,
-        if (amount != null) 'amount_minor': (amount * 100).round(),
-      }, options: ApiRequestOptions(idempotencyKey: refundIdempotencyKey)),
-    );
-    final idx = _orders.indexWhere((o) => o.id == id);
-    if (idx != -1) _orders[idx] = updated;
-    notifyListeners();
-    return updated;
+  }) {
+    final intent = SecurityCommandStore.captureIntent(<String, dynamic>{
+      'lines': lines,
+      if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+    });
+    return _securityCommands.serialized(() async {
+      _checkSecurity(context);
+      final command = await _securityCommands.prepare(
+        context,
+        'request-order-refund:$id',
+        intent,
+        check: () => _checkSecurity(context),
+      );
+      final data = await _api.orders.refund(
+        id,
+        {...command.intent, 'idempotency_key': command.key},
+        options: ApiRequestOptions(
+          idempotencyKey: command.key,
+          storeId: context.storeId,
+          expectedContextVersion: context.version,
+        ),
+      );
+      _checkSecurity(context);
+      final updated = _refundOrder(data, id, context.storeId);
+      if (data['status'] != 'pending' ||
+          data['refund_id'] is! String ||
+          data['return_id'] is! String)
+        throw const FormatException(
+          'Refund request is incomplete. Retry the original request.',
+        );
+      await _securityCommands.complete(
+        context,
+        command,
+        check: () => _checkSecurity(context),
+      );
+      _checkSecurity(context);
+      _applyRefundOrder(updated);
+      return updated;
+    });
   }
 
-  /// Complete a provider-side refund after the gateway marks it ready.
   Future<OrderContract> completeRefund(
     String id, {
-    String? refundId,
+    required MerchantStepUpProof approval,
+    required String refundId,
     String? providerRefundId,
     String? notes,
-  }) async {
-    final updated = OrderContract.fromJson(
-      await _api.orders.completeRefund(id, {
-        if (refundId != null && refundId.trim().isNotEmpty)
-          'refund_id': refundId.trim(),
-        if (providerRefundId != null && providerRefundId.trim().isNotEmpty)
-          'provider_refund_id': providerRefundId.trim(),
-        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
-      }),
-    );
-    final idx = _orders.indexWhere((o) => o.id == id);
+  }) {
+    if (notes != null && notes.trim().isNotEmpty)
+      throw const FormatException(
+        'Record completion notes on the return before completing an order refund.',
+      );
+    approval.ensureCurrent(_api);
+    final c = approval.context;
+    final intent = <String, dynamic>{
+      'refund_id': refundId.trim(),
+      if (providerRefundId != null && providerRefundId.trim().isNotEmpty)
+        'provider_refund_id': providerRefundId.trim(),
+    };
+    return _securityCommands.serialized(() async {
+      approval.ensureCurrent(_api);
+      final command = await _securityCommands.prepare(
+        c,
+        'complete-order:$id',
+        intent,
+        check: () => approval.ensureCurrent(_api),
+      );
+      final data = await _api.orders.completeRefund(id, {
+        ...command.intent,
+        'idempotency_key': command.key,
+      }, options: approval.options(command.key));
+      approval.ensureCurrent(_api);
+      final updated = _refundOrder(data, id, c.storeId),
+          refund = asJsonMap(data['refund']);
+      if (refund['id'] != refundId.trim() || refund['status'] != 'succeeded')
+        throw const FormatException(
+          'Refund completion is not confirmed. Retry the original request.',
+        );
+      await _securityCommands.complete(
+        c,
+        command,
+        check: () => approval.ensureCurrent(_api),
+      );
+      approval.ensureCurrent(_api);
+      _applyRefundOrder(updated);
+      return updated;
+    });
+  }
+
+  OrderContract _refundOrder(JsonMap response, String id, String store) {
+    final row = asJsonMap(response['order']);
+    if (row['id'] != id || (row['store_id'] ?? row['site_id']) != store)
+      throw const FormatException(
+        'The refund returned an incomplete order. Retry the original request.',
+      );
+    return OrderContract.fromJson({
+      ...row,
+      if (response['refund_id'] != null) 'refund_id': response['refund_id'],
+    });
+  }
+
+  void _applyRefundOrder(OrderContract updated) {
+    final idx = _orders.indexWhere((o) => o.id == updated.id);
     if (idx != -1) _orders[idx] = updated;
     notifyListeners();
-    return updated;
   }
 
   // ── Counts / Stats ───────────────────────────────────────

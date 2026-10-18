@@ -6,34 +6,49 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// Small read-through cache for mobile merchant data that must remain useful
 /// when the device is offline.
 class CacheService {
-  CacheService._(this._box);
+  CacheService._(this._box, this._actorIdProvider);
 
-  CacheService.memory() : _box = null;
+  CacheService.memory({String? Function()? actorIdProvider})
+    : _box = null,
+      _actorIdProvider = actorIdProvider;
 
   static const String boxName = 'letbuyy_mobile_cache_v1';
 
   static bool _hiveInitialized = false;
 
   final Box<String>? _box;
+  final String? Function()? _actorIdProvider;
+  String? _keyForActor(String key) {
+    if (_actorIdProvider == null) return key; // Explicit in-memory test caches.
+    final actor = _actorIdProvider()?.trim();
+    if (actor == null || actor.isEmpty) return null;
+    // Never adopt a legacy unscoped private snapshot into another account.
+    return 'merchant-account-v1:${Uri.encodeComponent(actor)}:$key';
+  }
+
   final Map<String, String> _memory = <String, String>{};
 
-  static Future<CacheService> open() async {
+  static Future<CacheService> open({
+    required String? Function() actorIdProvider,
+  }) async {
     if (!_hiveInitialized) {
       await Hive.initFlutter();
       _hiveInitialized = true;
     }
     final box = await Hive.openBox<String>(boxName);
-    return CacheService._(box);
+    return CacheService._(box, actorIdProvider);
   }
 
   Future<void> writeJson(String key, Object? value) async {
+    final scopedKey = _keyForActor(key);
+    if (scopedKey == null) return;
     final encoded = jsonEncode(value);
     final box = _box;
     if (box == null) {
-      _memory[key] = encoded;
+      _memory[scopedKey] = encoded;
       return;
     }
-    await box.put(key, encoded);
+    await box.put(scopedKey, encoded);
   }
 
   Map<String, dynamic>? readJsonMap(String key) {
@@ -54,12 +69,14 @@ class CacheService {
   }
 
   Future<void> remove(String key) async {
+    final scopedKey = _keyForActor(key);
+    if (scopedKey == null) return;
     final box = _box;
     if (box == null) {
-      _memory.remove(key);
+      _memory.remove(scopedKey);
       return;
     }
-    await box.delete(key);
+    await box.delete(scopedKey);
   }
 
   Future<void> clear() async {
@@ -68,7 +85,9 @@ class CacheService {
   }
 
   Object? _readDecoded(String key) {
-    final encoded = _box?.get(key) ?? _memory[key];
+    final scopedKey = _keyForActor(key);
+    if (scopedKey == null) return null;
+    final encoded = _box?.get(scopedKey) ?? _memory[scopedKey];
     if (encoded == null || encoded.isEmpty) return null;
     try {
       return jsonDecode(encoded);

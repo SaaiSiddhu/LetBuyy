@@ -1,55 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import {
-    isConsoleEmailAllowed,
-    normalizeConsoleEmail,
-    writeConsoleAuditLog,
-} from '@/lib/console-auth-server';
-import { createConsoleMagicLinkToken } from '@/lib/console-session';
-
-const loginSchema = z.object({
-    email: z.string().email(),
-});
-
-function redirectWithError(request: NextRequest, error: string) {
-    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(error)}`, request.url), 303);
-}
-
-export async function POST(request: NextRequest) {
-    const formData = await request.formData();
-    const parsed = loginSchema.safeParse({
-        email: formData.get('email'),
-    });
-
-    if (!parsed.success) {
-        return redirectWithError(request, 'invalid_email');
-    }
-
-    const email = normalizeConsoleEmail(parsed.data.email);
-    if (!isConsoleEmailAllowed(email)) {
-        return redirectWithError(request, 'access_denied');
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-        return redirectWithError(request, 'magic_link_delivery_not_configured');
-    }
-
-    const token = await createConsoleMagicLinkToken(email);
-    if (!token) {
-        return redirectWithError(request, 'session_secret_not_configured');
-    }
-
-    await writeConsoleAuditLog({
-        action: 'platform_console_login_magic_sent',
-        email,
-        requestHeaders: request.headers,
-    });
-
-    const devMagicLink = new URL('/api/console-auth/callback', request.url);
-    devMagicLink.searchParams.set('token', token);
-
-    return NextResponse.redirect(
-        new URL(`/login?sent=1&devMagicLink=${encodeURIComponent(devMagicLink.pathname + devMagicLink.search)}`, request.url),
-        303,
-    );
+import {NextRequest,NextResponse} from 'next/server';
+import {z} from 'zod';
+import {requestConsoleIdentity} from '@/lib/console-identity-client';
+function fail(request:NextRequest,error:string){return NextResponse.redirect(new URL('/login?error='+encodeURIComponent(error),request.url),303);}
+export async function POST(request:NextRequest){
+ if(request.headers.get('origin')!==request.nextUrl.origin)return NextResponse.json({error:'A same-origin sign-in form is required.'},{status:403});
+ const form=await request.formData().catch(()=>null),email=z.string().trim().email().max(254).safeParse(form?.get('email'));
+ if(!email.success)return fail(request,'invalid_email');
+ const result=await requestConsoleIdentity({operation:'magic',email:email.data.toLowerCase()});
+ if(!result.ok||!result.magic_token)return fail(request,result.error?.code==='magic_link_delivery_not_configured'?'magic_link_delivery_not_configured':'session_unavailable');
+ const link=new URL('/api/console-auth/callback',request.url);link.searchParams.set('token',result.magic_token);
+ return NextResponse.redirect(new URL('/login?sent=1&devMagicLink='+encodeURIComponent(link.pathname+link.search),request.url),303);
 }

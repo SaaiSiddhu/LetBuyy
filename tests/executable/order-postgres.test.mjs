@@ -11,6 +11,8 @@ const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_exec
 const foundationSql = readFileSync(join(repoRoot, 'database/supabase/migrations/139_executable_foundation_ledger_core.sql'), 'utf8');
 const orderSql = readFileSync(join(repoRoot, 'database/supabase/migrations/147_executable_order_state_risk.sql'), 'utf8');
 const orderRollbackSql = readFileSync(join(repoRoot, 'database/supabase/rollback/147_executable_order_state_risk.rollback.sql'), 'utf8');
+const orderItemSnapshotSql = readFileSync(join(repoRoot, 'database/supabase/migrations/289_checkout_order_item_snapshot_integrity.sql'), 'utf8');
+const orderItemSnapshotRollbackSql = readFileSync(join(repoRoot, 'database/supabase/rollback/289_checkout_order_item_snapshot_integrity.rollback.sql'), 'utf8');
 const foundationRollbackSql = readFileSync(join(repoRoot, 'database/supabase/rollback/139_executable_foundation_ledger_core.rollback.sql'), 'utf8');
 
 function psql(sql, options = {}) {
@@ -143,6 +145,35 @@ function resetDatabase() {
       updated_at timestamptz NOT NULL DEFAULT now(),
       deleted_at timestamptz
     );
+    CREATE TABLE public.order_items (
+      id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+      order_id uuid NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
+      product_id uuid,
+      variant_id text,
+      name text NOT NULL,
+      sku text,
+      quantity integer NOT NULL,
+      price numeric(10,2) NOT NULL,
+      total numeric(10,2) NOT NULL,
+      title text,
+      variant_title text,
+      unit_price numeric(10,2),
+      discount_amount numeric(10,2) DEFAULT 0,
+      tax_amount numeric(10,2) DEFAULT 0,
+      product_snapshot jsonb DEFAULT '{}'::jsonb NOT NULL,
+      hsn_code text,
+      gst_rate numeric(5,2) DEFAULT 0,
+      taxable_amount numeric(10,2) DEFAULT 0,
+      cgst_amount numeric(10,2) DEFAULT 0,
+      sgst_amount numeric(10,2) DEFAULT 0,
+      igst_amount numeric(10,2) DEFAULT 0,
+      fulfillment_status text DEFAULT 'unfulfilled',
+      fulfilled_quantity integer DEFAULT 0,
+      returned_quantity integer DEFAULT 0 NOT NULL,
+      refunded_quantity integer DEFAULT 0 NOT NULL,
+      updated_at timestamptz DEFAULT now() NOT NULL,
+      deleted_at timestamptz
+    );
     CREATE TABLE public.returns (
       id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
       site_id uuid NOT NULL REFERENCES public.sites(id) ON DELETE CASCADE,
@@ -155,6 +186,7 @@ function resetDatabase() {
   `);
   psql(foundationSql);
   psql(orderSql);
+  psql(orderItemSnapshotSql);
   psql(`
     GRANT USAGE ON SCHEMA public TO app_user;
     GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO app_user;
@@ -194,6 +226,25 @@ test('Task 005 order migration applies, enforces immutable checkout fields, isol
       '{"locked":true}'::jsonb,
       'pending_cod'
     );
+    INSERT INTO public.orders (
+      id, store_id, site_id, order_number, customer_email, shipping_address, items,
+      subtotal, total, order_source
+    ) VALUES (
+      '66666666-6666-4666-8666-666666666666', ${sqlString(siteId)}::uuid,
+      ${sqlString(siteId)}::uuid, 'LBY-DRAFT-1', 'draft@example.test', '{}'::jsonb,
+      '[]'::jsonb, 10.00, 10.00, 'draft'
+    );
+    INSERT INTO public.order_items (
+      id, order_id, product_id, variant_id, name, sku, quantity, price, total,
+      title, variant_title, unit_price, discount_amount, tax_amount,
+      product_snapshot, hsn_code, gst_rate, taxable_amount, cgst_amount, sgst_amount, igst_amount
+    ) VALUES (
+      '44444444-4444-4444-8444-444444444444', ${sqlString(orderId)}::uuid,
+      '55555555-5555-4555-8555-555555555555', 'variant-a', 'Synthetic item', 'SYN-1', 2, 600.00, 1200.00,
+      'Synthetic item', 'Large', 600.00, 0, 0,
+      '{"product_id":"55555555-5555-4555-8555-555555555555","title":"Synthetic item"}'::jsonb,
+      '12345678', 0, 1200.00, 0, 0, 0
+    );
     INSERT INTO public.order_risk_assessments (
       site_id, order_id, risk_score, risk_level, reasons, actions, input, idempotency_key
     ) VALUES (
@@ -220,6 +271,15 @@ test('Task 005 order migration applies, enforces immutable checkout fields, isol
   `);
 
   assert.throws(() => psql(`UPDATE public.orders SET total = 100.00 WHERE id = ${sqlString(orderId)}::uuid;`), /immutable/);
+  assert.throws(() => psql("UPDATE public.order_items SET unit_price = 1.00 WHERE id = '44444444-4444-4444-8444-444444444444';"), /immutable/);
+  assert.throws(() => psql("UPDATE public.order_items SET product_snapshot = '{\"title\":\"changed\"}'::jsonb WHERE id = '44444444-4444-4444-8444-444444444444';"), /immutable/);
+  assert.throws(() => psql("DELETE FROM public.order_items WHERE id = '44444444-4444-4444-8444-444444444444';"), /immutable/);
+  psql("UPDATE public.order_items SET fulfillment_status = 'partial', fulfilled_quantity = 1 WHERE id = '44444444-4444-4444-8444-444444444444';");
+  assert.equal(psql("SELECT fulfillment_status || ':' || fulfilled_quantity::text FROM public.order_items WHERE id = '44444444-4444-4444-8444-444444444444';"), 'partial:1');
+  psql(`INSERT INTO public.order_items (id, order_id, name, quantity, price, total, unit_price)
+    VALUES ('77777777-7777-4777-8777-777777777777', '66666666-6666-4666-8666-666666666666', 'Draft item', 1, 10.00, 10.00, 10.00);
+    UPDATE public.order_items SET unit_price = 12.00 WHERE id = '77777777-7777-4777-8777-777777777777';`);
+  assert.equal(psql("SELECT unit_price::text FROM public.order_items WHERE id = '77777777-7777-4777-8777-777777777777';"), '12.00');
   assert.equal(psql('SET ROLE app_user; SELECT count(*) FROM public.order_risk_assessments; RESET ROLE;'), '0');
   assert.equal(
     lastPsqlLine(psql(`BEGIN; SET ROLE app_user; SELECT public.set_current_site_id(${sqlString(siteId)}::uuid); SELECT count(*) FROM public.cod_confirmation_requests; RESET ROLE; COMMIT;`)),
@@ -230,6 +290,8 @@ test('Task 005 order migration applies, enforces immutable checkout fields, isol
     '0',
   );
 
+  psql(orderItemSnapshotRollbackSql);
+  assert.equal(psql("SELECT to_regprocedure('public.prevent_checkout_order_item_snapshot_update()') IS NULL;"), 't');
   psql(orderRollbackSql);
   assert.equal(psql("SELECT to_regclass('public.order_risk_assessments') IS NULL;"), 't');
   assert.equal(psql("SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='orders' AND column_name='order_source';"), '0');

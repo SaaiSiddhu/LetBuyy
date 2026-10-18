@@ -45,7 +45,7 @@ function harness(opts: { ownedBy?: string } = {}) {
         // Models the real query: scoped by BOTH ids, so another buyer's ticket simply does not match.
         getTicket: async (_c, buyer, ticket) => { calls.get.push({ buyer, ticket }); return { data: buyer === owner && ticket === TICKET ? TICKET_ROW : null, error: null }; },
         listPublicMessages: async (_c, ticket) => { calls.messages.push(ticket); return { data: [PUBLIC_MSG], error: null }; },
-        openTicket: async () => ({ data: TICKET_ROW, error: null }),
+        openTicket: async (_c, _buyer, input) => ({ data: { ...TICKET_ROW, subject: input.subject }, complaintCopy: { id: 'm0', author_type: 'requester', body: input.body, created_at: '2026-09-06T00:00:01.000Z' }, error: null }),
         addRequesterMessage: async (_c, ticket, body) => { calls.inserted.push(body); return { data: { id: 'm2', author_type: 'requester', body, created_at: 'now' }, error: null }; },
     });
     const app = new Hono<{ Bindings: Env }>();
@@ -61,6 +61,26 @@ test('the ticket list is scoped to the TOKEN subject, not a query parameter', as
     const res = await h.app.request(`/storefront/buyer/support/tickets?requester_user_id=${OTHER}`, { headers: { 'X-LetBuyy-Buyer-Session': await tok(privateKey, BUYER) } }, env(jwks));
     assert.equal(res.status, 200);
     assert.deepEqual(h.calls.list, [{ buyer: BUYER }]);
+});
+
+test('ticket creation returns the exact persisted complaint copy and receipt timestamp', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness();
+    const complaint = 'Package arrived damaged; the seal is broken.';
+    const res = await h.app.request('/storefront/buyer/support/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Buyer-Session': await tok(privateKey, BUYER) },
+        body: JSON.stringify({ subject: 'Damaged package', body: complaint }),
+    }, env(jwks));
+    assert.equal(res.status, 201);
+    const body = await res.json() as { data: { ticket_ref: string; complaint_copy: { subject: string; body: string; recorded_at: string }; receipt_confirmed_at: string } };
+    assert.equal(body.data.ticket_ref, TICKET_ROW.ticket_ref);
+    assert.deepEqual(body.data.complaint_copy, {
+        subject: 'Damaged package',
+        body: complaint,
+        recorded_at: '2026-09-06T00:00:01.000Z',
+    });
+    assert.equal(body.data.receipt_confirmed_at, body.data.complaint_copy.recorded_at);
 });
 
 test('another buyer cannot read a ticket they do not own, and cannot tell it exists', async () => {
@@ -146,13 +166,30 @@ test('SOURCE: every ticket read is scoped by the requester, not by the ticket al
 });
 
 test('SOURCE: the server sets author_type and visibility on every buyer write', () => {
-    for (const op of ['openTicket', 'addRequesterMessage']) {
-        const body = dep(op);
-        assert.match(body, /author_type: 'requester'/, `${op} must fix the author type`);
-        assert.match(body, /visibility: 'public'/, `${op} must fix the visibility`);
-    }
+    const open = dep('openTicket');
+    const intakeMigration = code(readFileSync(join(SRC, '../../../database/supabase/migrations/287_buyer_support_intake_atomic.sql'), 'utf8'));
+    const append = dep('addRequesterMessage');
+    assert.match(open, /open_buyer_support_ticket_with_complaint/, 'initial ticket and complaint are created by one database transaction');
+    assert.match(intakeMigration, /'customer', p_requester_user_id,[\s\S]*?'chat', 'open'/);
+    assert.match(intakeMigration, /'requester', p_requester_user_id, 'public'/);
+    assert.match(append, /author_type: 'requester'/, 'follow-up messages must fix the author type');
+    assert.match(append, /visibility: 'public'/, 'follow-up messages must fix the visibility');
     // requester_type is fixed too: a buyer must not be able to open a ticket as a merchant.
-    assert.match(dep('openTicket'), /requester_type: 'customer'/);
+    assert.match(intakeMigration, /'customer', p_requester_user_id/);
+});
+
+test('SOURCE: atomic buyer intake RPC is callable only by service_role', () => {
+    const migration = code(readFileSync(join(SRC, '../../../database/supabase/migrations/287_buyer_support_intake_atomic.sql'), 'utf8'));
+    assert.match(migration, /SECURITY DEFINER[\s\S]*?SET search_path = public, pg_catalog/);
+    assert.match(migration, /REVOKE ALL ON FUNCTION public\.open_buyer_support_ticket_with_complaint[\s\S]*?FROM PUBLIC, anon, authenticated, app_tenant/);
+    assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.open_buyer_support_ticket_with_complaint[\s\S]*?TO service_role/);
+    assert.match(migration, /INSERT INTO public\.support_tickets[\s\S]*?INSERT INTO public\.ticket_messages/);
+});
+
+test('SOURCE: support routes accept the canonical shared buyer data-session contract', () => {
+    const body = code(readFileSync(join(SRC, 'routes/storefront/buyer-support-routes.ts'), 'utf8'));
+    assert.match(body, /requireBuyerDataSession/);
+    assert.doesNotMatch(body, /requireBuyerSession\s*,/, 'storefront BFF requests carry a site-bound storefront session, not only the marketplace buyer audience');
 });
 
 test('SOURCE: the buyer surface reuses the operator ticket-reference generator', () => {
