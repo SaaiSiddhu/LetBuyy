@@ -16,6 +16,10 @@ const productionBranch = process.env.LETBUYY_PRODUCTION_BRANCH || "main";
 const integrationBranch = process.env.LETBUYY_RELEASE_INTEGRATION_BRANCH || "staging";
 const developBranch = process.env.LETBUYY_DEVELOP_BRANCH || "develop";
 const enforceLag = process.env.LETBUYY_ENFORCE_BRANCH_LAG === "1";
+const lagContext = process.env.LETBUYY_BRANCH_LAG_CONTEXT || "deploy";
+const monitorLag = lagContext === "monitor";
+reporter.assert(["deploy", "monitor"].includes(lagContext), "Unknown branch-lag context");
+reporter.assert(!monitorLag || enforceLag, "Monitor context requires live branch-lag enforcement");
 
 reporter.assert(
   workflow.includes("branch-lag-guard:"),
@@ -37,6 +41,12 @@ reporter.assert(
   workflow.includes("LETBUYY_RELEASE_INTEGRATION_BRANCH: staging"),
   "Production deploy branch-lag-guard must measure main against staging (D-BRANCH)",
 );
+const deploymentContexts = [...workflow.matchAll(/^\s*LETBUYY_BRANCH_LAG_CONTEXT:\s*([^\r\n#]+)/gm)]
+  .map(match => match[1].trim().replace(/^["']|["']$/g, ""));
+reporter.assert(
+  deploymentContexts.every(context => context === "deploy"),
+  "Production deploy must retain the main-only deploy context",
+);
 reporter.assert(
   /release-preflight:\s+name: Release credential preflight\s+needs:\s+- branch-lag-guard\s+- governance-gate/s.test(workflow),
   "Release credential preflight must depend on the branch-lag guard and governance gate",
@@ -55,6 +65,7 @@ reporter.assert(
   monitorWorkflow.includes("fetch-depth: 0") &&
     monitorWorkflow.includes("node scripts/validators/branch-lag-guard-validator.mjs") &&
     monitorWorkflow.includes('LETBUYY_ENFORCE_BRANCH_LAG: "1"') &&
+    monitorWorkflow.includes("LETBUYY_BRANCH_LAG_CONTEXT: monitor") &&
     monitorWorkflow.includes("LETBUYY_PRODUCTION_BRANCH: main") &&
     monitorWorkflow.includes("LETBUYY_RELEASE_INTEGRATION_BRANCH: staging"),
   "Branch lag monitor workflow must enforce main against staging with full history",
@@ -91,14 +102,28 @@ function maybeFetchReleaseBranches() {
 
 if (enforceLag) {
   const githubRefName = process.env.GITHUB_REF_NAME;
-  reporter.assert(
-    !githubRefName || githubRefName === productionBranch,
-    `Production deploy must run from ${productionBranch}; current ref is ${githubRefName}`,
-  );
+  if (monitorLag) {
+    // Schedules run from the default branch. A monitor reads the fetched
+    // environment refs; it never treats that checkout as production.
+    reporter.assert(
+      !process.env.GITHUB_WORKFLOW || process.env.GITHUB_WORKFLOW === "Branch lag monitor",
+      "Monitor context is reserved for the read-only Branch lag monitor workflow",
+    );
+    reporter.assert(
+      !process.env.GITHUB_EVENT_NAME || ["schedule", "workflow_dispatch"].includes(process.env.GITHUB_EVENT_NAME),
+      "Monitor context requires a scheduled or manually dispatched monitor",
+    );
+  } else {
+    reporter.assert(
+      !githubRefName || githubRefName === productionBranch,
+      `Production deploy must run from ${productionBranch}; current ref is ${githubRefName}`,
+    );
+  }
 
   try {
     maybeFetchReleaseBranches();
-    const lagCount = Number(git(["rev-list", "--count", `HEAD..origin/${integrationBranch}`]));
+    const productionRef = monitorLag ? `origin/${productionBranch}` : "HEAD";
+    const lagCount = Number(git(["rev-list", "--count", `${productionRef}..origin/${integrationBranch}`]));
     reporter.assert(
       Number.isFinite(lagCount) && lagCount === 0,
       `${productionBranch} is behind ${integrationBranch} by ${lagCount} commit(s); promote ${integrationBranch} → ${productionBranch} (fast-forward only, .claude/skills/letbuyy/references/promote.md) before production deploy`,

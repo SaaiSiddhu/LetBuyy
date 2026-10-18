@@ -21,5 +21,6 @@ jobs:
         run: node scripts/validators/branch-lag-guard-validator.mjs
         env:
           LETBUYY_ENFORCE_BRANCH_LAG: "1"
+          LETBUYY_BRANCH_LAG_CONTEXT: monitor
           LETBUYY_PRODUCTION_BRANCH: main
           LETBUYY_RELEASE_INTEGRATION_BRANCH: staging

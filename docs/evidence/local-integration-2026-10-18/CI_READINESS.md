@@ -34,6 +34,12 @@ the nine paused product phases retain their existing acceptance boundaries.
   30-minute deadline; an explicit runner timeout still takes precedence.
 - Read the complete product catalog profile in one bounded 64 MiB psql result,
   preserving every JSON field while avoiding repeated per-chunk catalog scans.
+- Give the scheduled branch-lag monitor an explicit read-only context. It
+  compares fetched `origin/main` with `origin/staging` even when the default
+  checkout is `develop`. Production retains its main-only checkout guard and
+  HEAD comparison; it cannot select the monitor context. Eleven isolated Git
+  regressions cover real lag, missing refs and attempted context downgrades.
+  A live fetched-ref check passed with both release refs unchanged.
 
 No migration was applied to the restored or hosted database. SQL behavior is
 checked only in disposable owned PostgreSQL. Existing security, money,
