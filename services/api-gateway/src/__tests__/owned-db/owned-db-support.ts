@@ -29,6 +29,7 @@ import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash,X509Certificate} from 'node:crypto';
 import {SUPABASE_FAITHFUL_BOOTSTRAP_SQL} from '../../../../../scripts/governance/supabase-faithful-bootstrap.mjs';
+import {removeOwnedNextDirectory,validateOwnedNextDirectoryReceipt} from '../../../../../scripts/governance/owned-next-directory.mjs';
 
 const GUARD = fileURLToPath(new URL('../../../../../scripts/governance/owned-fixture-guard.mjs', import.meta.url));
 
@@ -218,7 +219,28 @@ export function createOwnedCheckoutTlsCertificate(owned:OwnedDatabase):{key:Buff
 type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe' | 'money-ledger-scheduled-probe' | 'subscription-restart';
 const CLIENT_KINDS = new Set<ClientKind>(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
-const clients = new Map<OwnedClientProcess, { closed:Promise<void>; clientPid?:number }>();
+type NextDirectoryReceipt = Parameters<typeof removeOwnedNextDirectory>[0];
+interface ClientRecord { closed:Promise<void>; clientPid?:number; nextDirectory?:NextDirectoryReceipt; cleanupError?:Error }
+const clients = new Map<OwnedClientProcess, ClientRecord>();
+
+async function finishClientDirectory(record:ClientRecord):Promise<void> {
+    if (!record.nextDirectory) return;
+    const groupAlive = () => {
+        if (!record.clientPid) return false;
+        try { process.kill(-record.clientPid,0); return true; }
+        catch (error) {
+            if ((error as NodeJS.ErrnoException).code === 'ESRCH') return false;
+            // macOS can briefly refuse group inspection during forced teardown.
+            // Treat that as still present and retry; never authorize deletion.
+            if ((error as NodeJS.ErrnoException).code === 'EPERM') return true;
+            throw new Error(`owned Next group ${record.clientPid} inspection failed: ${(error as NodeJS.ErrnoException).code}`);
+        }
+    };
+    const deadline=Date.now()+2500;
+    while(groupAlive() && Date.now()<deadline) await new Promise(done=>setTimeout(done,40));
+    if(groupAlive()) throw new Error('owned Next process group still alive; directory preserved');
+    removeOwnedNextDirectory(record.nextDirectory);
+}
 
 /** Launch only a named test client after database ownership is proven; no raw command/cwd seam. */
 export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined> }):OwnedClientProcess {
@@ -238,11 +260,21 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
     const child = spawn(process.execPath,[LAUNCHER,kind,String(process.pid),process.cwd(),String(options.port ?? 0)],{
         cwd:process.cwd(), env:{ ...base, ...clientFixtureEnv }, stdio:['pipe','pipe','pipe','ipc'], detached:true,
     }) as OwnedClientProcess; // All three pipes are fixed above; the fourth channel is private IPC.
-    const record:{ closed:Promise<void>; clientPid?:number } = { closed:new Promise(resolveClosed => child.once('close',() => resolveClosed())) };
+    const record:ClientRecord = { closed:Promise.resolve() };
+    record.closed=new Promise(resolveClosed => child.once('close',() => {
+        void finishClientDirectory(record).catch(error=>{record.cleanupError=error;}).finally(resolveClosed);
+    }));
     clients.set(child,record);
     child.on('message', message => {
-        const value = message as {type?:string;pid?:number};
+        const value = message as {type?:string;pid?:number;receipt?:NextDirectoryReceipt};
         if (value.type === 'owned-client-started' && Number.isInteger(value.pid) && value.pid! > 1) record.clientPid=value.pid;
+        if (value.type === 'owned-next-directory') {
+            try {
+                record.nextDirectory=validateOwnedNextDirectoryReceipt(value.receipt,{
+                    root:process.cwd(),kind,runId:owned.runId,supervisorPid:child.pid!,parentPid:process.pid,
+                });
+            } catch(error) { record.cleanupError=error as Error;child.kill('SIGTERM'); }
+        }
     });
     child.once('exit',() => {
         // A killed supervisor cannot run its own cleanup; its launching owner
@@ -265,8 +297,12 @@ export async function stopOwnedClientRuntime(child:OwnedClientProcess|undefined)
     let timeout:NodeJS.Timeout|undefined;
     try {
         await Promise.race([record.closed,new Promise<never>((_,reject) => {
-            timeout=setTimeout(() => { child.kill('SIGKILL'); reject(new Error('owned client supervisor did not stop')); },8000);
+            timeout=setTimeout(() => {
+                child.kill('SIGKILL');
+                timeout=setTimeout(()=>reject(new Error('owned client supervisor did not stop')),4000);
+            },8000);
         })]);
+        if(record.cleanupError)throw record.cleanupError;
     } finally {
         if (timeout) clearTimeout(timeout);
         clients.delete(child);
