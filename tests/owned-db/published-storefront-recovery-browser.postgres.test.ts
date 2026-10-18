@@ -90,15 +90,15 @@ before(async () => {
     const common = { INTERNAL_API_SECRET: INTERNAL_SECRET, LETBUYY_INTERNAL_API_SECRET: INTERNAL_SECRET,
         NEXT_PUBLIC_ACCOUNTS_URL: identityOrigin, NEXT_PUBLIC_ADMIN_URL: merchantOrigin,
         LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false', NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false' };
-    clients.push(startOwnedClientRuntime(owned, 'identity-next', { port: identityPort, env: { ...common,
+    clients.push(startOwnedClientRuntime(owned, 'identity-next-production', { port: identityPort, env: { ...common,
         LETBUYY_API_URL: apiOrigin + '/v1', LETBUYY_IDENTITY_ISSUER: identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify({ ...await exportJWK(keys.privateKey), alg: 'ES256', kid: keys.kid }),
         ACCOUNTS_COOKIE_SECRET: crypto.randomUUID() + crypto.randomUUID(), COOKIE_DOMAIN: '',
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA', TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
         RESEND_API_KEY: '', LETBUYY_EMAIL_API_KEY: '' } }));
-    clients.push(startOwnedClientRuntime(owned, 'merchant-next', { port: merchantPort, env: { ...common,
+    clients.push(startOwnedClientRuntime(owned, 'merchant-next-production', { port: merchantPort, env: { ...common,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_STOREFRONT_URL: commerceOrigin } }));
-    clients.push(startOwnedClientRuntime(owned, 'commerce-next', { port: commercePort, env: { ...common,
+    clients.push(startOwnedClientRuntime(owned, 'commerce-next-production', { port: commercePort, env: { ...common,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', LETBUYY_API_URL: apiOrigin + '/v1',
         NEXT_PUBLIC_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_API_URL: apiOrigin + '/v1',
         CHECKOUT_ORIGIN: `http://checkout.localhost:${commercePort}`, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost' } }));
@@ -138,6 +138,7 @@ async function fixture(tag: string) {
         INSERT INTO inventory_levels(id,store_id,product_id,variant_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity,created_at,updated_at)
         VALUES(gen_random_uuid(),'${tenant.siteId}','${product}',NULL,'${tenant.locationId}',25,0,0,25,0,25,now(),now());`);
     const context = await browser!.newContext({ viewport: { width: 1440, height: 1000 } }); contexts.push(context);
+    context.setDefaultNavigationTimeout(90_000);
     const page = await context.newPage(); page.setDefaultTimeout(30_000); page.setDefaultNavigationTimeout(90_000);
     const previewDocuments: unknown[] = [];
     context.on('close', () => console.info('N4_PREVIEW_DOCUMENT_DIAGNOSTIC', JSON.stringify({ tag, documents: previewDocuments })));
@@ -242,8 +243,12 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     await publish(f.page);
     const firstRelease = f.currentRelease(); assert.ok(firstRelease);
     const buyer = await f.context.newPage();
+    buyer.on('framenavigated', frame => {
+        if (!frame.parentFrame()) console.info('N4_PUBLIC_NAVIGATION', JSON.stringify({ path: new URL(frame.url()).pathname }));
+    });
     const initial = await buyer.goto(f.publicUrl); assert.equal(initial?.status(), 200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    await buyer.waitForLoadState('networkidle');
     const initialHeading = await buyer.getByRole('heading', { level: 1 }).first().textContent();
     const marker = `Synthetic saved release ${crypto.randomUUID()}`;
     await editHeading(f.page, marker);
@@ -261,17 +266,21 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     await expect(buyer.getByRole('heading', { level: 1 }).first()).toHaveText(marker);
     // Browse the real data-bound catalog; captured home product-grid code is block-driven.
     await buyer.getByRole('link', { name: 'Catalog', exact: true }).click();
-    await buyer.waitForURL(url => url.pathname === '/products');
+    await buyer.waitForURL(url => url.pathname === '/products', { waitUntil: 'domcontentloaded' });
     assert.equal(new URL(buyer.url()).pathname, '/products');
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
-    await buyer.getByRole('link').filter({ hasText: 'Synthetic published Liquid product' }).first().click();
-    await buyer.waitForURL(url => url.pathname === `/product/${f.product}`);
+    await buyer.waitForLoadState('networkidle');
+    // The catalog menu can also contain the product label. Select the actual
+    // data-bound product anchor, then require its normal browser navigation.
+    await buyer.locator(`a[href="/product/${f.product}"]`).filter({ hasText: 'Synthetic published Liquid product' }).first().click();
+    await buyer.waitForURL(url => url.pathname === `/product/${f.product}`, { waitUntil: 'domcontentloaded' });
     assert.equal(new URL(buyer.url()).pathname, `/product/${f.product}`);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-add-to-cart')));
     const [handoff] = await Promise.all([buyer.waitForResponse(r => new URL(r.url()).pathname === '/api/checkout-handoff' && r.request().method() === 'POST'),
         buyer.getByRole('button', { name: 'Buy now', exact: true }).click()]);
     assert.equal(handoff.status(), 200, 'real product action creates a canonical server cart and checkout handoff');
-    await buyer.waitForURL(url => url.hostname === 'checkout.localhost' && url.pathname === '/checkout');
+    await buyer.waitForURL(url => url.hostname === 'checkout.localhost' && url.pathname === '/checkout', { waitUntil: 'domcontentloaded' });
     assert.equal(new URL(buyer.url()).port, new URL(commerceOrigin).port);
     assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id='${f.tenant.siteId}';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`), '0', 'handoff proof stops before any order or payment');
@@ -285,9 +294,8 @@ for (const operation of ['save', 'publish'] as const) {
         // Compile the normal logout route while this fresh context has no session or editor document.
         // No reload is blocked; the original same-document guard and effect baseline remain strict.
         const warmLogout = await f.context.request.post(merchantOrigin + '/api/auth/logout'); assert.equal(warmLogout.status(), 200);
-        // Compile the normal staff dashboard before capturing the original A
-        // document. Cold Next development compilation can otherwise reload it
-        // during B's later sign-in; no navigation is blocked or ignored below.
+        // Complete normal staff dashboard setup before capturing the original A
+        // document; no navigation is blocked or ignored after that baseline.
         const warmStaff = await f.context.newPage();
         await signIn(warmStaff, f.staffEmail);
         const endWarmup = await f.context.request.post(merchantOrigin + '/api/auth/logout'); assert.equal(endWarmup.status(), 200);

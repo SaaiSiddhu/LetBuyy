@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: "22"
   PNPM_VERSION: "10.6.2"
   # Official Supabase mirror, same v16.2 multi-architecture image. Avoid the
   # anonymous ECR download limit shared by GitHub-hosted runners.

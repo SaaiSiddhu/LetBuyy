@@ -803,11 +803,18 @@ try {
       linkPage.on('console', message => {
         if (message.type() === 'error') browserTrace.push({ step: 'link-browser-console-error', message: message.text().slice(0, 250) });
       });
+      // A visible server-rendered submit button can precede hydration. Wait
+      // for the real client session read before exercising its submit handler.
+      const hydratedLegacySession = linkPage.waitForResponse(response =>
+        new URL(response.url()).pathname === '/api/customer/session' && response.request().method() === 'GET');
       await linkPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/settings`, { waitUntil: 'domcontentloaded' });
+      const legacySessionResponse = await hydratedLegacySession;
+      assert.equal(legacySessionResponse.status(), 200);
+      await legacySessionResponse.finished();
       const linkButton = linkPage.getByRole('button', { name: 'Sign in and connect with LetBuyy' });
       await linkButton.waitFor({ state: 'visible', timeout: 15_000 });
       await linkButton.click();
-      await linkPage.waitForURL(/\/buyer\/authorize\?/, { timeout: 15_000 });
+      await linkPage.waitForURL(/\/buyer\/authorize\?/, { waitUntil: 'domcontentloaded', timeout: 60_000 });
       await linkPage.waitForLoadState('networkidle');
       const linkSignInButton = linkPage.getByRole('button', { name: 'Sign in' });
       await linkSignInButton.waitFor({ state: 'visible', timeout: 10_000 });
@@ -818,7 +825,7 @@ try {
       await linkPage.waitForLoadState('networkidle');
       await linkPage.getByRole('button', { name: consentHeading }).click();
       await linkPage.waitForURL(url => url.pathname === `/store/${STORE_A_HOSTNAME}/account/settings`
-        && url.searchParams.get('buyer_link') === 'linked', { timeout: 15_000 });
+        && url.searchParams.get('buyer_link') === 'linked', { waitUntil: 'domcontentloaded', timeout: 60_000 });
       await linkPage.getByText('This store account is connected.', { exact: true }).waitFor({ timeout: 10_000 });
       const linkedCookies = await linkContext.cookies(storeOrigin);
       assert.ok(linkedCookies.some(cookie => cookie.name === '__Host-lb_store_buyer'), 'account-link callback issues the canonical buyer session on this store');
@@ -1007,9 +1014,16 @@ try {
             { waitUntil: 'domcontentloaded' },
           );
           runtimeProgress('cross-tab-switch-start-redirected');
-          await tabSwitchPage.waitForURL(url => url.origin === identityOrigin && url.pathname === '/buyer/authorize', { timeout: 15_000 });
+          await tabSwitchPage.waitForURL(url => url.origin === identityOrigin && url.pathname === '/buyer/authorize', { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          await tabSwitchPage.waitForLoadState('networkidle');
           browserTrace.push({ step: 'cross-tab-identity-authorize-loaded', title: await tabSwitchPage.title().catch(() => ''), body: (await tabSwitchPage.locator('body').innerText().catch(() => '')).slice(0, 300) });
-          await tabSwitchPage.getByRole('button', { name: 'Use a different account' }).click();
+          const [switchLogout] = await Promise.all([
+            tabSwitchPage.waitForResponse(response => new URL(response.url()).origin === identityOrigin
+              && new URL(response.url()).pathname === '/api/buyer/logout' && response.request().method() === 'POST'),
+            tabSwitchPage.getByRole('button', { name: 'Use a different account' }).click(),
+          ]);
+          assert.equal(switchLogout.status(), 200, 'normal Identity logout completes before replacing the buyer account');
+          await switchLogout.finished();
           runtimeProgress('cross-tab-identity-account-switch-clicked');
           await tabSwitchPage.getByRole('heading', { name: 'Sign in', exact: true }).waitFor({ timeout: 10_000 });
           await tabSwitchPage.waitForLoadState('networkidle');
@@ -1021,7 +1035,7 @@ try {
           await tabSwitchPage.waitForLoadState('networkidle');
           runtimeProgress('cross-tab-replacement-account-signed-in');
           await tabSwitchPage.getByRole('button', { name: consentHeading }).click();
-          await tabSwitchPage.waitForURL(url => url.pathname === returnToWishlist, { timeout: 15_000 });
+          await tabSwitchPage.waitForURL(url => url.pathname === returnToWishlist, { waitUntil: 'domcontentloaded', timeout: 60_000 });
           runtimeProgress('cross-tab-replacement-account-returned-to-store');
 
           const switchedBuyerSession = await tabSwitchPage.evaluate(async () => {
@@ -1545,7 +1559,11 @@ try {
         });
         assert.equal(crossSiteAddressDelete.status(), 403, 'cross-site callers cannot delete a saved address');
 
+        const legacyAddressesRead = resetPage.waitForResponse(response =>
+          new URL(response.url()).pathname === '/api/customer/addresses' && response.request().method() === 'GET');
         await resetPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'domcontentloaded' });
+        assert.equal((await legacyAddressesRead).status(), 200);
+        await resetPage.waitForLoadState('networkidle');
         await resetPage.getByRole('button', { name: 'Add Address' }).click();
         await resetPage.getByPlaceholder('Full Name *').fill(ADDRESS_TEST_NAME);
         await resetPage.getByPlaceholder('Address Line 1 *').fill(ADDRESS_TEST_LINE1);
@@ -1553,13 +1571,27 @@ try {
         await resetPage.getByPlaceholder('State *').fill('Maharashtra');
         await resetPage.getByPlaceholder('PIN Code *').fill('411001');
         await resetPage.getByRole('checkbox', { name: 'Set as default address' }).check();
-        await resetPage.getByRole('button', { name: 'Save Address' }).click();
+        const formValidity = await resetPage.locator('form').evaluate(form => Array.from(form.elements)
+          .filter(field => 'validity' in field && !field.validity.valid)
+          .map(field => ({ placeholder: field.getAttribute('placeholder'), reason: field.validationMessage })));
+        assert.deepEqual(formValidity, [], 'the completed legacy address form must satisfy native validation');
+        const [legacyAddressCreated] = await Promise.all([
+          resetPage.waitForResponse(response => new URL(response.url()).pathname === '/api/customer/addresses'
+            && response.request().method() === 'POST'),
+          resetPage.getByRole('button', { name: 'Save Address' }).click(),
+        ]);
+        assert.equal(legacyAddressCreated.status(), 201, 'the normal address form must persist through its real BFF');
         await resetPage.getByText(ADDRESS_TEST_LINE1, { exact: true }).waitFor({ state: 'visible', timeout: 10_000 });
         assert.equal(await resetPage.getByText(ADDRESS_TEST_NAME, { exact: true }).count(), 1,
           'the saved legacy customer address appears once in the real account page');
         await resetPage.getByRole('button', { name: 'Edit' }).click();
         await resetPage.getByPlaceholder('Address Line 1 *').fill(ADDRESS_TEST_UPDATED_LINE1);
-        await resetPage.getByRole('button', { name: 'Update Address' }).click();
+        const [legacyAddressUpdated] = await Promise.all([
+          resetPage.waitForResponse(response => new URL(response.url()).pathname === '/api/customer/addresses'
+            && response.request().method() === 'PUT'),
+          resetPage.getByRole('button', { name: 'Update Address' }).click(),
+        ]);
+        assert.equal(legacyAddressUpdated.status(), 200);
         await resetPage.getByText(ADDRESS_TEST_UPDATED_LINE1, { exact: true }).waitFor({ state: 'visible', timeout: 10_000 });
         browserTrace.push({ step: 'legacy-customer-address-form-created-and-edited-default-through-bff-gateway-owned-postgres' });
         await resetContext.close();
