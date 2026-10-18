@@ -1,13 +1,18 @@
 // Real worker + owned PostgREST/database. Reproduce the restored backend ACL
 // outage without inherited tenant grants, then prove recovery and exact rollback.
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test,{before,after} from 'node:test';
 import { readFileSync } from 'node:fs';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders } from './gateway-harness';
 import { requireOwnedDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
+// Exercise predecessor role/ACL profiles only while the later empty tax custody
+// family is genuinely retired; restore its complete source after these controls.
+const taxSource=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+'/360_subscription_tax_quote_snapshot'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+before(()=>owned.script(taxSource('rollback')));
+after(()=>owned.script(taxSource('migrations')));
 const migration = readFileSync(new URL('../../../../../database/supabase/migrations/364_store_discovery_backend_grants.sql', import.meta.url), 'utf8');
 const rollback = readFileSync(new URL('../../../../../database/supabase/rollback/364_store_discovery_backend_grants.rollback.sql', import.meta.url), 'utf8');
 const snapshot = () => owned.psql(`SELECT jsonb_object_agg(relname,relacl::text ORDER BY relname) FROM pg_class
