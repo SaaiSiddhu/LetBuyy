@@ -303,8 +303,14 @@ test('361 retains zero-receipt direct-write history, tombstones and later receip
     assert.equal(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(tombstone)+';'),'2','Insert and hard-delete tombstone history persists after its parent is gone');
     const tombstoneState=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),tombstoneState);
     assert.match(owned.psqlExpectError('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic forbidden ID reuse')].join(',')+');'),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
-    for(const sql of ["UPDATE audit_activity_events SET metadata='{}'WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),"DELETE FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),'UPDATE collection_membership_receipts SET response=response WHERE idempotency_key='+q(body.idempotency_key),'DELETE FROM collection_membership_receipts WHERE idempotency_key='+q(body.idempotency_key)]){
-        assert.match(owned.psqlExpectError(sql),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
+    const immutableControls:[string,RegExp][]=[
+        ["UPDATE audit_activity_events SET metadata='{}'WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),/COLLECTION_MEMBERSHIP_AUDIT_RETAINED/],
+        ["DELETE FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),/COLLECTION_MEMBERSHIP_AUDIT_RETAINED/],
+        ['UPDATE collection_membership_receipts SET response=response WHERE idempotency_key='+q(body.idempotency_key),/^ERROR:\s+collection membership receipts are immutable/m],
+        ['DELETE FROM collection_membership_receipts WHERE idempotency_key='+q(body.idempotency_key),/^ERROR:\s+collection membership receipts are immutable/m],
+    ];
+    for(const [sql,reason] of immutableControls){
+        assert.match(owned.psqlExpectError(sql),reason);assertWholeState361(rawState361(),tombstoneState);
     }
     assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assert.deepEqual(readData(await request(w,'GET'),w),resumed);
 });
