@@ -1,7 +1,7 @@
 {
   "date": "2026-10-18",
   "timezone": "Asia/Kolkata",
-  "status": "READY_FOR_AUTHORIZED_PUSH",
+  "status": "PUSHED_AND_REMOTE_VERIFIED",
   "reviewedSource": "216ca0205b50cdc2308ef9b8391b8734b8f61ee9",
   "remoteDevelopBefore": "ffcd12427078b0aaccf40606ad56af789a90d532",
   "sourceHistoryAhead": 240,
@@ -47,7 +47,8 @@
         "NOT_APPLICABLE": 1
       },
       "exitCode": 0,
-      "disposableInstalledClone": true
+      "disposableInstalledClone": true,
+      "checkedCommit": "b51cffb79b4ae19863ff30c0fe9ed9dba45c112b"
     }
   },
   "excludedInvalidObservations": [
@@ -74,5 +75,18 @@
     "Collection full19-case final rerun still required; prior18/19 and isolated corrected1/1 are separate.",
     "Private archive, ignored credentials/signing and live local data are not carried by a Git clone.",
     "No staging/main promotion, deployment, hosted migration, provider transaction or phase Goal resume."
-  ]
+  ],
+  "publishedSourceCheckpoint": "b51cffb79b4ae19863ff30c0fe9ed9dba45c112b",
+  "verifiedRemoteSourcePush": {
+    "refs/heads/develop": "b51cffb79b4ae19863ff30c0fe9ed9dba45c112b",
+    "refs/heads/letbuyy/recovery-2026-10-18": "faeab17f7d5a404ffec95b7c56961bdae74ee379",
+    "refs/heads/main": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a",
+    "refs/heads/staging": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a"
+  },
+  "pushMethod": "git push --atomic origin develop and the named recovery branch; exit0",
+  "receiptPublication": "This receipt is published in a documentation-only descendant of publishedSourceCheckpoint. Final HEAD is also independently verified against the remote.",
+  "sourceConservation": {
+    "originalPhaseWorktreeStatusesUnchanged": 9,
+    "phaseSourceFilesHashVerified": 11542
+  }
 }
