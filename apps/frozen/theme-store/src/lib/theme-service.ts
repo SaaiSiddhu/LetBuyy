@@ -168,7 +168,7 @@ export const ThemeService = {
         return api.themes.releases(slug, storeId).then((releases) => releases as unknown as Record<string, unknown>[]).catch(() => []);
     },
 
-    async rollbackThemeRelease(slug: string, storeId: string, releaseId: string): Promise<Record<string, unknown>> {
+    async rollbackThemeRelease(slug: string, storeId: string, releaseId: string, expectedCurrentReleaseId: string): Promise<Record<string, unknown>> {
         const api = await getThemeApi(true);
         if (!api) {
             throw new Error('Authentication required');
@@ -176,6 +176,8 @@ export const ThemeService = {
 
         return api.themes.rollbackRelease(slug, releaseId, {
             store_id: storeId,
+            expected_current_release_id: expectedCurrentReleaseId,
+            idempotency_key: `marketplace-rollback:${expectedCurrentReleaseId}:${releaseId}`,
             make_store_live: true,
             rollback_message: 'Marketplace rollback',
         }).then((result) => result as unknown as Record<string, unknown>);

@@ -7,6 +7,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { listWorkspaceFiles } from '../../scripts/validators/governance-common.mjs';
+import { functionDefinitions, sqlStatements, tokenText } from '../../scripts/governance/definer-role-closure.mjs';
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const migrationsDir = join(repoRoot, 'database/supabase/migrations');
@@ -61,6 +62,45 @@ export function referencesIn(sources, name) {
     const quoted = new RegExp(`['"\`]${name}['"\`]`);
     const qualified = new RegExp(`public\\.${name}\\b`);
     return sources.filter(({ text }) => quoted.test(text) || qualified.test(text)).map(({ path }) => path);
+}
+
+// Follow only installed SQL functions reached from application source. DDL alone,
+// an orphan helper and the generated registry cannot make a table reachable.
+export function reachableSqlSources(sources, migrations = migrationFiles().map(file => ({ file, text: readFileSync(join(migrationsDir, file), 'utf8') }))) {
+    const definitions = new Map();
+    for (const { text, file } of migrations) {
+        const statements = sqlStatements(text);
+        const byStart = new Map(functionDefinitions(text).map(fn => [fn.start, fn]));
+        for (const statement of statements) {
+            const code = tokenText(statement);
+            const drop = code.match(/^drop function (?:if exists )?public \. ([a-z_][a-z0-9_]*) /);
+            if (drop) for (const [identity, definition] of definitions) {
+                if (definition.name === drop[1]) definitions.delete(identity);
+            }
+            const definition = byStart.get(statement[0].start);
+            if (!definition) continue;
+            const as = statement.findIndex(token => token.kind === 'word' && token.value === 'as');
+            const body = statement[as + 1];
+            if (as < 0 || !['body', 'string'].includes(body?.kind)) continue;
+            definitions.set(definition.identity, {
+                name: definition.name, path: `${file}:${definition.name}`,
+                text: stripSqlComments(body.value).replace(/\/\*[\s\S]*?\*\//g, ' '),
+            });
+        }
+    }
+    const reached = new Map();
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (const [identity, definition] of definitions) {
+            if (reached.has(identity)) continue;
+            const caller = new RegExp(`\\bpublic\\.${definition.name}\\s*\\(`, 'i');
+            if (referencesIn(sources, definition.name).length || [...reached.values()].some(fn => caller.test(fn.text))) {
+                reached.set(identity, definition); changed = true;
+            }
+        }
+    }
+    return [...reached.values()];
 }
 
 // Every exemption must say WHY and name the decision or phase that removes it. An exemption without

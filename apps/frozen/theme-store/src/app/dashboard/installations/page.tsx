@@ -52,11 +52,12 @@ async function rollbackReleaseAction(formData: FormData) {
     const slug = formStringValue(formData.get('theme'));
     const storeId = formStringValue(formData.get('store_id'));
     const releaseId = formStringValue(formData.get('release_id'));
-    if (!slug || !storeId || !releaseId) {
+    const expectedCurrentReleaseId = formStringValue(formData.get('expected_current_release_id'));
+    if (!slug || !storeId || !releaseId || !expectedCurrentReleaseId) {
         redirect('/dashboard/installations?action=rollback-missing');
     }
 
-    await ThemeService.rollbackThemeRelease(slug, storeId, releaseId);
+    await ThemeService.rollbackThemeRelease(slug, storeId, releaseId, expectedCurrentReleaseId);
     redirect(`/dashboard/installations?action=rolled-back&installed=${encodeURIComponent(slug)}`);
 }
 
@@ -141,6 +142,7 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                         const slug = typeof theme.slug === 'string' ? theme.slug : '';
                         const storeId = typeof inst.store_id === 'string' ? inst.store_id : '';
                         const rollbackRelease = (inst.releases || []).find((release) => release.is_current !== true && typeof release.id === 'string');
+                        const currentRelease = (inst.releases || []).find((release) => release.is_current === true && typeof release.id === 'string');
                         const editorHref = hasEditorLink
                             ? getAdminUrl(`/${inst.store_slug}/online-store/themes/${themeEditorId}/editor`)
                             : '/support';
@@ -201,11 +203,12 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                                                 </Button>
                                             </form>
                                         )}
-                                        {rollbackRelease && slug && storeId && (
+                                        {rollbackRelease && currentRelease && slug && storeId && (
                                             <form action={rollbackReleaseAction}>
                                                 <Input unstyled type="hidden" name="theme" value={slug} />
                                                 <Input unstyled type="hidden" name="store_id" value={storeId} />
                                                 <Input unstyled type="hidden" name="release_id" value={String(rollbackRelease.id)} />
+                                                <Input unstyled type="hidden" name="expected_current_release_id" value={String(currentRelease.id)} />
                                                 <Button unstyled type="submit" className="btn-secondary text-xs py-1.5 px-3">
                                                     Roll back
                                                 </Button>

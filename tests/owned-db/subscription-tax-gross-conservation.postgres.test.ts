@@ -2,7 +2,7 @@
 // Real Gateway/PostgREST/PostgreSQL. Only provider HTTP is an explicit synthetic
 // fixture; no payment capture, actual tax registration, device or live acceptance.
 import assert from 'node:assert/strict';
-import {createHmac} from 'node:crypto';
+import {createHmac,randomUUID} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import test,{before,after} from 'node:test';
 import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET,tapRest,restJson} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
@@ -432,7 +432,7 @@ test('new tax financial rows and populated retirement reject direct changes with
  const documentBefore=owned.psql(`SELECT to_jsonb(i) FROM merchant_billing_invoices i WHERE billing_history_id='${issuedId}';`);
  owned.psql(`SELECT public.issue_subscription_tax_invoice_360('${issuedId}');`);
  assert.equal(owned.psql(`SELECT to_jsonb(i) FROM merchant_billing_invoices i WHERE billing_history_id='${issuedId}';`),documentBefore);
- for(const mutation of ["i.period_start+interval '1 day',i.period_end,i.status,i.metadata", "i.period_start,i.period_end+interval '1 day',i.status,i.metadata", "i.period_start,i.period_end,'payment_failed',i.metadata", "i.period_start,i.period_end,i.status,jsonb_set(i.metadata,'{source_id}',to_jsonb('00000000-0000-4000-8000-000000000000'::text))", "i.period_start,i.period_end,i.status,jsonb_set(i.metadata,'{basis}','\"exclusive\"'::jsonb)"]){
+ for(const mutation of ["i.period_start+interval '1 day',i.period_end,i.status,i.metadata", "i.period_start,i.period_end+interval '1 day',i.status,i.metadata", "i.period_start,i.period_end,'payment_failed',i.metadata", `i.period_start,i.period_end,i.status,jsonb_set(i.metadata,'{source_id}',to_jsonb('${randomUUID()}'::text))`, "i.period_start,i.period_end,i.status,jsonb_set(i.metadata,'{basis}','\"exclusive\"'::jsonb)"]){
   assert.match(owned.psqlExpectError(`INSERT INTO merchant_billing_invoices(site_id,subscription_id,billing_history_id,invoice_number,currency,subtotal_minor,cgst_minor,sgst_minor,igst_minor,total_minor,period_start,period_end,status,metadata,created_by,updated_by)
    SELECT i.site_id,i.subscription_id,i.billing_history_id,i.invoice_number,i.currency,i.subtotal_minor,i.cgst_minor,i.sgst_minor,i.igst_minor,i.total_minor,${mutation},i.created_by,i.updated_by FROM merchant_billing_invoices i WHERE i.billing_history_id='${issuedId}';`),/subscription tax invoice differs from canonical source/);
  }

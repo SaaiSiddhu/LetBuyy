@@ -69,6 +69,10 @@ function loadCheckoutCore() {
     },
   }).outputText;
 
+  const amounts = { exports: {} };
+  vm.runInNewContext(ts.transpileModule(readFileSync('packages/shared-types/src/gst-amounts.ts', 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText, { module: amounts, exports: amounts.exports, Math });
   const module = { exports: {} };
   const generic = createSchema();
   const sandbox = {
@@ -78,6 +82,7 @@ function loadCheckoutCore() {
       if (specifier === 'zod') return createZodStub();
       if (specifier === '@letbuyy/shared-types') {
         return {
+          calculateGstAmounts: amounts.exports.calculateGstAmounts,
           AddressSchema: generic,
           CurrencySchema: generic,
           DraftOrderStatusSchema: generic,

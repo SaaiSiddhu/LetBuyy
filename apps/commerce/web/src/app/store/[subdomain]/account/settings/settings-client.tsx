@@ -485,10 +485,15 @@ function BuyerSettings() {
 }
 
 function PrivacyEntry({ buyerId }: { buyerId: string }) {
+    let href: string;
     try {
-        const href = buyerPrivacyUrl(buyerId, { NEXT_PUBLIC_ACCOUNTS_URL: process.env.NEXT_PUBLIC_ACCOUNTS_URL });
-        return <a className="inline-block underline" href={href}>Manage data access</a>;
-    } catch { return <p role="alert">The secure data access page is unavailable. Contact support.</p>; }
+        href = buyerPrivacyUrl(buyerId, { NEXT_PUBLIC_ACCOUNTS_URL: process.env.NEXT_PUBLIC_ACCOUNTS_URL });
+    } catch {
+        href = '';
+    }
+    return href
+        ? <a className="inline-block underline" href={href}>Manage data access</a>
+        : <p role="alert">The secure data access page is unavailable. Contact support.</p>;
 }
 
 export default function SettingsPageClient() {

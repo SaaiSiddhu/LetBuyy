@@ -146,6 +146,42 @@ function splitAtSemicolons(tokens) {
     for(const token of tokens) {if(token.kind==='symbol' && token.value===';'){rows.push(row);row=[];}else row.push(token);}
     if(row.length)rows.push(row);return rows;
 }
+// These statements cannot alter function ACLs. Match the whole format call:
+// literal-escaped custom configuration, or a table-only GRANT whose identifiers
+// and privileges come from one finite, unmodified VALUES record.
+function nonFunctionDynamicStatement(expression, tokens) {
+    if (expression[0]?.value !== 'format' || expression[1]?.value !== '(' || expression.at(-1)?.value !== ')' || expression[2]?.kind !== 'string') return false;
+    const template = expression[2].value;
+    const config = template.match(/^ALTER FUNCTION (public\.[a-z_][a-z0-9_]*\([^()]*\)) SET [a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*=%L$/i);
+    if (config && functionIdentity(config[1]) && expression[3]?.value === ',' && expression.length > 5) {
+        // No trailing concatenation or second SQL statement can follow format().
+        let depth = 0;
+        return expression.slice(4,-1).every(t => {
+            if (t.value === '(') depth++;
+            if (t.value === ')') depth--;
+            return depth >= 0 && ![';', '||', ','].includes(t.value);
+        }) && depth === 0;
+    }
+    if (template !== 'GRANT %s ON TABLE %s TO service_role') return false;
+    const match = tokenText(expression).match(/^format \( '[^']+' , ([a-z_][a-z0-9_]*) \. permission , \1 \. signature \)$/);
+    if (!match) return false;
+    const record = match[1];
+    const structural = tokenText(tokens.map(t => ['string','body'].includes(t.kind) ? {...t,kind:'symbol',value:'#'} : t));
+    if (new RegExp('\\b' + record + ' (?:\\:=|=)|\\b' + record + ' \\. [a-z_]+ (?:\\:=|=)|\\binto ' + record + '\\b|\\bcall\\b').test(structural)) return false;
+    if (new RegExp('\\bforeach ' + record + '\\b').test(structural)) return false;
+    if ([...structural.matchAll(new RegExp('\\bfor ' + record + ' in\\b','g'))].length !== 1) return false;
+    const text = tokenText(tokens);
+    const head = text.match(new RegExp('for ' + record + ' in select \\* from \\( values ([\\s\\S]*?) \\) as [a-z_][a-z0-9_]* \\( signature , permission \\) loop'));
+    if (!head) return false;
+    const rows = splitSqlList(sqlTokens(head[1]));
+    return rows.length > 0 && rows.every(row => {
+        if (row[0]?.value !== '(' || row.at(-1)?.value !== ')') return false;
+        const cells = splitSqlList(row.slice(1,-1));
+        return cells.length === 2 && cells.every(cell => cell.length === 1 && cell[0].kind === 'string')
+            && /^public\.[a-z_][a-z0-9_]*$/.test(cells[0][0].value)
+            && /^(?:SELECT|INSERT|UPDATE|DELETE|TRUNCATE|REFERENCES|TRIGGER)$/.test(cells[1][0].value);
+    });
+}
 function uncertainPrivileges(body) {
     const tokens = sqlTokens(body), events = [], bindings = new Map(), parents = new Map();
     const structural = tokenText(tokens.map(t => ['string','body'].includes(t.kind) ? {...t,value:'#',kind:'symbol'} : t));
@@ -180,6 +216,7 @@ function uncertainPrivileges(body) {
         if (tokens[i].value !== 'execute' || ['grant','revoke'].includes(tokens[i-1]?.value)) continue;
         const end = tokens.findIndex((t,j) => j > i && t.value === ';');
         const expression = tokens.slice(i+1,end);
+        if (nonFunctionDynamicStatement(expression, tokens)) continue;
         const first = expression[0]?.value === 'format' ? expression[2] : expression[0];
         if (first?.kind !== 'string') { events.push({action:'unknown'}); continue; }
         // This tripwire concerns function ACLs. Literal table/policy commands

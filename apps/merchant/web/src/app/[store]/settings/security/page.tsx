@@ -26,7 +26,7 @@ function AccountSecurity({ store }: { store: string }) {
             </div> : <div className="grid gap-4">
                 <p>Authenticator app active</p>
                 {!showDisable ? <Button variant="destructive" onClick={() => setShowDisable(true)}>Disable 2FA</Button> : <form className="grid gap-4" onSubmit={event => { event.preventDefault(); void security.disable(code, recovery).then(() => setCode('')) }}>
-                    <label><input type="checkbox" checked={recovery} onChange={event => { setRecovery(event.target.checked); setCode('') }} /> Use a recovery code</label>
+                    <label><Input unstyled type="checkbox" checked={recovery} onChange={event => { setRecovery(event.target.checked); setCode('') }} /> Use a recovery code</label>
                     <Input label={recovery ? 'Recovery code' : 'Authenticator code'} autoComplete="off" value={code} maxLength={recovery ? 64 : 6} onChange={event => setCode(recovery ? event.target.value : event.target.value.replace(/\D/g, '').slice(0, 6))} />
                     <Button type="submit" variant="destructive" loading={security.working} disabled={recovery ? code.trim().length < 8 : code.length !== 6}>Confirm disable</Button>
                     <Button type="button" variant="ghost" onClick={() => { setShowDisable(false); setCode('') }}>Cancel</Button>

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, type FormEvent } from 'react';
 import { z } from 'zod';
 import { InternalPlatformJobRecoveryRequestSchema, type InternalPlatformJob } from '@letbuyy/shared-types';
-import { Button, Textarea } from '@letbuyy/ui';
+import { Input, Button, Textarea } from '@letbuyy/ui';
 
 const draftSchema = InternalPlatformJobRecoveryRequestSchema.extend({ reason:z.string().max(1000) });
 type Draft = z.infer<typeof draftSchema>;
@@ -76,8 +76,8 @@ function JobReview({ job, actorId, sessionId }: {job:ReviewJob;actorId:string;se
         {!job.eligible ? <p>This job cannot be retried in its current state. Reload after its source or recovery state has been reviewed.</p> : <>
             <p>Request one additional attempt using this job’s original order and points. A different active platform super admin must review it. Approval alone does not retry the job.</p>
             <form action="/api/approvals/request-job-recovery" method="post" onSubmit={submit} aria-busy={pending} data-enhanced={loaded}>
-                <input type="hidden" name="job_id" value={job.id} />
-                {(['site_id','source_fingerprint','expected_session_id','request_key'] as const).map(name => <input key={name} type="hidden" name={name} value={draft[name]} />)}
+                <Input unstyled type="hidden" name="job_id" value={job.id} />
+                {(['site_id','source_fingerprint','expected_session_id','request_key'] as const).map(name => <Input unstyled key={name} type="hidden" name={name} value={draft[name]} />)}
                 <fieldset disabled={pending} className="space-y-3">
                     <Textarea label="Recovery reason" name="reason" value={draft.reason} minLength={8} maxLength={1000} required
                         onChange={event => setDraft({...draft,reason:event.target.value})} />

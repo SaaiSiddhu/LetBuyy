@@ -94,7 +94,9 @@ test('a NEW rollback may not restore a function without either a DROP or a preco
     for (const name of rollbackFiles()) {
         if (number(name) <= RATCHET_FROM_EXCLUSIVE) continue;
         const sql = read(name);
-        const guarded = new Set(guardedRestorations(sql));
+        const forwardFile=join(rollbackDir,'../migrations',name.replace('.rollback.sql','.sql'));
+        const forwardSql=readFileSync(forwardFile,'utf8');
+        const guarded = new Set(guardedRestorations(sql,{forwardSql}));
         const dropped = new Set(droppedRestorations(sql));
         for (const fn of new Set(createdFunctions(sql))) {
             const dropsIt = dropped.has(fn);
@@ -748,4 +750,39 @@ const traversalNegativeCases=[
 for(const [label,change] of traversalNegativeCases)test('full traversal rejects '+label,()=>{
  const source=traversalGuardFixture(),altered=change(source);assert.notEqual(altered,source,'mutation must reach actual source');
  assert.deepEqual(rollbackSignatureGuards(altered),[],label);
+});
+
+test('separate missing-function and ABI refusals cannot lose a predicate or move after mutation',()=>{
+    const name=rollbackFiles().find(file=>number(file)===347),sql=read(name);
+    assert.equal(guardedRestorations(sql).length,4);
+    for(const [before,after] of [
+        ['live.proargnames[1:live.pronargs] IS DISTINCT FROM expected.input_names','false'],
+        ["live.prorettype IS DISTINCT FROM 'jsonb'::regtype",'false'],
+        ['OR live.proretset','OR false'],
+        ['pg_catalog.to_regprocedure(expected.signature) IS NULL','false'],
+        ["other.proname=live.proname)<>1","other.proname=live.proname)<>2"],
+    ]){
+        assert.ok(sql.includes(before));assert.deepEqual(guardedRestorations(sql.replace(before,after)),[]);
+    }
+});
+
+test('historical full-definition guards require custody, every restored ABI, and an unbypassable member check',()=>{
+    const name=rollbackFiles().find(file=>number(file)===360),sql=read(name);
+    const forwardSql=readFileSync(join(rollbackDir,'../migrations',name.replace('.rollback.sql','.sql')),'utf8');
+    const guarded=source=>guardedRestorations(source,{forwardSql});
+    assert.equal(guarded(sql).length,4);
+    const mutations=[
+        ["v_journal.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex')",'false'],
+        ["v_fn.oid IS DISTINCT FROM (v_entry.value->>'oid')::oid",'false'],
+        ["(v_entry.key<>'public.guard_subscription_tax_ddl_360()' AND encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'definition_hash')",'false'],
+        ["proname=v_fn.proname)<>1","proname=v_fn.proname)<>2"],
+        ["jsonb_each(binding->'functions') LOOP","jsonb_each('{}'::jsonb) LOOP"],
+        ["SELECT * INTO v_fn FROM pg_proc WHERE oid=to_regprocedure(v_entry.key);","RETURN; SELECT * INTO v_fn FROM pg_proc WHERE oid=to_regprocedure(v_entry.key);"],
+        ["SET LOCAL search_path=pg_catalog,public;","SET LOCAL search_path=public,pg_catalog;"],
+        ["v_fn.proargmodes IS NOT NULL",'false'],
+        ["p_actor uuid,p_site uuid,p_key text,p_request jsonb,p_quote jsonb DEFAULT NULL", "p_other uuid,p_site uuid,p_key text,p_request jsonb,p_quote jsonb DEFAULT NULL"],
+    ];
+    for(const [before,after] of mutations){assert.ok(sql.includes(before),before);assert.deepEqual(guarded(sql.replace(before,after)),[],before);}
+    assert.deepEqual(guardedRestorations(sql),[],'no forward binding source means no historical proof');
+    assert.deepEqual(guardedRestorations(sql,{forwardSql:forwardSql.replace("'claim_merchant_subscription_checkout_v1','public.claim_merchant_subscription_checkout_v1", "'other_checkout','public.other_checkout")}),[]);
 });

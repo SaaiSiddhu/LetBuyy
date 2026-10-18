@@ -24,7 +24,7 @@ export default async function ApprovalsPage({ searchParams }: { searchParams: Pr
             <p>Use an administrator reset for a lost or compromised authenticator. A distinct active platform super admin must independently review it. The affected operator cannot approve their own recovery. Executing recovery for your own account signs you out.</p>
             <form method="get" className="my-4 flex gap-3"><label htmlFor="operator-query">Find operator<Input id="operator-query" name="operator_q" defaultValue={operatorQuery} maxLength={160}/></label><Button type="submit">Find operator</Button></form>
             <ConsoleApprovalForm action="/api/approvals/request-mfa-reset" className="space-y-4">
-                <input type="hidden" name="request_key" value={requestKey}/>
+                <Input unstyled type="hidden" name="request_key" value={requestKey}/>
                 <div><label htmlFor="recovery-operator" className="block">Operator</label><select id="recovery-operator" name="operator_id" required defaultValue={selectedOperator} className="block w-full rounded border bg-background p-2">
                     <option value="">Choose an active operator</option>
                     {targets.data?.data.items.map(actor=><option key={actor.actor_id} value={actor.actor_id} disabled={actor.reset_required}>{actor.name?actor.name+' · ':''}{actor.email}{actor.actor_id===session.userId?' · your account':''}{actor.reset_required?' · replacement required':''}</option>)}

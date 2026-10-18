@@ -1,22 +1,39 @@
-/**
- * DecisionService integration tests.
- * All assertions are real and reproducible against the current graphify-out/ artifacts.
- *
- * Principles:
- * - Use conservative `>=` where artifact values may shift.
- * - Skip gracefully if an artifact is missing (store.has() check).
- * - No randomness; rankings are deterministic across two calls.
- * - Scale-tier honesty: strings must contain "load test", never a fabricated number.
- */
+/** Decision scoring over explicit synthetic artifacts, independent of today's project blockers. */
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
+import { after, describe, it } from 'node:test';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { ArtifactStore } from '../src/runtime/ArtifactStore';
 import { DecisionService } from '../src/decision/DecisionService';
 import { riskScore, fixScore, severityWeight, inrImpactTier } from '../src/decision/scoring';
 
-// Use the real graphify-out/ directory (same path as blast-radius.test.ts)
-const store = ArtifactStore.default();
+// Keep the original scoring scenarios active even after real LB issues close.
+// These files are private to this test process; no project intelligence is changed.
+const fixtureDir=mkdtempSync(join(tmpdir(),'letbuyy-decision-fixture-'));
+after(()=>rmSync(fixtureDir,{recursive:true,force:true}));
+const blockers=['LB-7','LB-8','LB-9','LB-10','LB-11','LB-12'].map((id,i)=>({
+  id,title:`Synthetic ${id} test blocker`,severity:['🟡','🔴','🔴','🟠','🟡','🔴'][i],status:'open',
+}));
+const systemRows=[
+  ['Payments','payments',88],['Architecture','architecture',100],['Merchant App','merchant',88],['Identity','identity',90],
+  ['Synthetic LB8','LB-8',88],['Synthetic LB9','LB-9',95],['Synthetic LB12','LB-12',96],
+  ...Array.from({length:11},(_,i)=>[`Synthetic System ${i}`,`fixture-${i}`,95]),
+].map(([system,key,score])=>({system,key,score,evidence:['Synthetic test fixture'],blockers:[]}));
+const fixtures={
+  'execution-intel':{summary:{openBlockers:6,launchVerdict:'NO-GO'},blockers,verdicts:[{doc:'synthetic-fixture.md',verdict:'NO-GO'}]},
+  'production-readiness':{summary:{overall:88,openBlockers:6,launchVerdict:'NO-GO'},systems:systemRows},
+  'production-readiness-v2':{summary:{overall:88,openBlockers:6,launchVerdict:'NO-GO'},dimensions:Array.from({length:10},(_,i)=>({dimension:i===0?'Security':`Synthetic Dimension ${i}`,score:90,evidence:'Synthetic test fixture'}))},
+  'decision-engine-v2':{summary:{launchVerdict:'NO-GO',overallReadiness:88,fixNextCount:6},
+    highestRisk:blockers.map(b=>({type:'blocker',ref:b.id,detail:b.title,severity:b.severity})),
+    blocksLaunch:{verdict:'NO-GO',blockers:blockers.map(b=>b.id)},
+    blocksScale:Object.fromEntries(['blocks100Merchants','blocks10kUsers','blocks100kConcurrentUsers','blocks1000Merchants','blocks10000Merchants'].map(k=>[k,['Synthetic capacity requires a load test']]))},
+  'fix-engine':{summary:{plans:7,openBlockers:6},plans:[...blockers.map(b=>({finding:`${b.id} (${b.severity}): synthetic ${b.id==='LB-7'?'shipping':'appearance'} fix`,fixPlan:'Synthetic fix',verificationPlan:'Verify fixture',testPlan:'Test fixture',rollbackPlan:'Restore fixture'})),
+    {finding:'unused RPC synthetic cleanup',fixPlan:'Synthetic cleanup',verificationPlan:'Verify fixture',testPlan:'Test fixture',rollbackPlan:'Restore fixture'}]},
+};
+for(const [name,value] of Object.entries(fixtures))writeFileSync(join(fixtureDir,name+'.json'),JSON.stringify(value));
+const store = ArtifactStore.fromDir(fixtureDir);
 const svc = new DecisionService(store);
 
 // ─── Pure scoring function tests (no IO) ─────────────────────────────────────
@@ -115,7 +132,7 @@ describe('DecisionService.rankRisks()', () => {
     }
   });
 
-  it('TC-1d: rank 1 is LB-8 (🔴, open blocker) when artifacts are real', { skip: !store.has('decision-engine-v2') || !store.has('execution-intel') }, () => {
+  it('TC-1d: rank 1 is LB-8 (🔴, open blocker) in the controlled fixture', { skip: !store.has('decision-engine-v2') || !store.has('execution-intel') }, () => {
     const risks = svc.rankRisks();
     const top = risks[0];
     assert.ok(top !== undefined);
@@ -145,7 +162,7 @@ describe('DecisionService.rankFixes()', () => {
   it('TC-3b: LB-8 fix score equals 205 (severityWeight=3, tier=high, openBlocker=1, noMoney)', { skip: !store.has('fix-engine') && !store.has('execution-intel') }, () => {
     const fixes = svc.rankFixes();
     const lb8 = fixes.find((f) => f.id === 'LB-8');
-    if (!lb8) return; // skip if not in this run's fix list
+    if (!lb8) throw Error('LB-8 fixture must be present')
     assert.equal(lb8.score, 205, `LB-8 fix score should be 205, got ${lb8.score}`);
     assert.match(lb8.formula, /205/);
   });

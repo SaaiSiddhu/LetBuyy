@@ -51,16 +51,18 @@ test('root and governance runners include workspace and TypeScript contract test
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
 });
 
-test('the test:behavioral wrapper runs the full tests/*/*.test.mjs surface, each suite in exactly one environment', async () => {
-    const { discoverSuites } = await import('../../scripts/governance/test-suite-catalog.mjs');
+test('behavioral and explicit native CI lanes cover every tests/*/*.test.mjs suite exactly once', async () => {
+    const { discoverSuites, EXPLICIT_RUNTIME_SUITES } = await import('../../scripts/governance/test-suite-catalog.mjs');
     const { all, pure, postgres, live } = discoverSuites(repoRoot) as Record<string, string[]>;
     // The surface `tests/*/*.test.mjs` would glob, computed without the catalog.
     const globbed = readdirSync(join(repoRoot, 'tests'), { withFileTypes: true })
         .filter((entry) => entry.isDirectory())
         .flatMap((dir) => readdirSync(join(repoRoot, 'tests', dir.name)).filter((name) => name.endsWith('.test.mjs')).map((name) => `tests/${dir.name}/${name}`))
         .sort();
-    assert.deepEqual(all, globbed);
-    assert.deepEqual([...pure, ...postgres, ...live].sort(), globbed, 'every suite runs, none twice');
+    assert.deepEqual([...all, ...EXPLICIT_RUNTIME_SUITES].sort(), globbed);
+    assert.deepEqual([...pure, ...postgres, ...live, ...EXPLICIT_RUNTIME_SUITES].sort(), globbed, 'every suite is classified, none twice');
+    const ci=readFileSync(join(repoRoot,'.github/workflows/ci.yml'),'utf8');
+    for(const runtime of EXPLICIT_RUNTIME_SUITES) assert.ok(ci.includes(`node --test ${runtime}`), `${runtime} must have an explicit CI invocation`);
 
     const wrapper = readFileSync(join(repoRoot, 'scripts/governance/test-behavioral.mjs'), 'utf8');
     assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.pure, \.\.\.live\]/, 'database-free suites keep the sequential node --test invocation');

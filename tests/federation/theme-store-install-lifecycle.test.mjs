@@ -161,3 +161,27 @@ test('installed themes render from the storefront release snapshot without store
   assert.match(storefrontStoreService, /normalizeTemplates\(templateConfig\.templates/);
   assert.match(storefrontStoreService, /injectAppBlocksIntoTemplates\(templates, appBlocks\)/);
 });
+
+test('marketplace rollback preserves the reviewed current-release precondition across retries', async () => {
+  const [{ default: ts }, { runInNewContext }] = await Promise.all([import('typescript'), import('node:vm')]);
+  const calls=[];
+  const module={exports:{}};
+  const compiled=ts.transpileModule(read(THEME_SERVICE),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+  runInNewContext(compiled,{module,exports:module.exports,require:name=>{
+    if(name==='server-only')return {};
+    if(name==='@/lib/api/client')return {createThemeMarketplaceApiClient:async()=>({themes:{rollbackRelease:async(...args)=>{calls.push(args);return {accepted:true};}}})};
+    throw Error(`Unexpected rollback dependency: ${name}`);
+  }});
+  const service=module.exports.ThemeService;
+  await service.rollbackThemeRelease('fixture-theme','fixture-store','reviewed-target','reviewed-current');
+  await service.rollbackThemeRelease('fixture-theme','fixture-store','reviewed-target','reviewed-current');
+  await service.rollbackThemeRelease('fixture-theme','fixture-store','reviewed-target','new-reviewed-current');
+  assert.equal(calls.length,3);
+  assert.equal(calls[0][2].store_id,'fixture-store');
+  assert.equal(calls[0][2].expected_current_release_id,'reviewed-current');
+  assert.equal(calls[1][2].idempotency_key,calls[0][2].idempotency_key);
+  assert.notEqual(calls[2][2].idempotency_key,calls[0][2].idempotency_key);
+  const page=read('apps/frozen/theme-store/src/app/dashboard/installations/page.tsx');
+  assert.match(page,/name="expected_current_release_id" value=\{String\(currentRelease.id\)\}/);
+  assert.match(page,/!expectedCurrentReleaseId/);
+});

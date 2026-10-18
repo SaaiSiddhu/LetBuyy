@@ -23,6 +23,7 @@ const LOYALTY_RPC = "restore_loyalty_on_refund";
 
 // Every non-test source file that reverses a gift card on refund.
 const routeFiles = ['services/api-gateway/src/routes/orders.ts', 'services/api-gateway/src/routes/order-risk.ts'];
+const recoveryFile = 'services/api-gateway/src/lib/gift-card-refund-recovery.ts';
 
 test('the files that restore a gift card on refund are the ones this guard knows about', () => {
     // Non-vacuity, and a tripwire: a THIRD refund path that restores gift cards would not be covered
@@ -34,28 +35,42 @@ test('the files that restore a gift card on refund are the ones this guard knows
     const found = execFileSync('git', ['grep', '-l', `.rpc('${GIFT_CARD_RPC}'`, '--', 'services', 'apps'], {
         cwd: root, encoding: 'utf8',
     }).split('\n').filter(Boolean).filter((f) => !/__tests__|\.test\./.test(f)).sort();
-    assert.deepEqual(found, routeFiles.slice().sort(),
+    assert.deepEqual(found, [...routeFiles,recoveryFile].sort(),
         'a refund path restores gift cards without this guard covering it — add it, then make sure it restores loyalty too');
 });
 
-for (const file of routeFiles) {
-    const source = readFileSync(join(root, file), 'utf8');
-
-    test(`${file} restores loyalty wherever it restores a gift card`, () => {
-        const giftCard = source.indexOf(`'${GIFT_CARD_RPC}'`);
-        const loyalty = source.indexOf(`'${LOYALTY_RPC}'`);
-        assert.ok(giftCard > -1, 'sanity: this file is supposed to restore gift cards');
-        assert.ok(loyalty > -1, `${file} reverses a gift card on refund but not loyalty points — a buyer who paid with points loses them`);
-
-        // Co-located: the loyalty restore must sit within a short distance of the gift-card one, not
-        // in some other branch reached under different conditions.
-        assert.ok(Math.abs(loyalty - giftCard) < 1200,
-            'the two reversals must sit together; separated, they drift apart under different conditions');
-    });
-
-    test(`${file} passes the resolved tenant, not request input, to the loyalty restore`, () => {
-        const call = source.slice(source.indexOf(`'${LOYALTY_RPC}'`), source.indexOf(`'${LOYALTY_RPC}'`) + 400);
-        assert.match(call, /p_site_id: tenant\.siteId/, 'the site must come from the resolved tenant');
-        assert.match(call, /p_order_id: orderId/);
-    });
+const code = file => readFileSync(join(root,file),'utf8').replace(/\/\*[\s\S]*?\*\//g,' ').replace(/\/\/[^\n]*/g,' ');
+function assertPaired(source) {
+    const calls=[...source.matchAll(/\.rpc\('restore_gift_card_on_refund'/g)];
+    assert.ok(calls.length>0);
+    for (const call of calls) {
+        const block=source.slice(call.index,call.index+1200);
+        assert.match(block,/p_store_id: tenant\.siteId/);
+        assert.match(block,/p_order_id: orderId/);
+        assert.match(block,/await tryRestoreRedeemedLoyalty\(db,\s*\{\s*\.\.\.tenant,\s*orderId\s*\}\)/,
+            'every gift-card restoration must be followed by the loyalty recovery with the same tenant and order');
+    }
 }
+for (const file of routeFiles) {
+    test(`${file} pairs every direct gift-card restore with same-tenant loyalty recovery`, () => assertPaired(code(file)));
+}
+test('verified whole-order recovery pairs both instruments in the refund completion handler',()=>{
+    const orders=code(routeFiles[0]);
+    const calls=[...orders.matchAll(/await tryRestoreGiftCardForReversedOrder\(db,/g)];
+    assert.equal(calls.length,1);
+    assert.match(orders.slice(calls[0].index,calls[0].index+300),
+        /tryRestoreGiftCardForReversedOrder\(db,\s*\{\s*\.\.\.tenant,\s*orderId\s*\},\s*data\.order\);\s*await tryRestoreRedeemedLoyalty\(db,\s*\{\s*\.\.\.tenant,\s*orderId\s*\}\)/);
+    const recovery=code(recoveryFile);
+    assert.match(recovery,/order\.id!==input\.orderId\|\|order\.store_id!==input\.siteId/);
+    assert.match(recovery,/p_store_id:input\.siteId,p_order_id:input\.orderId/);
+});
+test('loyalty helper binds the actual RPC to the supplied tenant and order',()=>{
+    const helper=code('services/api-gateway/src/lib/loyalty-refund-recovery.ts');
+    assert.match(helper,/\.rpc\('restore_loyalty_on_refund',\s*\{\s*p_site_id: input\.siteId, p_order_id: input\.orderId/);
+    assert.ok(helper.includes(LOYALTY_RPC));
+});
+test('the co-location guard rejects a deleted recovery call or a different tenant',()=>{
+    const source=code(routeFiles[1]);
+    assert.throws(()=>assertPaired(source.replace('await tryRestoreRedeemedLoyalty','await unrelated')));
+    assert.throws(()=>assertPaired(source.replace('p_store_id: tenant.siteId','p_store_id: body.siteId')));
+});

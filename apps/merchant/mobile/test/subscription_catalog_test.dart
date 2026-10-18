@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:letbuyy_store/services/subscription_catalog.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 
 Map<String, dynamic> plan() => {

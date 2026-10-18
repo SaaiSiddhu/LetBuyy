@@ -66,6 +66,7 @@ import {
     newRunId,
     publishedHostPort,
     reapStaleClusters,
+    parseReapRunIds,
     removeContainer,
     removeNetwork,
     removeVolume,
@@ -434,9 +435,10 @@ async function startClusters(count) {
 }
 
 async function main() {
+    const reapRunIds = parseReapRunIds(args);
     const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
     if (flag('--reap-only')) {
-        const { containers, networks, volumes } = reapStaleClusters({ minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
+        const { containers, networks, volumes } = reapStaleClusters({ runIds: reapRunIds, minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
         process.stdout.write(JSON.stringify({ reaped: containers, reapedNetworks: networks, reapedVolumes: volumes }) + '\n');
         return 0;
     }

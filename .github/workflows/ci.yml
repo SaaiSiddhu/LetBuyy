@@ -30,6 +30,9 @@ concurrency:
 env:
   NODE_VERSION: "20"
   PNPM_VERSION: "10.6.2"
+  # Official Supabase mirror, same v16.2 multi-architecture image. Avoid the
+  # anonymous ECR download limit shared by GitHub-hosted runners.
+  LETBUYY_EXECUTABLE_REST_IMAGE: ghcr.io/supabase/postgrest:v16.2@sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
@@ -116,16 +119,44 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install owned browser prerequisites
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install owned marketplace Flutter dependencies
+        working-directory: apps/marketplace/mobile
+        run: flutter pub get
+
+      - name: Install owned buyer API Dart dependencies
+        working-directory: packages/dart/api_client
+        run: dart pub get
 
       - name: Run behavioral gate
         run: pnpm run test:behavioral
         env:
           CI: "true"
 
+      - name: Private R2 native runtime proof
+        run: node --test tests/runtime/reel-private-r2.workerd.test.mjs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate LCIS source artifacts for workspace tests
+        run: |
+          python -m pip install graphifyy==0.8.39
+          pnpm run test:prepare:lcis
+
       - name: Run unit tests
-        run: pnpm turbo test --filter="...[HEAD^1]"
+        run: pnpm turbo test --filter="...[HEAD^1]" --concurrency=2
         env:
           CI: "true"
 
@@ -162,10 +193,24 @@ jobs:
         env:
           CI: "true"
 
+      - name: Install owned browser prerequisites
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install owned marketplace Flutter dependencies
+        working-directory: apps/marketplace/mobile
+        run: flutter pub get
+
+      - name: Install owned buyer API Dart dependencies
+        working-directory: packages/dart/api_client
+        run: dart pub get
+
       - name: Behavioral tests
         run: pnpm run test:behavioral
         env:
           CI: "true"
+
+      - name: Private R2 native runtime proof
+        run: node --test tests/runtime/reel-private-r2.workerd.test.mjs
 
       - name: Contract tests
         run: pnpm run test:contracts
@@ -259,7 +304,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build all apps and packages
-        run: pnpm turbo build --filter="...[HEAD^1]"
+        run: pnpm turbo build --filter="...[HEAD^1]" --concurrency=2
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key

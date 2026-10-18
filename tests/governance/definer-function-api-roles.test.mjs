@@ -159,3 +159,21 @@ test('uncertain dynamic targets cannot borrow a literal binding after reassignme
     const quoted=mint.replace('public.mint_things','public."Mint_things"');
     assert.notDeepEqual(currentDefinerClosureOffenders([migration(257,quoted+close)]),[]);
 });
+
+test('literal-escaped custom function configuration cannot reopen an ACL; raw interpolation can',()=>{
+    const closed=migration(257,mint+close);
+    const config="DO $$ BEGIN EXECUTE format('ALTER FUNCTION public.mint_things(uuid) SET letbuyy.birth=%L', binding::text); END $$;";
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,config)]),[]);
+    for(const mutant of [config.replace('%L','%s'),config.replace('=%L',"=%L; GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon"),config.replace('binding::text)',"binding::text) || unsafe_sql")]) {
+        assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,mutant)]),[]);
+    }
+});
+
+test('finite table grant records cannot inject function grants or borrow a reassigned binding',()=>{
+    const closed=migration(257,mint+close);
+    const table="DO $$ DECLARE entry record; BEGIN FOR entry IN SELECT * FROM (VALUES ('public.employees','SELECT')) AS dependencies(signature,permission) LOOP EXECUTE format('GRANT %s ON TABLE %s TO service_role',entry.permission,entry.signature); END LOOP; END $$;";
+    assert.deepEqual(currentDefinerClosureOffenders([closed,migration(258,table)]),[]);
+    for(const mutant of [table.replace("'SELECT'","'SELECT; GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon; --'"),table.replace("'public.employees'","'public.employees; GRANT EXECUTE ON FUNCTION public.mint_things(uuid) TO anon; --'"),table.replace('LOOP EXECUTE',"LOOP entry.signature := unsafe_sql; EXECUTE"),table.replace('ON TABLE %s','ON FUNCTION %s')]) {
+        assert.notDeepEqual(currentDefinerClosureOffenders([closed,migration(258,mutant)]),[]);
+    }
+});

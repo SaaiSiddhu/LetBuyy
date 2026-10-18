@@ -113,7 +113,7 @@ export default async function MoneyReconciliationPage({ searchParams }: { search
                                             <Input unstyled type="hidden" name="site_id" value={row.site_id} />
                                             <Select name="resolution" hideLabel label="Resolution" defaultValue="request_recheck" options={resolutionOptions} controlSize="sm" />
                                             <div className="grid gap-[var(--lb-space-2)] md:grid-cols-2">
-                                                <input type="hidden" name="request_key" value={site.data === row.site_id && retryKey.success ? retryKey.data : crypto.randomUUID()} />
+                                                <Input unstyled type="hidden" name="request_key" value={site.data === row.site_id && retryKey.success ? retryKey.data : crypto.randomUUID()} />
                                                 <Input name="provider_reference" label="Provider reference (optional)" placeholder="Reference for review" />
                                             </div>
                                             <Textarea name="reason" label="Review reason" required minLength={8} placeholder="Evidence, suspense account, or recheck reason." rows={2} />

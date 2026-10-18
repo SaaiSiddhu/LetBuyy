@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button, Input, Textarea } from '@letbuyy/ui';
+import { Table, Button, Input, Textarea } from '@letbuyy/ui';
 import { ConsoleWorkspace, EmptyDataState, Panel, StatusPill } from '@/components/_local-ui/console-workspace';
 import { fetchConsoleApi, formatDateTime } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
@@ -93,7 +93,7 @@ export default async function MarketplaceListingDetailPage({ params }: { params:
                 <Panel title="Revision comparison" description="Differences are computed from the submitted snapshot and the last approved snapshot. A first submission has no previous approved revision.">
                     {!listing.submitted_product_snapshot ? <EmptyDataState message="No submitted revision snapshot is available. Ask the merchant to resubmit before approving." />
                         : diff.length === 0 ? <p>No material differences from the last approved revision.</p>
-                            : <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr><th>Field</th><th>Previously approved</th><th>Submitted now</th></tr></thead><tbody>{diff.map((item) => <tr key={item.path}><th className="pr-4 align-top">{item.path}</th><td className="whitespace-pre-wrap pr-4 align-top">{item.before}</td><td className="whitespace-pre-wrap align-top">{item.after}</td></tr>)}</tbody></table></div>}
+                            : <div className="overflow-x-auto"><Table className="shadow-none" tableClassName="w-full text-left text-sm"><thead><tr><th>Field</th><th>Previously approved</th><th>Submitted now</th></tr></thead><tbody>{diff.map((item) => <tr key={item.path}><th className="pr-4 align-top">{item.path}</th><td className="whitespace-pre-wrap pr-4 align-top">{item.before}</td><td className="whitespace-pre-wrap align-top">{item.after}</td></tr>)}</tbody></Table></div>}
                 </Panel>
 
                 <Panel title="Submitted product evidence" description="Evidence references are shown as merchant-provided URLs. Open each item to inspect the source; the console does not fetch external URLs on the reviewer’s behalf.">

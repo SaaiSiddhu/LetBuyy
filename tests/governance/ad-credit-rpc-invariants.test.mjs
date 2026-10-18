@@ -142,7 +142,7 @@ const INVARIANTS = {
         },
         {
             what: 'the tenant fence',
-            pattern: /current_setting\('app\.site_id', true\)[\s\S]{0,300}?does not match the requested site/,
+            pattern: /v_tenant_guc := NULLIF\(current_setting\('app\.site_id', true\), ''\);[\s\S]{0,300}?IF v_tenant_guc IS NULL OR v_tenant_guc::uuid IS DISTINCT FROM p_site_id THEN\s+RAISE EXCEPTION 'Current tenant site context is required for campaign budget' USING ERRCODE = '42501'/,
             why: 'a caller in one tenant transaction must not move another merchant\'s budget',
         },
         {
