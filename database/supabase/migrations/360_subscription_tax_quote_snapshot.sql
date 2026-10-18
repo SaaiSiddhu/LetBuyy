@@ -1232,6 +1232,9 @@ END $g$;
 -- no prior event guard is disabled. Final same-transaction verification requires O.
 CREATE EVENT TRIGGER subscription_tax_ddl_guard_360 ON ddl_command_end EXECUTE FUNCTION public.guard_subscription_tax_ddl_360();
 ALTER EVENT TRIGGER subscription_tax_ddl_guard_360 DISABLE;
+-- Supabase's delegated event-trigger creation may assign supabase_admin.
+-- Normalize this new owned object to the exact trusted owner before binding it.
+ALTER EVENT TRIGGER subscription_tax_ddl_guard_360 OWNER TO postgres;
 REVOKE ALL ON FUNCTION public.guard_subscription_tax_ddl_360() FROM PUBLIC,anon,authenticated,app_tenant,service_role;
 GRANT EXECUTE ON FUNCTION public.guard_subscription_tax_ddl_360() TO service_role;
 DO $birth360$

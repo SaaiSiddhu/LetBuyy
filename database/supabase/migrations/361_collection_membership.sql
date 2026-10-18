@@ -26,12 +26,13 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
   OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname='authenticator' AND (rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb OR NOT rolcanlogin OR rolreplication OR rolbypassrls)) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_PROFILE';END IF;
+ -- Supabase delegates canonical GRANT execution through its trusted admin.
  IF (SELECT count(*)FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
-   WHERE parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole)<>2
+   WHERE parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))<>2
   OR EXISTS(SELECT 1 FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
    WHERE (parent.rolname IN('postgres','app_tenant','anon','authenticated','service_role') OR member.rolname IN('anon','authenticated','service_role','app_tenant','authenticator')) AND NOT(
-    (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole)
-    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole))) THEN
+    (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))
+    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))))) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_MEMBERSHIP';END IF;
  IF to_regclass('public.collections') IS NULL OR to_regclass('public.collection_products')IS NULL
   OR to_regclass('public.audit_activity_events')IS NULL OR to_regclass('public.outbox_events')IS NULL OR to_regclass('public.migration_privilege_journal')IS NULL
@@ -67,7 +68,7 @@ BEGIN
   OR p_store_id IS NULL OR p_actor_id IS NULL OR nullif(current_setting('app.site_id',true),'') IS DISTINCT FROM p_store_id::text
   OR nullif(current_setting('app.actor_id',true),'') IS DISTINCT FROM p_actor_id::text OR nullif(current_setting('app.request_id',true),'') IS NULL THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP_FORBIDDEN' USING ERRCODE='42501';END IF;
- PERFORM id FROM public.users_custom WHERE id=p_actor_id AND deleted_at IS NULL FOR SHARE;
+ PERFORM id FROM public.users_custom WHERE id=p_actor_id FOR SHARE;
  IF NOT FOUND THEN RAISE EXCEPTION 'COLLECTION_MEMBERSHIP_FORBIDDEN' USING ERRCODE='42501';END IF;
  PERFORM id FROM public.sites WHERE id=p_store_id AND deleted_at IS NULL AND (custom_user_id=p_actor_id OR user_id=p_actor_id) FOR SHARE;
  IF NOT FOUND THEN RAISE EXCEPTION 'COLLECTION_MEMBERSHIP_FORBIDDEN' USING ERRCODE='42501';END IF;

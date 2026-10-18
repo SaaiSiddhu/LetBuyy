@@ -41,7 +41,7 @@ class NativeGateway {
   const compiler = createRequire(gatewayRequire.resolve('wrangler'))('esbuild') as { build(options: unknown): Promise<{ outputFiles?: { text: string }[] }> };
   const bundle = await compiler.build({ entryPoints: [new URL('../../services/api-gateway/src/index.ts', import.meta.url).pathname], absWorkingDir: new URL('../..', import.meta.url).pathname,
    bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022',
-   banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire(import.meta.url);"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
+   banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
    // Match Wrangler's Node compatibility resolution while retaining native
    // implementations. No crypto, storage or route implementation is replaced.
    plugins: [{ name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
@@ -317,7 +317,7 @@ test('private-original canonical native intake and conservative reverse retireme
  } finally { await gateway.settle(); }
  await t.test('ordinary password/session merchant browser transfers through signed BFF and recovers received-unprocessed after reload',async()=>{
   await withMerchantReelBrowser(async fixture=>{
-   const {page}=await fixture.login(email,password);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
+   const {page}=await fixture.login(email,password,tenant.subdomain);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
    await expect(page.getByLabel('Original video')).toBeVisible();const bytes=original(128*1024+7);
    await page.getByLabel('Original video').setInputFiles({name:'browser-original.mp4',mimeType:'video/mp4',buffer:Buffer.from(bytes)});
    await expect(page.getByRole('button',{name:'Transfer same original',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Transfer same original',exact:true}).click();
@@ -329,7 +329,7 @@ test('private-original canonical native intake and conservative reverse retireme
  });
  await t.test('normal merchant browser recovers a lost committed content reply after reload with the same intake and no duplicate effects',async()=>{
   await withMerchantReelBrowser(async fixture=>{
-   const {page}=await fixture.login(email,password);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
+   const {page}=await fixture.login(email,password,tenant.subdomain);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
    const bytes=original(128*1024+13);await page.getByLabel('Original video').setInputFiles({name:'lost-browser-original.mp4',mimeType:'video/mp4',buffer:Buffer.from(bytes)});
    const transferButton=page.getByRole('button',{name:'Transfer same original',exact:true});await expect(transferButton).toBeEnabled();fixture.loseReply();
    const lostResponse=page.waitForResponse(response=>response.request().method()==='PUT'&&/\/reels\/uploads\/[a-f0-9-]{36}\/content$/.test(new URL(response.url()).pathname));await transferButton.click();const lost=await lostResponse;assert.equal(lost.status(),503);
@@ -347,7 +347,7 @@ test('private-original canonical native intake and conservative reverse retireme
  });
  await t.test('normal merchant browser rejects valid-shaped wrong id/key/checksum and non-received completion, preserving the same request for recovery',async()=>{
   await withMerchantReelBrowser(async fixture=>{
-   const {page}=await fixture.login(email,password);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
+   const {page}=await fixture.login(email,password,tenant.subdomain);await page.goto(`${fixture.origin}/${tenant.subdomain}/content/reels`);
    for(const fault of ['id','idempotency_key','checksum_sha256','state'] as const) {
     const bytes=original(128*1024+29),filename=`binding-${fault}.mp4`;await page.getByLabel('Original video').setInputFiles({name:filename,mimeType:'video/mp4',buffer:Buffer.from(bytes)});
     const button=page.getByRole('button',{name:'Transfer same original',exact:true});await expect(button).toBeEnabled();
@@ -397,7 +397,7 @@ function retainedBrowserIntake(key:string) {
 async function withMerchantReelBrowser(run: (fixture: {
   origin: string; evidence: string; readOutage(value: boolean): void; loseReply(): void;
   privateOriginalState(key: string): Promise<{ count: number; version: string | null }>;
-  login(email: string, password: string): Promise<{ page: Page; context: BrowserContext }>;
+  login(email: string, password: string, subdomain: string): Promise<{ page: Page; context: BrowserContext }>;
 }) => Promise<void>) {
   async function port() { const server = createServer(); await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve)); const value = (server.address() as { port: number }).port; await new Promise<void>(resolve => server.close(() => resolve())); return value; }
   async function ready(url: string, child: OwnedClientProcess) {
@@ -446,7 +446,7 @@ async function withMerchantReelBrowser(run: (fixture: {
     for (const app of [identity, merchant]) for (const stream of [app.stdout, app.stderr]) stream.on('data', data => { diagnostics.push(data.toString().replace(/\?[^\s]+/g, '?redacted').slice(0, 700)); if (diagnostics.length > 20) diagnostics.shift(); });
     await Promise.all([ready(identityOrigin + '/login', identity), ready(origin, merchant)]);
     browser = await chromium.launch({ headless: true });
-    await run({ origin, evidence, readOutage: value => { outage = value; }, loseReply: () => { lose = true; }, privateOriginalState: async key => { const bucket=await activeGateway.mf.getR2Bucket('REEL_ORIGINALS_BUCKET'), head=await bucket.head(key);return {count:(await bucket.list({prefix:key})).objects.filter(object=>object.key===key).length,version:head?.version ?? null}; }, login: async (email, password) => {
+    await run({ origin, evidence, readOutage: value => { outage = value; }, loseReply: () => { lose = true; }, privateOriginalState: async key => { const bucket=await activeGateway.mf.getR2Bucket('REEL_ORIGINALS_BUCKET'), head=await bucket.head(key);return {count:(await bucket.list({prefix:key})).objects.filter(object=>object.key===key).length,version:head?.version ?? null}; }, login: async (email, password, subdomain) => {
       const context = await browser!.newContext(), page = await context.newPage(); pages.push(page); page.setDefaultTimeout(45000); page.setDefaultNavigationTimeout(90000); page.on('pageerror', error => errors.push((error.stack || error.message).replace(/\?[^\s]+/g, '?redacted').slice(0, 2000)));
       const cdp = await context.newCDPSession(page); await cdp.send('Runtime.enable'); await cdp.send('Debugger.enable');
       await cdp.send('Network.enable');
@@ -471,7 +471,7 @@ async function withMerchantReelBrowser(run: (fixture: {
         scriptFailures.push({ kind: 'script-parse', url: value.url, line: value.startLine, column: value.startColumn, file });
         void cdp.send('Debugger.getScriptSource', { scriptId: value.scriptId }).then(result => writeFileSync(file, result.scriptSource)).catch(() => undefined);
       });
-      await page.goto(identityOrigin + '/login'); await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click(); await page.getByLabel('Password', { exact: true }).fill(password);
+      await page.goto(identityOrigin + '/login?return_to=' + encodeURIComponent(origin + '/' + subdomain + '/content/reels')); await page.getByLabel('Email', { exact: true }).fill(email); await page.getByRole('button', { name: 'Continue with email', exact: true }).click(); await page.getByLabel('Password', { exact: true }).fill(password);
       const [response] = await Promise.all([page.waitForResponse(reply => reply.url().endsWith('/api/auth/login') && reply.request().method() === 'POST'), page.getByRole('button', { name: 'Log in', exact: true }).click()]); assert.equal(response.status(), 200, 'Actual password/session sign-in must succeed'); await page.waitForURL(url => url.origin === origin);
       // As in the canonical Console fixture, finish the journey route's dev
       // compilation before browser navigation. A cold webpack response has

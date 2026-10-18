@@ -296,7 +296,8 @@ BEGIN
     THEN ARRAY['postgres=X/postgres','service_role=X/postgres']::aclitem[]
     ELSE ARRAY['postgres=X/postgres']::aclitem[] END))
  OR NOT EXISTS(SELECT 1 FROM pg_class WHERE oid='public.reel_upload_intents'::regclass AND relowner='postgres'::regrole
-  AND relrowsecurity AND relforcerowsecurity AND relacl=ARRAY['postgres=arwdDxt/postgres']::aclitem[]) THEN
+  AND relrowsecurity AND relforcerowsecurity AND relacl=CASE WHEN current_setting('server_version_num')::integer/10000=17
+   THEN ARRAY['postgres=arwdDxtm/postgres'] ELSE ARRAY['postgres=arwdDxt/postgres'] END::aclitem[]) THEN
  RAISE EXCEPTION 'REEL_UPLOAD_MIGRATION_UNEXPECTED_EFFECTIVE_ACL';END IF;
 END $intake_final_acl$;
 NOTIFY pgrst,'reload schema';

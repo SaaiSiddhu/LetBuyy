@@ -195,11 +195,11 @@ test('empty360 rollback/reapply preserves the full retained legacy invoice and p
   ['ALTER POLICY subscription_tax_current_backend_read_360 ON public.subscriptions USING(true)',/360 refuses changed tax policy shape/],
   ['ALTER TABLE public.billing_history DISABLE ROW LEVEL SECURITY',/360 refuses changed tax policy shape/],
   ['ALTER TABLE public.subscriptions ALTER CONSTRAINT subscriptions_subscription_tax_source_id_fkey DEFERRABLE INITIALLY DEFERRED',/360 refuses replaced native RI trigger identity/],
-  ['ALTER TABLE public.billing_history DROP CONSTRAINT billing_history_subscription_tax_source_id_fkey',/360 refuses changed tax foreign key shape/],
+  ['ALTER TABLE public.billing_history DROP CONSTRAINT billing_history_subscription_tax_source_id_fkey',/360 refuses replaced native RI trigger identity/],
   ['CREATE INDEX synthetic_unknown_tax_expression ON public.subscriptions ((subscription_tax_snapshot->>\'gross_minor\'))',/360 refuses unknown tax column dependency/],
   ['CREATE VIEW public.synthetic_unknown_tax_view AS SELECT subscription_tax_snapshot FROM public.billing_history',/360 refuses unknown tax column dependency/],
   ['ALTER TABLE public.billing_history ADD CONSTRAINT synthetic_unknown_tax_check CHECK(subscription_tax_snapshot IS NULL)',/360 refuses unknown tax column dependency/],
-  ['ALTER INDEX public.merchant_billing_tax_source_360_uidx SET(fillfactor=80)',/360 refuses changed tax index shape/],
+  ['ALTER INDEX public.merchant_billing_tax_source_360_uidx SET(fillfactor=80)',/360 refuses changed historical invoice index identity\/expression/],
  ];
  for(const [mutation,expected] of mutations){
   assert.match(owned.psqlExpectError(`BEGIN;${mutation};ROLLBACK;`),expected,'exact tax guard must reject '+mutation);

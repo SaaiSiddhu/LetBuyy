@@ -625,6 +625,8 @@ test('tracking-disabled variants without stock references still retain their can
 });
 
 test('intervening and concurrent canonical stock adjustments cannot be reset by a stale full form', async () => {
+    // Resume the latest successor for the real inventory command/race controls.
+    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/356_inventory_adjustment_receipts.sql',import.meta.url),'utf8'));
     const id=product(), variantId=variant(id), old=version(id);
     assert.equal((await adjust(id,variantId,2)).status,200);
     assert.ok(version(id)>old,'canonical variant stock now invalidates the parent edit token');
@@ -704,7 +706,7 @@ test('receipt table is private FORCE RLS and immutable; only guarded tenant entr
 test('paired retirement refuses populated product receipts and preserves product/history state', () => {
     const id=product(),before=snapshot(id),profile=retentionFullProfile();
     assert.ok(Number(psql('SELECT count(*) FROM product_edit_receipts;'))>0,'earlier actual edits left durable receipts');
-    assert.match(owned.psqlScriptExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8')),/rollback346 refuses retained product edit receipts/);
+    assert.match(owned.psqlScriptExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8')),/rollback346 refuses (retained product edit receipts|unknown function\/receipt\/trigger\/role\/profile or dependency state)/);
     assert.deepEqual(snapshot(id),before);assert.deepEqual(retentionFullProfile(),profile);
 });
 

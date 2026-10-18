@@ -14,6 +14,7 @@ type ProviderOrder={id:string;amount:number;currency:string;notes:Record<string,
 const orders=new Map<string,ProviderOrder>(),payments=new Map<string,{id:string;order_id:string;amount:number;currency:string;status:string}>();
 let diagnostic:ReturnType<typeof tapRest>;
 let restore:()=>void;let loseNextCreate=false;let createCount=0;
+let legacyPaidFixture:{j:Awaited<ReturnType<typeof fixture>>;p:{id:string;order_id:string;amount:number;currency:string;status:string};id:string;store:string;end:string};
 const legacyFreeFixtures=new Map<string,{j:Awaited<ReturnType<typeof freeFixture>>;legacy:{accepted:boolean;subscription:{id:string}}}>();
 before(async()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
  const r=await forward();if(call.resource.startsWith('rpc/')&&!r.ok){const raw=await r.clone().json();const e=raw&&typeof raw==='object'?raw as Record<string,unknown>:{};console.info('OWNED_CHECKOUT_RPC '+JSON.stringify({rpc:call.resource,status:r.status,code:e.code,message:e.message}));}return r;
@@ -46,6 +47,17 @@ before(async()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forw
  assert.equal(legacy.accepted,true);
   legacyFreeFixtures.set(status,{j,legacy});
  }
+ // Retain a real predecessor-era paid invoice before the new writer guards exist.
+ const j=await fixture(),id=crypto.randomUUID(),store=j.stores[0].siteId,end='2026-12-01T00:00:00.000Z';
+ const p={id:'pay_syn_'+crypto.randomUUID(),order_id:'order_syn_'+crypto.randomUUID(),amount:Number(owned.psql("SELECT price_monthly_inr FROM plans WHERE slug='growth' AND site_type='store';")),currency:'INR',status:'captured'};
+ payments.set(p.id,p);orders.set(p.order_id,{id:p.order_id,amount:p.amount,currency:p.currency,notes:{purpose:'subscription',store_id:store,user_id:j.owner,plan_slug:'growth',site_type:'store',billing_period:'monthly'},receipt:'synthetic-legacy'});
+ owned.psql(`INSERT INTO subscriptions(id,user_id,store_id,site_id,plan,status,billing_period,razorpay_payment_id,amount_paid,current_period_end)
+  VALUES('${id}','${j.owner}','${store}','${store}','growth','active','monthly','${p.id}',${p.amount},'${end}');
+  UPDATE sites SET trial_status='paid' WHERE id='${store}';
+  INSERT INTO billing_history(user_id,store_id,site_id,subscription_id,invoice_number,description,amount,total_amount,payment_gateway,payment_id,payment_status,billing_period)
+  VALUES('${j.owner}','${store}','${store}','${id}','SYN-LEGACY-${id}','Synthetic retained legacy subscription',${p.amount},${p.amount},'razorpay','${p.id}','paid','monthly');
+  SELECT allocate_founding_merchant('${store}','${id}','founding:${id}');`);
+ legacyPaidFixture={j,p,id,store,end};
  owned.script(freeMigration('migrations'));owned.script(taxFile('migrations'));
 });
 after(()=>{restore();diagnostic.restore();});afterEach(()=>mock.timers.reset());
@@ -114,8 +126,8 @@ function assertOneFreeEffect(store:string){
  return result;
 }
 
-const freeMigration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+
- '/347_free_subscription_checkout_receipts'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+function freeMigration(direction:'migrations'|'rollback'){return readFileSync(new URL('../../../../../database/supabase/'+direction+
+ '/347_free_subscription_checkout_receipts'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');}
 function checkoutFunctionState(){
  return owned.psql(`SELECT jsonb_agg(jsonb_build_object('name',p.proname,'definition',pg_get_functiondef(p.oid),'acl',p.proacl::text) ORDER BY p.proname)
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public'
@@ -426,13 +438,7 @@ test('a verify request replayed thirty application-clock days later starts no ne
  assert.equal(owned.psql(`SELECT current_period_end FROM subscriptions WHERE razorpay_payment_id='${p.id}';`),end);
 });
 test('a legacy payment with no idempotency key or optional provider fields is read back without another activation',async()=>{
- const j=await fixture(),p=await j.capture(),id=crypto.randomUUID(),store=j.stores[0].siteId,end='2026-12-01T00:00:00.000Z';
- owned.psql(`INSERT INTO subscriptions(id,user_id,store_id,site_id,plan,status,billing_period,razorpay_payment_id,amount_paid,current_period_end)
-  VALUES('${id}','${j.owner}','${store}','${store}','growth','active','monthly','${p.id}',${p.amount},'${end}');
-  UPDATE sites SET trial_status='paid' WHERE id='${store}';
-  INSERT INTO billing_history(user_id,store_id,site_id,subscription_id,invoice_number,description,amount,total_amount,payment_gateway,payment_id,payment_status,billing_period)
-  VALUES('${j.owner}','${store}','${store}','${id}','SYN-LEGACY-${id}','Synthetic retained legacy subscription',${p.amount},${p.amount},'razorpay','${p.id}','paid','monthly');
-  SELECT allocate_founding_merchant('${store}','${id}','founding:${id}');`);
+ const {j,p,id,store,end}=legacyPaidFixture;
  const replay=await j.verify(p);once(p.id,[replay]);assert.equal(new Date((replay.json?.data.subscription.current_period_end as string)).toISOString(),end);
  assert.equal(owned.psql(`SELECT idempotency_key IS NULL FROM subscriptions WHERE id='${id}';`),'t');
 });

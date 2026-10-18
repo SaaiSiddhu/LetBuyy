@@ -88,6 +88,7 @@ function outsideState361() {
     const ordinal=Number(psql("SELECT attnum FROM pg_attribute WHERE attrelid='collections'::regclass AND attname='membership_version'AND NOT attisdropped;"));
     const junction=Number(psql("SELECT 'collection_products'::regclass::oid;")),parent=Number(psql("SELECT 'collections'::regclass::oid;"));
     const journalAcl=psql("SELECT coalesce(jsonb_agg(jsonb_build_array(grantee,'postgres',privilege,false)ORDER BY grantee,privilege),'[]'::jsonb)::text FROM migration_privilege_journal WHERE migration='361'AND action='revoked'AND object_signature='public.collection_products';");
+    const journalAclRoles=sqlJson("SELECT coalesce(jsonb_agg(DISTINCT r.oid),'[]'::jsonb) FROM pg_roles r WHERE r.rolname='service_role' OR r.rolname IN(SELECT grantee FROM migration_privilege_journal WHERE migration='361' AND action='revoked' AND object_signature='public.collection_products');") as number[];
     const objectTest=(classExpression:string,id:string,sub='0')=>'('+objects.map(([c,o,s])=>'('+classExpression+'='+c+' AND '+id+'='+o+(s===0?'':' AND '+sub+'='+s)+')').join(' OR ')+')';
     const catalogSql=state361Catalogs.filter(([name])=>name!=='pg_prepared_xacts').map(([table,predicate])=>{
         let filter='('+predicate+')',projection='to_jsonb(t)';
@@ -95,7 +96,12 @@ function outsideState361() {
         if(table==='pg_index')filter+=' AND NOT '+objectTest("'pg_class'::regclass::oid",'t.indexrelid');
         if(table==='pg_attribute')filter+=' AND NOT '+objectTest("'pg_class'::regclass::oid",'t.attrelid','t.attnum');
         if(table==='pg_depend')filter+=' AND NOT '+objectTest('t.classid','t.objid','t.objsubid')+' AND NOT '+objectTest('t.refclassid','t.refobjid','t.refobjsubid');
-        if(table==='pg_shdepend')filter+=' AND NOT '+objectTest('t.classid','t.objid','t.objsubid');
+        if(table==='pg_shdepend') {
+            filter+=' AND NOT '+objectTest('t.classid','t.objid','t.objsubid');
+            // ACL restoration owns exactly these journaled junction/grantee
+            // edges. Other role/dependency rows remain in full conservation.
+            filter+=" AND NOT(t.classid='pg_class'::regclass AND t.objid="+junction+" AND t.objsubid=0 AND t.deptype='a' AND t.refclassid='pg_authid'::regclass AND t.refobjid=ANY(ARRAY["+journalAclRoles.join(',')+"]::oid[]))";
+        }
         if(table==='pg_description'||table==='pg_seclabel')filter+=' AND NOT '+objectTest('t.classoid','t.objoid','t.objsubid');
         if(table==='pg_class'){
             // Canonicalize ACL semantics (ACL array order/default NULL is not
@@ -154,6 +160,12 @@ function rawStateSql361() {
     return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>'SELECT '+q(key)+" AS k,encode(sha256(convert_to(("+sql+")::text,'UTF8')),'hex')AS v").join(' UNION ALL ')+')s';
 }
 function rawState361(){return largeOwnedScript(rawStateSql361()+';');}
+function assertWholeState361(actual:string,expected:string,message='Entire owned state must remain unchanged') {
+    if(actual===expected)return;
+    const a=JSON.parse(actual) as Record<string,string>,b=JSON.parse(expected) as Record<string,string>;
+    assert.fail(message+': '+JSON.stringify([...new Set([...Object.keys(a),...Object.keys(b)])].filter(k=>a[k]!==b[k])));
+}
+
 function refusedRetirement361(label:string,mutation='') {
     const state=rawStateSql361();
     // The real candidate body executes inside an exception subtransaction. A
@@ -225,7 +237,7 @@ test('361 empty-only retirement first proves source/schema/ACL/dependency/role r
         ['own receipt comment',"COMMENT ON TABLE collection_membership_receipts IS 'syn361 drift'"],
         ['own provenance drift',"UPDATE migration_privilege_journal SET object_definition_hash='syn361'WHERE migration='361'AND privilege='361 RECEIPT'"],
     ];
-    for(const [label,mutation]of mutations){const before=rawState361();refusedRetirement361(label,mutation);assert.equal(rawState361(),before,label+' mutation leaked from outer rollback');}
+    for(const [label,mutation]of mutations){const before=rawState361();refusedRetirement361(label,mutation);assertWholeState361(rawState361(),before,label+' mutation leaked from outer rollback');}
     const outside=outsideState361();
     const expectedPriorAcl=psql("SELECT coalesce(jsonb_agg(jsonb_build_array(grantee,'postgres',privilege_type,false)ORDER BY grantee,privilege_type),'[]'::jsonb)::text FROM(SELECT 'postgres'::text grantee,unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'])privilege_type UNION ALL SELECT grantee,privilege FROM migration_privilege_journal WHERE migration='361'AND action='revoked'AND object_signature='public.collection_products')s;");
     const beforeData=largeOwnedScript("SELECT coalesce(jsonb_agg(to_jsonb(t)-'membership_version'ORDER BY id),'[]'::jsonb)::text FROM collections t;"),oldJunctionAcl=psql("SELECT coalesce(jsonb_agg(jsonb_build_array(x.grantee,x.grantor,x.privilege_type,x.is_grantable)ORDER BY x.grantee,x.grantor,x.privilege_type),'[]'::jsonb)::text FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner)))x WHERE c.oid='collection_products'::regclass;");
@@ -254,13 +266,13 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
     try{
         for(const [index,gid]of gids.entries()){owned.script('BEGIN;SELECT pg_advisory_xact_lock('+String(361001+index)+');PREPARE TRANSACTION '+q(gid)+';');prepared.push(gid);}
         assert.equal(Number(psql('SELECT count(*)FROM pg_prepared_xacts WHERE database=current_database()AND gid IN('+gids.map(q).join(',')+');')),2);
-        const before=rawState361();assert.equal(owned.exec(rollback361),null,'The actual whole retirement file refuses real prepared state');assert.equal(rawState361(),before);
+        const before=rawState361();assert.equal(owned.exec(rollback361),null,'The actual whole retirement file refuses real prepared state');assertWholeState361(rawState361(),before);
     }finally{for(const gid of prepared)owned.script('ROLLBACK PREPARED '+q(gid)+';');}
     const name='syn_cm361_writer_'+owned.runId;const writer=owned.psqlAsync('BEGIN;SET LOCAL application_name='+q(name)+';LOCK TABLE collections IN ROW EXCLUSIVE MODE;SELECT txid_current();SELECT pg_sleep(4);COMMIT;');
     let witnessed=false;
     try{
         const deadline=Date.now()+2500;while(Date.now()<deadline){if(psql('SELECT count(*)FROM pg_stat_activity WHERE application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';")==='1'){witnessed=true;break;}await new Promise(resolve=>setTimeout(resolve,25));}
-        assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();assert.equal(owned.exec(rollback361),null);assert.equal(rawState361(),before);
+        assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),before);
     }finally{await writer;}
     console.info('OWNED361_QUIESCENCE '+JSON.stringify({preparedTransactions:2,writerBarrier:witnessed,syntheticPositiveSubstitution:false}));
 });
@@ -272,17 +284,17 @@ test('361 retains zero-receipt direct-write history, tombstones and later receip
     const current=readData(await request(w,'GET'),w);assert.deepEqual(current.product_ids,initial.product_ids);assert.ok(current.membership_version>initial.membership_version);
     assert.equal(psql('SELECT count(*)FROM collection_membership_receipts WHERE collection_id='+q(w.collection)+';'),'0');
     const history=Number(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection)+';'));assert.ok(history>0);
-    const before=rawState361();assert.equal(owned.exec(rollback361),null);assert.equal(rawState361(),before);
+    const before=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),before);
     const body=command(current.membership_version,[w.products[2]]),first=readData(await request(w,'PUT',{body}),w),retained=rawState361();
-    assert.equal(owned.exec(rollback361),null);assert.equal(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assert.equal(rawState361(),retained);
+    assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assertWholeState361(rawState361(),retained);
     const resumed=readData(await request(w,'PUT',{body:command(first.membership_version,[w.products[3]])}),w);assert.deepEqual(resumed.product_ids,[w.products[3]]);
     const tombstone=crypto.randomUUID();psql('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic tombstone')].join(',')+');DELETE FROM collections WHERE id='+q(tombstone)+';');
     assert.equal(psql('SELECT count(*)FROM collections WHERE id='+q(tombstone)+';'),'0');
     assert.equal(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(tombstone)+';'),'2','Insert and hard-delete tombstone history persists after its parent is gone');
-    const tombstoneState=rawState361();assert.equal(owned.exec(rollback361),null);assert.equal(rawState361(),tombstoneState);
-    assert.match(owned.psqlExpectError('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic forbidden ID reuse')].join(',')+');'),/COLLECTION_MEMBERSHIP_/);assert.equal(rawState361(),tombstoneState);
+    const tombstoneState=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),tombstoneState);
+    assert.match(owned.psqlExpectError('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic forbidden ID reuse')].join(',')+');'),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
     for(const sql of ["UPDATE audit_activity_events SET metadata='{}'WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),"DELETE FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection),'UPDATE collection_membership_receipts SET response=response WHERE idempotency_key='+q(body.idempotency_key),'DELETE FROM collection_membership_receipts WHERE idempotency_key='+q(body.idempotency_key)]){
-        assert.match(owned.psqlExpectError(sql),/COLLECTION_MEMBERSHIP_/);assert.equal(rawState361(),tombstoneState);
+        assert.match(owned.psqlExpectError(sql),/COLLECTION_MEMBERSHIP_/);assertWholeState361(rawState361(),tombstoneState);
     }
     assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assert.deepEqual(readData(await request(w,'GET'),w),resumed);
 });
@@ -431,13 +443,13 @@ test('361 ordinary raw roles are denied while the same app_tenant role can execu
         'SELECT public.assert_collection_membership_owner_v1('+q(w.a.siteId)+','+q(w.owner)+')',
     ];
     for(const role of ['app_tenant','anon','authenticated','service_role'])for(const sql of forbidden){
-        const before=rawState361(),error=owned.psqlExpectError(roleScript361(w,sql,{role}));assert.match(error,/permission denied|COLLECTION_MEMBERSHIP_/i,role+':'+sql);assert.equal(rawState361(),before);
+        const before=rawState361(),error=owned.psqlExpectError(roleScript361(w,sql,{role}));assert.match(error,/permission denied|COLLECTION_MEMBERSHIP_/i,role+':'+sql);assertWholeState361(rawState361(),before);
     }
     const success=largeOwnedScript(roleScript361(w,canonicalSql361(w,body),{commit:true}));
     const response=JSON.parse(success.split('\n').find(x=>x.startsWith('{'))!);
     assert.equal(response.current_role,'app_tenant');assert.equal(response.current_user,'app_tenant');assert.deepEqual(response.data.product_ids,body.product_ids);
     assert.deepEqual(effects(w),{audit:1,outbox:1,receipts:1});
-    const before=rawState361();assert.equal(largeOwnedScript(roleScript361(w,canonicalSql361(w,body))),success,'Same ordinary role exact replay returns its original response');assert.equal(rawState361(),before);
+    const before=rawState361();assert.equal(largeOwnedScript(roleScript361(w,canonicalSql361(w,body))),success,'Same ordinary role exact replay returns its original response');assertWholeState361(rawState361(),before);
     const invalid:[string,string,Parameters<typeof roleScript361>[2]][]=[
         ['service_role inherits execute but is not the literal canonical role',canonicalSql361(w,body),{role:'service_role'}],
         ['store GUC mismatch',canonicalSql361(w,body),{site:w.b.siteId}],
@@ -448,9 +460,9 @@ test('361 ordinary raw roles are denied while the same app_tenant role can execu
         ['foreign product fails whole command',canonicalSql361(w,command(response.data.membership_version,[w.foreign])),{}],
         ['same key different payload refuses',canonicalSql361(w,{...body,product_ids:[w.products[3]]}),{}],
     ];
-    for(const [label,sql,options]of invalid){const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,sql,options)),/COLLECTION_MEMBERSHIP_/i,label);assert.equal(rawState361(),state,label);}
+    for(const [label,sql,options]of invalid){const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,sql,options)),/COLLECTION_MEMBERSHIP_/i,label);assertWholeState361(rawState361(),state,label);}
     psql('UPDATE sites SET custom_user_id='+q(w.other)+' WHERE id='+q(w.a.siteId)+';');
-    try{const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,canonicalSql361(w,body))),/COLLECTION_MEMBERSHIP_FORBIDDEN/);assert.equal(rawState361(),state);}
+    try{const state=rawState361();assert.match(owned.psqlExpectError(roleScript361(w,canonicalSql361(w,body))),/COLLECTION_MEMBERSHIP_FORBIDDEN/);assertWholeState361(rawState361(),state);}
     finally{psql('UPDATE sites SET custom_user_id='+q(w.owner)+' WHERE id='+q(w.a.siteId)+';');}
     const again=largeOwnedScript(roleScript361(w,canonicalSql361(w,body)));assert.equal(again,success);assert.deepEqual(effects(w),{audit:1,outbox:1,receipts:1});
     const fresh=readData(await request(w,'GET'),w);assert.equal((await request(w,'PUT',{body:command(fresh.membership_version,[w.products[3]])})).status,200);

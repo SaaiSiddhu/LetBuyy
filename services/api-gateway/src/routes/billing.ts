@@ -312,7 +312,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
             idempotencyKey: `event:billing.failed:${subscription.id}`,
             actorId: tenant.userId,
             requestId: c.req.header('X-Request-ID') || null,
-            payload: { invoice_id: history.id, amount: amount.amountMinor },
+            payload: { invoice_id: history.id, amount: { amount_minor: amount.amountMinor, currency: 'INR' } },
         });
         return c.json(success({ subscription:publicSubscriptionBillingRecord(subscription), dunning, invoice:publicSubscriptionBillingRecord(history) }), 201);
     }
@@ -373,7 +373,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         idempotencyKey: `event:billing.plan_changed:${subscription.id}`,
         actorId: tenant.userId,
         requestId: c.req.header('X-Request-ID') || null,
-        payload: { plan_id: plan.id, amount: amount.amountMinor },
+        payload: { plan_id: plan.id, amount: { amount_minor: amount.amountMinor, currency: 'INR' } },
     });
     await emitBillingEvent(db, {
         siteId: tenant.siteId,
@@ -382,7 +382,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         idempotencyKey: `event:billing.charged:${subscription.id}`,
         actorId: tenant.userId,
         requestId: c.req.header('X-Request-ID') || null,
-        payload: { invoice_id: history?.id, amount: amount.amountMinor },
+        payload: { invoice_id: history?.id, amount: { amount_minor: amount.amountMinor, currency: 'INR' } },
     });
 
     return c.json(success({ subscription, dunning, invoice: history?publicSubscriptionBillingRecord(history):null }), 201);

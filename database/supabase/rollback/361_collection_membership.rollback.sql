@@ -43,12 +43,13 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
   OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname='authenticator' AND (rolsuper OR rolinherit OR rolcreaterole OR rolcreatedb OR NOT rolcanlogin OR rolreplication OR rolbypassrls)) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_PROFILE';END IF;
+ -- Supabase delegates canonical GRANT execution through its trusted admin.
  IF (SELECT count(*)FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
-   WHERE parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole)<>2
+   WHERE parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))<>2
   OR EXISTS(SELECT 1 FROM pg_auth_members m JOIN pg_roles parent ON parent.oid=m.roleid JOIN pg_roles member ON member.oid=m.member
    WHERE (parent.rolname IN('postgres','app_tenant','anon','authenticated','service_role') OR member.rolname IN('anon','authenticated','service_role','app_tenant','authenticator')) AND NOT(
-    (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole)
-    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor='postgres'::regrole))) THEN
+    (parent.rolname='app_tenant' AND member.rolname IN('postgres','service_role') AND NOT m.admin_option AND m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin')))
+    OR (parent.rolname IN('anon','authenticated','service_role') AND member.rolname='authenticator' AND NOT m.admin_option AND NOT m.inherit_option AND m.set_option AND m.grantor IN('postgres'::regrole,to_regrole('supabase_admin'))))) THEN
   RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLE_MEMBERSHIP';END IF;
  IF EXISTS(SELECT 1 FROM public.collection_membership_receipts)
   OR EXISTS(SELECT 1 FROM public.collections WHERE membership_version<>1)
@@ -67,7 +68,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
 ('public.prepare_collection_membership_revision_v1()','prepare_collection_membership_revision_v1','9a6839bc52057158adca48fd5bbaff39473223e2cd40c9f22742300639228e64','plpgsql','trigger',true,'v',NULL::text[]),
 ('public.record_collection_membership_revision_v1()','record_collection_membership_revision_v1','dee8deb9f8c5dc62e0af2b57f2c74712096ea7ac1454b183f4c184ee77412b48','plpgsql','trigger',true,'v',NULL::text[]),
 ('public.protect_collection_membership_audit_v1()','protect_collection_membership_audit_v1','6186d7a96d6ced1e6e6ed2b0e9b301ed4b7aabe39a6e746c1bbfb0b28e3b7758','plpgsql','trigger',false,'v',NULL::text[]),
-('public.assert_collection_membership_owner_v1(uuid,uuid)','assert_collection_membership_owner_v1','43a5a10c8d3af964e3d75626965e82ebfa63bc7c680b97deef089cd2a33a4146','plpgsql','void',true,'v',ARRAY['p_store_id','p_actor_id']::text[]),
+('public.assert_collection_membership_owner_v1(uuid,uuid)','assert_collection_membership_owner_v1','33fe3427f0fcdc6ed158d0ed4897f0f1685c3bfeb84452036ea2e3c126ade327','plpgsql','void',true,'v',ARRAY['p_store_id','p_actor_id']::text[]),
 ('public.collection_membership_snapshot_v1(uuid,uuid)','collection_membership_snapshot_v1','99b00dd3c1eecac5977d0e6a88466704062ae587d5fc1e60f9dda4dbdf548077','sql','jsonb',false,'s',ARRAY['p_store_id','p_collection_id']::text[]),
 ('public.apply_collection_membership_v1(uuid,uuid,uuid,integer,uuid,jsonb)','apply_collection_membership_v1','25b36ca094c5341030d703ac16ed4189bcf822431112e0261a16668d3cbf323c','plpgsql','jsonb',true,'v',ARRAY['p_store_id','p_collection_id','p_actor_id','p_expected_version','p_idempotency_key','p_product_ids']::text[])
  )AS v(signature,name,source_hash,language,result_type,definer,volatility,argnames) LOOP
