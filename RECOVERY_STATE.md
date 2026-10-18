@@ -1,4 +1,4 @@
-# Recovery snapshot N5 — 18 October 2026
+# Recovery snapshot N6 — 18 October 2026
 
 This is an unfinished, unverified phase snapshot preserved for machine transfer.
 Start normal development from develop. Do not merge this snapshot wholesale:

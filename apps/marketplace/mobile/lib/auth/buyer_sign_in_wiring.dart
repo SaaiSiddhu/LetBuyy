@@ -2,6 +2,7 @@
 // always calls this (Phase 1R): it's the app's sole sign-in, with no Firebase fallback.
 
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 import '../config/app_config.dart';
 import '../data/canonical_api.dart';
@@ -10,12 +11,31 @@ import 'buyer_sign_in_browser.dart';
 import 'buyer_sign_in_controller.dart';
 
 BuyerSignInController buildBuyerSignInController() {
-  return BuyerSignInController(
+  final controller = BuyerSignInController(
     client: BuyerSignInClient(identityBaseUrl: AppConfig.identityBaseUrl),
     accounts: BuyerAccountApi(buildCanonicalApiClient()),
     browser: platformBuyerSignInBrowser(),
     store: SecureBuyerSessionStore(),
   );
+  bindBuyerAiChatAuth(controller);
+  return controller;
+}
+
+/// Keep private AI state aligned even when no chat screen is mounted. The
+/// canonical controller owns this listener and releases it through its existing
+/// ChangeNotifier.dispose; the service holds no controller or extra subscription.
+void bindBuyerAiChatAuth(
+  BuyerSignInController controller, {
+  AIChatService? service,
+}) {
+  final chat = service ?? AIChatService.instance;
+  void synchronize() => chat.updateAuth(
+    buyerId: controller.buyerId,
+    sessionToken: controller.token,
+    email: controller.email,
+  );
+  controller.addListener(synchronize);
+  synchronize();
 }
 
 // SUSTAINED-L — the buyer's own canonical, cross-store profile (D1) and address book (D2), for
@@ -25,4 +45,5 @@ BuyerSignInController buildBuyerSignInController() {
 BuyerAccountApi buildBuyerAccountApi() => BuyerAccountApi(buildCanonicalApiClient());
 BuyerAddressApi buildBuyerAddressApi() => BuyerAddressApi(buildCanonicalApiClient());
 BuyerOrdersApi buildBuyerOrdersApi() => BuyerOrdersApi(buildCanonicalApiClient());
+BuyerSupportApi buildBuyerSupportApi() => BuyerSupportApi(buildCanonicalApiClient());
 BuyerLoyaltyApi buildBuyerLoyaltyApi() => BuyerLoyaltyApi(buildCanonicalApiClient());

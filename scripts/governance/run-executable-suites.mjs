@@ -451,14 +451,6 @@ async function main() {
         throw new Error(`refusing --container ${containerBase}: a cluster name must be one this runner allocates (letbuyy-exec-...); the Supabase development stack and every other container are never used`);
     }
 
-    // Optional exclusive-create receipt is durable before the first Docker operation.
-    // Lifecycle SIGKILL/failure cleanup can select this exact generated run, never guessed names.
-    if (args.includes('--run-receipt')) {
-        const path = value('--run-receipt', null);
-        if (values('--run-receipt').length !== 1 || !path || path.startsWith('--')) throw new Error('--run-receipt requires one new file path');
-        writeFileSync(path, JSON.stringify({ runId, runnerPid: process.pid, containerBase }) + '\n', { flag: 'wx', mode: 0o600 });
-    }
-
     // Parallel clusters are only isolated when each container is a real one. The cloud-sandbox docker
     // shim (scripts/dev/docker-shim) maps every container name onto ONE native cluster, so parallel
     // suites there would share roles and race; it does not implement `docker info`, which is the tell.

@@ -1,7 +1,4 @@
 import { createLetbuyyGraphQLSdk } from './graphql';
-import { createReelReviewSdk } from './reels';
-export { createReelReviewSdk } from './reels';
-export type { ReelMerchantCommand, ReelReviewerCommand, ReelReadback, ReelReviewPage, ReelDraftSelection, ReelSummary } from './reels';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
   AICreditBalance,
@@ -3905,7 +3902,6 @@ export class LetbuyyApiClient {
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
-  readonly reels = createReelReviewSdk(this);
 
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>

@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GATEWAY_DB_SUITE_DIR, ROOT_GATEWAY_DB_SUITE_DIR, EXPLICIT_RUNTIME_SUITES, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
+import { GATEWAY_DB_SUITE_DIR, ROOT_GATEWAY_DB_SUITE_DIR, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
 import { pullsAllowed, requireImagePresent } from '../../scripts/governance/executable-pg-fixture.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -38,6 +38,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
             'buyer-privacy-export-browser.postgres.test.ts',
             'buyer-privacy-export.postgres.test.ts',
             'buyer-privacy-intake.postgres.test.ts',
+            'buyer-support-mutation-recovery.postgres.test.ts',
             'buyer-support-readback.postgres.test.ts',
             'checkout-browser.postgres.test.ts',
             'cod-collection.postgres.test.ts',
@@ -139,14 +140,11 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-staff-invitation-delivery.postgres.test.ts",
         "payment-refund-reconciliation.postgres.test.ts",
         "payout-statement-replay.postgres.test.ts",
-        "private-reel-intake.postgres.test.ts",
-        "reel-review-revisions.postgres.test.ts"
+        "storefront-buyer-support-recovery-browser.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());
     assert.ok(gatewayDb.every(isGatewayDatabaseSuite));
-    assert.deepEqual(EXPLICIT_RUNTIME_SUITES, ['tests/runtime/reel-private-r2.workerd.test.mjs']);
-    assert.ok(EXPLICIT_RUNTIME_SUITES.every(suite => !all.includes(suite)), 'native runtime is explicit-only, never pure auto-discovery');
     // The lane is a separate partition: it does not disturb the tests/*/*.test.mjs one.
     assert.equal(pure.length + postgres.length + live.length, all.length);
     assert.ok(all.every((suite) => !suite.startsWith('services/')));

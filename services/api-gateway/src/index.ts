@@ -75,8 +75,6 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import operationsMarketplaceReviewsRouter from './routes/operations/marketplace-reviews';
 import operationsMarketplaceListingsRouter from './routes/operations/marketplace-listings';
-import reelsRouter from './routes/reels';
-import operationsReelsRouter from './routes/operations/reels';
 import operationsBuyerLinksRouter from './routes/operations/buyer-links';
 import operationsMarketplaceCategoriesRouter from './routes/operations/marketplace-categories';
 import operationsMarketplaceBannersRouter from './routes/operations/marketplace-banners';
@@ -232,9 +230,6 @@ export interface Env {
     PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
-    /** Approved server-only private-original profile. No default account/binding activation. */
-    REEL_CUSTODY_PROFILE?: string;
-    REEL_ORIGINALS_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;
     RUNTIME_COORDINATOR?: DurableObjectNamespace;
@@ -802,9 +797,6 @@ api.route('/', contactPublicRouter);
 api.use('/internal/*', internalPerimeter);
 api.route('/internal/identity/operator', internalOperatorIdentityRouter);
 api.route('/internal/console', internalConsoleRouter);
-// Inherits the canonical Console perimeter/token middleware; the adapter also
-// verifies the bound human session and current permission inside the transaction.
-api.route('/internal/console/reels', operationsReelsRouter);
 api.route('/internal/billing', internalBillingRouter);
 api.route('/internal/founding', internalFoundingRouter);
 api.route('/internal/events', internalEventsRouter);
@@ -832,7 +824,6 @@ api.route('/custom', customDomainsRouter);
 api.route('/store-access', storeAccessRouter);
 api.route('/products', productsRouter);
 api.route('/channel-listings', channelListingsRouter);
-api.route('/reels', reelsRouter);
 api.route('/loyalty', loyaltyRouter);
 api.route('/ads', adsRouter);
 api.route('/orders', ordersRouter);

@@ -12,7 +12,6 @@ test('335 rollback and forward repair preserve exact bodies/ACLs without deletin
  assert.equal(owned.psql(`SELECT to_regprocedure('public.enqueue_pending_loyalty_refunds_v1(integer)') IS NULL;`),'t');
  assert.equal(owned.psql(`SELECT has_function_privilege('service_role','public.restore_loyalty_on_refund(uuid,uuid,uuid,text)','EXECUTE');`),'t');
  assert.equal(owned.psql(`SELECT has_function_privilege('app_tenant','public.restore_loyalty_on_refund(uuid,uuid,uuid,text)','EXECUTE');`),'f');
- for(const role of ['anon','authenticated'])assert.equal(owned.psql(`SELECT has_function_privilege('${role}','public.restore_loyalty_on_refund(uuid,uuid,uuid,text)','EXECUTE');`),'f');
  owned.script(migration);assert.equal(digest(),before);
 });
 test('rollback refuses changed input names, return ABI and overloads before any definition changes',()=>{

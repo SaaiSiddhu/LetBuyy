@@ -35,7 +35,6 @@ const NAV_SECTIONS: AppNavigationSection[] = [
             { id: 'subscriptions', label: 'Subscriptions', href: '/subscriptions', icon: <CreditCard size={16} /> },
             { id: 'founding', label: 'Founding Merchants', href: '/founding', icon: <Award size={16} /> },
             { id: 'marketplace-governance', label: 'Marketplace Governance', href: '/marketplace-governance', icon: <AppWindow size={16} /> },
-            { id: 'reels', label: 'Private reel reviews', href: '/reels', icon: <AppWindow size={16} /> },
             { id: 'risk', label: 'Risk Detection', href: '/risk', icon: <ShieldAlert size={16} /> },
             { id: 'trust-safety', label: 'Trust & Safety', href: '/trust-safety', icon: <ShieldAlert size={16} /> },
             { id: 'analytics', label: 'Analytics', href: '/analytics', icon: <BarChart3 size={16} /> },
