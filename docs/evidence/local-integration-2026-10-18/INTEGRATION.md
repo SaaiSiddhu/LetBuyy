@@ -108,7 +108,8 @@ theme ownership mock/source expectations and the mobile AI draft contract.
 They are recorded without weakening production guards or asserting that all
 failure attribution has been independently established.
 
-Five governance validators remain red:
+The initial run recorded five failing governance validators. These are historical
+results; the migration-safety finding is resolved in the follow-up below:
 
 - Migration safety flags `TRUNCATE` tokens in permission/guard declarations313,
   319 and357; it does not establish that those migrations delete rows.
@@ -185,12 +186,45 @@ Fresh verification:
 | Live gateway with existing local identities | HTTP200 for store lists; account data/credentials not copied to evidence |
 | Existing signed-in Chrome session | Store picker and Snaz dashboard render; zero captured errors on the verified tab after recovery |
 
-The migration-safety validator still exits1 on the same three previously
-recorded `TRUNCATE`-token findings in313,319 and357. It reports no364 finding.
-This repair does not claim a clean full governance gate or close the paused
-programme. No push or hosted deployment occurred.
+At this merchant-repair checkpoint, the migration-safety validator still exited1
+on the three previously recorded `TRUNCATE`-token findings in313,319 and357,
+with no364 finding. The subsequent migration-validator verification below
+supersedes that result. This merchant repair did not claim a clean full
+governance gate or close the paused programme. No push or hosted deployment
+occurred.
 
 Sanitized test output, owned-run receipt and browser screenshot are under
 workspace `Verification/LetBuyy-Admin-Repair-2026-10-18/`, including
 `final-owned-result.json`, `merchant-tests-final.log` and `admin-dashboard.png`.
 Next action for this bug: continue using the running local merchant dashboard.
+
+## Migration-validator findings313,319 and357 — resolved 18 October 2026
+
+The owner requested fixing the three remaining migration-safety findings.
+On recovery, primary `develop` had advanced to
+`8800ee34dfcc7646e246d5781c755f1e27b55128`. Its integrated commit `ce4d1e66`
+already contained the validator correction: closed privilege metadata reads,
+`TG_OP` comparisons and protective `BEFORE TRUNCATE` trigger declarations are
+recognized separately from destructive SQL. Fresh execution confirmed that all
+three findings were cleared before this follow-up's edits.
+
+This follow-up adds explicit regressions for the exact313,319 and357 source
+files. In a temporary Git fixture, the actual validator accepts all three
+unchanged files, rejects an injected destructive command in each by filename,
+and passes again after each exact source restore. The three controls cover
+direct `TRUNCATE TABLE`, dynamic SQL in a DO block and a statement inside a
+dollar-quoted PL/pgSQL function. Existing checks still cover unsafe untracked
+migrations and dynamic array/concatenation forms. The fixture verifies maintained
+source hashes and Git status are unchanged, then removes its own temporary copy.
+No SQL is executed by these tests.
+
+Fresh commands on the final test source:
+
+- `node scripts/validators/migration-safety-validator.mjs`: PASS, exit0.
+- `node --test tests/migrations/migration-safety.test.mjs`: PASS, exit0;
+  9 tests,9 pass,0 fail/cancel/skip/TODO.
+- `git diff --check`: PASS, exit0.
+
+Only the focused regression suite and this evidence record changed in this
+follow-up. The three migration files retain their security guards. This closes
+the three named findings; it is not a new full-governance or release verdict.

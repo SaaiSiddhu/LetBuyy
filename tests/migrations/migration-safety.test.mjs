@@ -7,6 +7,12 @@ import { join, dirname, basename } from "node:path";
 import { createHash } from "node:crypto";
 import { stripTruncateGuardDeclarations } from "../../scripts/validators/migration-safety-validator.mjs";
 
+const previouslyFlaggedMigrations = [
+  "313_protect_sensitive_approval_authority.sql",
+  "319_protect_trust_mutation_authority.sql",
+  "357_buyer_review_ownership.sql",
+].map(name => "database/supabase/migrations/" + name);
+
 test("Supabase migration history is replay-safe against destructive table operations", () => {
   const result = spawnSync(process.execPath, ["scripts/validators/migration-safety-validator.mjs"], {
     cwd: process.cwd(),
@@ -31,6 +37,14 @@ test("current361 protection events do not masquerade as destructive statements",
   assert.doesNotMatch(stripTruncateGuardDeclarations(source.replace(/--.*$/gm, "")), /\bTRUNCATE\b/i);
 });
 
+for (const path of previouslyFlaggedMigrations) {
+  test(`${basename(path)} uses TRUNCATE only as guarded metadata or a trigger event`, () => {
+    const sql = readFileSync(path, "utf8").replace(/--.*$/gm, "");
+    assert.match(sql, /\bTRUNCATE\b/i, "the regression must exercise the formerly flagged token");
+    assert.doesNotMatch(stripTruncateGuardDeclarations(sql), /\bTRUNCATE\b/i);
+  });
+}
+
 test("migration validator includes untracked source without staging or changing Git ownership", () => {
   const maintainedRoot=process.cwd();
   const staticInputs=[
@@ -38,6 +52,7 @@ test("migration validator includes untracked source without staging or changing 
     "docs/governance/migration-replayability.md", "database/supabase/config.toml",
     "scripts/migration/run-hot-table-partition-maintenance.mjs", ".github/workflows/hot-table-partition-maintenance.yml",
     "infrastructure/deployment/migration-orchestration.yaml",
+    ...previouslyFlaggedMigrations,
     ...["000_baseline.sql","079_partition_worker_request_logs.sql","090_custom_domains_and_store_access.sql",
       "114_mobile_onboarding_attempt_progress.sql","115_product_review_merchant_replies.sql","116_mobile_draft_orders.sql",
       "117_mobile_customer_notes_tags.sql","118_mobile_shipping_labels.sql","119_mobile_money_ledgers.sql",
@@ -62,6 +77,24 @@ test("migration validator includes untracked source without staging or changing 
     const initialized=git(temporary,"init","--quiet");assert.equal(initialized.status,0,initialized.stderr);
     const run=()=>spawnSync(process.execPath,["scripts/validators/migration-safety-validator.mjs"],{cwd:temporary,env,encoding:"utf8"});
     const clean=run();assert.equal(clean.status,0,clean.stderr||clean.stdout);
+    const destructiveControls = [
+      "TRUNCATE TABLE public.syn_migration_safety;",
+      "DO $control$ BEGIN EXECUTE 'TRUNCATE TABLE public.syn_migration_safety'; END $control$;",
+      "CREATE FUNCTION public.syn_migration_safety() RETURNS void LANGUAGE plpgsql AS $control$ BEGIN TRUNCATE TABLE public.syn_migration_safety; END $control$;",
+    ];
+    for (const [index,path] of previouslyFlaggedMigrations.entries()) {
+      const target=join(temporary,path);
+      try {
+        writeFileSync(target,readFileSync(target,"utf8")+"\n"+destructiveControls[index]+"\n");
+        const rejected=run();
+        assert.notEqual(rejected.status,0,`Real destructive SQL in ${path} must fail`);
+        assert.ok((rejected.stderr+rejected.stdout).includes(path),"The validator must name the modified migration");
+        assert.match(rejected.stderr+rejected.stdout,/TRUNCATE is forbidden/);
+      } finally {
+        copyFileSync(join(maintainedRoot,path),target);
+      }
+      const restored=run();assert.equal(restored.status,0,restored.stderr||restored.stdout);
+    }
     writeFileSync(join(temporary,unsafeName),"TRUNCATE TABLE public.syn_untracked_guard;\n");
     const untracked=git(temporary,"status","--porcelain=v1","--untracked-files=all", "--",unsafeName);assert.equal(untracked.status,0,untracked.stderr);assert.equal(untracked.stdout.trim(),"?? "+unsafeName);
     assert.equal(git(temporary,"ls-files").stdout.trim(),"","Fixture has an empty Git index; no staging masks the untracked case");
@@ -70,7 +103,7 @@ test("migration validator includes untracked source without staging or changing 
     writeFileSync(join(temporary,safeName),"CREATE TABLE public.syn_untracked_guard(id integer);\nCREATE FUNCTION public.syn_guard_reject() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF TG_OP='TRUNCATE' THEN RAISE EXCEPTION 'retained'; END IF; RETURN NULL; END $$;\nCREATE TRIGGER syn_guard BEFORE TRUNCATE ON public.syn_untracked_guard FOR EACH STATEMENT EXECUTE FUNCTION public.syn_guard_reject();\n");
     const safe=run();assert.equal(safe.status,0,safe.stderr||safe.stdout);assert.equal(git(temporary,"status","--porcelain=v1","--untracked-files=all","--",safeName).stdout.trim(),"?? "+safeName);
     assert.equal(git(temporary,"ls-files").stdout.trim(),"");
-    console.info("MIGRATION_UNTRACKED_BEHAVIOR "+JSON.stringify({cleanExit:clean.status,unsafeExit:unsafe.status,unsafeNamed:true,safeGuardExit:safe.status,emptyIndex:true,temporaryOnly:true,SQLExecuted:false}));
+    console.info("MIGRATION_UNTRACKED_BEHAVIOR "+JSON.stringify({cleanExit:clean.status,unsafeExit:unsafe.status,unsafeNamed:true,safeGuardExit:safe.status,reportedMigrationControls:previouslyFlaggedMigrations.length,emptyIndex:true,temporaryOnly:true,SQLExecuted:false}));
   }finally{
     assert.ok(basename(temporary).startsWith("letbuyy-migration-validator-untracked-"));rmSync(temporary,{recursive:true,force:true});
     for(const[path,digest]of Object.entries(beforeHashes))assert.equal(hash(join(maintainedRoot,path)),digest,"Maintained source changed: "+path);
