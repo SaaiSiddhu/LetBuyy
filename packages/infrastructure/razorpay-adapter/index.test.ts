@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazorpayPlan, fetchRazorpaySubscription, fetchRazorpayInvoice } from './index';
+import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt } from './index';
 
 test('Razorpay receipt lookup sends an authenticated bounded exact-receipt query', async () => {
   let requestedUrl = '';
@@ -57,44 +57,4 @@ test('Razorpay refund creation remains pending until the provider reports proces
   assert.equal((await provider.refund(input)).status, 'refunded');
   responseStatus = 'failed';
   assert.equal((await provider.refund(input)).status, 'failed');
-});
-
-test('configured subscription plan lookup uses authenticated fixed-origin GET and preserves amount/currency evidence',async()=>{
- let calls=0;
- const result=await fetchRazorpayPlan({keyId:'synthetic-key',keySecret:'synthetic-secret'},'plan_Synthetic123',{fetch:(async(input,init)=>{
-  calls++;assert.equal(String(input),'https://api.razorpay.com/v1/plans/plan_Synthetic123');assert.equal(init?.method,'GET');
-  assert.equal(new Headers(init?.headers).get('Authorization'),`Basic ${btoa('synthetic-key:synthetic-secret')}`);
-  return Response.json({id:'plan_Synthetic123',period:'monthly',interval:1,item:{amount:69900,currency:'INR',active:true,tax_rate:null,tax_id:null,tax_group_id:null}});
- }) as typeof fetch});
- assert.equal(calls,1);assert.equal(result.item?.amount,69900);assert.equal(result.item?.currency,'INR');
-});
-test('invalid configured plan cannot redirect transport, and provider failure remains explicit',async()=>{
- let calls=0;const transport=(async()=>{calls++;return new Response('{}',{status:503});}) as typeof fetch;
- for(const id of ['https://foreign.invalid','../plans','plan_a?query',''])assert.ok((await fetchRazorpayPlan({keyId:'synthetic',keySecret:'synthetic'},id,{fetch:transport})).error);
- assert.equal(calls,0);const failed=await fetchRazorpayPlan({keyId:'synthetic',keySecret:'synthetic'},'plan_Synthetic123',{fetch:transport});
- assert.equal(calls,1);assert.ok(failed.error);
-});
-
-test('subscription lineage read is fixed-origin authenticated GET and excludes customer/notes',async()=>{
- const result=await fetchRazorpaySubscription({keyId:'synthetic-key',keySecret:'synthetic-secret'},'sub_Synthetic123',{fetch:(async(input,init)=>{
-  assert.equal(String(input),'https://api.razorpay.com/v1/subscriptions/sub_Synthetic123');assert.equal(init?.method,'GET');
-  assert.equal(new Headers(init?.headers).get('Authorization'),'Basic '+btoa('synthetic-key:synthetic-secret'));
-  return Response.json({id:'sub_Synthetic123',entity:'subscription',plan_id:'plan_Synthetic123',status:'active',quantity:1,current_start:100,current_end:200,paid_count:1,customer_id:'private-ignored',notes:{private:'ignored'}});
- }) as typeof fetch});
- assert.equal(result.plan_id,'plan_Synthetic123');assert.equal(result.current_end,200);assert.doesNotMatch(JSON.stringify(result),/private|customer_id|notes/);
-});
-test('invoice lineage read retains payment/subscription/period/components and excludes party data',async()=>{
- const result=await fetchRazorpayInvoice({keyId:'synthetic-key',keySecret:'synthetic-secret'},'inv_Synthetic123',{fetch:(async(input,init)=>{
-  assert.equal(String(input),'https://api.razorpay.com/v1/invoices/inv_Synthetic123');assert.equal(init?.method,'GET');
-  assert.equal(new Headers(init?.headers).get('Authorization'),'Basic '+btoa('synthetic-key:synthetic-secret'));
-  return Response.json({id:'inv_Synthetic123',entity:'invoice',subscription_id:'sub_Synthetic123',payment_id:'pay_Synthetic123',order_id:'order_Synthetic123',status:'paid',amount:74900,amount_paid:74900,amount_due:0,gross_amount:74900,currency:'INR',billing_start:100,billing_end:200,partial_payment:false,customer_details:{email:'private-ignored'},notes:{private:'ignored'},line_items:[{type:'plan',name:'Synthetic Plan',quantity:1,amount:69900,unit_amount:69900,gross_amount:69900,tax_amount:0,currency:'INR',private:'ignored'},{type:'addon',name:'Synthetic Usage',quantity:1,amount:5000,unit_amount:5000,gross_amount:5000,tax_amount:0,currency:'INR'}]});
- }) as typeof fetch});
- assert.equal(result.payment_id,'pay_Synthetic123');assert.equal(result.subscription_id,'sub_Synthetic123');assert.equal(result.line_items?.length,2);assert.equal(result.amount_paid,74900);assert.doesNotMatch(JSON.stringify(result),/private|customer_details|notes/);
-});
-test('lineage lookups refuse malformed references before transport and safely report provider failure',async()=>{
- let calls=0;const options={fetch:(async()=>{calls++;return Response.json({error:{description:'private ignored'}},{status:503});}) as typeof fetch};
- assert.ok((await fetchRazorpayInvoice({keyId:'synthetic',keySecret:'synthetic'},'https://elsewhere.invalid',options)).error);
- assert.ok((await fetchRazorpaySubscription({keyId:'synthetic',keySecret:'synthetic'},'sub_x/../foreign',options)).error);assert.equal(calls,0);
- assert.equal((await fetchRazorpayInvoice({keyId:'synthetic',keySecret:'synthetic'},'inv_Synthetic123',options)).error?.description,'Razorpay invoice lookup failed with 503');
- assert.equal((await fetchRazorpaySubscription({keyId:'synthetic',keySecret:'synthetic'},'sub_Synthetic123',options)).error?.description,'Razorpay subscription lookup failed with 503');assert.equal(calls,2);
 });

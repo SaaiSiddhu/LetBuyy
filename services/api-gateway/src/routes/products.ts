@@ -1,3 +1,5 @@
+import { resolveOwnedStoreScope } from '../lib/tenant-context';
+import { readCollectionMembership, replaceCollectionMembership } from '../execution/collection-membership.adapter';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -6,6 +8,8 @@ import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { readProductForEdit } from '../execution/product-mutation.adapter';
+import { ValidationError } from '../lib/errors';
 import { registerGiftCardRoutes } from './gift-cards';
 import {
     CreateProductSchema,
@@ -109,6 +113,7 @@ type DatabaseErrorLike = {
 function createProductExecutionAdapter(db: ReturnType<typeof getSupabaseAdmin>, env: Env): ProductExecutionAdapter {
     return new ProductExecutionAdapter(db, {
         variantDiffEnabled: isProductVariantDiffEnabled(env),
+        mutationEnv: env,
     });
 }
 
@@ -479,6 +484,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.category) dbQuery = dbQuery.eq('category', query.category);
         if (query.status === 'active') dbQuery = dbQuery.eq('is_active', true);
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
+        if (query.status === 'draft' || query.status === 'archived') dbQuery = dbQuery.eq('status', query.status);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
         if (decodedCursor) {
             dbQuery = query.order === 'asc'
@@ -745,194 +751,22 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
     return c.json(success(data));
 });
 
-// GET /products/collections/:id/products — List assigned products for a collection
+// GET/PUT /products/collections/:id/products — current-owner manual membership.
 router.get('/collections/:id/products', async (c) => {
-    const auth = c.get('auth');
-    const collectionId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
-    const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
-            .from('collections')
-            .select('id, store_id')
-            .eq('id', collectionId);
-
-        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
-        return request.maybeSingle();
-    };
-
-    let { data: existing, error: existingError } = await loadCollection(true);
-    if (isMissingDeletedAtError(existingError)) {
-        ({ data: existing, error: existingError } = await loadCollection(false));
-    }
-
-    if (isMissingTableError(existingError, 'collections')) {
-        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
-    }
-    if (existingError) {
-        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
-    }
-
-    const collection = existing as { id: string; store_id?: string | null } | null;
-    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
-    }
-
-    const { data: assignments, error: assignError } = await db
-        .from('collection_products')
-        .select('product_id, position')
-        .eq('collection_id', collectionId)
-        .order('position', { ascending: true });
-
-    if (isMissingTableError(assignError, 'collection_products')) {
-        return c.json(success({ collection_id: collectionId, product_ids: [], products: [] }));
-    }
-    if (assignError) {
-        return c.json({ error: { code: 'DB_ERROR', message: assignError.message } }, 500);
-    }
-
-    const productIds = (assignments || []).map((row) => row.product_id as string);
-    if (productIds.length === 0) {
-        return c.json(success({ collection_id: collectionId, product_ids: [], products: [] }));
-    }
-
-    const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
-        let query = db
-            .from('products')
-            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS)
-            .in('id', productIds)
-            .eq('store_id', collection.store_id!);
-
-        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
-        return query;
-    };
-
-    let { data: products, error: productsError } = await buildProductsQuery(true);
-    if (isMissingDeletedAtError(productsError)) {
-        ({ data: products, error: productsError } = await buildProductsQuery(false));
-    }
-
-    if (productsError) {
-        return c.json({ error: { code: 'DB_ERROR', message: productsError.message } }, 500);
-    }
-
-    return c.json(success({
-        collection_id: collectionId,
-        product_ids: productIds,
-        products: products || [],
-    }));
+    const selected = c.req.query('store_id') || c.req.header('X-Store-ID');
+    if (!selected || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(selected)) throw new ValidationError('Select a valid store before managing collection products.');
+    const scope = await resolveOwnedStoreScope(c, selected);
+    return c.json(success(await readCollectionMembership(scope, c.req.param('id'))));
 });
-
-// PUT /products/collections/:id/products — Replace the product assignment set for a collection
 router.put('/collections/:id/products', async (c) => {
-    const auth = c.get('auth');
-    const collectionId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    if (!customUser) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    }
-
+    const selected = c.req.query('store_id') || c.req.header('X-Store-ID');
+    if (!selected || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(selected)) throw new ValidationError('Select a valid store before managing collection products.');
+    const scope = await resolveOwnedStoreScope(c, selected);
     const body = await c.req.json().catch(() => null);
-    if (!body || !Array.isArray(body.product_ids)) {
-        return c.json({ error: { code: 'VALIDATION', message: 'product_ids array is required' } }, 400);
+    if (!body || body.idempotency_key !== (c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key'))) {
+        throw new ValidationError('The original collection save key is required.');
     }
-    const productIds = (body.product_ids as unknown[])
-        .filter((id): id is string => typeof id === 'string' && /^[0-9a-f-]{36}$/i.test(id))
-        .slice(0, 500);
-
-    const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
-            .from('collections')
-            .select('id, store_id')
-            .eq('id', collectionId);
-
-        if (includeDeletedAtFilter) request = request.is('deleted_at', null);
-        return request.maybeSingle();
-    };
-
-    let { data: existing, error: existingError } = await loadCollection(true);
-    if (isMissingDeletedAtError(existingError)) {
-        ({ data: existing, error: existingError } = await loadCollection(false));
-    }
-
-    if (isMissingTableError(existingError, 'collections')) {
-        return c.json({ error: { code: 'COLLECTION_SCHEMA_MISSING', message: 'Collections are not available in this environment.' } }, 503);
-    }
-    if (existingError) {
-        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
-    }
-
-    const collection = existing as { id: string; store_id?: string | null } | null;
-    if (!collection?.store_id || !(await verifyStoreOwnership(db, collection.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Collection not found' } }, 404);
-    }
-
-    // Validate that all submitted product IDs belong to the same store
-    if (productIds.length > 0) {
-        const buildValidateQuery = (includeDeletedAtFilter: boolean) => {
-            let query = db
-                .from('products')
-                .select('id', { count: 'exact', head: true })
-                .in('id', productIds)
-                .eq('store_id', collection.store_id!);
-
-            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
-            return query;
-        };
-
-        let { count: validCount, error: validateError } = await buildValidateQuery(true);
-        if (isMissingDeletedAtError(validateError)) {
-            ({ count: validCount, error: validateError } = await buildValidateQuery(false));
-        }
-
-        if (validateError) {
-            return c.json({ error: { code: 'DB_ERROR', message: validateError.message } }, 500);
-        }
-
-        if ((validCount || 0) !== productIds.length) {
-            return c.json({ error: { code: 'VALIDATION', message: 'One or more product IDs do not belong to this store' } }, 422);
-        }
-    }
-
-    // Delete removed assignments
-    const { error: deleteError } = await db
-        .from('collection_products')
-        .delete()
-        .eq('collection_id', collectionId);
-
-    if (deleteError && !isMissingTableError(deleteError, 'collection_products')) {
-        return c.json({ error: { code: 'DB_ERROR', message: deleteError.message } }, 500);
-    }
-
-    // Insert new assignments with position index
-    if (productIds.length > 0) {
-        const inserts = productIds.map((productId, index) => ({
-            collection_id: collectionId,
-            product_id: productId,
-            position: index,
-        }));
-
-        const { error: insertError } = await db
-            .from('collection_products')
-            .upsert(inserts, { onConflict: 'collection_id,product_id', ignoreDuplicates: false });
-
-        if (insertError) {
-            return c.json({ error: { code: 'DB_ERROR', message: insertError.message } }, 500);
-        }
-    }
-
-    return c.json(success({
-        collection_id: collectionId,
-        product_ids: productIds,
-        count: productIds.length,
-    }));
+    return c.json(success(await replaceCollectionMembership(c.env, scope, c.req.param('id'), body)));
 });
 
 // DELETE /products/collections/:id — Soft-delete a collection
@@ -1119,11 +953,11 @@ router.get('/:id', async (c) => {
         if (staffBlock) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    const rows = productVariantRelationalReadsEnabled(c.env)
-        ? await hydrateProductVariants(db, [product])
-        : [product];
-
-    return c.json(success(rows[0]));
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== storeId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const data = await readProductForEdit(c.env, storeId, productId, customUser.id,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
+    return c.json(success(data));
 });
 
 // POST /products — Create a product
@@ -1174,17 +1008,16 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
     const productStoreId = String(product.store_id);
-    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== productStoreId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const headerKey = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
+    if (headerKey && headerKey.toLowerCase() !== body.idempotency_key.toLowerCase()) throw new ValidationError('The save key must match the edit intent.');
+    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write', 'enforce');
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>);
-    await emitProductEvent(db, {
-        eventType: 'product.updated',
-        product: data,
-        actorId: customUser.id,
-        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-    });
+    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
 
     return c.json(success(data));
 });

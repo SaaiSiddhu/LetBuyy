@@ -12,29 +12,6 @@ import 'api_client.dart';
 import 'subscription_catalog.dart';
 export 'subscription_catalog.dart';
 
-/// Public saved money only; tax applicability and arithmetic remain server-owned.
-class SubscriptionTaxBreakdown {
-  const SubscriptionTaxBreakdown({required this.gross,required this.base,required this.tax,required this.cgst,required this.sgst,required this.igst,required this.supplyType});
-  final int gross,base,tax,cgst,sgst,igst;
-  final String supplyType;
-  factory SubscriptionTaxBreakdown.fromJson(Object? value,{required Object? grossMinor}) {
-    if(value is! Map || value['schema_version']!=1 || value['policy_version']!='D-SUB-TAX-INCLUSIVE-V1' || value['basis']!='inclusive' || value['currency']!='INR') {
-      throw const FormatException('The saved subscription tax breakdown needs review before paying.');
-    }
-    int minor(Object? v) {
-      if(v is! num || !v.isFinite || v<0 || v!=v.round() || v>2147483647) throw const FormatException('Subscription money is unavailable.');
-      return v.toInt();
-    }
-    final gross=minor(value['gross_minor']),base=minor(value['taxable_minor']),tax=minor(value['tax_minor']),
-      cgst=minor(value['cgst_minor']),sgst=minor(value['sgst_minor']),igst=minor(value['igst_minor']),supply=value['supply_type'];
-    if(gross<=0 || gross!=minor(grossMinor) || base+tax!=gross || cgst+sgst+igst!=tax ||
-      !(supply=='intra_state' ? igst==0 && cgst==tax~/2 && sgst==tax-cgst : supply=='inter_state' && cgst==0 && sgst==0 && igst==tax)) {
-      throw const FormatException('The saved subscription tax breakdown does not match the charge.');
-    }
-    return SubscriptionTaxBreakdown(gross:gross,base:base,tax:tax,cgst:cgst,sgst:sgst,igst:igst,supplyType:supply as String);
-  }
-}
-
 class BillingHistoryEntry {
   const BillingHistoryEntry({
     required this.id,
@@ -45,7 +22,6 @@ class BillingHistoryEntry {
     this.invoiceNumber,
     this.taxAmount,
     this.totalAmount,
-    this.taxBreakdown,
   });
 
   factory BillingHistoryEntry.fromJson(Map<String, dynamic> json) {
@@ -54,7 +30,6 @@ class BillingHistoryEntry {
     return BillingHistoryEntry(
       id: _stringValue(json['id']),
       amountPaid: _invoiceMinor(json['amount'] ?? json['amount_paid']),
-      taxBreakdown:json['tax']==null?null:SubscriptionTaxBreakdown.fromJson(json['tax'],grossMinor:json['amount']??json['amount_paid']),
       status: _stringValue(
         json['payment_status'] ?? json['status'],
         fallback: 'unknown',
@@ -79,7 +54,6 @@ class BillingHistoryEntry {
 
   final String? invoiceNumber;
   final int? taxAmount, totalAmount;
-  final SubscriptionTaxBreakdown? taxBreakdown;
   String get amountLabel => 'INR ${(amountPaid / 100).toStringAsFixed(2)}';
   static int _invoiceMinor(Object? value) {
     if (value is! num ||
@@ -169,7 +143,6 @@ class SubscriptionService {
     );
     if (_actor() != actor)
       throw StateError('Account changed. Open checkout again.');
-    if(value['tax']!=null) SubscriptionTaxBreakdown.fromJson(value['tax'],grossMinor:value['amount']);
     if (value['activated'] == true) {
       pending.remove(intent);
     } else {

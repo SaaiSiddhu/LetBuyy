@@ -2,6 +2,7 @@ import {
   createReporter,
   exists,
   getTrackedFiles,
+  getUntrackedFiles,
   readFile,
 } from "./governance-common.mjs";
 
@@ -24,6 +25,24 @@ function stripLiquidBundleJsonPayloads(sql) {
   return sql.replace(/\$liquidbundle\$[\s\S]*?\$liquidbundle\$/g, () => "$liquidbundle$$liquidbundle$");
 }
 
+// TRUNCATE trigger events, TG_OP comparisons and closed ACL-read projections
+// do not execute a destructive statement. Keep all function/dynamic SQL bodies
+// visible; only these complete non-DML forms are removed from the keyword scan.
+export function stripTruncateGuardDeclarations(sql) {
+  const privileges = String.raw`'(?:SELECT|INSERT|UPDATE|DELETE|TRUNCATE|REFERENCES|TRIGGER|MAINTAIN)'`;
+  const array = String.raw`ARRAY\s*\[\s*${privileges}(?:\s*,\s*${privileges})*\s*\]`;
+  const aclColumn = String.raw`(?:split_part\(\s*privilege\s*,\s*' WITH GRANT OPTION'\s*,\s*1\s*\)|(?:[A-Za-z_]\w*\.)?privilege_type)`;
+  const check = new RegExp(String.raw`\b${aclColumn}\s*=\s*ANY\(\s*${array}\s*\)`, 'gi');
+  const snapshot = new RegExp(String.raw`\bSELECT\s+jsonb_object_agg\(\s*p\s*,\s*has_table_privilege\(\s*'service_role'\s*,\s*v_table\s*,\s*p\s*\)\s*\)\s+INTO\s+[A-Za-z_]\w*\s+FROM\s+unnest\(\s*${array}\s*\)\s+p\s*;`, 'gi');
+  const aclRead = (projection) => projection.replace(/'TRUNCATE'/gi, "'CHECKED_PRIVILEGE'");
+  return sql
+    .replace(/\bCREATE\s+TRIGGER\s+[A-Za-z_][A-Za-z0-9_]*\s+BEFORE\s+TRUNCATE\s+ON\s+(?:public\.)?[A-Za-z_][A-Za-z0-9_]*\s+FOR\s+EACH\s+STATEMENT\s+EXECUTE\s+FUNCTION\s+(?:public\.)?[A-Za-z_][A-Za-z0-9_]*\s*\(\s*\)\s*;/gi,
+      (declaration) => declaration.replace(/\bTRUNCATE\b/gi, 'GUARDED_EVENT'))
+    .replace(/\bTG_OP\s*=\s*'TRUNCATE'/gi, "TG_OP='GUARDED_EVENT'")
+    .replace(check, aclRead)
+    .replace(snapshot, aclRead);
+}
+
 const forbiddenPatterns = [
   { pattern: /\bDROP\s+TABLE\b/i, message: "DROP TABLE is forbidden in replayable migrations; use additive compatibility or explicit repair runbooks" },
   { pattern: /\bDROP\s+SCHEMA\b/i, message: "DROP SCHEMA is forbidden in replayable migrations" },
@@ -36,12 +55,12 @@ const forbiddenPatterns = [
   { pattern: /\bCREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+stores\b/i, message: "stores table is forbidden; use sites table plus stores view/API terminology" },
 ];
 
-for (const file of getTrackedFiles().filter((candidate) => candidate.startsWith("database/supabase/migrations/") && candidate.endsWith(".sql"))) {
+for (const file of [...new Set([...getTrackedFiles(), ...getUntrackedFiles()])].sort().filter((candidate) => candidate.startsWith("database/supabase/migrations/") && candidate.endsWith(".sql"))) {
   // Strip the dollar-quoted JSON payload BEFORE stripping SQL comments: the embedded bundle contains
   // real `--lb-*` CSS custom-property declarations, and stripSqlComments' `--.*$` line-comment strip
   // would otherwise eat everything from the first one to end-of-line — on a JSON.stringify'd single-line
   // payload, that is the rest of the statement, including the closing dollar-quote tag.
-  const sql = stripSqlComments(stripLiquidBundleJsonPayloads(readFile(file)));
+  const sql = stripTruncateGuardDeclarations(stripSqlComments(stripLiquidBundleJsonPayloads(readFile(file))));
   for (const { pattern, message } of forbiddenPatterns) {
     reporter.assert(!pattern.test(sql), `${file}: ${message}`);
   }

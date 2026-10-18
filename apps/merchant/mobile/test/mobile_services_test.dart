@@ -3847,25 +3847,12 @@ void main() {
         final service = KycService(api: api);
 
         final overview = await service.fetchOverview('store_1');
-        final pathsBeforeDeniedFile = List<String>.of(api.paths);
-        await expectLater(
-          service.submitDocument(
-            storeId: 'store_1',
-            documentType: 'business_pan',
-            fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
-            fileName: 'pan.jpg',
-          ),
-          throwsA(isA<ApiException>().having(
-            (error) => error.code,
-            'code',
-            'KYC_PRIVATE_UPLOAD_UNAVAILABLE',
-          )),
-        );
-        expect(api.paths, pathsBeforeDeniedFile);
         final submitted = await service.submitDocument(
           storeId: 'store_1',
           documentType: 'business_pan',
           documentNumberLast4: '1234',
+          fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
+          fileName: 'pan.jpg',
         );
         final refreshed = await service.refreshDocument('kyc_1', 'store_1');
 
@@ -3881,7 +3868,7 @@ void main() {
         );
         expect(
           api.bodies['/kyc/documents'],
-          isNot(contains('file_url')),
+          containsPair('file_url', 'https://cdn.letbuyy.com/kyc/pan.jpg'),
         );
       },
     );

@@ -170,6 +170,27 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  /// Fetch a seller page without replacing the home/shop feed or borrowing its cursor/cache.
+  /// Failures propagate to the seller screen so an outage cannot masquerade as an empty seller.
+  Future<({List<ProductModel> products, MarketplaceFeedCursor? nextCursor})>
+  loadSellerProducts(
+    String sellerSiteId, {
+    MarketplaceFeedCursor? cursor,
+  }) async {
+    final siteId = sellerSiteId.trim().toLowerCase();
+    final page = await _client.marketplaceFeed(
+      sellerSiteId: siteId,
+      limit: 20,
+      cursor: cursor,
+    );
+    if (page.items.any((item) => item.siteId != siteId)) {
+      throw StateError('The seller feed returned an unexpected store.');
+    }
+    return (
+      products: page.items.map(_productFromFeedItem).toList(growable: false),
+      nextCursor: page.nextCursor,
+    );
+  }
   Future<void> loadCountryOrigins() async {
     _countryOriginsLoading = true;
     _countryOriginsError = null;

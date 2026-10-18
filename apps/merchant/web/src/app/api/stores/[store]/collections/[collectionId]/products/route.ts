@@ -1,45 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
+import { ReplaceCollectionMembershipSchema } from '@letbuyy/shared-types'
 
-export async function GET(
-    _request: NextRequest,
-    { params }: { params: Promise<{ store: string; collectionId: string }> }
-) {
+type Params = { params: Promise<{ store: string; collectionId: string }> }
+export async function GET(request: NextRequest, { params }: Params) {
     try {
-        const { store, collectionId } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
+        const scope = await merchantSecurityScope(request, params, false)
+        if (scope.error) return scope.error
+        const { collectionId } = await params
         const result = await createMerchantApiClient().products.collections.listProducts(
-            decodeURIComponent(collectionId),
-        )
-
-        return NextResponse.json({ data: result })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to load collection products')
-    }
+            decodeURIComponent(collectionId), { storeId: scope.storeId })
+        return privateSecurityResponse(NextResponse.json({ data: result }))
+    } catch (error) { return privateSecurityResponse(merchantApiErrorResponse(error, 'Unable to load collection products')) }
 }
-
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ store: string; collectionId: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: Params) {
     try {
-        const { store, collectionId } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
-
-        if (resolved.error) return resolved.error
-
-        const body = await request.json()
+        const scope = await merchantSecurityScope(request, params)
+        if (scope.error) return scope.error
+        const { collectionId } = await params
+        const parsed = ReplaceCollectionMembershipSchema.safeParse(await request.json().catch(() => null))
+        if (!parsed.success) return privateSecurityResponse(NextResponse.json({ error: { code: 'VALIDATION', message: 'An explicit product list, current membership version and save key are required.' } }, { status: 400 }))
+        if (parsed.data.idempotency_key !== scope.headers!['X-Idempotency-Key']) return privateSecurityResponse(NextResponse.json({ error: { code: 'COLLECTION_MEMBERSHIP_KEY_MISMATCH', message: 'The saved request key changed. Reload this page.' } }, { status: 400 }))
         const result = await createMerchantApiClient().products.collections.replaceProducts(
-            decodeURIComponent(collectionId),
-            { product_ids: body.product_ids ?? [] },
-        )
-
-        return NextResponse.json({ data: result })
-    } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to update collection products')
-    }
+            decodeURIComponent(collectionId), parsed.data, { storeId: scope.storeId })
+        return privateSecurityResponse(NextResponse.json({ data: result }))
+    } catch (error) { return privateSecurityResponse(merchantApiErrorResponse(error, 'Unable to update collection products')) }
 }
+

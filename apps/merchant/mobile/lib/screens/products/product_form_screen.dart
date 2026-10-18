@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import '../../app/store_context.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../../services/product_service.dart';
+import '../../services/api_client.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 import '../../widgets/shared/barcode_scanner_sheet.dart';
 import '../../widgets/shared/cached_merchant_image.dart';
@@ -31,6 +34,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
   bool _isLoading = false;
+  bool _loadingEdit = false;
+  bool _editBlocked = false;
+  ProductContract? _baseProduct;
+  ProductContract? _latestProduct;
+  String? _editMessage;
+  ({String key, int version, String signature, Map<String, dynamic> fields})?
+  _pendingEdit;
 
   // Form Controllers
   final _nameController = TextEditingController();
@@ -66,11 +76,18 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void initState() {
     super.initState();
     _initData();
+    if (widget.product != null) {
+      _loadingEdit = true;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _checkLatestProduct(initial: true),
+      );
+    }
   }
 
-  void _initData() {
-    final p = widget.product;
+  void _initData([ProductContract? product]) {
+    final p = product ?? widget.product;
     if (p != null) {
+      _baseProduct = p;
       _nameController.text = p.name;
       _descriptionController.text = p.description;
       _salePriceController.text = p.price.toString();
@@ -147,9 +164,15 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             )
           else
             TextButton(
-              onPressed: _submitProduct,
+              onPressed: _loadingEdit || (_editBlocked && _pendingEdit == null)
+                  ? null
+                  : _submitProduct,
               child: Text(
-                isEdit ? 'Update' : 'Save',
+                _pendingEdit != null
+                    ? 'Retry pending save'
+                    : isEdit
+                    ? 'Update'
+                    : 'Save',
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -158,91 +181,133 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Stepper(
-          currentStep: _currentStep,
-          onStepContinue: _nextStep,
-          onStepCancel: _previousStep,
-          onStepTapped: (step) => setState(() => _currentStep = step),
-          controlsBuilder: (context, details) => Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Row(
-              children: [
-                if (_currentStep < _lastStepIndex)
-                  ElevatedButton(
-                    onPressed: details.onStepContinue,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Continue'),
-                  ),
-                if (_currentStep > 0) ...[
-                  const SizedBox(width: 12),
+      body: Column(
+        children: [
+          if (_loadingEdit || _editMessage != null)
+            MaterialBanner(
+              content: Text(
+                _loadingEdit ? 'Loading the current product…' : _editMessage!,
+              ),
+              actions: [
+                if (!_loadingEdit && _pendingEdit == null && _editBlocked)
                   TextButton(
-                    onPressed: details.onStepCancel,
-                    child: const Text('Back'),
+                    onPressed: _checkLatestProduct,
+                    child: const Text('Check latest product'),
                   ),
-                ],
+                if (_latestProduct != null)
+                  TextButton(
+                    onPressed: () => setState(() {
+                      _initData(_latestProduct);
+                      _latestProduct = null;
+                      _editBlocked = false;
+                      _editMessage = null;
+                    }),
+                    child: const Text('Reload latest and discard my edits'),
+                  ),
+                if (_loadingEdit) const SizedBox(width: 16),
+                if (!_loadingEdit && !_editBlocked) const SizedBox(width: 16),
               ],
             ),
+          Expanded(
+            child: AbsorbPointer(
+              absorbing: _loadingEdit,
+              child: Form(
+                key: _formKey,
+                child: Stepper(
+                  currentStep: _currentStep,
+                  onStepContinue: _nextStep,
+                  onStepCancel: _previousStep,
+                  onStepTapped: (step) => setState(() => _currentStep = step),
+                  controlsBuilder: (context, details) => Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      children: [
+                        if (_currentStep < _lastStepIndex)
+                          ElevatedButton(
+                            onPressed: details.onStepContinue,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Continue'),
+                          ),
+                        if (_currentStep > 0) ...[
+                          const SizedBox(width: 12),
+                          TextButton(
+                            onPressed: details.onStepCancel,
+                            child: const Text('Back'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  steps: [
+                    // Step 1: Basic Info
+                    Step(
+                      title: const Text('Basic Info'),
+                      subtitle: _nameController.text.isNotEmpty
+                          ? Text(
+                              _nameController.text,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : null,
+                      isActive: _currentStep >= 0,
+                      state: _currentStep > 0
+                          ? StepState.complete
+                          : StepState.indexed,
+                      content: _buildBasicInfoStep(),
+                    ),
+
+                    // Step 2: Images
+                    Step(
+                      title: const Text('Images'),
+                      subtitle: Text('${_images.length} images'),
+                      isActive: _currentStep >= 1,
+                      state: _currentStep > 1
+                          ? StepState.complete
+                          : StepState.indexed,
+                      content: _buildImagesStep(),
+                    ),
+
+                    // Step 3: Pricing & Stock
+                    Step(
+                      title: const Text('Pricing'),
+                      subtitle: _salePriceController.text.isNotEmpty
+                          ? Text('₹${_salePriceController.text}')
+                          : null,
+                      isActive: _currentStep >= 2,
+                      state: _currentStep > 2
+                          ? StepState.complete
+                          : StepState.indexed,
+                      content: _buildPricingStep(),
+                    ),
+
+                    // Step 4: Details
+                    Step(
+                      title: const Text('Variants'),
+                      subtitle: Text('${_variants.length} rows'),
+                      isActive: _currentStep >= 3,
+                      state: _currentStep > 3
+                          ? StepState.complete
+                          : StepState.indexed,
+                      content: _buildVariantsStep(),
+                    ),
+
+                    // Step 5: Details
+                    Step(
+                      title: const Text('Details'),
+                      subtitle: Text('${_specifications.length} specs'),
+                      isActive: _currentStep >= 4,
+                      state: StepState.indexed,
+                      content: _buildDetailsStep(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          steps: [
-            // Step 1: Basic Info
-            Step(
-              title: const Text('Basic Info'),
-              subtitle: _nameController.text.isNotEmpty
-                  ? Text(
-                      _nameController.text,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  : null,
-              isActive: _currentStep >= 0,
-              state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-              content: _buildBasicInfoStep(),
-            ),
-
-            // Step 2: Images
-            Step(
-              title: const Text('Images'),
-              subtitle: Text('${_images.length} images'),
-              isActive: _currentStep >= 1,
-              state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-              content: _buildImagesStep(),
-            ),
-
-            // Step 3: Pricing & Stock
-            Step(
-              title: const Text('Pricing'),
-              subtitle: _salePriceController.text.isNotEmpty
-                  ? Text('₹${_salePriceController.text}')
-                  : null,
-              isActive: _currentStep >= 2,
-              state: _currentStep > 2 ? StepState.complete : StepState.indexed,
-              content: _buildPricingStep(),
-            ),
-
-            // Step 4: Details
-            Step(
-              title: const Text('Variants'),
-              subtitle: Text('${_variants.length} rows'),
-              isActive: _currentStep >= 3,
-              state: _currentStep > 3 ? StepState.complete : StepState.indexed,
-              content: _buildVariantsStep(),
-            ),
-
-            // Step 5: Details
-            Step(
-              title: const Text('Details'),
-              subtitle: Text('${_specifications.length} specs'),
-              isActive: _currentStep >= 4,
-              state: StepState.indexed,
-              content: _buildDetailsStep(),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -1066,14 +1131,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Future<void> _submitProduct() async {
-    if (!_formKey.currentState!.validate()) {
+    if (_pendingEdit == null && !_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill required fields')),
       );
       return;
     }
 
-    if (_images.isEmpty) {
+    if (_pendingEdit == null && _images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please add at least one image')),
       );
@@ -1090,34 +1155,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
       if (widget.product != null) {
         // Update existing
-        await productService.updateProduct(widget.product!.id, {
-          'name': _nameController.text,
-          'description': _descriptionController.text,
-          'price': double.parse(_salePriceController.text),
-          'compare_price': _originalPriceController.text.isNotEmpty
-              ? double.parse(_originalPriceController.text)
-              : null,
-          'stock': int.parse(_stockController.text),
-          'sku': _skuController.text.trim().isEmpty
-              ? null
-              : _skuController.text.trim(),
-          'barcode': _barcodeController.text.trim().isEmpty
-              ? null
-              : _barcodeController.text.trim(),
-          'url_handle': _nullableTrim(_handleController.text),
-          'seo_title': _nullableTrim(_seoTitleController.text),
-          'seo_description': _nullableTrim(_seoDescriptionController.text),
-          'category': _categoryId,
-          'images': _images,
-          'is_featured': _isFeatured,
-          'product_type': _nullableTrim(_productTypeController.text),
-          'vendor': _nullableTrim(_vendorController.text),
-          'country_of_origin': _nullableTrim(_countryOfOriginController.text),
-          'importer_details': _nullableTrim(_importerDetailsController.text),
-          'tags': _tagValues(),
-          'metadata': _metadataPayload(),
-          'variants': _variantPayloads(),
-        });
+        await _saveExistingProduct(productService, store.id);
+        return;
       } else {
         // Create new
         await productService.createProduct(
@@ -1170,6 +1209,211 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     }
   }
 
+  Future<void> _checkLatestProduct({bool initial = false}) async {
+    final original = widget.product;
+    if (!mounted || original == null) return;
+    setState(() => _loadingEdit = true);
+    try {
+      final latest = await context.read<ProductService>().fetchProductForEdit(
+        original.id,
+        original.storeId,
+      );
+      if (!mounted) return;
+      setState(() {
+        if (initial) {
+          _initData(latest);
+          _editBlocked = false;
+          _editMessage = null;
+        } else {
+          _latestProduct = latest;
+          _editBlocked = true;
+          _editMessage =
+              'Latest: ${latest.name}, ₹${latest.price}, stock ${latest.stock}. Your draft is kept. Reload the latest product before saving again.';
+        }
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _editBlocked = true;
+        _editMessage =
+            'Your draft is kept. The latest product could not be checked: $error';
+      });
+    } finally {
+      if (mounted) setState(() => _loadingEdit = false);
+    }
+  }
+
+  Future<void> _saveExistingProduct(
+    ProductService service,
+    String selectedStore,
+  ) async {
+    final base = _baseProduct;
+    if (base == null || base.version == null || selectedStore != base.storeId) {
+      setState(() {
+        _editBlocked = true;
+        _editMessage =
+            'Select this product’s store and load its current version before saving. Your draft is kept.';
+      });
+      return;
+    }
+    if (_editBlocked && _pendingEdit == null) return;
+    var intent = _pendingEdit;
+    if (intent == null) {
+      final fields = _editFields();
+      intent = (
+        key: const Uuid().v4(),
+        version: base.version!,
+        signature: _editDraftSignature(),
+        fields: jsonDecode(jsonEncode(fields)) as Map<String, dynamic>,
+      );
+    }
+    setState(() {
+      _pendingEdit = intent;
+      _editMessage = null;
+    });
+    try {
+      final result = await service.updateProduct(
+        base.id,
+        intent.fields,
+        storeId: base.storeId,
+        version: intent.version,
+        idempotencyKey: intent.key,
+      );
+      if (!mounted) return;
+      final newerDraft = _editDraftSignature() != intent.signature;
+      final variantsUnchanged =
+          jsonEncode(_variantPayloads()) ==
+          jsonEncode(intent.fields['variants']);
+      final needsIdentityReview =
+          !variantsUnchanged &&
+          (intent.fields['variants'] as List).any(
+            (row) => (row as Map)['id'] == null,
+          );
+      setState(() {
+        _baseProduct = ProductContract.fromJson(result);
+        if (variantsUnchanged) {
+          _variants = _baseProduct!.variants
+              .map(_ProductVariantDraft.fromContract)
+              .toList();
+        }
+        _pendingEdit = null;
+        _latestProduct = null;
+        _editBlocked = needsIdentityReview;
+        _editMessage = newerDraft
+            ? 'The earlier save is confirmed. Your newer draft is kept; review it and save again.'
+            : null;
+      });
+      if (needsIdentityReview) await _checkLatestProduct();
+      if (!mounted) return;
+      if (!newerDraft) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Product updated!')));
+        Navigator.pop(context, true);
+      }
+    } catch (error) {
+      if (!mounted) return;
+      final terminal =
+          error is ApiException &&
+          error.code != 'SESSION_CONTEXT_CHANGED' &&
+          [400, 401, 403, 404, 409, 422].contains(error.statusCode);
+      final conflict =
+          error is ApiException &&
+          [
+            'PRODUCT_VERSION_CONFLICT',
+            'PRODUCT_EDIT_KEY_CONFLICT',
+          ].contains(error.code);
+      setState(() {
+        if (terminal) _pendingEdit = null;
+        _editBlocked =
+            conflict ||
+            (error is ApiException &&
+                [401, 403, 404].contains(error.statusCode));
+        _editMessage = terminal
+            ? '$error Your draft is kept.'
+            : 'The save result is not confirmed. Retry pending save to recover it. Your draft is kept.';
+      });
+      if (conflict) await _checkLatestProduct();
+    }
+  }
+
+  // A newer invalid number must not prevent recovery of an already validated save.
+  String _editDraftSignature() => jsonEncode({
+    'text': [
+      _nameController.text,
+      _descriptionController.text,
+      _salePriceController.text,
+      _originalPriceController.text,
+      _stockController.text,
+      _skuController.text,
+      _barcodeController.text,
+      _handleController.text,
+      _seoTitleController.text,
+      _seoDescriptionController.text,
+      _productTypeController.text,
+      _vendorController.text,
+      _countryOfOriginController.text,
+      _importerDetailsController.text,
+      _tagsController.text,
+    ],
+    'images': _images,
+    'category': _categoryId,
+    'featured': _isFeatured,
+    'specifications': _specifications,
+    'variants': _variantPayloads(),
+  });
+
+  Map<String, dynamic> _editFields() => {
+    'name': _nameController.text,
+    'description': _descriptionController.text,
+    'price': double.parse(_salePriceController.text),
+    'compare_price': _originalPriceController.text.isNotEmpty
+        ? double.parse(_originalPriceController.text)
+        : null,
+    'stock': int.parse(_stockController.text),
+    'sku': _skuController.text.trim().isEmpty
+        ? null
+        : _skuController.text.trim(),
+    'barcode': _barcodeController.text.trim().isEmpty
+        ? null
+        : _barcodeController.text.trim(),
+    'url_handle': _nullableTrim(_handleController.text),
+    'seo_title': _nullableTrim(_seoTitleController.text),
+    'seo_description': _nullableTrim(_seoDescriptionController.text),
+    'category': _categoryId,
+    'images': _images,
+    'is_featured': _isFeatured,
+    'product_type': _nullableTrim(_productTypeController.text),
+    'vendor': _nullableTrim(_vendorController.text),
+    'country_of_origin': _nullableTrim(_countryOfOriginController.text),
+    'importer_details': _nullableTrim(_importerDetailsController.text),
+    'tags': _tagValues(),
+    'metadata': _metadataPayload(),
+    'variants': _variantPayloads(),
+    'product_options': _productOptionPayloads(),
+  };
+
+  List<Map<String, dynamic>> _productOptionPayloads() {
+    final values = <String, Set<String>>{};
+    for (final option in _baseProduct?.options ?? <ProductOptionContract>[]) {
+      values[option.name] = option.values.toSet();
+    }
+    for (final variant in _variants) {
+      for (final entry in variant.optionValues.entries) {
+        values.putIfAbsent(entry.key, () => <String>{}).add(entry.value);
+      }
+    }
+    return values.entries.indexed
+        .map(
+          (entry) => <String, dynamic>{
+            'name': entry.$2.key,
+            'position': entry.$1,
+            'values': entry.$2.value.toList(),
+          },
+        )
+        .toList(growable: false);
+  }
+
   List<Map<String, dynamic>> _variantPayloads() {
     return _variants.map((variant) => variant.toJson()).toList(growable: false);
   }
@@ -1190,7 +1434,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   Map<String, dynamic> _metadataPayload() {
     final metadata = Map<String, dynamic>.from(
-      widget.product?.metadata ?? const {},
+      _baseProduct?.metadata ?? widget.product?.metadata ?? const {},
     );
     if (_specifications.isEmpty) {
       metadata.remove('specifications');
@@ -1208,6 +1452,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
 class _ProductVariantDraft {
   const _ProductVariantDraft({
+    this.id,
+    this.otherOptions = const {},
     required this.title,
     required this.sku,
     required this.barcode,
@@ -1230,6 +1476,10 @@ class _ProductVariantDraft {
         ? contract.stock
         : contract.inventoryQuantity;
     return _ProductVariantDraft(
+      id: contract.id.isEmpty ? null : contract.id,
+      otherOptions: contract.options.map(
+        (key, value) => MapEntry(key, '$value'),
+      ),
       title: contract.title,
       sku: contract.sku ?? '',
       barcode: contract.barcode ?? '',
@@ -1244,6 +1494,8 @@ class _ProductVariantDraft {
   }
 
   final String title;
+  final String? id;
+  final Map<String, String> otherOptions;
   final String sku;
   final String barcode;
   final double? price;
@@ -1252,17 +1504,21 @@ class _ProductVariantDraft {
   final String optionName;
   final String optionValue;
 
+  Map<String, String> get optionValues => {
+    ...otherOptions,
+    if (optionName.isNotEmpty && optionValue.isNotEmpty)
+      optionName: optionValue,
+  };
+
   Map<String, dynamic> toJson() => {
+    if (id != null) 'id': id,
     'title': title,
-    if (sku.isNotEmpty) 'sku': sku,
-    if (barcode.isNotEmpty) 'barcode': barcode,
+    'sku': sku.isEmpty ? null : sku,
+    'barcode': barcode.isEmpty ? null : barcode,
     if (price != null) 'price': price,
-    if (comparePrice != null) 'compare_price': comparePrice,
+    'compare_price': comparePrice,
     'stock': stock,
-    'options': {
-      if (optionName.isNotEmpty && optionValue.isNotEmpty)
-        optionName: optionValue,
-    },
+    'options': optionValues,
   };
 }
 
@@ -1320,6 +1576,10 @@ class _VariantDraftSheetState extends State<_VariantDraftSheet> {
         : _titleController.text.trim();
     Navigator.of(context).pop(
       _ProductVariantDraft(
+        id: widget.variant?.id,
+        otherOptions: Map<String, String>.from(
+          widget.variant?.otherOptions ?? {},
+        )..remove(widget.variant?.optionName),
         title: title,
         sku: _skuController.text.trim(),
         barcode: _barcodeController.text.trim(),

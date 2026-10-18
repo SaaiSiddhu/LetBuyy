@@ -665,9 +665,6 @@ importers:
 
   packages/billing-core:
     dependencies:
-      '@letbuyy/checkout-core':
-        specifier: workspace:*
-        version: link:../checkout-core
       '@letbuyy/event-core':
         specifier: workspace:*
         version: link:../event-core

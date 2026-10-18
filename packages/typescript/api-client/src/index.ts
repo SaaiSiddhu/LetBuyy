@@ -1,4 +1,4 @@
-export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
+import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
@@ -205,7 +205,6 @@ import type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
-  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,
@@ -3184,7 +3183,10 @@ export interface MediaListQuery extends StoreScopedQuery {
 export type CreateMediaInput = Pick<MediaAsset, 'store_id' | 'filename' | 'url' | 'mime_type'> & Partial<MediaAsset>;
 export type UpdateMediaInput = Partial<Pick<MediaAsset, 'alt_text' | 'caption' | 'folder' | 'tags' | 'filename'>>;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
-export type UpdateProductInput = NewRecord<Product>;
+export type UpdateProductInput = NewRecord<Product> & Pick<Product, 'version'> & {
+  /** Retain one UUID for this exact edit through transport retries. */
+  idempotency_key: string;
+};
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
 export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'description' | 'image_url'>> & {
   is_active?: boolean;
@@ -4865,7 +4867,7 @@ export class LetbuyyApiClient {
     sample: (input: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>('/products/sample', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateProductInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, idempotencyKey: input.idempotency_key }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ id: string }>(`/products/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     bulk: (input: { store_id: string; action: string; product_ids: string[] }, options?: LetbuyyRequestOptions) =>
@@ -4881,10 +4883,10 @@ export class LetbuyyApiClient {
         this.requestData<Collection>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
       remove: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean; id: string }>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
-      listProducts: (id: string, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ collection_id: string; product_ids: string[]; products: Product[] }>(`/products/collections/${encodePathSegment(id)}/products`, options),
-      replaceProducts: (id: string, input: { product_ids: string[] }, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ collection_id: string; product_ids: string[]; count: number }>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input }),
+      listProducts: async (id: string, options: LetbuyyRequestOptions & { storeId: string }) =>
+        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, options)),
+      replaceProducts: async (id: string, input: ReplaceCollectionMembershipInput, options: LetbuyyRequestOptions & { storeId: string }) =>
+        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input, idempotencyKey: input.idempotency_key })),
     },
     giftCards: {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -5911,7 +5913,6 @@ export type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
-  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,

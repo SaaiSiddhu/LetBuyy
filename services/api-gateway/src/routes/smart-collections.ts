@@ -7,7 +7,8 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { dbFailureBody, getSupabaseAdmin, success } from '../lib/supabase';
+import { resolveOwnedStoreScope } from '../lib/tenant-context';
 import { filterProducts, type SmartCondition, type SmartMatchType, type EvalProduct } from '../lib/smart-collection-eval';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -16,7 +17,7 @@ const router = new Hono<{ Bindings: Env }>();
 const SC_COLUMNS = 'id,store_id,name,slug,description,conditions,match_type,created_at,created_by,updated_by,version';
 
 // Columns selected for products during preview evaluation
-const PRODUCT_PREVIEW_COLUMNS = 'id,name,title,product_type,vendor,tags,price,stock,inventory_quantity';
+const PRODUCT_PREVIEW_COLUMNS = 'id,name,product_type,vendor,tags,price,stock';
 
 // Max products fetched for preview evaluation (guard against massive catalogs)
 const PREVIEW_PRODUCT_LIMIT = 500;
@@ -220,50 +221,51 @@ router.patch('/:id', async (c) => {
 router.get('/:id/preview', async (c) => {
     const auth = c.get('auth');
     const collectionId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-
-    // Fetch the smart collection
-    const { data: sc, error: scError } = await db
-        .from('smart_collections')
-        .select(SC_COLUMNS)
-        .eq('id', collectionId)
-        .is('deleted_at', null)
-        .single();
-
-    if (scError || !sc) {
-        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Smart collection not found' } }, 404);
+    const queryStore = c.req.query('store_id')?.trim();
+    const headerStore = c.req.header('X-Store-ID')?.trim();
+    const storeId = queryStore || headerStore || auth.user.storeId;
+    if (!storeId) {
+        return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'store_id is required for preview' } }, 400);
     }
-
-    const scRow = sc as SmartCollectionRow;
-
-    if (!customUser || !(await verifySiteOwnership(db, scRow.store_id, customUser.id, auth.user.storeId))) {
+    if ((auth.user.storeId && auth.user.storeId !== storeId) || (headerStore && headerStore !== storeId)) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    // Fetch the store's active products for evaluation
+    // The selected store is only a hint. Resolve its current owner/tenant with
+    // the canonical context helper before reading private collection fields.
+    const { db, siteId } = await resolveOwnedStoreScope(c, storeId);
+    const { data: sc, error: scError } = await db
+        .from('smart_collections')
+        .select(SC_COLUMNS)
+        .eq('store_id', siteId)
+        .eq('id', collectionId)
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    // A missing or out-of-scope id has the same public shape. There is no
+    // preliminary cross-tenant existence/owner lookup or tenant-guard bypass.
+    if (scError) return c.json(dbFailureBody(), 500);
+    if (!sc) {
+        return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Smart collection not found' } }, 404);
+    }
+    const scRow = sc as SmartCollectionRow;
     const { data: products, error: prodError } = await db
         .from('products')
         .select(PRODUCT_PREVIEW_COLUMNS)
-        .eq('store_id', scRow.store_id)
+        .eq('store_id', siteId)
         .is('deleted_at', null)
         .eq('is_active', true)
         .limit(PREVIEW_PRODUCT_LIMIT);
-
-    if (prodError) {
-        return c.json({ success: false, error: { code: 'DB_ERROR', message: prodError.message } }, 500);
-    }
+    if (prodError) return c.json(dbFailureBody(), 500);
 
     const evalProducts = (products || []) as EvalProduct[];
     const matched = filterProducts(evalProducts, scRow.conditions ?? [], (scRow.match_type as SmartMatchType) ?? 'all');
-
     return c.json(success({
         collection_id: scRow.id,
         match_type: scRow.match_type,
         condition_count: (scRow.conditions ?? []).length,
         count: matched.length,
         sample_product_ids: matched.slice(0, PREVIEW_SAMPLE_SIZE).map((p) => p.id),
-        // Indicate whether the result is over the evaluation limit
         evaluated_of: evalProducts.length,
         capped_at: PREVIEW_PRODUCT_LIMIT,
     }));

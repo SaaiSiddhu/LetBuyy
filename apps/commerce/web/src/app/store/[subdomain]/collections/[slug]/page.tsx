@@ -1,17 +1,17 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { StoreService } from '@/lib/store-service';
-import { createStorefrontApiClient, storefrontReadInit, StorefrontApiRequestError } from '@/lib/api/client';
+import { createStorefrontApiClient, StorefrontApiRequestError } from '@/lib/api/client';
 import { buildBreadcrumbJsonLd, buildStoreJsonLd, buildStoreMetadata } from '@/lib/seo';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import { createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import type { ProductModel } from '@letbuyy/commerce-core';
+import { LetbuyyApiError } from '@letbuyy/api-client';
 
-export const revalidate = 30;
-
-const COLLECTION_REVALIDATE_SECONDS = 30;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function loadCollectionWithProducts(
     subdomain: string,
@@ -19,17 +19,16 @@ async function loadCollectionWithProducts(
     query: { country_of_origin?: string; category?: string; search?: string; page?: string } = {},
 ) {
     try {
-        const result = await createStorefrontApiClient(
-            storefrontReadInit(COLLECTION_REVALIDATE_SECONDS, [
-                `storefront:${subdomain}:collections`,
-                `storefront:${subdomain}:collection:${slug}`,
-            ]),
-        ).storefront.getCollectionWithProducts(subdomain, slug, { query });
+        // Membership and public eligibility are read through the current
+        // canonical endpoint on every render, including an explicit retry.
+        const result = await createStorefrontApiClient({ cache: 'no-store' })
+            .storefront.getCollectionWithProducts(subdomain, slug, { query });
         return result;
     } catch (err) {
-        if (err instanceof StorefrontApiRequestError && err.status === 404) return null;
-        console.error('[CollectionPage] Failed to load collection:', err);
-        return null;
+        if ((err instanceof LetbuyyApiError || err instanceof StorefrontApiRequestError) && err.status === 404) return null;
+        // The existing application error boundary owns the normal Try again
+        // control. An outage must not become a missing-collection result.
+        throw new Error('Collection products are temporarily unavailable. Please try again.');
     }
 }
 

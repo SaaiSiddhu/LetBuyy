@@ -1,5 +1,3 @@
-import {subscriptionCheckoutRpc,requireSubscriptionTaxSnapshot,resolveNewSubscriptionTaxSnapshot,subscriptionTaxSummary,publicSubscriptionBillingRecord} from '../lib/subscription-checkout-source';
-import {createMerchantSubscriptionCheckout} from '../lib/subscription-checkout';
 import { Hono } from 'hono';
 import {
     BillingInvoiceQuerySchema,
@@ -21,7 +19,7 @@ import { resolveFoundingCheckoutLock, isPlanPurchasable } from '../lib/founding-
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { SubscriptionExecutionAdapter, subscriptionPeriodEnd } from '../execution/subscription-execution.adapter';
-import { HumanRequiredError, NotFoundError, AppError } from '../lib/errors';
+import { HumanRequiredError, NotFoundError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -133,12 +131,35 @@ async function createMerchantBillingInvoice(
         metadata?: JsonRecord;
     },
 ) {
-    // The atomic source writer owns invoice creation and component allocation.
-    // This route reads its result; it cannot upsert or rewrite an issued invoice.
-    const {data,error}=await db.from('merchant_billing_invoices').select('*')
-        .eq('site_id',input.siteId).eq('billing_history_id',input.billingHistoryId).single();
-    if(error||!data)throw new AppError('The canonical billing invoice needs recovery.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
+    const { data, error } = await db
+        .from('merchant_billing_invoices')
+        .upsert(
+            {
+                site_id: input.siteId,
+                subscription_id: input.subscriptionId,
+                billing_history_id: input.billingHistoryId,
+                invoice_number: input.invoiceNumber,
+                status: input.paymentStatus === 'paid' ? 'issued' : 'payment_failed',
+                currency: 'INR',
+                subtotal_minor: input.amountMinor,
+                cgst_minor: 0,
+                sgst_minor: 0,
+                igst_minor: input.taxMinor,
+                total_minor: input.totalMinor,
+                period_start: input.periodStart,
+                period_end: input.periodEnd,
+                irn: `sandbox-irn-${input.invoiceNumber}`,
+                qr_payload: `sandbox-qr:${input.invoiceNumber}`,
+                metadata: input.metadata || {},
+                created_by: input.userId,
+                updated_by: input.userId,
+            },
+            { onConflict: 'site_id,invoice_number' },
+        )
+        .select('*')
+        .single();
 
+    if (error) throw new Error(`Merchant billing invoice create failed: ${error.message}`);
     return data;
 }
 
@@ -241,43 +262,63 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
     if (!isPlanPurchasable(plan)) {
         return c.json({ error: { code: 'PLAN_NOT_PURCHASABLE', message: 'This plan is not available for purchase' } }, 400);
     }
-    const request={plan_slug:body.plan_slug,site_type:siteType,billing_period:body.billing_period,
-        approved_usage_charges:[],coupon_code:null,sandbox_payment_status:body.sandbox_payment_status,mandate_id:body.mandate_id||null};
-    const claimArgs={p_actor:tenant.userId,p_site:tenant.siteId,p_key:body.idempotency_key,p_request:request};
-    const retained=await subscriptionCheckoutRpc(db,'read_merchant_subscription_checkout_key_v1',claimArgs);
-    const foundingLock=retained.charge?null:await resolveFoundingCheckoutLock(db,tenant.siteId,plan);
-    const effectivePlan=retained.charge?retained.charge.subscription_checkout.plan as BillingPlanCatalogRecord:applyFoundingLockToPlan(plan,foundingLock);
-    const amount=retained.charge?{amountMinor:retained.charge.amount,isPromo:false}:planBillingAmountMinor(effectivePlan,body.billing_period);
-    if(amount.amountMinor===0){
-        const free=await createMerchantSubscriptionCheckout({db,env:c.env,userId:tenant.userId||'',storeId:tenant.siteId,
-            siteType,planSlug:body.plan_slug,billingPeriod:body.billing_period,idempotencyKey:body.idempotency_key});
-        return c.json(free.body,free.status);
-    }
-    const tax=retained.charge?requireSubscriptionTaxSnapshot(retained.charge):await resolveNewSubscriptionTaxSnapshot(db,c.env,{
-        actor:tenant.userId||'',site:tenant.siteId,key:body.idempotency_key,plan:effectivePlan,period:body.billing_period,
-        gross:amount.amountMinor,beforeDiscount:amount.amountMinor});
-    const claimed=retained.charge?retained:await subscriptionCheckoutRpc(db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
-        mode:'sandbox_activation',plan:effectivePlan,amount_minor:amount.amountMinor,currency:'INR',subscription_tax_snapshot:tax,
-        response:{checkout_mode:'sandbox_activation',amount:amount.amountMinor,currency:'INR',billing_period:body.billing_period,tax:subscriptionTaxSummary(tax)}}});
-    if(!claimed.charge?.id)throw new AppError('Subscription source is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
-    const source=claimed.charge;
-    if(!source.subscription_checkout_reference)await subscriptionCheckoutRpc(db,'bind_merchant_subscription_checkout_v1',{
-        p_actor:tenant.userId,p_site:tenant.siteId,p_charge:source.id,p_reference:`sandbox_autopay:${tenant.siteId}:${body.idempotency_key}`});
+    // Founding price lock applies on every recurring charge (renewal-safe).
+    const foundingLock = await resolveFoundingCheckoutLock(db, tenant.siteId, plan);
+    const amount = planBillingAmountMinor(applyFoundingLockToPlan(plan, foundingLock), body.billing_period);
     const now = new Date();
     const periodEnd = subscriptionPeriodEnd(now, body.billing_period);
     const dunning = planBillingDunning({ paymentStatus: body.sandbox_payment_status });
 
     if (body.sandbox_payment_status === 'failed') {
-        const invoiceNumber=`MBI-${crypto.randomUUID().slice(0,8).toUpperCase()}`;
-        const {data:failed,error:failedError}=await db.rpc('record_merchant_subscription_failure_v1',{p_input:{
-            user_id:tenant.userId,store_id:tenant.siteId,source_id:source.id,payment_id:`sandbox_failed:${body.idempotency_key}`,
-            invoice_number:invoiceNumber,description:`${plan.name} plan - ${body.billing_period}`,
-            period_start:now.toISOString(),period_end:periodEnd.toISOString(),mandate_id:body.mandate_id||null,
-            dunning_status:dunning.status,dunning_attempts:dunning.dunning_attempts,next_dunning_at:dunning.next_dunning_at,
-        }});
-        if(failedError||!failed||failed.accepted!==true||!failed.subscription||!failed.invoice)
-            throw new AppError('Failed subscription billing source needs recovery.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
-        const subscription=failed.subscription,history=failed.invoice,taxMinor=tax.tax_minor;
+        const { data: subscription, error: subscriptionError } = await db
+            .from('subscriptions')
+            .insert({
+                user_id: tenant.userId,
+                store_id: tenant.siteId,
+                plan: plan.slug,
+                plan_id: plan.id,
+                status: 'past_due',
+                billing_period: body.billing_period,
+                current_period_start: now.toISOString(),
+                current_period_end: periodEnd.toISOString(),
+                payment_gateway: 'razorpay',
+                external_subscription_id: `sandbox_autopay_failed:${tenant.siteId}:${body.idempotency_key}`,
+                amount_paid: amount.amountMinor,
+                currency: 'INR',
+                mandate_id: body.mandate_id || null,
+                idempotency_key: body.idempotency_key,
+                dunning_status: dunning.status,
+                dunning_attempts: dunning.dunning_attempts,
+                next_dunning_at: dunning.next_dunning_at,
+            })
+            .select('*')
+            .single();
+        if (subscriptionError || !subscription) throw new Error(`Past-due subscription create failed: ${subscriptionError?.message || 'unknown error'}`);
+
+        const invoiceNumber = `MBI-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+        const taxMinor = Math.round(amount.amountMinor * 0.18);
+        const { data: history, error: historyError } = await db
+            .from('billing_history')
+            .insert({
+                user_id: tenant.userId,
+                store_id: tenant.siteId,
+                site_id: tenant.siteId,
+                subscription_id: subscription.id,
+                invoice_number: invoiceNumber,
+                description: `${plan.name} plan - ${body.billing_period}`,
+                amount: amount.amountMinor,
+                currency: 'INR',
+                tax_amount: taxMinor,
+                total_amount: amount.amountMinor + taxMinor,
+                payment_gateway: 'razorpay',
+                payment_id: `sandbox_failed:${body.idempotency_key}`,
+                payment_status: 'failed',
+                period_start: now.toISOString(),
+                period_end: periodEnd.toISOString(),
+            })
+            .select('*')
+            .single();
+        if (historyError || !history) throw new Error(`Billing history create failed: ${historyError?.message || 'unknown error'}`);
 
         await createMerchantBillingInvoice(db, {
             siteId: tenant.siteId,
@@ -286,7 +327,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
             invoiceNumber,
             amountMinor: amount.amountMinor,
             taxMinor,
-            totalMinor: amount.amountMinor,
+            totalMinor: amount.amountMinor + taxMinor,
             periodStart: now.toISOString(),
             periodEnd: periodEnd.toISOString(),
             paymentStatus: 'failed',
@@ -314,7 +355,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
             requestId: c.req.header('X-Request-ID') || null,
             payload: { invoice_id: history.id, amount: amount.amountMinor },
         });
-        return c.json(success({ subscription:publicSubscriptionBillingRecord(subscription), dunning, invoice:publicSubscriptionBillingRecord(history) }), 201);
+        return c.json(success({ subscription, dunning, invoice: history }), 201);
     }
 
     const subscription = await new SubscriptionExecutionAdapter(db).activateMerchantSubscription({
@@ -326,7 +367,6 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         paymentGateway: amount.amountMinor > 0 ? 'razorpay' : null,
         externalSubscriptionId: `sandbox_autopay:${tenant.siteId}:${body.idempotency_key}`,
         razorpayPaymentId: amount.amountMinor > 0 ? `sandbox_autopay_payment:${body.idempotency_key}` : null,
-        taxSource:source,
         now,
     });
     await db
@@ -349,6 +389,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         .limit(1)
         .maybeSingle();
     if (history) {
+        await db.from('billing_history').update({ site_id: tenant.siteId }).eq('id', history.id);
         await createMerchantBillingInvoice(db, {
             siteId: tenant.siteId,
             subscriptionId: subscription.id,
@@ -384,7 +425,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         payload: { invoice_id: history?.id, amount: amount.amountMinor },
     });
 
-    return c.json(success({ subscription, dunning, invoice: history?publicSubscriptionBillingRecord(history):null }), 201);
+    return c.json(success({ subscription, dunning, invoice: history || null }), 201);
 });
 
 // GET /billing/mandates — list the store's billing payment methods (Razorpay UPI
@@ -418,7 +459,7 @@ router.get('/invoices', validate('query', BillingInvoiceQuerySchema), async (c) 
         .limit(query.limit);
 
     if (error) throw new Error(`Billing invoice lookup failed: ${error.message}`);
-    return c.json(success({ invoices: (data||[]).map(row=>publicSubscriptionBillingRecord(row)) }));
+    return c.json(success({ invoices: data || [] }));
 });
 
 // ---------------------------------------------------------------------------

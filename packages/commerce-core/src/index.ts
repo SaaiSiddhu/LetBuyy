@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { CustomerSegmentRulesSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+export { ReplaceCollectionMembershipSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
+import { CustomerSegmentRulesSchema, ProductStatusSchema, EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -18,6 +19,14 @@ export const ProductOptionSchema = z.object({
   name: z.string().min(1).max(100).trim(),
   position: z.number().int().min(0).default(0),
   values: z.array(z.string().min(1).max(100)).max(100).default([]),
+});
+
+// Existing rows use their durable UUID, never mutable SKU/options. Edit omissions
+// preserve stock/options instead of applying the creation defaults.
+export const ProductEditVariantSchema = ProductVariantSchema.omit({ stock: true, options: true }).extend({
+  id: UuidSchema.optional(),
+  stock: z.number().int().min(0).optional(),
+  options: z.record(z.string(), z.string().max(100)).optional(),
 });
 
 export const CreateProductSchema = z
@@ -69,12 +78,12 @@ export const UpdateProductSchema = z.object({
   compare_price: MoneySchema.optional().nullable(),
   cost_per_item: MoneySchema.optional().nullable(),
   images: z.array(UrlSchema).max(20).optional(),
-  category: z.string().max(100).optional(),
+  category: z.string().max(100).optional().nullable(),
   product_type: z.string().max(100).optional().nullable(),
   vendor: z.string().max(100).optional().nullable(),
   tags: z.array(z.string().max(50)).max(30).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  variants: z.array(ProductVariantSchema).max(100).optional(),
+  variants: z.array(ProductEditVariantSchema).max(100).optional(),
   product_options: z.array(ProductOptionSchema).max(10).optional(),
   stock: z.number().int().min(0).optional(),
   track_inventory: z.boolean().optional(),
@@ -93,6 +102,7 @@ export const UpdateProductSchema = z.object({
   seo_description: z.string().max(160).optional().nullable(),
   charge_tax: z.boolean().optional(),
   is_active: z.boolean().optional(),
+  status: ProductStatusSchema.optional(),
   is_featured: z.boolean().optional(),
   display_order: z.number().int().min(0).optional(),
   // CAP-FB-SHIPPING-PRODUCT (D-9): which of the site's shipping profiles this product uses. NULL
@@ -103,12 +113,15 @@ export const UpdateProductSchema = z.object({
   // shipping_profiles (id, site_id). Another merchant's profile is rejected by the database, so this
   // schema deliberately validates only the shape.
   shipping_profile_id: UuidSchema.optional().nullable(),
-  version: z.number().int().positive('Version is required').optional(),
+  version: z.number().int().positive('Load the current product version before saving'),
+  idempotency_key: UuidSchema,
+}).refine(data => data.status === undefined || data.is_active === (data.status === 'active'), {
+  message: 'Status requires its matching active flag', path: ['is_active'],
 });
 
 export const ListProductsQuery = z.object({
   store_id: UuidSchema.optional(),
-  status: z.enum(['active', 'inactive', 'all']).default('all'),
+  status: z.enum(['active', 'draft', 'archived', 'inactive', 'all']).default('all'),
   category: z.string().max(100).optional(),
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -646,6 +659,7 @@ export const PRODUCT_UPDATE_FIELDS = [
   // the schema accepts but this list omits is silently dropped, so both must be updated together.
   'shipping_profile_id',
   'is_active',
+  'status',
   'is_featured',
   'tags',
   'metadata',
@@ -659,6 +673,17 @@ export interface ProductUpdatePlan {
   hasOptionUpdates: boolean;
   hasVariantUpdates: boolean;
   hasInventoryUpdate: boolean;
+}
+
+export interface ProductMutationPlan {
+  expectedVersion: number;
+  idempotencyKey: string;
+  mutation: {
+    fields: Record<string, unknown>;
+    stock?: number;
+    product_options?: z.infer<typeof ProductOptionSchema>[];
+    variants?: z.infer<typeof ProductEditVariantSchema>[];
+  };
 }
 
 export interface ProductCreatePlan {
@@ -1225,5 +1250,25 @@ export function planProductUpdate(updates: Record<string, unknown>): ProductUpda
     hasOptionUpdates: updates.product_options !== undefined,
     hasVariantUpdates: Array.isArray(updates.variants),
     hasInventoryUpdate: typeof updates.stock === 'number',
+  };
+}
+
+/** One normalized edit intent for validation and the canonical transactional writer. */
+export function planProductMutation(input: unknown): ProductMutationPlan {
+  const updates = UpdateProductSchema.parse(input);
+  const plan = planProductUpdate(updates);
+  const { stock: _stock, ...fields } = plan.safeUpdates;
+  if (Object.keys(fields).length === 0 && !plan.hasOptionUpdates && !plan.hasVariantUpdates && !plan.hasInventoryUpdate) {
+    throw new Error('No valid product fields to update');
+  }
+  return {
+    expectedVersion: updates.version,
+    idempotencyKey: updates.idempotency_key,
+    mutation: {
+      fields,
+      ...(updates.stock !== undefined ? { stock: updates.stock } : {}),
+      ...(updates.product_options !== undefined ? { product_options: updates.product_options.map((option, position) => ({ ...option, position })) } : {}),
+      ...(updates.variants !== undefined ? { variants: updates.variants } : {}),
+    },
   };
 }

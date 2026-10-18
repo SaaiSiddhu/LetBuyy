@@ -4,7 +4,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { classifyAppApiRoute, listAppApiRoutes } from '../../scripts/validators/app-api-route-inventory.mjs';
 
-// LB-6: collections end-to-end structural tests
+// LB-6 structural ownership checks only. Real authority, atomicity, failures
+// and normal login are proved separately in the owned database/browser fixtures.
 
 const repoRoot = process.cwd();
 
@@ -15,6 +16,8 @@ const mcpProxyRoute = path.join(repoRoot, 'apps/merchant/web/src/app/api/stores/
 const storefrontCollectionPage = path.join(repoRoot, 'apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx');
 const categoryGrid = path.join(repoRoot, 'apps/commerce/web/src/components/sections/category-grid.tsx');
 const apiClient = path.join(repoRoot, 'packages/typescript/api-client/src/index.ts');
+const membershipAdapter = path.join(repoRoot, 'services/api-gateway/src/execution/collection-membership.adapter.ts');
+const securityScope = path.join(repoRoot, 'apps/merchant/web/src/lib/api/merchant-security-scope.ts');
 
 function read(p) { return readFileSync(p, 'utf8'); }
 
@@ -22,20 +25,33 @@ test('(a) gateway has GET collection products route reading collection_products'
     const content = read(gatewayProducts);
     assert.match(content, /router\.get\(['"`]\/collections\/:id\/products['"`]/,
         'GET /products/collections/:id/products route must exist');
-    assert.match(content, /collection_products/,
-        'Route must query collection_products table');
+    assert.match(content, /readCollectionMembership\(scope, c\.req\.param\('id'\)\)/,
+        'GET must delegate its verified scope to the canonical membership reader');
+    assert.match(content, /resolveOwnedStoreScope/,
+        'Private membership reads must resolve current owner scope');
+    const adapter = read(membershipAdapter);
+    assert.match(adapter, /\.from\('collection_products'\)/,
+        'Canonical reader must load complete assigned membership');
+    assert.match(adapter, /\.from\('collections'\)[\s\S]*\.eq\('store_id', scope.siteId\)/,
+        'Canonical reader must scope the parent collection before private membership');
 });
 
 test('(a) gateway has PUT collection products route writing collection_products', () => {
     const content = read(gatewayProducts);
     assert.match(content, /router\.put\(['"`]\/collections\/:id\/products['"`]/,
         'PUT /products/collections/:id/products route must exist');
-    assert.match(content, /collection_products.*delete|delete.*collection_products/s,
-        'PUT route must delete old assignments from collection_products');
-    assert.match(content, /collection_products.*upsert|upsert.*collection_products/s,
-        'PUT route must upsert new assignments into collection_products');
-    assert.match(content, /eq\('store_id', collection\.store_id/,
-        'PUT route must validate products belong to the same store');
+    assert.match(content, /replaceCollectionMembership\(c\.env, scope, c\.req\.param\('id'\), body\)/,
+        'PUT must delegate to the canonical owner-scoped command');
+    const adapter = read(membershipAdapter);
+    assert.match(adapter, /withTenantTx\(env, scope\.tenant/,
+        'Canonical replacement must use the tenant transaction');
+    assert.match(adapter, /SELECT public\.apply_collection_membership_v1\(/,
+        'Canonical replacement must invoke one atomic database command');
+    assert.match(adapter, /scope\.siteId, collectionId, scope\.customUser\.id, input\.expected_version, input\.idempotency_key/,
+        'Command must carry verified tenant/actor, loaded revision and captured save key');
+    const route = content.slice(content.indexOf("router.put('/collections/:id/products'"), content.indexOf('// DELETE /products/collections/:id'));
+    assert.doesNotMatch(route, /\.(?:delete|upsert)\(/,
+        'Transport must not retain the old nontransactional REST replacement writer');
 });
 
 test('(b) public storefront collection-by-slug endpoint exists in public-routes', () => {
@@ -81,8 +97,17 @@ test('(c) MCP proxy route exists and forwards GET and PUT', () => {
         'Proxy route must export PUT handler');
     assert.match(content, /createMerchantApiClient/,
         'Proxy route must use createMerchantApiClient (no direct DB)');
-    assert.match(content, /resolveOwnedStoreId/,
-        'Proxy route must resolve store ownership');
+    assert.match(content, /merchantSecurityScope/,
+        'Proxy route must use the current mounted-account and selected-store scope');
+    const scope = read(securityScope);
+    assert.match(scope, /auth\.session\(/,
+        'Shared security scope must resolve the current signed-in account');
+    assert.match(scope, /resolveOwnedStoreId/,
+        'Shared security scope must resolve selected store ownership');
+    assert.match(content, /storeId: scope\.storeId/,
+        'Proxy must explicitly forward the resolved store to the shared SDK');
+    assert.doesNotMatch(content, /product_ids:\s*body\.product_ids\s*\?\?\s*\[\]/,
+        'A missing product list must not become an intentional empty replacement');
     assert.match(content, /listProducts|replaceProducts/,
         'Proxy route must call listProducts or replaceProducts on the api client');
     assert.doesNotMatch(content, /getSupabase|supabaseAdmin|\.from\(/,

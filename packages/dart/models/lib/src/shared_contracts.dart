@@ -214,6 +214,7 @@ class ProductVariantContract extends SharedTypeContract {
 class ProductContract extends SharedTypeContract {
   static const ownFields = <String>[
     'store_id',
+    'version',
     'name',
     'slug',
     'description',
@@ -258,6 +259,12 @@ class ProductContract extends SharedTypeContract {
 
   String get id => stringValue('id');
   String get storeId => stringValue('store_id');
+  // An absent/invalid revision is not a locally fabricated editable version.
+  int? get version {
+    final value = this['version'];
+    return value is int && value > 0 ? value : null;
+  }
+
   String get name => stringValue('name');
   String get slug => stringValue('slug');
   String get description => stringValue('description');
