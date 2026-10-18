@@ -155,8 +155,9 @@ export function preparedTransactionArgs(env = process.env) {
 
 // Validate ambient opt-in before callers can create any owned resource.
 const defaultPreparedServerArgs = preparedTransactionArgs();
-export function startCluster({ name, database, image = DEFAULT_IMAGE, runId = newRunId(), network, volume, limits = POSTGRES_LIMITS, plain = false, preparedTransactions, disableJit = false }) {
+export function startCluster({ name, database, image = DEFAULT_IMAGE, runId = newRunId(), network, volume, limits = POSTGRES_LIMITS, plain = false, preparedTransactions, disableJit = false, disableAutovacuum = false }) {
     if(typeof disableJit!=='boolean')throw new Error('owned PostgreSQL JIT option must be boolean');
+    if(typeof disableAutovacuum!=='boolean')throw new Error('owned PostgreSQL autovacuum option must be boolean');
     const preparedServerArgs = preparedTransactions === undefined ? defaultPreparedServerArgs : preparedTransactionArgs({ LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS: preparedTransactions });
     if (plain && preparedServerArgs.length) throw new Error('prepared transaction proof requires a real owned PostgreSQL cluster');
     if (plain) {
@@ -176,7 +177,7 @@ export function startCluster({ name, database, image = DEFAULT_IMAGE, runId = ne
             '--mount', `type=volume,source=${ownVolume},target=${DATA_DIR}`,
             '-e', 'POSTGRES_PASSWORD=postgres',
             '-e', `POSTGRES_DB=${database}`,
-            image, ...preparedServerArgs, ...(disableJit ? ['-c','jit=off'] : []),
+            image, ...preparedServerArgs, ...(disableJit ? ['-c','jit=off'] : []), ...(disableAutovacuum ? ['-c','autovacuum=off'] : []),
         ]);
     } catch (error) {
         // The volume this call made (and only that one) goes with the failed start; the caller owns anything it passed in.

@@ -68,6 +68,19 @@ export class GraphService {
   private readonly deg = new Map<string, number>();
   private built = false;
   private builtAtCommit: string | undefined;
+  private readonly resolvedSymbols = new Map<string, GraphNode | undefined>();
+  private readonly searches = new Map<string, readonly GraphNode[]>();
+
+  // The graph is an immutable per-engine snapshot. Repeated planning must not
+  // rescan its full node set for the same term; keep each query cache bounded.
+  private remember<T>(cache: Map<string, T>, key: string, value: T): T {
+    if (cache.size >= 512) {
+      const oldest = cache.keys().next();
+      if (!oldest.done) cache.delete(oldest.value);
+    }
+    cache.set(key, value);
+    return value;
+  }
 
   constructor(private readonly store: ArtifactStore) {}
 
@@ -141,6 +154,7 @@ export class GraphService {
     const direct = this.nodesById.get(symbol);
     if (direct) return direct;
     const q = symbol.toLowerCase();
+    if (this.resolvedSymbols.has(q)) return this.resolvedSymbols.get(q);
     let best: GraphNode | undefined;
     let bestDeg = -1;
     for (const n of this.nodesById.values()) {
@@ -154,7 +168,7 @@ export class GraphService {
         }
       }
     }
-    return best;
+    return this.remember(this.resolvedSymbols, q, best);
   }
 
   /** BFS of reachable node ids from start, up to `depth` hops, in the given direction. Excludes start. */
@@ -191,6 +205,9 @@ export class GraphService {
   search(query: string, limit = 20): GraphNode[] {
     this.build();
     const q = query.toLowerCase();
+    const cacheKey = JSON.stringify([q, limit]);
+    const cached = this.searches.get(cacheKey);
+    if (cached) return [...cached];
     const out: GraphNode[] = [];
     for (const n of this.nodesById.values()) {
       if (n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)) {
@@ -198,6 +215,7 @@ export class GraphService {
         if (out.length >= limit) break;
       }
     }
+    this.remember(this.searches, cacheKey, [...out]);
     return out;
   }
 }

@@ -8,13 +8,13 @@ import {spawnSync} from 'node:child_process';
 import {preparedTransactionArgs} from '../../scripts/governance/executable-pg-fixture.mjs';
 const moduleUrl=new URL('../../scripts/governance/executable-pg-fixture.mjs',import.meta.url).href;
 const fixtureArgs={name:'letbuyy-exec-prepared-recording',database:'synthetic_prepared',network:'synthetic_net',volume:'synthetic_volume',runId:'synthetic-run'};
-function run(value,{plain=false,disableJit=false}={}) {
+function run(value,{plain=false,disableJit=false,disableAutovacuum=false}={}) {
     const dir=mkdtempSync(join(tmpdir(),'n9-346-prepared-recording-')),log=join(dir,'argv.json');
     const fake=join(dir,'docker');
     writeFileSync(fake,`#!${process.execPath}\nimport {writeFileSync} from 'node:fs';writeFileSync(process.env.N9_ARGV_FILE,JSON.stringify(process.argv.slice(2)));process.stdout.write('synthetic-container-id\\n');\n`);chmodSync(fake,0o755);
     const env={...process.env,PATH:dir+':'+process.env.PATH,N9_ARGV_FILE:log,LETBUYY_EXECUTABLE_PG_IMAGE:'postgres:16-alpine'};
     delete env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS;if(value!==undefined)env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS=value;
-    const result=spawnSync(process.execPath,['--input-type=module','-e',`import {startCluster} from ${JSON.stringify(moduleUrl)};startCluster(${JSON.stringify({...fixtureArgs,plain,disableJit})});`],{env,encoding:'utf8',timeout:10000});
+    const result=spawnSync(process.execPath,['--input-type=module','-e',`import {startCluster} from ${JSON.stringify(moduleUrl)};startCluster(${JSON.stringify({...fixtureArgs,plain,disableJit,disableAutovacuum})});`],{env,encoding:'utf8',timeout:10000});
     return {pid:result.pid,status:result.status,stderr:result.stderr,args:existsSync(log)?JSON.parse(readFileSync(log,'utf8')):[]};
 }
 test('bounded opt-in is literal-only; missing retains default',()=>{
@@ -40,4 +40,12 @@ test('owned catalog proof can disable LLVM compilation without changing limits, 
     const normalize=args=>args.map(v=>v.startsWith('com.letbuyy.executable-fixture.owner-pid=')?'com.letbuyy.executable-fixture.owner-pid=<child>':v);
     assert.deepEqual(normalize(bounded.args),[...normalize(ordinary.args),'-c','jit=off']);
     const invalid=run('2',{disableJit:'arbitrary-server-option'});assert.notEqual(invalid.status,0);assert.deepEqual(invalid.args,[]);
+});
+
+test('owned quiescent migration fixture can disable only background vacuum',()=>{
+    const ordinary=run('2'),quiet=run('2',{disableAutovacuum:true});
+    assert.equal(ordinary.status,0,ordinary.stderr);assert.equal(quiet.status,0,quiet.stderr);
+    const normalize=args=>args.map(v=>v.startsWith('com.letbuyy.executable-fixture.owner-pid=')?'com.letbuyy.executable-fixture.owner-pid=<child>':v);
+    assert.deepEqual(normalize(quiet.args),[...normalize(ordinary.args),'-c','autovacuum=off']);
+    const invalid=run('2',{disableAutovacuum:'arbitrary-server-option'});assert.notEqual(invalid.status,0);assert.deepEqual(invalid.args,[]);
 });

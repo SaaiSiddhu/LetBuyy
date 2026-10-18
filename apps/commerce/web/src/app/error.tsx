@@ -5,7 +5,6 @@ import { Button } from '@letbuyy/ui'
 
 export default function StorefrontError({
     error,
-    reset,
 }: {
     error: Error & { digest?: string }
     reset: () => void
@@ -52,7 +51,9 @@ export default function StorefrontError({
                 ) : null}
                 <Button
                     type="button"
-                    onClick={reset}
+                    // Retry the server read as well as the client boundary.
+                    // Resetting only the boundary can reuse the failed RSC payload.
+                    onClick={() => window.location.reload()}
                     unstyled
                     style={{
                         display: 'inline-flex',

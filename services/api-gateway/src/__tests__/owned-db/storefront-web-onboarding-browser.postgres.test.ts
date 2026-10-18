@@ -435,7 +435,7 @@ test('merchant resumes the real onboarding form and creates one completed store'
     await inventoryPage.getByRole('button', { name: 'Save', exact: true }).click();
     const inventoryResult = await inventoryResponse;
     assert.equal(inventoryResult.status(), 200, await inventoryResult.text());
-    await inventoryPage.getByText('Browser inventory product now has 9 available.', { exact: true }).waitFor({ timeout: 20_000 });
+    await inventoryPage.getByText('Browser inventory product: stock change +5 confirmed.', { exact: true }).waitFor({ timeout: 20_000 });
     assert.equal(owned.psql(`SELECT available FROM inventory_levels WHERE product_id='${inventoryProductId}';`), '9');
     assert.equal(owned.psql(`SELECT count(*)||'|'||sum(quantity_change)||'|'||min(created_by::text) FROM inventory_adjustments WHERE product_id='${inventoryProductId}';`), `1|5|${ownerId}`);
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${storeId}' AND aggregate_id='${inventoryProductId}' AND event_type='inventory.level.adjusted';`), '1');

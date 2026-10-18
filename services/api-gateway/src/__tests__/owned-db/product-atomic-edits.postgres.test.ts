@@ -149,20 +149,12 @@ function retentionProfileSql() {
         'dependencies',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text),'[]') FROM pg_catalog.pg_depend t WHERE (t.classid,t.objid) IN(${retentionObjects}) OR (t.refclassid,t.refobjid) IN(${retentionObjects}))
     )`;
 }
-// The full logical profile exceeds execFileSync's default stdout buffer. Keep
-// exactly the same SQL/JSON contents; transport bounded hex chunks so psql's
-// trim() cannot discard whitespace at a chunk boundary. No field is omitted.
+// The owned psql transport explicitly allows 64 MiB. Read the complete JSON
+// profile once: recalculating this catalog query for every 64 KiB chunk made
+// the conservation checks exceed the suite deadline. JSON escaping preserves
+// whitespace inside every field; psql.trim() affects only the outer framing.
 function retentionFullProfile() {
-    const query=retentionProfileSql(),chunkCharacters=65536;
-    const characters=Number(psql(`SELECT length((${query})::text)`));
-    assert.ok(Number.isSafeInteger(characters)&&characters>0);
-    const chunks: Buffer[]=[];
-    for(let offset=1;offset<=characters;offset+=chunkCharacters) {
-        const hex=psql(`SELECT pg_catalog.encode(pg_catalog.convert_to(substr((${query})::text,${offset},${chunkCharacters}),'UTF8'),'hex')`);
-        assert.match(hex,/^(?:[0-9a-f]{2})+$/);
-        chunks.push(Buffer.from(hex,'hex'));
-    }
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    return JSON.parse(psql(`SELECT (${retentionProfileSql()})::text`));
 }
 function retentionSnapshot() {
     return {data:JSON.parse(psql(retentionDataSql())),profile:retentionFullProfile()};

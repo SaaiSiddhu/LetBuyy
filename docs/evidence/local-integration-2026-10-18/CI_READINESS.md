@@ -23,6 +23,17 @@ the nine paused product phases retain their existing acceptance boundaries.
   then revoke and journal every non-read privilege as before. Unknown profiles,
   owners, grantors and grant options remain refusals.
 - Reject product creation when persisted entitlement authority is unavailable.
+- Propagate exhausted public product-query failures as sanitized errors; the
+  storefront retry reloads the server read and recovers at the same URL.
+- Generate operational LCIS artifacts from source, compare reports to current
+  artifact inventories and use portable source paths. Graph query caches preserve
+  ranking, case handling and result limits within the immutable engine snapshot.
+- Keep background autovacuum out of newly owned migration fixtures, whose
+  migrations require quiescence. Ordinary writer/prepared-transaction refusal
+  controls remain real. The two exhaustive catalog suites have a bounded
+  30-minute deadline; an explicit runner timeout still takes precedence.
+- Read the complete product catalog profile in one bounded 64 MiB psql result,
+  preserving every JSON field while avoiding repeated per-chunk catalog scans.
 
 No migration was applied to the restored or hosted database. SQL behavior is
 checked only in disposable owned PostgreSQL. Existing security, money,

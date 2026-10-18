@@ -460,7 +460,8 @@ test('generateForecastReport: different now() → different timestamp', () => {
 test('source files must not contain network/spawn/eval/writeFile calls', async () => {
   const { readFileSync } = await import('node:fs');
   const { join } = await import('node:path');
-  const root = '/Users/saai_sidd/Git/Letbuyy_Store/packages/lcis-operations/src/forecast';
+  const { fileURLToPath } = await import('node:url');
+  const root = fileURLToPath(new URL('../src/forecast/', import.meta.url));
   const files = ['ForecastOperationsService.ts', 'methods.ts', 'index.ts'];
   // Strip comments before checking to avoid false positives in JSDoc
   const COMMENT_RE = /\/\*[\s\S]*?\*\/|\/\/.*/g;

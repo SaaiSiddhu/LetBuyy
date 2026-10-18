@@ -95,6 +95,13 @@ const filter = value('--filter', null);
 const asJson = flag('--json');
 const keepContainer = flag('--keep-container');
 const perSuiteTimeoutMs = Number(value('--timeout', '600')) * 1000;
+// These two suites compare the complete database and physical catalogs around
+// dozens of real retirement mutants. Keep their full proof within a bounded
+// 30-minute budget; an explicit --timeout always wins (including lifecycle tests).
+const exhaustiveCatalogSuites = new Set([
+    'services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts',
+    'services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts',
+]);
 const requestedJobs = Number(value('--jobs', process.env.LETBUYY_EXECUTABLE_PG_JOBS || '2'));
 const logDir = value('--log-dir', null);
 const jsonOutPath = value('--json-out', null);
@@ -193,7 +200,9 @@ function spawnAndCollect(command, commandArgs, env, suite) {
         running.add(child);
         let out = '';
         let timedOut = false;
-        const timer = setTimeout(() => { timedOut = true; killGroup(child, 'SIGKILL'); }, perSuiteTimeoutMs);
+        const deadline = !flag('--timeout') && exhaustiveCatalogSuites.has(suite?.path)
+            ? 1_800_000 : perSuiteTimeoutMs;
+        const timer = setTimeout(() => { timedOut = true; killGroup(child, 'SIGKILL'); }, deadline);
         const collect=(d)=>{out+=d;if(suite&&logDir)appendFileSync(join(logDir,`${basename(suite.path).replace(/\.test\.(mjs|ts)$/, '')}.log`),d);};
         child.stdout.on('data', collect);
         child.stderr.on('data', collect);
@@ -430,7 +439,7 @@ async function startClusters(count) {
             createVolume({ name: cluster.volume, runId });
             cluster.volumeCreated = true;
         }
-        startCluster({ name, database: sharedDatabase, runId, network: cluster.network ?? undefined, volume: cluster.volume ?? undefined, plain: !realDaemon, preparedTransactions: value('--prepared-transactions', undefined), disableJit: true });
+        startCluster({ name, database: sharedDatabase, runId, network: cluster.network ?? undefined, volume: cluster.volume ?? undefined, plain: !realDaemon, preparedTransactions: value('--prepared-transactions', undefined), disableJit: true, disableAutovacuum: true });
         cluster.containerStarted = true;
     }
     await Promise.all(clusters.map((cluster) => waitUntilAccepting(cluster.name)));

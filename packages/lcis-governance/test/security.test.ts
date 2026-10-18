@@ -23,6 +23,10 @@ const fixedNow = () => FIXED;
 
 const engine = createEngine();
 const svc = new SecurityDriftService(engine, fixedNow);
+const dbArtifact = engine.store.read<{tables: {name: string; tenant: boolean; rls: boolean; hasSiteId: boolean}[]}>('db-intel');
+const missingRls = dbArtifact.tables.filter(table => table.tenant && !table.rls).map(table => table.name).sort();
+const noSiteId = dbArtifact.tables.filter(table => table.tenant && !table.hasSiteId).map(table => table.name).sort();
+const moneyDomainKeys = engine.store.read<{domains: {key: string; money: boolean}[]}>('domain-intel').domains.filter(domain => domain.money).map(domain => domain.key);
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -49,7 +53,7 @@ function assertArtifact(obj: SecurityDriftReport, label: string) {
 test('findMissingRLS returns findings for the 20 tenant tables with rls=false', () => {
   const findings = svc.findMissingRLS();
   // Real data: 20 tenant tables have rls=false (all rls=false tables ARE tenant tables)
-  assert.equal(findings.length, 20, 'exactly 20 missing-RLS findings');
+  assert.deepEqual(findings.map(f => f.subject).sort(), missingRls, 'every current missing-RLS table is reported exactly');
 });
 
 test('findMissingRLS: all findings have kind=missing-rls and severity critical or high', () => {
@@ -227,7 +231,7 @@ test('findCrossTenantRisks finds 72 tenant tables missing site_id', () => {
   // From probe: 72 tenant tables with hasSiteId=false
   // The table-level findings have id starting with CROSS-TENANT-NO-SITEID-
   const noSiteIdFindings = findings.filter((f) => f.id.includes('CROSS-TENANT-NO-SITEID'));
-  assert.equal(noSiteIdFindings.length, 72, '72 tenant tables without site_id');
+  assert.deepEqual(noSiteIdFindings.map(f => f.subject).sort(), noSiteId, 'every tenant table without site_id is reported exactly');
 });
 
 test('findCrossTenantRisks finds policy-level risks (usesSiteId=false on tenant tables)', () => {
@@ -414,7 +418,7 @@ test('findSensitiveDomainViolations only reports money domains', () => {
   const findings = svc.findSensitiveDomainViolations();
   // 8 money domains; each with violations should appear
   assert.ok(findings.length > 0, 'some money domains have violations');
-  assert.ok(findings.length <= 8, 'at most 8 money domain violation findings');
+  assert.ok(findings.length <= moneyDomainKeys.length, 'findings cannot exceed actual money domains');
 });
 
 test('findSensitiveDomainViolations: findings have kind=sensitive-domain-violation', () => {
@@ -427,7 +431,6 @@ test('findSensitiveDomainViolations: findings have kind=sensitive-domain-violati
 
 test('findSensitiveDomainViolations: subjects are money domain keys', () => {
   const findings = svc.findSensitiveDomainViolations();
-  const moneyDomainKeys = ['gift-cards', 'refunds', 'payouts', 'payments', 'shipping', 'inventory', 'orders', 'operations'];
   for (const f of findings) {
     assert.ok(moneyDomainKeys.includes(f.subject), `subject "${f.subject}" is a money domain`);
   }
@@ -492,7 +495,7 @@ test('generateSecurityDriftReport: byKind counts match finding lengths', () => {
 
 test('generateSecurityDriftReport: missing-rls count = 20 in byKind', () => {
   const report = svc.generateSecurityDriftReport();
-  assert.equal(report.byKind['missing-rls'], 20, 'byKind.missing-rls = 20');
+  assert.equal(report.byKind['missing-rls'], missingRls.length, 'byKind preserves the complete current missing-RLS inventory');
 });
 
 test('generateSecurityDriftReport: dangerous-policy count = 34 in byKind', () => {

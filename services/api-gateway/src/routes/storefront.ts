@@ -1187,10 +1187,6 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
         if (!isSchemaMismatchError(result.error)) break;
     }
 
-    if (isSchemaMismatchError(lastError) && !options.countryOfOrigin) {
-        return { data: [], count: 0, error: null };
-    }
-
     return { data: [], count: 0, error: lastError };
 }
 

@@ -11,6 +11,7 @@ import type { OperationalFinding, OperationalFact, LiveSignal, MerchantReport } 
 
 const FIXED = '2026-06-21T00:00:00.000Z';
 const NOW = () => FIXED;
+const tenantTableCount = createEngine().store.read<{summary: {tenantTables: number}}>('merchant-intelligence').summary.tenantTables;
 
 function makeService(): MerchantOperationsService {
   return new MerchantOperationsService(createEngine(), NOW);
@@ -204,7 +205,7 @@ test('detectRetention SPOF finding mentions tenant table count from real artifac
   if (spof) {
     // merchant-intelligence.json summary.tenantTables = 256
     assert.ok(
-      spof.detail.includes('256') || spof.title.includes('256'),
+      spof.detail.includes(String(tenantTableCount)) || spof.title.includes(String(tenantTableCount)),
       'SPOF finding references 256 tenant tables from artifact',
     );
   }
@@ -354,7 +355,7 @@ test('generateMerchantReport tenant table count fact is CONNECTED with value 256
   const tt = report.facts.find((f) => f.kind === 'tenant-table-count');
   assert.ok(tt != null, 'tenant-table-count fact present');
   assert.equal(tt!.status, 'CONNECTED');
-  assert.equal(tt!.value, 256, 'tenant table count = 256 from artifact');
+  assert.equal(tt!.value, tenantTableCount, 'tenant table count = 256 from artifact');
 });
 
 test('generateMerchantReport lifecycle fact references 8 states from artifact', () => {

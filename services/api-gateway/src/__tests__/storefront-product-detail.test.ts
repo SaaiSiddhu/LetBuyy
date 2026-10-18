@@ -325,6 +325,26 @@ test('a genuine query failure (schema mismatch) is reported distinctly from NOT_
     assert.ok(!JSON.stringify(payload).includes('short_description'), 'the raw error message must never leak to the client');
 });
 
+test('public lists and assigned collections fail closed when every product query fails', async (t) => {
+    const collectionId = 'cccccccc-0000-4000-8000-000000000001';
+    const postgrest = installFakePostgrest({
+        sites: [SITE_A],
+        collections: [{ id: collectionId, store_id: STORE_A_ID, title: 'Summer', is_active: true, deleted_at: null }],
+        collection_products: [{ collection_id: collectionId, product_id: PRODUCT_A.id }],
+    }, table => table === 'products' ? {
+        status: 503,
+        body: { code: 'XX000', message: 'relation "private_failure_detail" does not exist' },
+    } : null);
+    t.after(() => postgrest.restore());
+    for (const path of ['/storefront/snaz/products', `/storefront/snaz/collections/${collectionId}`]) {
+        const response = await storefrontApp().request(path, undefined, env());
+        assert.equal(response.status, 500, 'failed reads must never become an empty successful collection');
+        const body = await response.text();
+        assert.match(body, /DB_ERROR/);
+        assert.doesNotMatch(body, /private_failure_detail|XX000/);
+    }
+});
+
 test('the id.eq. branch is only added for uuid-shaped identifiers, so a slug lookup never risks a uuid cast error', async (t) => {
     const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_A], product_variants: [] });
     t.after(() => postgrest.restore());

@@ -10,6 +10,16 @@ function run(command,args){
     if(result.status!==0)process.exit(result.status??1);
 }
 run('graphify',['update','.','--no-cluster']);
-for(const generator of ['db-intel','infra-intel','domain-intel','relationship-intel','memory-intel','execution-intel','runbook-engine']) {
+for(const generator of [
+    'db-intel','infra-intel','domain-intel','relationship-intel','memory-intel',
+    'execution-intel','runbook-engine','runtime-intel','deployment-state',
+    'runtime-observability-intel','merchant-intelligence','merchant-health-intel',
+    'merchant-risk-intel','merchant-growth-intel','merchant-adoption-intel',
+    'merchant-churn-intel','deployment-intelligence-v5',
+    'security-intelligence-v5','incident-intelligence-v5','customer-intelligence-v2',
+    'customer-journey-intelligence',
+    'revenue-intelligence-v2','cost-intelligence','telemetry-intelligence',
+    'production-readiness-v2','commerce-control-intel','operations-center',
+]) {
     run(process.execPath,[`tools/graph-server/${generator}.mjs`]);
 }

@@ -1346,20 +1346,31 @@ try {
           // real shared cookie to buyer B. The profile call reaches the actual
           // BFF and confirms B, then this browser adapter returns A's previously
           // loaded profile. The write still reaches the real BFF under cookie B.
+          let staleProfileReadError;
           await tabSwitchPage.route('**/api/buyer/profile', async route => {
             if (route.request().method() !== 'GET') return route.continue();
-            const response = await route.fetch();
-            const canonicalBody = await response.json();
-            assert.equal(canonicalBody.buyer?.id, process.env.LETBUYY_SESSION_RUNTIME_TAB_SWITCH_BUYER_ID,
-              'the real profile BFF confirms buyer B before the stale account form receives its prior snapshot');
-            await route.fulfill({
-              status: response.status(),
-              headers: { ...response.headers(), 'content-type': 'application/json' },
-              body: JSON.stringify({ buyer: { id: buyerId, email: EMAIL, email_verified: true, full_name: 'Synthetic Buyer', phone: null } }),
-            });
+            try {
+              const response = await route.fetch({ timeout: 15_000 });
+              const canonicalBody = await response.json();
+              assert.equal(canonicalBody.buyer?.id, process.env.LETBUYY_SESSION_RUNTIME_TAB_SWITCH_BUYER_ID,
+                'the real profile BFF confirms buyer B before the stale account form receives its prior snapshot');
+              await route.fulfill({
+                status: response.status(),
+                headers: { ...response.headers(), 'content-type': 'application/json' },
+                body: JSON.stringify({ buyer: { id: buyerId, email: EMAIL, email_verified: true, full_name: 'Synthetic Buyer', phone: null } }),
+              });
+            } catch (error) {
+              staleProfileReadError = String(error);
+              if (!tabSwitchPage.isClosed()) await route.abort().catch(() => {});
+            }
           });
           await tabSwitchPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/settings`, { waitUntil: 'domcontentloaded' });
-          await tabSwitchPage.getByRole('heading', { name: 'LetBuyy Account' }).waitFor({ state: 'visible', timeout: 10_000 });
+          try {
+            await tabSwitchPage.getByRole('heading', { name: 'LetBuyy Account' }).waitFor({ state: 'visible', timeout: 20_000 });
+          } catch (error) {
+            throw new Error(`stale profile form must load from the confirmed buyer-B BFF read; route=${staleProfileReadError ?? 'pending'}; page=${(await tabSwitchPage.locator('main').innerText()).slice(0, 800)}; ${String(error)}`);
+          }
+          assert.equal(staleProfileReadError, undefined, 'every intercepted profile read must confirm buyer B');
           await tabSwitchPage.locator('#buyer-full-name').fill('Buyer A stale profile draft');
           const staleProfileWritePromise = tabSwitchPage.waitForResponse(response => new URL(response.url()).pathname === '/api/buyer/profile'
             && response.request().method() === 'PATCH', { timeout: 15_000 });
@@ -1371,27 +1382,37 @@ try {
             .waitFor({ state: 'visible', timeout: 5_000 });
           browserTrace.push({ step: 'cross-tab-profile-write-refused-before-revalidation', expectedBuyerId: buyerId, status: staleProfileWrite.status(), persisted: false });
           runtimeProgress('stale-profile-write-rejected');
-          await tabSwitchPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'domcontentloaded' });
-          await tabSwitchPage.getByRole('button', { name: 'Add Address' }).click();
+          await tabSwitchPage.unroute('**/api/buyer/profile');
+          // Rehydrate A's actual cached session in a separate mounted page, as
+          // for the review and wishlist controls. A newly loaded B form is valid
+          // for B and would not represent a stale account mutation.
+          const staleAddressPage = await linkContext.newPage();
+          await staleAddressPage.route('**/api/buyer-auth/session', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            headers: { 'cache-control': 'no-store' },
+            body: JSON.stringify(buyerASessionSnapshot),
+          }), { times: 1 });
+          await staleAddressPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'domcontentloaded' });
+          await staleAddressPage.getByRole('button', { name: 'Add Address' }).click();
           try {
-            await tabSwitchPage.getByPlaceholder('Full Name *').waitFor({ state: 'visible', timeout: 5_000 });
+            await staleAddressPage.getByPlaceholder('Full Name *').waitFor({ state: 'visible', timeout: 5_000 });
           } catch (error) {
-            const pageState = await tabSwitchPage.evaluate(() => ({
+            const pageState = await staleAddressPage.evaluate(() => ({
               path: location.pathname,
               mainText: document.querySelector('main')?.innerText.slice(0, 500) ?? null,
               mainHtml: document.querySelector('main')?.innerHTML.slice(0, 1200) ?? null,
             })).catch(() => null);
             throw new Error(`stale address form should open after Add Address; page=${JSON.stringify(pageState)}; ${String(error)}`);
           }
-          await tabSwitchPage.getByPlaceholder('Full Name *').fill('Buyer A stale address draft');
-          await tabSwitchPage.getByPlaceholder('Address Line 1 *').fill(TAB_SWITCH_ADDRESS_LINE1);
-          await tabSwitchPage.getByPlaceholder('City *').fill('Pune');
-          await tabSwitchPage.getByPlaceholder('State *').fill('Maharashtra');
-          await tabSwitchPage.getByPlaceholder('PIN Code *').fill('411001');
-          const staleAddressWritePromise = tabSwitchPage.waitForResponse(response => new URL(response.url()).pathname === '/api/buyer/addresses'
+          await staleAddressPage.getByPlaceholder('Full Name *').fill('Buyer A stale address draft');
+          await staleAddressPage.getByPlaceholder('Address Line 1 *').fill(TAB_SWITCH_ADDRESS_LINE1);
+          await staleAddressPage.getByPlaceholder('City *').fill('Pune');
+          await staleAddressPage.getByPlaceholder('State *').fill('Maharashtra');
+          await staleAddressPage.getByPlaceholder('PIN Code *').fill('411001');
+          const staleAddressWritePromise = staleAddressPage.waitForResponse(response => new URL(response.url()).pathname === '/api/buyer/addresses'
             && response.request().method() === 'POST', { timeout: 15_000 });
-          assert.equal(await tabSwitchPage.locator('form').count(), 1, 'the browser retains the buyer-A form snapshot after its shared cookie belongs to buyer B');
-          await tabSwitchPage.evaluate(() => {
+          assert.equal(await staleAddressPage.locator('form').count(), 1, 'the browser retains the buyer-A form snapshot after its shared cookie belongs to buyer B');
+          await staleAddressPage.evaluate(() => {
             document.querySelector('form')?.requestSubmit();
           });
           const staleAddressWrite = await staleAddressWritePromise;
@@ -1400,10 +1421,10 @@ try {
             'the browser sends only its loaded buyer as the stale-form comparison value');
           assert.deepEqual(await staleAddressWrite.json(), { error: 'Your account changed. Reload before saving.' });
           try {
-            await tabSwitchPage.getByRole('alert').getByText('Your account changed. Reload before saving.', { exact: true })
+            await staleAddressPage.getByRole('alert').getByText('Your account changed. Reload before saving.', { exact: true })
               .waitFor({ state: 'visible', timeout: 5_000 });
           } catch (error) {
-            const pageState = await tabSwitchPage.evaluate(() => ({
+            const pageState = await staleAddressPage.evaluate(() => ({
               path: location.pathname,
               alerts: Array.from(document.querySelectorAll('[role="alert"]')).map(node => ({
                 text: node.textContent,
@@ -1417,6 +1438,7 @@ try {
           }
           browserTrace.push({ step: 'cross-tab-address-write-refused-before-revalidation', expectedBuyerId: buyerId, status: staleAddressWrite.status(), persisted: false });
           runtimeProgress('stale-address-write-rejected');
+          await staleAddressPage.close();
           await tabSwitchPage.close();
         }
       }
@@ -1499,7 +1521,7 @@ try {
         });
         assert.equal(crossSiteAddressDelete.status(), 403, 'cross-site callers cannot delete a saved address');
 
-        await resetPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'networkidle' });
+        await resetPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'domcontentloaded' });
         await resetPage.getByRole('button', { name: 'Add Address' }).click();
         await resetPage.getByPlaceholder('Full Name *').fill(ADDRESS_TEST_NAME);
         await resetPage.getByPlaceholder('Address Line 1 *').fill(ADDRESS_TEST_LINE1);
@@ -1521,7 +1543,7 @@ try {
 
       if (gatewayPriceProduct) {
         const storefrontPage = await browser.newPage();
-        await storefrontPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/products`, { waitUntil: 'networkidle' });
+        await storefrontPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/products`, { waitUntil: 'domcontentloaded' });
         const priceCard = storefrontPage.locator('.storefront-product-card').filter({ hasText: PRICE_HISTORY_PRODUCT_NAME });
         const originControlCard = storefrontPage.locator('.storefront-product-card').filter({ hasText: 'Synthetic Origin Control Product' });
         await priceCard.waitFor({ state: 'visible', timeout: 15_000 });
