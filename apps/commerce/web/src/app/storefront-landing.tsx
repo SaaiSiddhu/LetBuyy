@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { Button, Input, MaterialIcon, ThemeToggleButton } from '@letbuyy/ui';
 import './storefront-landing.css';
 
-const accountsOrigin = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.com';
-
 // ─── Types ─────────────────────────────────────────────────────
 interface StoreShowcase {
     storeName: string;
@@ -304,7 +302,7 @@ function StoreFinder() {
                         <strong>&quot;{query}&quot;</strong> was not found.
                     </span>
                     <a
-                        href={accountsOrigin}
+                        href="https://accounts.letbuyy.com"
                         className="finder-status-link"
                     >
                         Create yours →
@@ -443,7 +441,7 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                     </Link>
                     <div className="flex items-center gap-[var(--lb-space-3)]">
                         <ThemeToggleButton label="Toggle storefront theme" />
-                        <a href={accountsOrigin} className="landing-nav-cta">
+                        <a href="https://accounts.letbuyy.com" className="landing-nav-cta">
                             Create Site →
                         </a>
                     </div>
@@ -489,7 +487,7 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                                     <MaterialIcon name="rocket_launch" />
                                 </div>
                                 <p>No sites launched yet. Be the first to create one!</p>
-                                <a href={accountsOrigin} className="landing-empty-cta">
+                                <a href="https://accounts.letbuyy.com" className="landing-empty-cta">
                                     Create Your Site →
                                 </a>
                             </div>
@@ -514,10 +512,10 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                 <section className="landing-footer-cta">
                     <h2>Ready to build your site?</h2>
                     <div className="landing-footer-buttons">
-                        <a href={accountsOrigin} className="btn-primary">
+                        <a href="https://accounts.letbuyy.com" className="btn-primary">
                             Create Your Site →
                         </a>
-                        <a href={accountsOrigin} className="btn-secondary">
+                        <a href="https://accounts.letbuyy.com" className="btn-secondary">
                             Browse Themes →
                         </a>
                     </div>

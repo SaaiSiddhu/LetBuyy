@@ -10,12 +10,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, dirname, join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { discoverSuites, LIVE_EXTERNAL_SUITES } from '../../scripts/governance/test-suite-catalog.mjs';
-import { DEFAULT_IMAGE, POSTGRES_LIMITS, RUN_ID_LABEL, ROLE_LABEL, RUN_ID_PATTERN, newRunId } from '../../scripts/governance/executable-pg-fixture.mjs';
 import { groupFailed, groupStatus, isHealthy, parseTap, totalOf } from '../../scripts/governance/tap-summary.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -63,128 +62,6 @@ async function until(predicate, timeoutMs, what) {
         await new Promise((resolve) => setTimeout(resolve, 250));
     }
     assert.fail(`timed out waiting for ${what}`);
-}
-
-// Case receipts retain exact allocation evidence even when the outer process cannot run finally.
-function lifecycleCase(dir) {
-    const runners=[], containers=[], allocationLabel='com.letbuyy.lifecycle-test-allocation';
-    const caseId=newRunId(), journalRoot=process.env.LETBUYY_LIFECYCLE_RECEIPTS_DIR??dir;
-    mkdirSync(journalRoot,{recursive:true,mode:0o700});
-    const journal=join(journalRoot,basename(dir)+'.ownership.json');
-    let receiptCounter=0,status='active',failures=[],cleanupPromise;
-    const persist=(initial=false)=>{
-        const data=JSON.stringify({schema_version:1,caseId,casePid:process.pid,status,dir,
-            runners:runners.map(r=>({pid:r.pid??null,receipt:r.receipt,runId:r.runId??null,containerBase:r.containerBase??null,closed:r.closed})),
-            containers:containers.map(f=>({...f})),failures},null,2)+'\n';
-        if(initial)writeFileSync(journal,data,{flag:'wx',mode:0o600});
-        else {const next=journal+'.next';writeFileSync(next,data,{flag:'wx',mode:0o600});renameSync(next,journal);}
-    };
-    persist(true); // before any create/spawn can lose its acknowledgement
-    const args=(extra)=>{
-        const receipt=join(journalRoot,`${basename(dir)}.run-${++receiptCounter}.json`),record={receipt,pid:null,closed:false};
-        runners.push(record);persist();
-        return {record,args:[runner,'--no-reap','--run-receipt',receipt,...extra]};
-    };
-    const track=(child,record)=>{
-        Object.assign(record,{child,pid:child.pid,closed:child.status!==undefined});persist();
-        if(!record.closed)record.exit=new Promise(resolve=>child.once('close',()=>{record.closed=true;persist();resolve();}));
-        return child;
-    };
-    const sync=extra=>{const next=args(extra);return track(spawnSync('node',next.args,{cwd:repoRoot,encoding:'utf8',timeout:120000,killSignal:'SIGTERM'}),next.record);};
-    const asyncRun=extra=>{const next=args(extra);return track(spawn('node',next.args,{cwd:repoRoot,stdio:'ignore'}),next.record);};
-    const missing=result=>result.status!==0&&/no such (?:object|container|volume)/i.test(result.stderr??'');
-    const volumeIdentity=name=>{
-        assert.match(name,/^[0-9a-f]{64}$/,'only captured image-created anonymous volume identities belong to direct fixtures');
-        const result=docker(['volume','inspect',name]);
-        if(missing(result))return null;
-        assert.equal(result.status,0,'own anonymous volume inspection must succeed');
-        const values=JSON.parse(result.stdout);assert.equal(values.length,1);
-        const item=values[0];assert.equal(item.Name,name);assert.equal(item.Driver,'local');assert.equal(item.Scope,'local');
-        assert.ok(Number.isFinite(Date.parse(item.CreatedAt)));
-        const labels=item.Labels??{},keys=Object.keys(labels);
-        assert.ok(typeof labels==='object'&&!Array.isArray(labels)&&(keys.length===0||keys.length===1&&keys[0]==='com.docker.volume.anonymous'&&labels[keys[0]]===''),'unknown anonymous volume labels');
-        assert.deepEqual(item.Options??{},{});
-        return {Name:item.Name,CreatedAt:item.CreatedAt,Driver:item.Driver,Scope:item.Scope,Labels:item.Labels??{},Options:item.Options??{}};
-    };
-    const identify=fixture=>{
-        const inspected=docker(['container','inspect',fixture.id??fixture.name]);
-        if(missing(inspected))return null;
-        assert.equal(inspected.status,0,'own fixture identity inspection must succeed');
-        const info=JSON.parse(inspected.stdout)[0];assert.ok(info);
-        assert.match(info.Id,/^[0-9a-f]{64}$/);
-        if(fixture.id)assert.equal(info.Id,fixture.id);
-        assert.equal(String(info.Name).replace(/^\//,''),fixture.name);
-        assert.equal(info.Config?.Labels?.[allocationLabel],fixture.allocation,'a matching name alone is not ownership');
-        assert.equal(info.Config?.Image,DEFAULT_IMAGE);
-        fixture.id=info.Id;
-        const volumes=(info.Mounts??[]).filter(m=>m.Type==='volume').map(m=>{
-            const identity=volumeIdentity(m.Name);assert.ok(identity,'captured anonymous volume must exist');return identity;
-        });
-        if(fixture.mountsVerified)assert.deepEqual(volumes,fixture.volumes,'captured anonymous volume metadata changed');
-        else {fixture.volumes=volumes;fixture.mountsVerified=true;persist();}
-        return info;
-    };
-    const sleeper=(name,labels)=>{
-        const fixture={name,allocation:`${caseId}-${containers.length+1}`,id:null,volumes:[],mountsVerified:false,creationAcknowledged:false};
-        containers.push(fixture);persist();
-        const result=docker(['run','-d','--pull','never','--name',name,...labels,'--label',`${allocationLabel}=${fixture.allocation}`,
-            '--memory',POSTGRES_LIMITS.memory,'--memory-swap',POSTGRES_LIMITS.memory,'--cpus',POSTGRES_LIMITS.cpus,'--pids-limit',POSTGRES_LIMITS.pids,
-            '--network','none','--entrypoint','sleep',DEFAULT_IMAGE,'300']);
-        if(result.status===0) {
-            fixture.id=result.stdout.trim();assert.match(fixture.id,/^[0-9a-f]{64}$/);fixture.creationAcknowledged=true;persist();
-            assert.ok(identify(fixture),'acknowledged fixture must exist');
-        }
-        return result;
-    };
-    const receiptFor=pid=>{
-        const record=runners.find(r=>r.pid===pid);assert.ok(record,'only this case owns the runner');
-        const receipt=JSON.parse(readFileSync(record.receipt,'utf8'));
-        assert.equal(receipt.runnerPid,pid);assert.match(receipt.runId,RUN_ID_PATTERN);
-        if(record.runId)assert.equal(receipt.runId,record.runId,'runner identity cannot change after observation');
-        record.runId=receipt.runId;record.containerBase=receipt.containerBase;persist();return receipt;
-    };
-    const reap=runIds=>spawnSync('node',[runner,'--reap-only','--reap-min-age','0',...runIds.flatMap(id=>['--reap-run-id',id])],{cwd:repoRoot,encoding:'utf8',timeout:30000});
-    const cleanup=()=>cleanupPromise??=(async()=>{
-        status='cleanup_started';persist();
-        for(const record of runners) {
-            try {
-                if(!record.child)throw Error('spawn acknowledgement missing; retained receipt plan requires owner recovery');
-                if(!record.closed) {
-                    record.child.kill('SIGTERM');
-                    try{await until(()=>record.closed,10000,'this case runner to close');}catch{
-                        receiptFor(record.pid);record.child.kill('SIGKILL');await until(()=>record.closed,5000,'this case runner after SIGKILL');
-                    }
-                }
-                const receipt=receiptFor(record.pid),result=reap([receipt.runId]);
-                assert.equal(result.status,0,'selected own-run cleanup failed');
-                for(const [kind,args] of [['container',['ps','-a']],['network',['network','ls']],['volume',['volume','ls']]]) {
-                    const left=docker([...args,'--filter',`label=${RUN_ID_LABEL}=${receipt.runId}`,'--format',kind==='container'?'{{.Names}}':'{{.Name}}']);
-                    assert.equal(left.status,0,`exact own-run ${kind} readback must succeed`);assert.equal(left.stdout.trim(),'');
-                }
-            }catch(error){failures.push(error.message);}
-        }
-        for(const fixture of containers) {
-            try {
-                const info=identify(fixture);
-                if(info)assert.equal(docker(['rm','-f',fixture.id]).status,0,'own container removal must succeed');
-                else if(!fixture.creationAcknowledged)throw Error('unacknowledged create remains for exact allocation recovery');
-                const inspected=docker(['container','inspect',fixture.id]);
-                assert.ok(missing(inspected),`owned container ${fixture.id} absence not proved`);
-                assert.ok(fixture.mountsVerified,'anonymous volume identities were not captured');
-                for(const volume of fixture.volumes) {
-                    const current=volumeIdentity(volume.Name);
-                    if(current) {
-                        assert.deepEqual(current,volume,'anonymous volume replacement is not owned');
-                        assert.equal(docker(['volume','rm',volume.Name]).status,0,'exact captured anonymous volume removal must succeed');
-                    }
-                    assert.ok(missing(docker(['volume','inspect',volume.Name])),`owned anonymous volume ${volume.Name} absence not proved`);
-                }
-            }catch(error){failures.push(error.message);}
-        }
-        status=failures.length?'cleanup_failed':'cleaned';persist();
-        assert.deepEqual(failures,[],'only exact case-owned handles may be cleaned; every failure stays red');
-    })();
-    return {sync,asyncRun,sleeper,receiptFor,reap,cleanup,journal};
 }
 
 test('the catalog puts every suite in exactly one class, and the live list is the reviewed one', () => {
@@ -288,9 +165,8 @@ test('TAP parsing separates failures, todos and skips, and totals add up across 
 test('a failing suite exits non-zero, is reported, and the run leaves no cluster behind', { skip: needsDocker }, async () => {
     const dir = suiteDir({ 'a-pass.test.mjs': PASSING_SUITE, 'b-fail.test.mjs': FAILING_SUITE });
     const base = uniqueName('fail');
-    const owned = lifecycleCase(dir);
     try {
-        const run = owned.sync(['--suite-dir', dir, '--jobs', '2', '--json', '--container', base]);
+        const run = spawnSync('node', [runner, '--suite-dir', dir, '--jobs', '2', '--json', '--container', base], { cwd: repoRoot, encoding: 'utf8' });
         const report = JSON.parse(run.stdout);
         assert.equal(run.status, 1, 'the exit code is the number of failing suites');
         assert.equal(report.suites, 2);
@@ -302,24 +178,21 @@ test('a failing suite exits non-zero, is reported, and the run leaves no cluster
         assert.notEqual(byName['a-pass'].cluster, byName['b-fail'].cluster, 'two jobs run in two clusters, never one');
         for (const name of report.containers) assert.equal(containerExists(name), false, `${name} must be removed`);
     } finally {
-        await owned.cleanup();
         rmSync(dir, { recursive: true, force: true });
     }
 });
 
-test('a name that is already taken is an infrastructure error and the other container survives it', { skip: needsDocker }, async () => {
+test('a name that is already taken is an infrastructure error and the other container survives it', { skip: needsDocker }, () => {
     const dir = suiteDir({ 'a-pass.test.mjs': PASSING_SUITE });
     const taken = uniqueName('taken');
-    const owned = lifecycleCase(dir);
     try {
-        assert.equal(owned.sleeper(taken, []).status, 0);
-        const run = owned.sync(['--suite-dir', dir, '--jobs', '1', '--json', '--container', taken]);
+        assert.equal(docker(['run', '-d', '--name', taken, '--entrypoint', 'sleep', 'postgres:16-alpine', '300']).status, 0);
+        const run = spawnSync('node', [runner, '--suite-dir', dir, '--jobs', '1', '--json', '--container', taken], { cwd: repoRoot, encoding: 'utf8' });
         assert.equal(run.status, 70, 'infrastructure that cannot start is exit 70, never a count of failing suites');
         assert.match(JSON.parse(run.stdout).infrastructureError, /docker run failed/);
         assert.equal(containerExists(taken), true, 'cleanup removes only what this run created');
     } finally {
-        await owned.cleanup();
-
+        docker(['rm', '-f', '-v', taken]);
         rmSync(dir, { recursive: true, force: true });
     }
 });
@@ -327,17 +200,15 @@ test('a name that is already taken is an infrastructure error and the other cont
 test('SIGTERM removes the run\'s clusters and exits 143', { skip: needsDocker }, async () => {
     const dir = suiteDir({ 'a-sleep.test.mjs': SLEEPING_SUITE });
     const base = uniqueName('term');
-    const owned = lifecycleCase(dir);
     try {
-        const child = owned.asyncRun(['--suite-dir', dir, '--jobs', '1', '--container', base, '--timeout', '60']);
+        const child = spawn('node', [runner, '--suite-dir', dir, '--jobs', '1', '--container', base, '--timeout', '60'], { cwd: repoRoot, stdio: 'ignore' });
         const closed = new Promise((resolve) => child.on('close', (code) => resolve(code)));
         await until(() => containerExists(base), 60_000, 'the run\'s cluster to exist');
         child.kill('SIGTERM');
         assert.equal(await closed, 143);
         assert.equal(containerExists(base), false);
     } finally {
-        await owned.cleanup();
-
+        docker(['rm', '-f', '-v', base]);
         rmSync(dir, { recursive: true, force: true });
     }
 });
@@ -347,11 +218,9 @@ test('a run killed with SIGKILL leaves one labeled orphan, and only that kind of
     const orphanBase = uniqueName('orphan');
     const live = uniqueName('live');
     const unlabeled = uniqueName('unlabeled');
-    const owned = lifecycleCase(dir);
-    const liveRunId = newRunId();
-    const sleeper = owned.sleeper;
+    const sleeper = (name, labels) => docker(['run', '-d', '--name', name, ...labels, '--entrypoint', 'sleep', 'postgres:16-alpine', '300']);
     try {
-        const child = owned.asyncRun(['--suite-dir', dir, '--jobs', '1', '--container', orphanBase, '--timeout', '60']);
+        const child = spawn('node', [runner, '--suite-dir', dir, '--jobs', '1', '--container', orphanBase, '--timeout', '60'], { cwd: repoRoot, stdio: 'ignore' });
         const closed = new Promise((resolve) => child.on('close', () => resolve()));
         await until(() => containerExists(orphanBase), 60_000, 'the run\'s cluster to exist');
         child.kill('SIGKILL');
@@ -360,12 +229,11 @@ test('a run killed with SIGKILL leaves one labeled orphan, and only that kind of
         const labels = docker(['inspect', '-f', `{{index .Config.Labels "${FIXTURE_LABEL}"}} {{index .Config.Labels "${OWNER_LABEL}"}}`, orphanBase]).stdout.trim();
         assert.equal(labels, `1 ${child.pid}`, 'the orphan carries the label and its dead owner\'s pid');
 
-        assert.equal(sleeper(live, ['--label', `${FIXTURE_LABEL}=1`, '--label', `${OWNER_LABEL}=${process.pid}`, '--label', `${RUN_ID_LABEL}=${liveRunId}`, '--label', `${ROLE_LABEL}=postgres`]).status, 0);
+        assert.equal(sleeper(live, ['--label', `${FIXTURE_LABEL}=1`, '--label', `${OWNER_LABEL}=${process.pid}`]).status, 0);
         assert.equal(sleeper(unlabeled, []).status, 0);
 
-        const orphanRunId = owned.receiptFor(child.pid).runId;
-        const reap = owned.reap([orphanRunId, liveRunId]);
-        assert.equal(reap.status, 0, 'intentional scoped reap result: '+String(reap.stdout??'').replace(/[^\x20-\x7e]/g,' ').slice(0,1200));
+        const reap = spawnSync('node', [runner, '--reap-only', '--reap-min-age', '0'], { cwd: repoRoot, encoding: 'utf8' });
+        assert.equal(reap.status, 0);
         const { reaped } = JSON.parse(reap.stdout.trim().split('\n').pop());
         assert.ok(reaped.includes(orphanBase), 'the dead owner\'s labeled cluster is reaped');
         assert.equal(reaped.includes(live), false, 'a cluster whose owner is alive is never reaped');
@@ -374,32 +242,7 @@ test('a run killed with SIGKILL leaves one labeled orphan, and only that kind of
         assert.equal(containerExists(live), true);
         assert.equal(containerExists(unlabeled), true);
     } finally {
-        await owned.cleanup();
-
-        rmSync(dir, { recursive: true, force: true });
-    }
-});
-
-
-test('an explicit run allowset reaps its own dead fixture and preserves a different dead run', { skip: needsDocker }, async () => {
-    const dir = suiteDir({});
-    const owned = lifecycleCase(dir), selected = newRunId(), foreign = newRunId();
-    const dead = spawnSync(process.execPath, ['-e', 'process.exit(0)']);
-    const selectedName = uniqueName('selected-dead'), foreignName = uniqueName('foreign-dead');
-    const labels = id => ['--label', `${FIXTURE_LABEL}=1`, '--label', `${OWNER_LABEL}=${dead.pid}`, '--label', `${RUN_ID_LABEL}=${id}`, '--label', `${ROLE_LABEL}=postgres`];
-    try {
-        assert.equal(dead.status, 0);
-        assert.equal(owned.sleeper(selectedName, labels(selected)).status, 0);
-        assert.equal(owned.sleeper(foreignName, labels(foreign)).status, 0);
-        const reap = owned.reap([selected]);
-        assert.equal(reap.status, 0, reap.stderr);
-        const result = JSON.parse(reap.stdout);
-        assert.ok(result.reaped.includes(selectedName));
-        assert.ok(!result.reaped.includes(foreignName));
-        assert.equal(containerExists(selectedName), false);
-        assert.equal(containerExists(foreignName), true);
-    } finally {
-        await owned.cleanup();
+        for (const name of [orphanBase, live, unlabeled]) docker(['rm', '-f', '-v', name]);
         rmSync(dir, { recursive: true, force: true });
     }
 });

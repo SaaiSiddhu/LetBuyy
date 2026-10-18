@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal Identity password login, maintained Next UI/proxies and real Gateway,
 // owned pooled SQL/PostgREST. Seed captures and intercepted transfer responses are
 // synthetic local evidence, never approved provider/bank settlement evidence.
@@ -10,7 +7,7 @@ import { createServer, type Server } from 'node:http';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { exportJWK } from 'jose';
 import { createLetbuyyInternalSessionHeaders } from '@letbuyy/auth-core';
-import { chromium, expect as playwrightExpect, type Page, type BrowserContext, type Response as PlaywrightResponse } from '@playwright/test';
+import { chromium, expect, type Page, type BrowserContext } from '@playwright/test';
 import { STEP_SECRET, TOTP_SECRET, otp } from './merchant-stepup-fixture';
 import { hashMerchantPassword } from '../../lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, INTERNAL_SECRET } from './gateway-harness';
@@ -18,7 +15,6 @@ import { requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime
 import { newSyntheticTenant, seedSyntheticTenant, seedSyntheticOrder, type SyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
-const expect = playwrightExpect.configure({ timeout: 45000 });
 const quote = (value: string) => "'" + value.replaceAll("'", "''") + "'";
 async function portFree(port: number) {
     const server = createServer();
@@ -96,11 +92,6 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
     const stages: string[] = [], calls: Array<{ path: string; status: number; key: string | null; errorCode?: string }> = [];
     const stage = (name: string) => { stages.push(name); writeFileSync(evidence + '/stages.json', JSON.stringify({ runId: owned.runId, stages }) + '\n'); console.info('N7_BROWSER_STAGE ' + name); };
     const transfers: Array<{ key: string; body: string }> = [];
-    // Preparation only: AFTER cases require a fresh root source review, never a
-    // provider-sandbox verdict. Only this existing named transfer seam is fake.
-    const recoveryCases = new Map<string, ReturnType<typeof seededStatement> & {
-        loseReply: boolean; transfers: Array<{ key: string; body: string }>;
-    }>();
     const forwardedSessions = new Map<string, Headers>();
     const directChecks: Array<{ label: string; status: number }> = [];
     const challenges: Array<{ key: string; actor: string; site: string }> = [];
@@ -115,12 +106,6 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
         if (url.hostname === 'api.razorpay.com') {
             assert.equal(url.pathname, '/v1/transfers');
             const body = String(init?.body), parsed = JSON.parse(body);
-            const recovery = recoveryCases.get(String(parsed.notes.statement_id));
-            if (recovery) {
-                assert.equal(parsed.amount, recovery.amount);
-                recovery.transfers.push({ key: new Headers(init?.headers).get('X-Transfer-Idempotency') || '', body });
-                return Response.json({ id: 'trf_synthetic_n7_' + recovery.id.replaceAll('-', ''), status: recovery.transfers.length === 1 ? 'created' : 'processed', created_at: providerCreatedAt });
-            }
             assert.equal(parsed.notes.statement_id, primary.id);
             assert.equal(parsed.amount, primary.amount);
             transfers.push({ key: new Headers(init?.headers).get('X-Transfer-Idempotency') || '', body });
@@ -149,11 +134,6 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
                 }
                 if (path === `/v1/payouts/${primary.id}/settle` && result.status === 200 && result.json?.data.status === 'processing' && loseReply) {
                     loseReply = false; res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'SYNTHETIC_COMMITTED_REPLY_LOSS', message: 'Synthetic committed reply lost. Retry the same request.' } })); return;
-                }
-                const recovery = [...recoveryCases.values()].find(item => path === `/v1/payouts/${item.id}/settle`);
-                if (recovery?.loseReply && result.status === 200 && result.json?.data.status === 'processing') {
-                    recovery.loseReply = false;
-                    res.writeHead(503, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: { code: 'SYNTHETIC_COMMITTED_REPLY_LOSS', message: 'Synthetic committed reply lost. Retry the same request.' } })); return;
                 }
                 res.writeHead(result.status, Object.fromEntries(result.headers.entries())); res.end(result.text);
             } catch (cause) {
@@ -301,9 +281,6 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
         await dialog.getByLabel('Authenticator code', { exact: true }).fill(otp(ownerSecret));
         holdChallenge = true; await dialog.getByRole('button', { name: 'Release Payout', exact: true }).click();
         await expect.poll(() => challengeHeld, { timeout: 30000 }).toBe(true);
-        // Retain the genuinely signed-in owner's current cookie in RAM for the
-        // appended recovery cases. This is not a persistent-profile restart.
-        const recoveryOwnerCookies = await context.cookies();
         await context.addCookies(await otherContext.cookies(merchantOrigin));
         const [staleMoney] = await Promise.all([
             page.waitForResponse(r => r.url().endsWith(`/payouts/${pending.id}/settle`) && r.request().method() === 'POST'),
@@ -313,97 +290,11 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
         assert.equal(owned.psql(`SELECT status FROM payout_statements WHERE id='${pending.id}';`), 'pending'); assert.equal(transfers.length, 3);
         await page.reload(); await expect(page.getByText(primary.number, { exact: true })).toHaveCount(0);
         stage('normal_session_switch_denies_late_money_command');
-        // AFTER PREPARATION ONLY: the prior frozen BEFORE source actually
-        // proved K2/409 in all four cases. These changed recovery expectations
-        // require root source/diff/hash review before any actual AFTER run.
-        const recoveryAfter: Array<Record<string, unknown>> = [];
-        for (const initialOutcome of ['processing-response', 'committed-response-loss'] as const) {
-            for (const lifecycle of ['page-reload', 'fresh-tab'] as const) {
-                const statement = seededStatement(site, owner, `RECOVERY-${initialOutcome}-${lifecycle}`);
-                const recovery = { ...statement, loseReply: initialOutcome === 'committed-response-loss', transfers: [] as Array<{ key: string; body: string }> };
-                recoveryCases.set(statement.id, recovery);
-                const recoveryContext: BrowserContext = await browser.newContext();
-                try {
-                    await recoveryContext.addCookies(recoveryOwnerCookies);
-                    let recoveryPage: Page = await recoveryContext.newPage();
-                    const open = async (): Promise<void> => {
-                        recoveryPage.setDefaultTimeout(45000); recoveryPage.setDefaultNavigationTimeout(90000);
-                        await recoveryPage.goto(`${merchantOrigin}/${site.subdomain}/payouts`);
-                        await expect(recoveryPage.getByText(statement.number, { exact: true })).toBeVisible();
-                    };
-                    await open();
-                    const submit = async (): Promise<PlaywrightResponse> => {
-                        const recoveryCard = recoveryPage.getByText(statement.number, { exact: true }).locator('..').locator('..');
-                        const button = recoveryCard.getByRole('button', { name: /^(Release|Retry release)$/ });
-                        await button.click();
-                        const verification = recoveryPage.getByRole('dialog', { name: 'Verify identity', exact: true });
-                        await verification.getByLabel('Authenticator code', { exact: true }).fill(otp(ownerSecret));
-                        const [challenge, result] = await Promise.all([
-                            recoveryPage.waitForResponse(r => r.url().endsWith('/security/step-up') && r.request().method() === 'POST'),
-                            recoveryPage.waitForResponse(r => r.url().endsWith(`/payouts/${statement.id}/settle`) && r.request().method() === 'POST'),
-                            verification.getByRole('button', { name: 'Release Payout', exact: true }).click(),
-                        ]);
-                        assert.equal(challenge.status(), 201, 'real fresh current-owner MFA is required each time');
-                        assert.equal(result.request().headers()['x-letbuyy-merchant-context'], owner);
-                        assert.equal(result.request().headers()['x-idempotency-key'], result.request().postDataJSON().idempotency_key);
-                        assert.match(result.headers()['cache-control'] || '', /no-store/);
-                        return result;
-                    };
-                    const first = await submit();
-                    assert.equal(first.status(), initialOutcome === 'committed-response-loss' ? 503 : 200);
-                    const firstKey = first.request().postDataJSON().idempotency_key as string;
-                    assert.ok(firstKey); assert.equal(recovery.transfers.length, 1);
-                    // The existing adapter hashes the tenant/statement/command
-                    // tuple to the provider's 36-character key limit.
-                    const transferMaterial = `letbuyy:razorpay-route:direct-transfer:${site.siteId}:${statement.id}:${firstKey}`;
-                    const expectedTransferKey = 'lb_' + Buffer.from(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(transferMaterial))).toString('hex').slice(0, 32);
-                    assert.equal(recovery.transfers[0].key, expectedTransferKey);
-                    assert.equal(owned.psql(`SELECT status||':'||release_idempotency_key||':'||release_claimed_by FROM payout_statements WHERE id='${statement.id}';`), `processing:${firstKey}:${owner}`);
-                    await expect(recoveryPage.getByText('Release recorded', { exact: true })).toHaveCount(0);
-                    if (lifecycle === 'page-reload') await recoveryPage.reload();
-                    else { await recoveryPage.close(); recoveryPage = await recoveryContext.newPage(); await open(); }
-                    const recoveryCard = recoveryPage.getByText(statement.number, { exact: true }).locator('..').locator('..');
-                    await expect(recoveryCard.getByLabel('Release remains unconfirmed', { exact: true })).toBeVisible();
-                    const retry = await submit();
-                    const retryKey = retry.request().postDataJSON().idempotency_key as string;
-                    assert.equal(retryKey, firstKey, 'recovery must use the current owned original processing claim');
-                    assert.equal(retry.status(), 200);
-                    assert.equal((await retry.json()).data.status, 'released');
-                    assert.equal(new Set(challenges.slice(-2).map(item => item.key)).size, 2);
-                    assert.equal(recovery.transfers.length, 2, 'the synthetic provider advances one original transfer on its same immutable request');
-                    assert.equal(new Set(recovery.transfers.map(item => item.key)).size, 1);
-                    assert.equal(new Set(recovery.transfers.map(item => item.body)).size, 1);
-                    assert.equal(recovery.transfers[1].key, expectedTransferKey);
-                    assert.equal(owned.psql(`SELECT status||':'||release_idempotency_key||':'||release_claimed_by FROM payout_statements WHERE id='${statement.id}';`), `released:${firstKey}:${owner}`);
-                    assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payout' AND source_id='${statement.id}';`), '1');
-                    assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${owner}' AND resource_id='${statement.id}' AND action='merchant.payout_release.authorized';`), '1');
-                    await expect(recoveryCard.getByLabel('Release recorded in the statement', { exact: true })).toBeVisible();
-                    // Preserve the existing released-state replay behavior with
-                    // the genuine current session and the same completed body.
-                    // The normal UI obtains fresh real MFA for the processing
-                    // retry above; no synthetic approval substitutes for it.
-                    const replay = await recoveryContext.request.post(`${merchantOrigin}/api/stores/${site.subdomain}/payouts/${statement.id}/settle`, {
-                        headers: { Origin: merchantOrigin, 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': owner, 'X-Idempotency-Key': firstKey },
-                        data: retry.request().postDataJSON(),
-                    });
-                    assert.equal(replay.status(), 200); assert.equal((await replay.json()).data.status, 'released');
-                    assert.equal(recovery.transfers.length, 2, 'released replay must not issue another provider request');
-                    await recoveryPage.reload();
-                    await expect(recoveryCard.getByLabel('Release recorded in the statement', { exact: true })).toBeVisible();
-                    await expect(recoveryCard.getByRole('button', { name: /^(Release|Retry release)$/ })).toHaveCount(0);
-                    assert.equal(owned.psql(`SELECT count(*) FROM ledger_transactions WHERE site_id='${site.siteId}' AND source_type='payout' AND source_id='${statement.id}';`), '1');
-                    assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${owner}' AND resource_id='${statement.id}' AND action='merchant.payout_release.authorized';`), '1');
-                    recoveryAfter.push({ initialOutcome, lifecycle, sameCommandKey: true, retryStatus: retry.status(), freshRealChallenges: 2, syntheticTransferResponses: 2, providerLogicalKeys: 1, canonicalPayoutJournals: 1, authorizationAudits: 1, releasedReplayStatus: replay.status(), matchingTerminalReadback: true, providerSandboxVerified: false, externalTransferRequests: 0 });
-                    writeFileSync(evidence + '/command-recovery-after.json', JSON.stringify({ runId: owned.runId, verdict: 'original processing command recovered; synthetic transfer only', cases: recoveryAfter }, null, 2) + '\n');
-                } finally { await recoveryContext.close(); }
-            }
-        }
-        assert.equal(recoveryAfter.length, 4); stage('processing_command_recovered_across_page_lifetime');
         const result = { runId: owned.runId, normalSignIns: 2, realMfaEnrollment: true, readFailureRetry: true,
             wrongFactorDenied: true, wrongStoreDenied: true, staleActorDenied: true, lateSessionSwitchDenied: true,
             sameMoneyKey: true, freshChallengePerRetry: true, syntheticTransferResponses: transfers.length,
             externalTransferRequests: 0, providerSandboxVerified: false, bankVerified: false,
-            canonicalPayoutJournals: 1, directChecks, calls, stages, recoveryAfter };
+            canonicalPayoutJournals: 1, directChecks, calls, stages };
         writeFileSync(evidence + '/result.json', JSON.stringify(result, null, 2) + '\n');
         console.info('OWNED_N7_BROWSER ' + JSON.stringify({ runId: owned.runId, evidence, providerSandboxVerified: false }));
     } catch (cause) {

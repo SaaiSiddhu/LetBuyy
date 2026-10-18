@@ -23,6 +23,7 @@
 import { execFileSync, spawn, type ChildProcessByStdio } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
+import {randomBytes,randomUUID} from 'node:crypto';
 import {createServer,type Socket} from 'node:net';
 
 const GUARD = fileURLToPath(new URL('../../../../../scripts/governance/owned-fixture-guard.mjs', import.meta.url));
@@ -49,14 +50,10 @@ export interface OwnedDatabase {
     psqlAsync(sql: string): Promise<string>;
     /** The error text of a statement that must fail, or '' if it unexpectedly succeeded. */
     psqlExpectError(sql: string): string;
-    /** Error text of a script sent on stdin; callers own explicit transaction boundaries. */
-    psqlScriptExpectError(sql: string): string;
     /** A script through stdin with ON_ERROR_STOP: its output, or null when it failed. */
     exec(sql: string): string | null;
     /** The same script, but a failure throws with the database's own error (fixtures must never fail quietly). */
     script(sql: string): string;
-    /** Same verified owned stdin script; bounded64MiB raw catalog/data conservation, never a new process/host seam. */
-    scriptLarge(sql: string): string;
 }
 
 let cached: OwnedDatabase | undefined;
@@ -132,14 +129,6 @@ export function requireOwnedDatabase(): OwnedDatabase {
                 return String((error as { stderr?: Buffer | string }).stderr ?? '').trim();
             }
         },
-        psqlScriptExpectError: (sql: string) => {
-            try {
-                execFileSync('docker', scriptArgs, { input: sql, encoding: 'utf8', timeout: 15_000, stdio: ['pipe', 'pipe', 'pipe'] });
-                return '';
-            } catch (error) {
-                return String((error as { stderr?: Buffer | string }).stderr ?? '').trim();
-            }
-        },
         exec: (sql: string) => {
             try {
                 return execFileSync('docker', scriptArgs, { input: sql, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
@@ -155,21 +144,13 @@ export function requireOwnedDatabase(): OwnedDatabase {
                 throw new Error(`owned database script failed: ${stderr.split('\n').find((line) => /ERROR|FATAL/.test(line)) ?? (stderr.slice(0, 300) || 'unknown error')}`);
             }
         },
-        scriptLarge: (sql: string) => {
-            try {
-                return execFileSync('docker', scriptArgs, { input: sql, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], timeout: 45_000, maxBuffer: 64 * 1024 * 1024 }).trim();
-            } catch (error) {
-                const stderr = String((error as { stderr?: Buffer | string }).stderr ?? '').trim();
-                throw new Error(`owned database large script failed: ${stderr.split('\n').find((line) => /ERROR|FATAL/.test(line)) ?? (stderr.slice(0, 300) || 'unknown error')}`);
-            }
-        },
     });
     return cached;
 }
 
 export type OwnedClientProcess = ChildProcessByStdio<Writable, Readable, Readable>;
-type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe' | 'money-ledger-scheduled-probe' | 'subscription-restart';
-const CLIENT_KINDS = new Set<ClientKind>(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
+type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe';
+const CLIENT_KINDS = new Set<ClientKind>(['commerce-next','identity-next','merchant-next','console-next','commerce-next-production','identity-next-production','merchant-next-production','commerce-session-smoke','marketplace-flutter','buyer-orders-dart','lifecycle-probe']);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
 const clients = new Map<OwnedClientProcess, { closed:Promise<void>; clientPid?:number }>();
 
@@ -246,14 +227,11 @@ export async function startOwnedPooledSqlProxy(owned:OwnedDatabase):Promise<Owne
     if(verified.pgContainer!==owned.container||verified.database!==owned.database||verified.runId!==owned.runId) {
         throw new Error('owned SQL proxy refuses a changed fixture binding');
     }
-    // Reuse the verified cluster's canonical NOINHERIT transport. Creating a
-    // new app_tenant member after migrations freeze authority would invalidate
-    // the billing/collection custody guards. Transactions still SET LOCAL ROLE
-    // app_tenant; the transport itself has no inherited table privileges.
-    const role='authenticator';
-    const password=process.env.LETBUYY_OWNED_SQL_PASSWORD ?? '';
-    if(!/^[0-9a-f]{48}$/.test(password))throw new Error('owned SQL proxy requires the runner-issued transport credential');
-    if(owned.psql("SELECT count(*) FROM pg_roles WHERE rolname='authenticator' AND rolcanlogin AND NOT rolinherit AND NOT rolsuper AND NOT rolbypassrls AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolreplication;")!=='1')throw new Error('owned SQL proxy refuses changed transport authority');
+    const role=`letbuyy_test_sql_${randomUUID().replaceAll('-','')}`;
+    const password=randomBytes(32).toString('hex');
+    // Use stdin, never a command argument or log carrying the ephemeral credential.
+    owned.script(`CREATE ROLE "${role}" LOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE PASSWORD '${password}';
+        GRANT app_tenant TO "${role}"; GRANT CONNECT ON DATABASE "${verified.database}" TO "${role}";`);
     const sockets=new Set<Socket>();
     const children=new Set<OwnedClientProcess>();
     const closed=new Set<Promise<void>>();
@@ -301,7 +279,7 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
             server.once('error',reject);server.listen(0,'127.0.0.1',()=>{server.removeListener('error',reject);resolve();});
         });
     } catch(error) {
-        process.removeListener('exit',killChildren);throw error;
+        process.removeListener('exit',killChildren);owned.script(`REVOKE CONNECT ON DATABASE "${verified.database}" FROM "${role}"; DROP ROLE "${role}";`);throw error;
     }
     const address=server.address();
     if(!address||typeof address==='string')throw new Error('owned SQL proxy has no loopback port');
@@ -315,7 +293,9 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
             const serverClosed=new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));
             for(const socket of sockets)socket.destroy();killChildren();
             await serverClosed;await Promise.all([...closed]);process.removeListener('exit',killChildren);
-            // Only this proxy owns these sockets/relays; the REST transport stays alive.
+            owned.script(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity
+                WHERE usename='${role}' AND datname='${verified.database}' AND pid<>pg_backend_pid();`);
+            owned.script(`REVOKE CONNECT ON DATABASE "${verified.database}" FROM "${role}"; DROP ROLE "${role}";`);
         })(),
     });
 }

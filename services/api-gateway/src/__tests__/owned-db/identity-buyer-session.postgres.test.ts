@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // N1.3: actual Identity Next routes -> actual Gateway worker -> owned PostgREST/PostgreSQL.
 // Development Turnstile bypass is declared only for this local route fixture. It is not provider,
 // inbox, browser or device acceptance. No session token is injected into Identity.

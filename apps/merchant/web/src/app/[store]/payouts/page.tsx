@@ -10,16 +10,6 @@ import { useMerchantSecurityContext } from '@/components/security/MerchantSecuri
 
 class PayoutReadbackError extends Error {}
 
-function releaseClaimKey(payout: MerchantPayoutStatement, actorId: string): string | null {
-    const key = payout.metadata.release_idempotency_key
-    // Match the existing settle route's key length and 342's trim/control
-    // checks. This is recovery evidence, never approval or session authority.
-    return payout.metadata.release_claimed_by === actorId
-        && typeof key === 'string' && key.length >= 8 && key.length <= 160
-        && key === key.trim() && !/[\u0000-\u001f\u007f]/.test(key)
-        ? key : null
-}
-
 function currency(minor: number) {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(minor / 100)
 }
@@ -58,8 +48,6 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
     const [settlingId, setSettlingId] = useState<string | null>(null)
     /** Stable across retries of one release attempt — see orders/page.tsx. */
     const settleKeys = useRef(new Map<string, string>())
-    const currentPayouts = useRef<MerchantPayoutStatement[]>([])
-    const releaseTarget = useRef<{ id: string; siteId: string } | null>(null)
     const active = useRef(true)
     const loadVersion = useRef(0)
     const settling = useRef(false)
@@ -79,18 +67,15 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
             } | null
             if (!current()) return
             if (!response.ok) {
-                currentPayouts.current = []
                 setPayouts([])
                 setError(getErrorMsg(payload, 'Unable to load payouts'))
                 return
             }
             const parsed = MerchantPayoutStatementSchema.array().safeParse(payload?.data?.payouts ?? payload?.payouts)
             if (!parsed.success) throw new PayoutReadbackError('Payout statements returned incomplete data. Refresh and retry.')
-            currentPayouts.current = parsed.data
             setPayouts(parsed.data)
         } catch (cause) {
             if (!current()) return
-            currentPayouts.current = []
             setPayouts([])
             setError(cause instanceof PayoutReadbackError ? cause.message : 'Unable to load payouts')
         } finally {
@@ -111,31 +96,15 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
             setActionError('The signed-in account changed. Reload this page before releasing a payout.')
             return
         }
-        const matches = currentPayouts.current.filter(payout => payout.id === releasingId)
-        const requestedStatement = matches[0]
-        const target = releaseTarget.current
-        if (matches.length !== 1 || !target || target.id !== releasingId || target.siteId !== requestedStatement.site_id
-            || (requestedStatement.status !== 'pending' && requestedStatement.status !== 'processing')) {
-            setStepUpOpen(false)
-            setActionError('The payout statement changed. Refresh it before releasing a payout.')
-            return
-        }
-        const command = `payout-settle-${requestedStatement.id}`
-        const identity = `${requestedStatement.site_id}:${command}`
-        // A processing statement has already claimed its command in SQL. Its
-        // current owned readback wins over a stale component Map after reload.
-        const claimedKey = releaseClaimKey(requestedStatement, actorId)
-        if (requestedStatement.status === 'processing' && !claimedKey) {
-            setStepUpOpen(false)
-            setActionError('This payout release cannot be safely resumed. Refresh the statement and contact support if it remains unresolved.')
-            return
-        }
-        const idempotencyKey = requestedStatement.status === 'processing' ? claimedKey!
-            : settleKeys.current.get(identity) ?? `${command}-${crypto.randomUUID()}`
+        const requestedStatement = payouts.find(payout => payout.id === releasingId)
+        if (!requestedStatement) return
         settling.current = true
         setStepUpOpen(false)
         setActionError(null)
         setSettlingId(releasingId)
+        const identity = `payout-settle-${releasingId}`
+        const idempotencyKey = settleKeys.current.get(identity)
+            ?? `${identity}-${crypto.randomUUID()}`
         settleKeys.current.set(identity, idempotencyKey)
         try {
             const response = await fetch(
@@ -163,15 +132,6 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                 throw new PayoutReadbackError('Payout release returned incomplete or conflicting statement data. Refresh and retry the same request.')
             }
             const payout = parsed.data
-            const current = currentPayouts.current.filter(row => row.id === requestedStatement.id)
-            if (releaseTarget.current?.id !== requestedStatement.id || releaseTarget.current.siteId !== requestedStatement.site_id
-                || current.length !== 1 || current[0].site_id !== requestedStatement.site_id
-                || settleKeys.current.get(identity) !== idempotencyKey
-                || (['processing', 'released'].includes(current[0].status) && releaseClaimKey(current[0], actorId) !== idempotencyKey)
-                || (['released', 'failed'].includes(current[0].status) && current[0].status !== payout.status)
-                || (['processing', 'released'].includes(payout.status) && releaseClaimKey(payout, actorId) !== idempotencyKey)) {
-                throw new PayoutReadbackError('Payout release returned incomplete or conflicting statement data. Refresh and retry the same request.')
-            }
             if (payout.status === 'released') {
                 settleKeys.current.delete(identity)
                 notify({ title: 'Release recorded', description: 'The statement records this payout as released.', variant: 'success' })
@@ -185,7 +145,6 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                 setActionError(message)
                 notify({ title: 'Release needs attention', description: message, variant: payout.status === 'failed' ? 'critical' : 'warning' })
             }
-            releaseTarget.current = null
             setReleasingId(null)
             await loadPayouts()
         } catch (cause) {
@@ -199,7 +158,7 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
             settling.current = false
             if (active.current) setSettlingId(null)
         }
-    }, [store, actorId, releasingId, loadPayouts, notify])
+    }, [store, actorId, releasingId, payouts, loadPayouts, notify])
 
     const emptyState = (
         <EmptyState
@@ -292,7 +251,6 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                                                 loading={settlingId === payout.id}
                                                 disabled={settlingId !== null}
                                                 onClick={() => {
-                                                    releaseTarget.current = { id: payout.id, siteId: payout.site_id }
                                                     setReleasingId(payout.id)
                                                     setStepUpOpen(true)
                                                     setActionError(null)
@@ -315,7 +273,6 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                 open={stepUpOpen}
                 onSuccess={(result) => { void handleReleaseStepUpSuccess(result) }}
                 onClose={() => {
-                    releaseTarget.current = null
                     setStepUpOpen(false)
                     setReleasingId(null)
                 }}

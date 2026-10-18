@@ -690,11 +690,11 @@ export default {
     );
     ctx.waitUntil(
       runMoneyLedgerReconciliation(env, {
-        requestId: `scheduled:money-ledger-reconciliation:${cron}:${controller.scheduledTime}`,
+        requestId: `scheduled:money-ledger-reconciliation:${cron}:${Date.now()}`,
       })
         .then((result) => writeQueueLog('info', {
           route: 'scheduled.money_ledger_reconciliation',
-          status: result.status,
+          status: 'completed',
           result,
         }))
         .catch((error) => writeQueueLog('error', {

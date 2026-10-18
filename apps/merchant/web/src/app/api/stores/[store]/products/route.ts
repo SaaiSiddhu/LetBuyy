@@ -5,7 +5,7 @@ import type { ProductListQuery } from '@letbuyy/api-client'
 
 function normalizeStatus(status: string | null) {
     if (status === 'active') return 'active'
-    if (status === 'draft' || status === 'archived' || status === 'inactive') return status
+    if (status === 'draft' || status === 'inactive' || status === 'archived') return 'inactive'
     return 'all'
 }
 

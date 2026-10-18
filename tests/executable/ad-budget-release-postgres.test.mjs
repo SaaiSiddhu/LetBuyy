@@ -36,21 +36,6 @@ const SITE_B = '22222222-2222-4222-8222-2222222222c2';
 const CAMPAIGN_A = '33333333-3333-4333-8333-3333333333c3';
 const CAMPAIGN_B = '44444444-4444-4444-8444-4444444444c4';
 
-//355 fixture authority: canonical synthetic owner and same-statement captured
-//context. The materialized CTE executes before the volatile budget RPC. It
-//does not grant authority, mint credit, or replace the role under test.
-const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
-const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
-function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
-    return `WITH captured_budget_context AS MATERIALIZED (
-      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
-             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
-    ) SELECT public.${operation}_ad_campaign_budget(
-      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
-      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
-      FROM captured_budget_context`;
-}
-
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -103,13 +88,9 @@ function bootstrapDatabase() {
 
 function seedFixtures() {
     psql(`
-    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid');
-    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${sqlString(SITE_A)}::uuid, 'Ads A', 'Ads A', 'store', 'ads-a', true),
       (${sqlString(SITE_B)}::uuid, 'Ads B', 'Ads B', 'store', 'ads-b', true);
-
-    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE_A)}::uuid,${budgetQ(SITE_B)}::uuid);
 
     INSERT INTO public.ad_campaigns (id, site_id, name, status) VALUES
       (${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Campaign A', 'draft'),
@@ -143,7 +124,8 @@ const allocatedOf = (campaign) => Number(psql(`SELECT allocated_minor FROM publi
 const spentOf = (campaign) => Number(psql(`SELECT public.ad_campaign_spent_minor(${sqlString(campaign)}::uuid);`));
 const balanceOf = (site) => Number(psql(`SELECT public.ad_credit_balance_minor(a.id) FROM public.ad_credit_accounts a WHERE a.site_id = ${sqlString(site)}::uuid;`));
 const release = (campaign, amount, key, site = SITE_A) => psql(
-    `${budgetRpc('release', site, campaign, amount, key, 'req-ads4', site)};`);
+    `SELECT public.release_ad_campaign_budget(${sqlString(site)}::uuid, ${sqlString(campaign)}::uuid,
+        ${amount === null ? 'NULL' : amount}::bigint, ${sqlString(key)}, 'req-ads4', NULL);`);
 
 // The invariant: nothing is created or destroyed by moving credit between the account and a campaign.
 const conserved = (site, campaign) => balanceOf(site) + remaining(campaign) + spentOf(campaign);
@@ -157,7 +139,7 @@ before(() => {
     if (!runnable) return;
     bootstrapDatabase();
     seedFixtures();
-    psql(`${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 40000, 'ads4:alloc', null, SITE_A)};`);
+    psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 40000, 'ads4:alloc');`);
     psql(`UPDATE public.ad_campaigns SET status = 'active', pricing_model = 'cpc', bid_minor = 5000 WHERE id = ${sqlString(CAMPAIGN_A)}::uuid;`);
     psql(`SELECT public.record_ad_spend(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 'click', 1, 'ads4:spend');`);
 });
@@ -199,11 +181,11 @@ test('a replayed release credits once', { skip }, () => {
 });
 
 test('releasing more than remains is refused — a ledger cannot invent credit', { skip }, () => {
-    psql(`${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 10000, 'ads4:alloc:2', null, SITE_A)};`);
+    psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 10000, 'ads4:alloc:2');`);
     assert.equal(remaining(CAMPAIGN_A), 10000);
 
     const refused = psqlExpectingFailure(
-        `${budgetRpc('release', SITE_A, CAMPAIGN_A, 999999, 'ads4:over', null, SITE_A)};`);
+        `SELECT public.release_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 999999::bigint, 'ads4:over');`);
     assert.ok(refused, 'releasing more than the campaign has left must be refused');
     assert.match(refused, /cannot release 999999 from a campaign with 10000 remaining/, refused);
     assert.equal(conserved(SITE_A, CAMPAIGN_A), 100000, 'and the refusal changed nothing');
@@ -221,9 +203,9 @@ test('a campaign with nothing left says so rather than writing an empty entry', 
 
 test('the tenant fence, and app_tenant can release through the RPC but not by hand', { skip }, () => {
     const mismatch = withTenant(SITE_A,
-        `${budgetRpc('release', SITE_B, CAMPAIGN_B, null, 'ads4:fence', null, SITE_A)}`);
+        `SELECT public.release_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, NULL::bigint, 'ads4:fence')`);
     assert.ok(mismatch, 'releasing another site\'s budget inside site A\'s transaction must be refused');
-    assert.match(mismatch, /Current tenant site context is required/, mismatch);
+    assert.match(mismatch, /tenant context .* does not match the requested site/, mismatch);
 
     // 236's fence still holds: the RPC may move allocated_minor, app_tenant may not.
     const direct = psqlExpectingFailure(`BEGIN;
@@ -240,10 +222,4 @@ test('the rollback removes it and 242 re-applies', { skip }, () => {
     applySqlFile(MIGRATION);
     assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname = 'release_ad_campaign_budget';`), '1');
     applySqlFile(MIGRATION);
-    applySqlFile('database/supabase/migrations/291_ad_credit_idempotency_payload_conflict.sql');
-    //242's historical DROP/recreate restores Supabase named default grants.
-    //Restore the exact reviewed309 closure before355 verifies the current ACL.
-    psql('REVOKE ALL ON FUNCTION public.release_ad_campaign_budget(uuid,uuid,bigint,text,text,uuid) FROM PUBLIC,anon,authenticated;');
-    applySqlFile('database/supabase/migrations/355_ad_campaign_current_budget_authority.sql');
-
 });

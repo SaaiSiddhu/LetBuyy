@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
+import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import {
     asThemeRecord as asRecord,
     collectThemeTemplateValidationIssues,
@@ -15,10 +15,8 @@ import {
     type LiquidThemePackageBundle,
     type StoreTemplateConfig,
     type ThemeDocument,
-    type ThemeDraftSaveResult,
-    type ThemePublishResult,
 } from '@letbuyy/theme-engine';
-import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
+import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import { isMissingSchemaError } from '../lib/supabase';
 import type {
     ArchiveSiteThemeInput,
@@ -30,7 +28,6 @@ import type {
     RenameSiteThemeInput,
     RollbackThemeReleaseInput,
     SaveThemeDraftInput,
-    ReorderThemeDraftInput,
     ValidateThemeDocumentInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from './event-execution.adapter';
@@ -256,7 +253,7 @@ function listThemeTemplateOptions(templateConfig: DbRecord): Array<{ key: string
 }
 
 export function isStaleThemeEditorBaseVersion(currentVersion: number, baseVersion: unknown): boolean {
-    return !Number.isInteger(baseVersion) || (baseVersion as number) < 0 || currentVersion !== baseVersion;
+    return typeof baseVersion === 'number' && Number.isFinite(baseVersion) && currentVersion > baseVersion;
 }
 
 export class ThemeExecutionAdapter {
@@ -272,7 +269,7 @@ export class ThemeExecutionAdapter {
 
     private schemaRegistry: SchemaRegistryExecutionAdapter;
 
-    constructor(private db: SupabaseClient, private boundSiteId?: string) {
+    constructor(private db: SupabaseClient) {
         this.schemaRegistry = new SchemaRegistryExecutionAdapter(db);
     }
 
@@ -305,28 +302,29 @@ export class ThemeExecutionAdapter {
             return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
         };
 
-        let { data, error } = await selectStore(true).maybeSingle();
+        let { data, error } = await selectStore(true).single();
 
         if (isMissingDeletedAtError(error, 'sites')) {
-            ({ data, error } = await selectStore(false).maybeSingle());
+            ({ data, error } = await selectStore(false).single());
         }
 
         if (error || !data) {
-            if (error) throw new AppError('Store ownership is temporarily unavailable. Retry this request.', 503, 'THEME_STATE_UNAVAILABLE');
+            if (isMissingSchemaError(error)) {
+                return {
+                    id: storeId,
+                    custom_user_id: userId,
+                    user_id: userId,
+                    store_name: 'dev-store',
+                    subdomain: 'dev-store',
+                    status: 'published',
+                    theme_id: 'modern',
+                    template_config: {},
+                } as StoreRecord;
+            }
             throw new ForbiddenError('Store not found or not owned by this user');
         }
 
         return data as StoreRecord;
-    }
-
-    async verifyThemeEditorStore(storeId: string, userId: string): Promise<StoreRecord> {
-        const { data, error } = await this.db.rpc('theme_draft_actor_site_v1', {
-            p_actor: userId, p_site: storeId, p_bound_site: this.boundSiteId || null,
-        });
-        if (error?.code === '42501') throw new ForbiddenError('Your current account cannot edit this store theme.');
-        const store = asRecord(Array.isArray(data) ? data[0] : data);
-        if (error || store.id !== storeId) throw new AppError('Theme access is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
-        return store as StoreRecord;
     }
 
     async getTheme(slug: string): Promise<ThemeRecord> {
@@ -338,7 +336,19 @@ export class ThemeExecutionAdapter {
             .maybeSingle();
 
         if (!data) {
-            if (error) throw new AppError('The theme catalog is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
+            if (error && isMissingSchemaError(error)) {
+                return {
+                    id: `theme-${slug}`,
+                    slug,
+                    name: slug.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
+                    description: 'A modern merchant theme',
+                    is_active: true,
+                    letbuyy_pricing_type: 'free',
+                    letbuyy_price_inr: 0,
+                    version: '1.0.0',
+                    created_at: new Date().toISOString(),
+                } as unknown as ThemeRecord;
+            }
             throw new NotFoundError('Theme not found');
         }
 
@@ -454,6 +464,103 @@ export class ThemeExecutionAdapter {
         return data as ThemeInstanceRecord;
     }
 
+    private async saveInstanceDraftSnapshot(
+        input: {
+            storeId: string;
+            themeInstanceId?: string | null;
+            templateConfig: DbRecord;
+            runtime: ThemeRuntimeSchema;
+            version: number;
+            actorId: string;
+            requestId?: string | null;
+            baseReleaseId?: string | null;
+        }
+    ): Promise<string | null> {
+        if (!input.themeInstanceId) return null;
+
+        const now = new Date().toISOString();
+        const { data: existing, error: existingError } = await this.db
+            .from('theme_instance_drafts')
+            .select('id, draft_version')
+            .eq('theme_instance_id', input.themeInstanceId)
+            .eq('draft_status', 'active')
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (isThemeEngineSchemaUnavailable(existingError)) return null;
+        if (existingError) throw new Error(`Theme instance draft lookup failed: ${existingError.message}`);
+
+        const existingRecord = existing as DbRecord | null;
+        const draftPayload = {
+            theme_instance_id: input.themeInstanceId,
+            store_id: input.storeId,
+            base_release_id: input.baseReleaseId || null,
+            draft_status: 'active',
+            draft_version: input.version,
+            working_manifest: input.templateConfig,
+            schema_manifest_version: input.runtime.schemaManifestVersion,
+            auto_saved_at: now,
+            updated_by: input.actorId,
+            updated_at: now,
+        };
+
+        const draftResult = existingRecord?.id
+            ? await this.db
+                .from('theme_instance_drafts')
+                .update(draftPayload)
+                .eq('id', String(existingRecord.id))
+                .eq('store_id', input.storeId)
+                .select('id')
+                .single()
+            : await this.db
+                .from('theme_instance_drafts')
+                .insert({
+                    ...draftPayload,
+                    created_by: input.actorId,
+                    created_at: now,
+                })
+                .select('id')
+                .single();
+
+        if (isThemeEngineSchemaUnavailable(draftResult.error)) return null;
+        if (draftResult.error || !draftResult.data) {
+            throw new Error(`Theme instance draft save failed: ${draftResult.error?.message || 'Unknown error'}`);
+        }
+
+        const draftId = String((draftResult.data as DbRecord).id);
+        const patchSequence = input.version;
+        const { error: patchError } = await this.db
+            .from('theme_draft_patches')
+            .insert({
+                draft_id: draftId,
+                store_id: input.storeId,
+                patch_sequence: patchSequence,
+                patch_type: 'set',
+                operation: { op: 'replace', path: '/', source: 'theme_editor_drafts.compat' },
+                path: '/',
+                value: input.templateConfig,
+                actor_id: input.actorId,
+                request_id: input.requestId || null,
+                client_revision: input.version,
+                server_revision: input.version,
+                metadata: { compatibility_snapshot: true },
+            });
+
+        if (!patchError) {
+            await this.db
+                .from('theme_instances')
+                .update({ current_draft_id: draftId, updated_at: now, updated_by: input.actorId })
+                .eq('id', input.themeInstanceId)
+                .eq('store_id', input.storeId);
+        }
+
+        if (patchError && !isThemeEngineSchemaUnavailable(patchError)) {
+            throw new Error(`Theme draft patch append failed: ${patchError.message}`);
+        }
+
+        return draftId;
+    }
+
     private async loadActiveInstanceDraft(
         storeId: string,
         theme: ThemeRecord
@@ -507,6 +614,7 @@ export class ThemeExecutionAdapter {
             themeInstanceId?: string | null;
             releaseId: string;
             actorId: string;
+            draftId?: string | null;
             activate: boolean;
         }
     ): Promise<void> {
@@ -517,6 +625,7 @@ export class ThemeExecutionAdapter {
             .from('theme_instances')
             .update({
                 active_release_id: input.releaseId,
+                current_draft_id: null,
                 instance_status: input.activate ? 'active' : 'installed',
                 activated_at: input.activate ? now : null,
                 updated_at: now,
@@ -528,6 +637,17 @@ export class ThemeExecutionAdapter {
         if (isThemeEngineSchemaUnavailable(instanceError)) return;
         if (instanceError) throw new Error(`Theme instance release attach failed: ${instanceError.message}`);
 
+        if (input.draftId) {
+            const { error: draftError } = await this.db
+                .from('theme_instance_drafts')
+                .update({ draft_status: 'published', updated_at: now, updated_by: input.actorId })
+                .eq('id', input.draftId)
+                .eq('store_id', input.storeId);
+
+            if (draftError && !isThemeEngineSchemaUnavailable(draftError)) {
+                throw new Error(`Theme instance draft publish failed: ${draftError.message}`);
+            }
+        }
     }
 
     // Phase G / G1 — run the section-schema migration registry over a template config at publish time.
@@ -912,61 +1032,139 @@ export class ThemeExecutionAdapter {
         return data as DraftRecord | null;
     }
 
-    private async draftRpc(name: string, params: DbRecord): Promise<DbRecord> {
-        const { data, error } = await this.db.rpc(name, params);
+    private async loadEditorDraftForWrite(storeId: string, themeSlug: string, templateKey: string): Promise<DraftRecord | null> {
+        const { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .select('id, version, template_key')
+            .eq('store_id', storeId)
+            .eq('theme_id', themeSlug)
+            .eq('template_key', templateKey)
+            .maybeSingle();
+
+        if (isMissingSchemaError(error)) return null;
+
+        if (isMissingColumnError(error, 'template_key')) {
+            if (templateKey !== 'index') {
+                throw new Error('Template-scoped theme drafts require migration 087_theme_template_drafts.sql before editing non-index templates.');
+            }
+
+            const legacy = await this.db
+                .from('theme_editor_drafts')
+                .select('id, version')
+                .eq('store_id', storeId)
+                .eq('theme_id', themeSlug)
+                .maybeSingle();
+            if (legacy.error) throw new Error(`Theme draft lookup failed: ${legacy.error.message}`);
+            return legacy.data as DraftRecord | null;
+        }
+
+        if (error) throw new Error(`Theme draft lookup failed: ${error.message}`);
+        return data as DraftRecord | null;
+    }
+
+    private async saveEditorDraftRecord(input: {
+        storeId: string;
+        themeSlug: string;
+        templateKey: string;
+        templateConfig: DbRecord;
+        version: number;
+        savedAt: string;
+        actorId: string;
+    }): Promise<DraftRecord> {
+        const draftPayload = {
+            store_id: input.storeId,
+            theme_id: input.themeSlug,
+            template_key: input.templateKey,
+            draft_config: input.templateConfig,
+            version: input.version,
+            auto_saved_at: input.savedAt,
+            updated_at: input.savedAt,
+        };
+
+        let { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .upsert(draftPayload, { onConflict: 'store_id,theme_id,template_key' })
+            .select('id, version, auto_saved_at, template_key')
+            .single();
+
+        if (isMissingColumnError(error, 'template_key')) {
+            if (input.templateKey !== 'index') {
+                throw new Error('Template-scoped theme drafts require migration 087_theme_template_drafts.sql before editing non-index templates.');
+            }
+
+            const legacyPayload: Record<string, unknown> = { ...draftPayload };
+            delete legacyPayload.template_key;
+            ({ data, error } = await this.db
+                .from('theme_editor_drafts')
+                .upsert(legacyPayload, { onConflict: 'store_id,theme_id' })
+                .select('id, version, auto_saved_at')
+                .single());
+        }
+
+        if (error || !data) {
+            if (error && isMissingSchemaError(error)) {
+                return {
+                    id: `dev-draft-${Date.now()}`,
+                    version: input.version,
+                    auto_saved_at: input.savedAt,
+                    template_key: input.templateKey,
+                } as DraftRecord;
+            }
+            throw new Error(`Theme draft save failed: ${error?.message || 'Unknown error'}`);
+        }
+
+        return data as DraftRecord;
+    }
+
+    private async buildTemplateScopedInstanceDraftConfig(input: {
+        storeId: string;
+        themeSlug: string;
+        templateKey: string;
+        templateConfig: DbRecord;
+    }): Promise<DbRecord> {
+        const mergedTemplates: DbRecord = { ...asRecord(input.templateConfig.templates) };
+        const applyTemplateFromConfig = (templateKey: string, candidateConfig: unknown) => {
+            const candidateTemplate = asRecord(asRecord(candidateConfig).templates)[templateKey];
+            if (Object.keys(asRecord(candidateTemplate)).length > 0) {
+                mergedTemplates[templateKey] = candidateTemplate;
+            }
+        };
+
+        const { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .select('template_key, draft_config')
+            .eq('store_id', input.storeId)
+            .eq('theme_id', input.themeSlug)
+            .is('deleted_at', null);
+
+        if (isMissingColumnError(error, 'template_key')) {
+            return input.templateConfig;
+        }
+
         if (error) {
-            if (error.code === '42501') throw new ForbiddenError('Your current account cannot edit this store theme.');
-            if (error.code === 'PT409') throw new ConflictError('Theme draft changed or this retry key belongs to a different intent. Reload before saving again.');
-            if (error.code === 'PT400') throw new ValidationError('A current draft version and stable retry key are required.');
-            throw new AppError('Theme state is temporarily unavailable. Retry the same request.', 503, 'THEME_STATE_UNAVAILABLE');
+            throw new Error(`Theme draft merge failed: ${error.message}`);
         }
-        const result = asRecord(data);
-        if (!Number.isInteger(result.version) || Number(result.version) < 0) {
-            throw new AppError('The theme service returned no confirmed draft state.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
-        if (name === 'mutate_owned_theme_draft_v1') {
-            const operation = params.p_operation;
-            const validReceipt = result.version === Number(params.p_base_version) + 1
-                && Number.isInteger(result.current_version) && Number(result.current_version) >= Number(result.version)
-                && typeof result.replayed === 'boolean'
-                && (operation === 'publish' ? ThemePublishResultSchema.safeParse(result).success
-                    : operation === 'discard' ? result.deleted === true
-                        : ThemeDraftSaveResultSchema.safeParse(result).success)
-                && (operation !== 'reorder' || (Array.isArray(result.section_order) && result.section_order.every(id => typeof id === 'string')));
-            if (!validReceipt) throw new AppError('The theme service returned no confirmed receipt. Retry the same request.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
-        return result;
-    }
 
-    private async readOwnedDraft(slug: string, storeId: string, actorId: string, templateKey: string): Promise<DbRecord> {
-        const state = await this.draftRpc('read_owned_theme_draft_v1', {
-            p_actor_id: actorId, p_store_id: storeId, p_theme_slug: slug,
-            p_template_key: templateKey, p_bound_site_id: this.boundSiteId || null,
-        });
-        const store = asRecord(state.store);
-        const hasDraftIdentity = UuidSchema.safeParse(state.theme_instance_draft_id).success || UuidSchema.safeParse(state.legacy_draft_id).success;
-        if (typeof store.id !== 'string' || store.id.toLowerCase() !== storeId.toLowerCase()
-            || typeof state.has_draft !== 'boolean'
-            || (state.has_draft && (!hasDraftIdentity || Number(state.version) < 1 || state.template_config === null
-                || typeof state.template_config !== 'object' || Array.isArray(state.template_config)))) {
-            throw new AppError('The owned theme state could not be confirmed. Retry loading it.', 503, 'THEME_STATE_UNAVAILABLE');
+        for (const draft of (data || []) as DraftRecord[]) {
+            const templateKey = normalizeThemeTemplateKey(draft.template_key);
+            if (templateKey === input.templateKey) continue;
+            applyTemplateFromConfig(templateKey, draft.draft_config);
         }
-        return state;
-    }
 
-    private draftRuntime(runtime: ThemeRuntimeSchema, client?: string): DbRecord {
-        if (!runtime.themePackageId || !runtime.themePackageVersionId) {
-            throw new AppError('The canonical theme runtime is unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
-        return { theme_package_id: runtime.themePackageId, theme_package_version_id: runtime.themePackageVersionId, client };
+        applyTemplateFromConfig(input.templateKey, input.templateConfig);
+
+        return {
+            ...input.templateConfig,
+            templates: mergedTemplates,
+        };
     }
 
     async loadEditor(slug: string, storeId: string, userId: string, templateKeyInput = 'index') {
         const templateKey = normalizeThemeTemplateKey(templateKeyInput);
-        const state = await this.readOwnedDraft(slug, storeId, userId, templateKey);
-        const store = asRecord(state.store) as StoreRecord;
+        const store = await this.verifyStoreOwner(storeId, userId);
         const theme = await this.getTheme(slug);
-        const draft = state.has_draft ? { draft_config: state.template_config, auto_saved_at: state.saved_at, version: state.version } as DraftRecord : null;
+
+        const draft = await this.loadEditorDraft(storeId, theme.slug, templateKey);
 
         const selectCurrentRelease = (includeDeletedAtFilter: boolean) => {
             const query = this.db
@@ -985,16 +1183,20 @@ export class ThemeExecutionAdapter {
             ({ data: currentRelease } = await selectCurrentRelease(false).maybeSingle());
         }
 
-        if (state.has_draft && !hasRenderableThemeTemplate(state.template_config)) {
-            throw new AppError('The saved theme draft is unavailable. Retry loading it.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
         const templateConfig =
             hasRenderableThemeTemplate((draft as DraftRecord | null)?.draft_config)
                 ? mergeThemeIdentity(asRecord((draft as DraftRecord).draft_config), theme)
                 : resolveRenderableThemeTemplateConfig(store.template_config, theme);
 
         const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
-        const themeInstanceId = typeof state.theme_instance_id === 'string' ? state.theme_instance_id : null;
+        const themeInstance = await this.ensureThemeInstance(
+            storeId,
+            theme,
+            runtime,
+            userId,
+            templateConfig,
+            store.theme_id === theme.slug
+        );
 
         return {
             store: {
@@ -1010,7 +1212,7 @@ export class ThemeExecutionAdapter {
                 renderer_key: theme.renderer_key || theme.slug,
                 theme_package_id: runtime.themePackageId || null,
                 theme_package_version_id: runtime.themePackageVersionId || null,
-                theme_instance_id: themeInstanceId,
+                theme_instance_id: themeInstance?.id || null,
                 schema_manifest_version: runtime.schemaManifestVersion,
                 schema_source: runtime.source,
             },
@@ -1021,7 +1223,7 @@ export class ThemeExecutionAdapter {
                 exists: Boolean(draft),
                 template_key: (draft as DraftRecord | null)?.template_key || templateKey,
                 updated_at: (draft as DraftRecord | null)?.auto_saved_at || null,
-                version: Number(state.version),
+                version: (draft as DraftRecord | null)?.version || 1,
             },
             release: currentRelease
                 ? {
@@ -1039,78 +1241,337 @@ export class ThemeExecutionAdapter {
             },
             renderer_manifest: runtime.rendererManifest,
             approved_renderer_keys: runtime.approvedRendererKeys,
-            version: Number(state.version),
+            version: (draft as DraftRecord | null)?.version || 1,
         };
     }
 
-    async saveDraft(slug: string, input: SaveThemeDraftInput, userId: string, requestId?: string | null): Promise<ThemeDraftSaveResult> {
+    async saveDraft(
+        slug: string,
+        input: SaveThemeDraftInput,
+        userId: string,
+        requestId?: string | null
+    ) {
         const templateKey = normalizeThemeTemplateKey(input.template_key);
-        const state = await this.readOwnedDraft(slug, input.store_id, userId, templateKey);
+        await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
-        const config = this.applySectionSchemaMigrations(mergeThemeIdentity(input.template_config, theme));
-        const runtime = state.version === input.base_version ? await this.validateTemplateConfig(config, theme) : null;
-        return await this.draftRpc('mutate_owned_theme_draft_v1', {
-            p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: theme.slug,
-            p_template_key: templateKey, p_base_version: input.base_version, p_key: input.idempotency_key,
-            p_operation: 'save', p_config: config, p_runtime: runtime ? this.draftRuntime(runtime, input.client) : {},
-            p_bound_site_id: this.boundSiteId || null, p_request_id: requestId || null,
-        }) as unknown as ThemeDraftSaveResult;
-    }
+        const runtime = await this.validateTemplateConfig(input.template_config, theme);
+        const templateConfig = mergeThemeIdentity(input.template_config, theme);
+        const themeInstance = await this.ensureThemeInstance(
+            input.store_id,
+            theme,
+            runtime,
+            userId,
+            templateConfig,
+            false
+        );
 
-    async reorderDraft(slug: string, input: ReorderThemeDraftInput, userId: string, requestId?: string | null): Promise<ThemeDraftSaveResult & { section_order: string[] }> {
-        // Send the immutable order intent, not a document reconstructed from a
-        // later read. Receipt replay must survive both response loss and edits
-        // made after the original reorder committed.
-        const loaded = await this.loadEditor(slug, input.store_id, userId, input.template_key);
-        const theme = await this.getTheme(slug);
-        const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
-        return await this.draftRpc('mutate_owned_theme_draft_v1', {
-            p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: theme.slug,
-            p_template_key: input.template_key, p_base_version: input.base_version, p_key: input.idempotency_key,
-            p_operation: 'reorder', p_config: { section_order: input.section_order },
-            p_runtime: { ...this.draftRuntime(runtime, input.client), initial_config: loaded.template_config },
-            p_bound_site_id: this.boundSiteId || null, p_request_id: requestId || null,
-        }) as unknown as ThemeDraftSaveResult & { section_order: string[] };
-    }
+        const existing = await this.loadEditorDraftForWrite(input.store_id, theme.slug, templateKey);
 
-    async deleteDraft(slug: string, storeId: string, userId: string, requestId?: string | null,
-        templateKeyInput = 'index', intent?: { base_version: number; idempotency_key: string }) {
-        if (!intent) throw new ValidationError('A current draft version and retry key are required to discard.');
-        return this.draftRpc('mutate_owned_theme_draft_v1', {
-            p_actor_id: userId, p_store_id: storeId, p_theme_slug: slug,
-            p_template_key: normalizeThemeTemplateKey(templateKeyInput), p_base_version: intent.base_version,
-            p_key: intent.idempotency_key, p_operation: 'discard',
-            p_bound_site_id: this.boundSiteId || null, p_request_id: requestId || null,
+        const existingVersion = (existing?.version || 0);
+
+        // KNOWN BYPASS: isStaleThemeEditorBaseVersion returns false when base_version is
+        // undefined/null (see its implementation). Clients that omit base_version skip the
+        // CAS check and last-writer-wins silently. The DB-level upsert on
+        // (store_id, theme_id, template_key) does not carry a version predicate, so two
+        // concurrent omitted-base_version saves can both overwrite at the same version.
+        // Full closure: make base_version required in SaveThemeDraftSchema for editors
+        // that issue concurrent saves (ARB-gated follow-up — documented as TOCTOU residual).
+        if (isStaleThemeEditorBaseVersion(existingVersion, input.base_version)) {
+            throw new ConflictError('Theme draft has changed in another session');
+        }
+
+        const version = Math.max(existingVersion + 1, 1);
+        const savedAt = new Date().toISOString();
+
+        const data = await this.saveEditorDraftRecord({
+            storeId: input.store_id,
+            themeSlug: theme.slug,
+            templateKey,
+            templateConfig,
+            version,
+            savedAt,
+            actorId: userId,
         });
+
+        const instanceDraftConfig = await this.buildTemplateScopedInstanceDraftConfig({
+            storeId: input.store_id,
+            themeSlug: theme.slug,
+            templateKey,
+            templateConfig,
+        });
+
+        const instanceDraftId = await this.saveInstanceDraftSnapshot({
+            storeId: input.store_id,
+            themeInstanceId: themeInstance?.id || null,
+            templateConfig: instanceDraftConfig,
+            runtime,
+            version,
+            actorId: userId,
+            requestId,
+        });
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitDomainEvent({
+            storeId: input.store_id,
+            aggregateType: 'theme_draft',
+            aggregateId: String(data.id),
+            eventType: 'theme.draft.saved',
+            idempotencyKey: `theme.draft.saved:${input.store_id}:${theme.slug}:${templateKey}:${version}`,
+            requestId,
+            actorId: userId,
+            payload: {
+                store_id: input.store_id,
+                theme_id: theme.slug,
+                template_key: templateKey,
+                theme_instance_id: themeInstance?.id || null,
+                theme_package_version_id: runtime.themePackageVersionId || null,
+                theme_instance_draft_id: instanceDraftId,
+                draft_id: data.id,
+                version,
+                client: input.client,
+            },
+        });
+
+        await events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.draft.save',
+            resourceType: 'theme_draft',
+            resourceId: String(data.id),
+            requestId,
+            afterState: {
+                theme_id: theme.slug,
+                template_key: templateKey,
+                version,
+            },
+            metadata: {
+                client: input.client,
+            },
+        });
+
+        return {
+            saved_at: savedAt,
+            version,
+            template_key: templateKey,
+            draft: data,
+        };
     }
 
-    async publish(slug: string, input: PublishThemeInput, userId: string, requestId?: string | null): Promise<ThemePublishResult> {
-        const templateKey = normalizeThemeTemplateKey(input.template_key);
-        const state = await this.readOwnedDraft(slug, input.store_id, userId, templateKey);
+    async deleteDraft(slug: string, storeId: string, userId: string, requestId?: string | null, templateKeyInput = 'index') {
+        const templateKey = normalizeThemeTemplateKey(templateKeyInput);
+        await this.verifyStoreOwner(storeId, userId);
         const theme = await this.getTheme(slug);
-        // The RPC rechecks the version while holding the same lock as saves. A
-        // caller-supplied document can only match this saved server document.
-        const templateConfig = asRecord(state.template_config);
-        const runtime = state.has_draft && state.version === input.base_version
-            ? await this.validateTemplateConfig(templateConfig, theme) : null;
-        const artifacts = runtime ? this.buildReleaseArtifacts({
-            storeId: input.store_id, themeId: theme.slug, releaseConfig: templateConfig, runtime,
-            themeInstanceId: typeof state.theme_instance_id === 'string' ? state.theme_instance_id : null,
-            publishedBy: userId, makeStoreLive: input.make_store_live,
-        }, '', 0) : {};
-        // A response-loss replay must reach the receipt even after publication
-        // cleared the active draft; the database reauthorizes before replay.
-        return await this.draftRpc('mutate_owned_theme_draft_v1', {
-            p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: theme.slug,
-            p_template_key: templateKey, p_base_version: input.base_version, p_key: input.idempotency_key,
-            p_operation: 'publish', p_config: input.template_config || null, p_runtime: artifacts,
-            p_bound_site_id: this.boundSiteId || null, p_request_id: requestId || null,
-            p_publish_options: { publish_message: input.publish_message || null, make_store_live: input.make_store_live },
-        }) as unknown as ThemePublishResult;
+
+        const draft = await this.loadEditorDraftForWrite(storeId, theme.slug, templateKey);
+
+        const deleteResult = await this.db
+            .from('theme_editor_drafts')
+            .delete()
+            .eq('store_id', storeId)
+            .eq('theme_id', theme.slug)
+            .eq('template_key', templateKey);
+
+        if (isMissingColumnError(deleteResult.error, 'template_key')) {
+            if (templateKey === 'index') {
+                await this.db
+                    .from('theme_editor_drafts')
+                    .delete()
+                    .eq('store_id', storeId)
+                    .eq('theme_id', theme.slug);
+            }
+        } else if (deleteResult.error) {
+            throw new Error(`Theme draft delete failed: ${deleteResult.error.message}`);
+        }
+
+        if (draft) {
+            const events = new EventExecutionAdapter(this.db);
+            await events.emitDomainEvent({
+                storeId,
+                aggregateType: 'theme_draft',
+                aggregateId: String((draft as DbRecord).id),
+                eventType: 'theme.draft.discarded',
+                idempotencyKey: `theme.draft.discarded:${storeId}:${theme.slug}:${templateKey}:${(draft as DbRecord).version}`,
+                requestId,
+                actorId: userId,
+                payload: {
+                    store_id: storeId,
+                    theme_id: theme.slug,
+                    template_key: templateKey,
+                    draft_id: (draft as DbRecord).id,
+                    version: (draft as DbRecord).version,
+                },
+            });
+        }
+
+        return { deleted: true, template_key: templateKey };
+    }
+
+    async publish(
+        slug: string,
+        input: PublishThemeInput,
+        userId: string,
+        requestId?: string | null
+    ) {
+        const templateKey = normalizeThemeTemplateKey(input.template_key);
+        const store = await this.verifyStoreOwner(input.store_id, userId);
+        const theme = await this.getTheme(slug);
+
+        // Idempotency pre-check: if caller supplied a key and a release already exists for this
+        // (store_id, idempotency_key) pair, return the existing release without any DB mutation or
+        // audit event. store_id is always the first filter — cross-tenant collision is structurally
+        // impossible because the query is scoped to the authenticated site.
+        if (input.idempotency_key) {
+            const { data: existingRelease } = await this.db
+                .from('theme_releases')
+                .select('id, release_version, published_at')
+                .eq('store_id', input.store_id)
+                .eq('idempotency_key', input.idempotency_key)
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            if (existingRelease) {
+                const existing = existingRelease as ThemeReleaseRecord;
+                const { data: updatedStore } = await this.db
+                    .from('sites')
+                    .select('id, status, theme_id, updated_at, current_theme_release_id, storefront_release_version')
+                    .eq('id', input.store_id)
+                    .single();
+                return {
+                    store: updatedStore,
+                    theme: { id: theme.id, slug: theme.slug, name: theme.name },
+                    release: {
+                        release_id: existing.id,
+                        release_version: existing.release_version,
+                        published_at: existing.published_at || new Date().toISOString(),
+                    },
+                    template_key: templateKey,
+                    published_at: existing.published_at || new Date().toISOString(),
+                    idempotent: true,
+                };
+            }
+        }
+
+        const draftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
+        const draftVersion = draftRecord?.version || 0;
+
+        // KNOWN BYPASS: isStaleThemeEditorBaseVersion returns false when base_version is
+        // undefined/null. A publish that omits base_version skips the draft-staleness check.
+        // Full closure: enforce base_version in PublishThemeSchema for web-editor clients
+        // (ARB-gated follow-up — documented as TOCTOU residual alongside publish/rollback).
+        if (isStaleThemeEditorBaseVersion(draftVersion, input.base_version)) {
+            throw new ConflictError('Theme draft has changed in another session');
+        }
+
+        const suppliedPublishConfig = hasRenderableThemeTemplate(input.template_config)
+            ? asRecord(input.template_config)
+            : null;
+        const resolvedTemplateConfig = suppliedPublishConfig
+            ? mergeThemeIdentity(suppliedPublishConfig, theme)
+            : hasRenderableThemeTemplate(draftRecord?.draft_config)
+                ? mergeThemeIdentity(asRecord(draftRecord?.draft_config), theme)
+                : resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        // Phase G / G1 — migrate stored section schemas forward at publish time so a config authored
+        // against an older section shape is snapshotted at the current shape (never silently misrendered).
+        const templateConfig = this.applySectionSchemaMigrations(resolvedTemplateConfig);
+        const runtime = await this.validateTemplateConfig(templateConfig, theme);
+        const themeInstance = await this.ensureThemeInstance(
+            input.store_id,
+            theme,
+            runtime,
+            userId,
+            templateConfig,
+            input.make_store_live
+        );
+
+        const release = await this.publishReleaseSnapshot({
+            storeId: input.store_id,
+            themeId: theme.slug,
+            releaseConfig: templateConfig,
+            runtime,
+            themeInstanceId: themeInstance?.id || null,
+            sourceDraftId: draftRecord?.id || null,
+            sourceDraftVersion: draftVersion || null,
+            publishedBy: userId,
+            publishMessage: input.publish_message || null,
+            makeStoreLive: input.make_store_live,
+            requestId,
+        });
+        await this.finalizeInstanceRelease({
+            storeId: input.store_id,
+            themeInstanceId: themeInstance?.id || null,
+            releaseId: release.release_id,
+            actorId: userId,
+            draftId: themeInstance?.current_draft_id || null,
+            activate: input.make_store_live,
+        });
+
+        await this.deleteDraft(theme.slug, input.store_id, userId, requestId, templateKey);
+
+        // Idempotency post-enrich: persist the caller-supplied key on the new release so
+        // subsequent retries hit the pre-check above. Both store_id and release id are required
+        // in the WHERE clause — the update is always scoped to the authenticated site.
+        if (input.idempotency_key && !release.release_id.startsWith('local-fallback:')) {
+            const { error: keyError } = await this.db
+                .from('theme_releases')
+                .update({ idempotency_key: input.idempotency_key })
+                .eq('id', release.release_id)
+                .eq('store_id', input.store_id);
+            if (keyError) {
+                // A unique-constraint violation means a concurrent publish with the same key
+                // already persisted the key (both passed the TS pre-check in the ~1-5ms window).
+                // The release is committed and valid; tolerate the duplicate. Any other error is
+                // a data-integrity risk — log it for forensic repair but do not block the caller
+                // (the release id is already committed and the caller must receive it).
+                if (
+                    !keyError.message?.includes('duplicate key') &&
+                    !keyError.message?.includes('unique constraint')
+                ) {
+                    console.error(
+                        `[theme-publish] idempotency key post-enrich failed for release ` +
+                        `${release.release_id} (store ${input.store_id}): ${keyError.message}. ` +
+                        `Manual back-patch: UPDATE theme_releases SET idempotency_key='${input.idempotency_key}' ` +
+                        `WHERE id='${release.release_id}' AND store_id='${input.store_id}'`
+                    );
+                }
+            }
+        }
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.publish',
+            resourceType: 'theme_release',
+            resourceId: release.release_id,
+            requestId,
+            afterState: {
+                theme_id: theme.slug,
+                release_version: release.release_version,
+                make_store_live: input.make_store_live,
+            },
+        });
+
+        const { data: updatedStore } = await this.db
+            .from('sites')
+            .select('id, status, theme_id, updated_at, current_theme_release_id, storefront_release_version')
+            .eq('id', input.store_id)
+            .single();
+
+        return {
+            store: updatedStore,
+            theme: {
+                id: theme.id,
+                slug: theme.slug,
+                name: theme.name,
+            },
+            release,
+            template_key: templateKey,
+            published_at: release.published_at,
+        };
     }
 
     async listReleases(slug: string, storeId: string, userId: string) {
-        await this.readOwnedDraft(slug, storeId, userId, 'index');
+        await this.verifyStoreOwner(storeId, userId);
         const theme = await this.getTheme(slug);
 
         const selectReleases = (includeDeletedAtFilter: boolean) => {
@@ -1143,27 +1604,119 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
-        const { data, error } = await this.db.rpc('rollback_owned_theme_release_v1', {
-            p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: slug,
-            p_target_release_id: releaseId, p_expected_current_release_id: input.expected_current_release_id,
-            p_key: input.idempotency_key, p_make_store_live: input.make_store_live,
-            p_rollback_message: input.rollback_message || null, p_bound_site_id: this.boundSiteId || null,
-            p_request_id: requestId || null,
+        await this.verifyStoreOwner(input.store_id, userId);
+        const theme = await this.getTheme(slug);
+
+        // CAS guard: if the caller supplied expected_current_release_id, verify the current
+        // release pointer has not changed since the client listed releases. The query is always
+        // scoped by store_id — a different site's is_current row can never match.
+        // KNOWN TOCTOU RESIDUAL: this check is TS-level only; two truly concurrent rollbacks
+        // both passing this window can both reach publishReleaseSnapshot. Full closure requires
+        // adding p_expected_current_release_version to the SECURITY DEFINER RPC (ARB-gated).
+        if (input.expected_current_release_id) {
+            const { data: currentRelease } = await this.db
+                .from('theme_releases')
+                .select('id')
+                .eq('store_id', input.store_id)
+                .eq('is_current', true)
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            const currentId = (currentRelease as ThemeReleaseRecord | null)?.id;
+            if (currentId !== input.expected_current_release_id) {
+                throw new ConflictError('Current release has changed since listing');
+            }
+        }
+
+        const selectRelease = (includeDeletedAtFilter: boolean) => {
+            const query = this.db
+                .from('theme_releases')
+                .select('id, store_id, theme_id, release_version, release_config, template_snapshot, settings_snapshot, release_manifest, theme_instance_id, theme_package_version_id, published_at')
+                .eq('id', releaseId)
+                .eq('store_id', input.store_id)
+                .eq('theme_id', theme.slug);
+
+            return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
+        };
+
+        let { data: release, error } = await selectRelease(true).single();
+
+        if (isMissingDeletedAtError(error, 'theme_releases')) {
+            ({ data: release, error } = await selectRelease(false).single());
+        }
+
+        if (error || !release) {
+            throw new NotFoundError('Theme release not found');
+        }
+
+        const releaseRecord = release as ThemeReleaseRecord;
+        const releaseConfig = mergeThemeIdentity(
+            Object.keys(asRecord(releaseRecord.template_snapshot)).length > 0
+                ? asRecord(releaseRecord.template_snapshot)
+                : asRecord(releaseRecord.release_config),
+            theme
+        );
+        const runtime = await this.validateTemplateConfig(releaseConfig, theme);
+        const themeInstance = await this.ensureThemeInstance(
+            input.store_id,
+            theme,
+            runtime,
+            userId,
+            releaseConfig,
+            input.make_store_live
+        );
+
+        const rollback = await this.publishReleaseSnapshot({
+            storeId: input.store_id,
+            themeId: theme.slug,
+            releaseConfig,
+            runtime,
+            themeInstanceId: themeInstance?.id || releaseRecord.theme_instance_id || null,
+            publishedBy: userId,
+            publishMessage: input.rollback_message || `Rollback to release ${releaseRecord.release_version}`,
+            makeStoreLive: input.make_store_live,
+            requestId,
+            rollbackOfReleaseId: releaseRecord.id,
         });
-        if (error) {
-            if (error.code === '42501') throw new ForbiddenError('Your current account cannot restore this store theme.');
-            if (error.code === 'PT409') throw new ConflictError('The reviewed release changed or this retry key belongs to a different rollback. Reload releases before trying again.');
-            if (error.code === 'PT400') throw new ValidationError('A reviewed release, current pointer and stable retry key are required.');
-            throw new AppError('Rollback was not confirmed. Retry the same request to recover its result.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
-        const parsed = ThemeRollbackResultSchema.safeParse(data);
-        if (!parsed.success || parsed.data.restored_release.id !== releaseId || parsed.data.theme.slug !== slug
-            || parsed.data.current_release_version < parsed.data.rollback.release_version
-            || (!parsed.data.replayed && (parsed.data.current_release_id !== parsed.data.rollback.release_id
-                || parsed.data.current_release_version !== parsed.data.rollback.release_version))) {
-            throw new AppError('No confirmed rollback receipt was returned. Retry the same request.', 503, 'THEME_STATE_UNAVAILABLE');
-        }
-        return parsed.data;
+        await this.finalizeInstanceRelease({
+            storeId: input.store_id,
+            themeInstanceId: themeInstance?.id || releaseRecord.theme_instance_id || null,
+            releaseId: rollback.release_id,
+            actorId: userId,
+            activate: input.make_store_live,
+        });
+
+        const events = new EventExecutionAdapter(this.db);
+        await events.emitAuditEvent({
+            storeId: input.store_id,
+            actorId: userId,
+            action: 'theme.rollback',
+            resourceType: 'theme_release',
+            resourceId: rollback.release_id,
+            requestId,
+            beforeState: {
+                rollback_of_release_id: releaseRecord.id,
+                rollback_of_version: releaseRecord.release_version,
+            },
+            afterState: {
+                new_release_id: rollback.release_id,
+                new_release_version: rollback.release_version,
+            },
+        });
+
+        return {
+            rollback,
+            restored_release: {
+                id: releaseRecord.id,
+                version: releaseRecord.release_version,
+                published_at: releaseRecord.published_at || null,
+            },
+            theme: {
+                id: theme.id,
+                slug: theme.slug,
+                name: theme.name,
+            },
+        };
     }
 
     async validateDocument(
@@ -1213,14 +1766,15 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
-        const templateKey = normalizeThemeTemplateKey(input.template_key);
-        const state = await this.readOwnedDraft(slug, input.store_id, userId, templateKey);
+        await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
-        const instanceDraft = typeof state.theme_instance_draft_id === 'string'
-            ? { id: state.theme_instance_draft_id, draft_version: Number(state.version) } : null;
-        const legacyDraftRecord = !instanceDraft && typeof state.legacy_draft_id === 'string'
-            ? { id: state.legacy_draft_id, version: Number(state.version) } : null;
-        if (!instanceDraft && !legacyDraftRecord) throw new NotFoundError('No saved draft exists for preview');
+        const templateKey = normalizeThemeTemplateKey(input.template_key);
+        const legacyDraftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
+        const instanceDraft = legacyDraftRecord?.id ? null : await this.loadActiveInstanceDraft(input.store_id, theme);
+
+        if (!legacyDraftRecord?.id && !instanceDraft?.id) {
+            throw new NotFoundError('No saved draft exists for preview');
+        }
 
         const token = `${crypto.randomUUID()}.${crypto.randomUUID()}`;
         const tokenHash = await sha256Hex(token);

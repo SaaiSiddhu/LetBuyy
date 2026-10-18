@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Controlled native device fixture, explicitly selected outside ordinary CI lanes.
 // UI observations AND actual BFF/Gateway/database effects are required; a marker alone is insufficient.
 import assert from 'node:assert/strict';

@@ -1,4 +1,3 @@
-import { calculateGstAmounts } from '@letbuyy/shared-types';
 import { z } from 'zod';
 import {
   AddressSchema,
@@ -906,7 +905,16 @@ export function calculateGstLine(input: GstInvoiceLineInput, supplyType: 'intra_
   const discountAmountMinor = positiveMinorUnit(input.discount_amount_minor, 'discount_amount_minor');
   const lineAmountMinor = Math.max(0, (unitAmountMinor * quantity) - discountAmountMinor);
   const gstRateBps = Math.max(0, Math.min(4000, Math.trunc(Number(input.gst_rate_bps ?? 0))));
-  const amounts = calculateGstAmounts(lineAmountMinor, gstRateBps, input.tax_inclusive, supplyType);
+  const taxableAmountMinor = input.tax_inclusive
+    ? Math.round((lineAmountMinor * 10_000) / (10_000 + gstRateBps))
+    : lineAmountMinor;
+  const taxAmountMinor = input.tax_inclusive
+    ? lineAmountMinor - taxableAmountMinor
+    : Math.round((taxableAmountMinor * gstRateBps) / 10_000);
+  const totalAmountMinor = taxableAmountMinor + taxAmountMinor;
+  const cgstAmountMinor = supplyType === 'intra_state' ? Math.floor(taxAmountMinor / 2) : 0;
+  const sgstAmountMinor = supplyType === 'intra_state' ? taxAmountMinor - cgstAmountMinor : 0;
+  const igstAmountMinor = supplyType === 'inter_state' ? taxAmountMinor : 0;
 
   return {
     id: input.id,
@@ -918,8 +926,13 @@ export function calculateGstLine(input: GstInvoiceLineInput, supplyType: 'intra_
     quantity,
     unit_amount_minor: unitAmountMinor,
     discount_amount_minor: discountAmountMinor,
+    taxable_amount_minor: taxableAmountMinor,
     gst_rate_bps: gstRateBps,
-    ...amounts,
+    cgst_amount_minor: cgstAmountMinor,
+    sgst_amount_minor: sgstAmountMinor,
+    igst_amount_minor: igstAmountMinor,
+    tax_amount_minor: taxAmountMinor,
+    total_amount_minor: totalAmountMinor,
   };
 }
 

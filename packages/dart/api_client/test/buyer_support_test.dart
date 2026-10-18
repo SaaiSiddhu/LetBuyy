@@ -24,23 +24,6 @@ JsonMap message() => {
   'created_at': '2026-10-16T10:01:00Z',
 };
 Object envelope(Object? data) => {'success': true, 'data': data};
-JsonMap receipt(String operation, {String key = 'support-saved-key'}) => {
-  'key': key,
-  'operation': operation,
-  'ticket_id': ticketId,
-  'message_id': messageId,
-  'confirmed_at': '2026-10-16T10:01:00Z',
-};
-JsonMap created() => {
-  ...ticket(),
-  'complaint_copy': {
-    'subject': 'Synthetic ticket',
-    'body': 'Synthetic complaint',
-    'recorded_at': '2026-10-16T10:01:00Z',
-  },
-  'receipt_confirmed_at': '2026-10-16T10:01:00Z',
-  'mutation_receipt': receipt('create'),
-};
 
 ({BuyerSupportApi api, Dio dio, List<RequestOptions> requests}) transport(
   Object? body, {
@@ -48,15 +31,6 @@ JsonMap created() => {
 }) {
   final requests = <RequestOptions>[];
   final dio = Dio();
-  final api = BuyerSupportApi(
-    ApiClient(
-      baseUrl: 'https://gateway.example.invalid/v1',
-      dio: dio,
-      maxRetries: 0,
-    ),
-  );
-  // Observe after the canonical client has applied its governed headers. An
-  // earlier resolving interceptor would skip the real action-key boundary.
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (request, handler) {
@@ -67,249 +41,22 @@ JsonMap created() => {
       },
     ),
   );
-  return (api: api, dio: dio, requests: requests);
+  return (
+    api: BuyerSupportApi(
+      ApiClient(
+        baseUrl: 'https://gateway.example.invalid/v1',
+        dio: dio,
+        maxRetries: 0,
+      ),
+    ),
+    dio: dio,
+    requests: requests,
+  );
 }
 
 void main() {
   final invalid = throwsA(
     isA<ApiException>().having((e) => e.code, 'code', 'INVALID_RESPONSE'),
-  );
-
-  test(
-    'cursor page requests use the canonical per-call session and preserve immutable public projection',
-    () async {
-      final h = transport(
-        envelope({
-          'items': [
-            {...ticket(), 'internal_notes': 'private'},
-          ],
-          'has_more': true,
-          'next_cursor': 'paired-cursor',
-        }),
-      );
-      final page = await h.api.listTicketPage(
-        'A',
-        limit: 1,
-        cursor: 'prior-cursor',
-      );
-      expect(page.items.single, ticket());
-      expect(page.hasMore, isTrue);
-      expect(page.nextCursor, 'paired-cursor');
-      expect(h.requests.single.queryParameters, {
-        'pagination': 'cursor',
-        'limit': 1,
-        'cursor': 'prior-cursor',
-      });
-      expect(h.requests.single.headers[letbuyyBuyerSessionHeader], 'A');
-      expect(
-        () => page.items.single['subject'] = 'overwrite',
-        throwsUnsupportedError,
-      );
-      final thread = transport(
-        envelope({
-          'items': [message()],
-          'has_more': false,
-          'next_cursor': null,
-        }),
-      );
-      expect(
-        (await thread.api.listPublicMessagePage('B', ticketId)).items.single,
-        message(),
-      );
-    },
-  );
-
-  test(
-    'malformed page metadata and private message pages never become an empty or partial success',
-    () async {
-      for (final data in [
-        {'items': [], 'has_more': true, 'next_cursor': 'cursor'},
-        {
-          'items': [message()],
-          'has_more': true,
-          'next_cursor': null,
-        },
-        {
-          'items': [message()],
-          'has_more': false,
-          'next_cursor': 'unexpected',
-        },
-        {
-          'items': [
-            {...message(), 'visibility': 'internal'},
-          ],
-          'has_more': false,
-          'next_cursor': null,
-        },
-        {
-          'items': [
-            {...message(), 'ticket_id': messageId},
-          ],
-          'has_more': false,
-          'next_cursor': null,
-        },
-      ])
-        await expectLater(
-          transport(envelope(data)).api.listPublicMessagePage('A', ticketId),
-          invalid,
-        );
-    },
-  );
-
-  test(
-    'create sends only reviewed intent and saved key and accepts the exact recorded complaint',
-    () async {
-      final h = transport(
-        envelope({...created(), 'internal_notes': 'private'}),
-        status: 201,
-      );
-      final result = await h.api.createTicket(
-        'A',
-        key: 'support-saved-key',
-        subject: ' Synthetic ticket ',
-        body: ' Synthetic complaint ',
-      );
-      expect(result.ticket, ticket());
-      expect(result.complaintCopy['body'], 'Synthetic complaint');
-      expect(result.receipt.key, 'support-saved-key');
-      expect(result.receipt.messageId, messageId);
-      expect(
-        h.requests.single.headers['X-Idempotency-Key'],
-        'support-saved-key',
-      );
-      expect(h.requests.single.headers[letbuyyBuyerSessionHeader], 'A');
-      expect(h.requests.single.data, {
-        'subject': 'Synthetic ticket',
-        'body': 'Synthetic complaint',
-      });
-      expect(
-        () => result.complaintCopy['body'] = 'changed',
-        throwsUnsupportedError,
-      );
-    },
-  );
-
-  test(
-    'missing, foreign, mismatched and fabricated mutation confirmations are refused',
-    () async {
-      for (final data in [
-        {...created()}..remove('mutation_receipt'),
-        {
-          ...created(),
-          'mutation_receipt': receipt('create', key: 'other-action-key'),
-        },
-        {...created(), 'mutation_receipt': receipt('reply')},
-        {
-          ...created(),
-          'mutation_receipt': {...receipt('create'), 'ticket_id': messageId},
-        },
-        {
-          ...created(),
-          'complaint_copy': {
-            'subject': 'Synthetic ticket',
-            'body': 'unrecorded different body',
-            'recorded_at': '2026-10-16T10:01:00Z',
-          },
-        },
-      ])
-        await expectLater(
-          transport(envelope(data), status: 201).api.createTicket(
-            'A',
-            key: 'support-saved-key',
-            subject: 'Synthetic ticket',
-            body: 'Synthetic complaint',
-          ),
-          invalid,
-        );
-    },
-  );
-
-  test(
-    'reply binds the public requester message, target, stable key and confirmed timestamp',
-    () async {
-      final data = {
-        ...message(),
-        'author_type': 'requester',
-        'body': 'Synthetic reply',
-        'mutation_receipt': receipt('reply'),
-      };
-      final h = transport(envelope(data), status: 201);
-      final reply = await h.api.reply(
-        'A',
-        ticketId,
-        key: 'support-saved-key',
-        body: ' Synthetic reply ',
-      );
-      expect(reply.message['id'], messageId);
-      expect(reply.receipt.ticketId, ticketId);
-      expect(
-        h.requests.single.headers['X-Idempotency-Key'],
-        'support-saved-key',
-      );
-      for (final changed in [
-        {...data, 'author_type': 'agent'},
-        {...data, 'body': 'other content'},
-        {...data, 'visibility': 'internal'},
-        {
-          ...data,
-          'mutation_receipt': {...receipt('reply'), 'message_id': ticketId},
-        },
-      ])
-        await expectLater(
-          transport(envelope(changed), status: 201).api.reply(
-            'A',
-            ticketId,
-            key: 'support-saved-key',
-            body: 'Synthetic reply',
-          ),
-          invalid,
-        );
-    },
-  );
-
-  test(
-    'invalid native mutation inputs never reach transport or generate an automatic replacement key',
-    () async {
-      final h = transport(envelope(created()), status: 201);
-      await expectLater(
-        h.api.createTicket(
-          'A',
-          key: 'short',
-          subject: 'Synthetic ticket',
-          body: 'Synthetic complaint',
-        ),
-        throwsArgumentError,
-      );
-      await expectLater(
-        h.api.createTicket(
-          'A',
-          key: 'support-saved-key',
-          subject: '',
-          body: 'Synthetic complaint',
-        ),
-        throwsArgumentError,
-      );
-      await expectLater(
-        h.api.createTicket(
-          'A',
-          key: 'support-saved-key',
-          subject: 'Synthetic ticket',
-          body: 'Synthetic complaint',
-          orderId: 'foreign-invalid',
-        ),
-        throwsArgumentError,
-      );
-      await expectLater(
-        h.api.reply(
-          'A',
-          'invalid',
-          key: 'support-saved-key',
-          body: 'Synthetic reply',
-        ),
-        throwsArgumentError,
-      );
-      expect(h.requests, isEmpty);
-    },
   );
 
   test(

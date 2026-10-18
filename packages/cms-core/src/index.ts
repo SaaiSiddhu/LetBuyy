@@ -2,8 +2,6 @@ import { z } from 'zod';
 import { PaginationQuery, SeoSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export {
-  REEL_REVIEW_REQUEST_BYTES, ReelDraftSelectionSchema, ReelMerchantCommandSchema, ReelReviewerCommandSchema,
-  type ReelDraftSelection, type ReelMerchantCommand, type ReelReviewerCommand, type ReelSummary, type ReelReadback, type ReelReviewPage,
   ReelReviewSubmissionSchema,
   ReelReviewBindingError,
   buildReelReviewPayload,

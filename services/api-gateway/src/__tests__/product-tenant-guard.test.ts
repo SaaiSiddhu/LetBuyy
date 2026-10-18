@@ -167,7 +167,7 @@ function productGateway(userId: string) {
 //    adapter and guarded client.
 // ---------------------------------------------------------------------------------------------------
 
-test('an authorized owner edit fails closed without its SQL transaction, while scoped deletion succeeds', async (t) => {
+test('the owner of store A edits product P and gets 200 with the row changed, then deletes it and gets 200 with the row gone', async (t) => {
     const tables = freshTables();
     const fake = installFakePostgrest(tables);
     t.after(fake.restore);
@@ -175,13 +175,13 @@ test('an authorized owner edit fails closed without its SQL transaction, while s
     const patchRes = await productGateway(OWNER_A).request(`/products/${PRODUCT_A}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ version: 1, idempotency_key: crypto.randomUUID(), name: 'Renamed by Owner A' }),
+        body: JSON.stringify({ name: 'Renamed by Owner A' }),
     });
     const patchText = await patchRes.text();
-    assert.equal(patchRes.status, 503, patchText);
-    assert.equal(JSON.parse(patchText).error.code, 'PRODUCT_EDIT_UNAVAILABLE');
-    assert.equal(tables.products[0].name, 'Original Name', 'a missing SQL transaction cannot fall back to a REST write');
-    // Real owner/staff edits, receipts and rollback are exercised by product-atomic-edits.postgres.test.ts.
+    assert.equal(patchRes.status, 200, patchText);
+    const patchBody = JSON.parse(patchText) as { success: boolean; data: { name: string; store_id: string } };
+    assert.equal(patchBody.data.name, 'Renamed by Owner A', 'the response reflects the change');
+    assert.equal(tables.products[0].name, 'Renamed by Owner A', 'the underlying row was actually written');
     assert.equal(tables.products[0].deleted_at, null);
 
     const deleteRes = await productGateway(OWNER_A).request(`/products/${PRODUCT_A}`, { method: 'DELETE' });
@@ -195,7 +195,7 @@ test('an authorized owner edit fails closed without its SQL transaction, while s
 
     // Every write the adapter sent for this product carried the store predicate the guard requires.
     const productWrites = fake.requests.filter((r) => r.table === 'products' && r.method === 'PATCH');
-    assert.equal(productWrites.length, 1, 'only deletion uses a REST write; edits require the tenant SQL transaction');
+    assert.ok(productWrites.length >= 2, 'both the rename and the soft delete reached PostgREST');
     for (const write of productWrites) {
         assert.match(write.query, /store_id=/, `every product write is store-scoped: ${write.query}`);
     }
@@ -213,7 +213,7 @@ test("cross-tenant denial: the owner of store B is refused for store A's product
     const before = JSON.parse(JSON.stringify(tables.products[0])) as Row;
 
     for (const [method, init] of [
-        ['PATCH', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ version: 1, idempotency_key: crypto.randomUUID(), name: 'Hijacked by Owner B' }) }],
+        ['PATCH', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Hijacked by Owner B' }) }],
         ['DELETE', { method: 'DELETE' }],
     ] as const) {
         const res = await productGateway(OWNER_B).request(`/products/${PRODUCT_A}`, init);
@@ -325,7 +325,7 @@ test("bulk deactivate: the owner of store B naming store A's product gets a deni
 //    must still be denied all three, exactly as before.
 // ---------------------------------------------------------------------------------------------------
 
-test('permitted staff reach the required product transaction and cannot fall back to REST when SQL is unavailable', async (t) => {
+test('a permitted staff member (products:write, not the owner) can PATCH a product', async (t) => {
     const tables = freshTables();
     const fake = installFakePostgrest(tables);
     t.after(fake.restore);
@@ -333,12 +333,11 @@ test('permitted staff reach the required product transaction and cannot fall bac
     const res = await productGateway(STAFF_FULL).request(`/products/${PRODUCT_A}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ version: 1, idempotency_key: crypto.randomUUID(), name: 'Renamed by permitted staff' }),
+        body: JSON.stringify({ name: 'Renamed by permitted staff' }),
     });
     const text = await res.text();
-    assert.equal(res.status, 503, text);
-    assert.equal(JSON.parse(text).error.code, 'PRODUCT_EDIT_UNAVAILABLE');
-    assert.equal(tables.products[0].name, 'Original Name', 'unavailable SQL must not mutate through REST');
+    assert.equal(res.status, 200, text);
+    assert.equal(tables.products[0].name, 'Renamed by permitted staff', 'the underlying row was actually written');
 });
 
 test('a permitted staff member (products:write, not the owner) can DELETE a product', async (t) => {
@@ -379,7 +378,7 @@ test('a staff member with only products:read is still denied PATCH, DELETE, and 
     const patchRes = await productGateway(STAFF_READONLY).request(`/products/${PRODUCT_A}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ version: 1, idempotency_key: crypto.randomUUID(), name: 'Should never apply' }),
+        body: JSON.stringify({ name: 'Should never apply' }),
     });
     assert.equal(patchRes.status, 403, await patchRes.clone().text());
 

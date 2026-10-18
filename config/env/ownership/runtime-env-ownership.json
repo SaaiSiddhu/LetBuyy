@@ -32,8 +32,7 @@
       "Worker secrets live in Cloudflare secret stores, not repository files.",
       "Wrangler bindings are service-owned.",
       "Provider webhook secrets are never committed.",
-      "Worker staging and production secrets live in Cloudflare secret stores, not tracked files.",
-      "BUYER_AI_ENABLED, BUYER_AI_PROFILE, BUYER_AI_API_KEY and BUYER_AI_FINGERPRINT_KEY belong only to services/api-gateway server bindings. Buyer AI is disabled by default; approved buyer-specific provider/content profile and bounded quotas are mandatory. No mobile exposure or merchant credential/profile reuse."
+      "Worker staging and production secrets live in Cloudflare secret stores, not tracked files."
     ]
   },
   "mobile": {

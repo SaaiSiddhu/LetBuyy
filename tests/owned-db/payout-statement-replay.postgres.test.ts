@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Phase 9: real payout statement route commits statement, wallet projection and fee journal atomically.
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';

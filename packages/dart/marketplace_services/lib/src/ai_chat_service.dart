@@ -4,6 +4,7 @@
 
 import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:uuid/uuid.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
@@ -101,8 +102,6 @@ class AIChatService {
       _profileCacheTime = null;
       if (actorChanged) {
         context.clear();
-        _pendingOperation = null;
-        _inFlight = null;
         _currentSessionId = null;
       }
     }
@@ -122,27 +121,28 @@ class AIChatService {
   AIChatService._({
     Future<SharedPreferences> Function()? preferencesLoader,
     Future<ChatMessage> Function(String, List<ChatMessage>?)? reply,
+    GenerativeModel? model,
   }) : _preferencesLoader = preferencesLoader ?? SharedPreferences.getInstance,
-       _reply = reply;
+       _reply = reply,
+       _testModel = model;
 
   /// Uses the same lifecycle and result guards with controlled local transports.
   @visibleForTesting
   factory AIChatService.forTesting({
     Future<SharedPreferences> Function()? preferencesLoader,
     Future<ChatMessage> Function(String, List<ChatMessage>?)? reply,
-  }) => AIChatService._(preferencesLoader: preferencesLoader, reply: reply);
+    GenerativeModel? model,
+  }) => AIChatService._(
+    preferencesLoader: preferencesLoader,
+    reply: reply,
+    model: model,
+  );
 
   final Future<SharedPreferences> Function() _preferencesLoader;
   final Future<ChatMessage> Function(String, List<ChatMessage>?)? _reply;
-  // Transient logical operation only. No raw conversation is durably stored.
-  ({
-    String id,
-    String prompt,
-    List<BuyerAssistantHistoryMessage> history,
-    bool submitted,
-  })?
-  _pendingOperation;
-  ({int epoch, String id, Future<BuyerAssistantResult> future})? _inFlight;
+  // A controlled SDK client supplied only by forTesting. Ordinary construction
+  // still uses the existing missing-provider gate, with no new key/config path.
+  final GenerativeModel? _testModel;
   SharedPreferences? _prefs;
   String? _currentSessionId;
 
@@ -188,8 +188,6 @@ class AIChatService {
     final key = _sessionKey;
     final id = const Uuid().v4();
     _currentSessionId = id;
-    _pendingOperation = null;
-    _inFlight = null;
     context.clear();
     userProfileCache = null;
     _profileCacheTime = null;
@@ -198,6 +196,46 @@ class AIChatService {
     _prefs = prefs;
     await prefs.setString(key, id);
   }
+
+  // ... (tools definition remains exactly the same) ...
+  final tools = [
+    Tool(
+      functionDeclarations: [
+        FunctionDeclaration(
+          'searchProducts',
+          'Search for products by name, keywords, or category. Use this when user asks to "show", "find", "buy", "price of", or just names a product.',
+          Schema(
+            SchemaType.object,
+            properties: {
+              'query': Schema(
+                SchemaType.string,
+                description:
+                    'Product name, keywords, or "all" to show all products',
+                nullable: false,
+              ),
+              'categoryId': Schema(
+                SchemaType.string,
+                description: 'Optional category ID filter',
+                nullable: true,
+              ),
+              'limit': Schema(
+                SchemaType.integer,
+                description: 'Max results (default: 8, max: 20)',
+                nullable: true,
+              ),
+            },
+            requiredProperties: ['query'],
+          ),
+        ),
+        // ... all other function declarations
+        FunctionDeclaration(
+          'getAvailableCoupons',
+          'Get active discount coupons. Use when user asks about deals, discounts, or coupons.',
+          Schema(SchemaType.object, properties: {}),
+        ),
+      ],
+    ),
+  ];
 
   /// C3: no durable chat-history backend exists yet (see this file's own class-level doc comment)
   /// -- kept in memory for the lifetime of the running app only. Never silently claims to have
@@ -220,6 +258,7 @@ class AIChatService {
     context.clear();
     userProfileCache = null;
     _profileCacheTime = null;
+    await primeCaches();
     _requireCurrent(expectedEpoch);
     return [];
   }
@@ -239,7 +278,7 @@ class AIChatService {
     try {
       final response =
           await (_reply?.call(msg, history) ??
-              handleAssistantResponse(msg, history));
+              handleGeminiResponse(msg, history));
       _requireCurrent(expectedEpoch);
       if (response.sessionId != sessionId) throw const AIChatContextChanged();
       return response;
@@ -256,199 +295,289 @@ class AIChatService {
     }
   }
 
-  // Personal profile/order/support context is never added to model requests.
-  Future<String> buildSystemPrompt() async =>
-      'Read-only shopping help; verify product facts in the canonical catalog.';
+  // ✅ FIXED: System prompt with better intent differentiation
+  Future<String> buildSystemPrompt() async {
+    final expectedEpoch = _epoch;
+    String userName = 'Guest';
 
-  Future<List<BuyerAssistantHistoryMessage>> buildChatHistory(
-    List<ChatMessage>? history,
-  ) async {
-    final content = <BuyerAssistantHistoryMessage>[];
-    for (final m in history ?? context) {
-      if (m.sessionId != _currentSessionId ||
-          m.text.trim().isEmpty ||
-          m.messageType == MessageType.loading ||
-          m.messageType == MessageType.system ||
-          m.messageType == MessageType.error)
-        continue;
+    if (isSignedIn) {
       try {
-        if (m.isUser || m.isAI) {
-          var text = m.text.trim();
-          if (text.length > 2000) {
-            text = text.substring(0, 2000);
-            final last = text.codeUnitAt(text.length - 1);
-            if (last >= 0xD800 && last <= 0xDBFF)
-              text = text.substring(0, text.length - 1);
-          }
-          content.add(
-            BuyerAssistantHistoryMessage(
-              role: m.isUser ? 'user' : 'assistant',
-              text: text,
-            ),
-          );
+        final profile = await handleUserProfile();
+        _requireCurrent(expectedEpoch);
+        if (!profile.containsKey('error')) {
+          userName = profile['name'] as String? ?? 'User';
+        }
+      } on AIChatContextChanged {
+        rethrow;
+      } catch (_) {
+        _diagnostic(_AiDiagnostic.profileContextFailed);
+      }
+    }
+
+    _requireCurrent(expectedEpoch);
+    return '''You are the LetBuyy AI Shopping Assistant. Help customers find products, track orders, and get deals.
+
+    Current User: $userName
+
+    🎯 YOUR PRIMARY JOB: Differentiate between INFORMATIONAL and COMMERCIAL intent.
+
+    CRITICAL RULES:
+    1.  **Informational Intent (ANSWER FIRST):**
+        * If a user asks an informational question (e.g., "what is...", "what is the purpose of...", "how to use...", "benefits of..."), you MUST answer the question using your general knowledge first.
+        * **DO NOT** call `searchProducts()` for this initial answer.
+        * After providing the information, you can then ask, "Would you like me to find some [product] for you?"
+
+    2.  **Commercial Intent (CALL FUNCTION):**
+        * If a user shows clear intent to buy or browse (e.g., "show me...", "find...", "do you have...", "price of...", or just the product name like "moringa powder"), you MUST call the appropriate function.
+        * `searchProducts()`: Call this for "show all products", "laptop", "do you have laptop stand".
+        * `getOrders()`: Call this for "track my order", "my orders", "order status".
+        * `getAvailableCoupons()`: Call this for "coupons", "deals", "discounts".
+        * `getCategories()`: Call this for "categories".
+
+    EXAMPLE DIALOGUE (INFORMATIONAL):
+    User: "what is the purpose of moringa powder"
+    AI: (Responds with general knowledge) "Moringa powder is known as an immunity booster, a natural multi-vitamin, and is good for hair & skin. It's often used as a nutritional supplement.
+    
+    Would you like to see our moringa powder products?"
+    User: "yes"
+    AI: (NOW calls the function) [FunctionCall: searchProducts(query: "moringa powder")]
+
+    EXAMPLE QUERIES (COMMERCIAL - CALL FUNCTION):
+    User: "show all products" → searchProducts(query: "all", limit: 8)
+    User: "moringa powder" → searchProducts(query: "moringa powder", limit: 8)
+    User: "do you have laptop stand" → searchProducts(query: "laptop stand", limit: 8)
+    User: "track my order" → getOrders(limit: 5)
+    User: "coupons" → getAvailableCoupons()
+    User: "categories" → getCategories()
+
+    RESPONSE RULES:
+    ✅ Use markdown for better readability
+    ✅ Be helpful and friendly
+    ✅ If a function call finds no results, say so kindly and suggest alternatives.
+    ❌ NEVER refuse to help - always try to find what they need.
+
+    FUNCTIONS AVAILABLE:
+    - searchProducts(query, categoryId?, limit?): Find products
+    - getOrders(limit?, status?): Get user orders (not available in this build yet -- if the result says so, tell the user honestly rather than implying it worked)
+    - getOrderDetails(orderId): Get specific order (same limitation as getOrders)
+    - getAvailableCoupons(): Show active coupons (not available in this build yet -- same limitation)
+    - getCategories(): List categories
+    - getUserProfile(): Get user info
+    - getProductDetails(productId): Get product details
+
+    Remember: Answer informational questions first, THEN offer to search. Call functions for all commercial queries. If a function's result says a feature isn't available yet, say so plainly -- never claim success it did not report.
+    ''';
+  }
+
+  Future<List<Content>> buildChatHistory(List<ChatMessage>? history) async {
+    final List<Content> content = [];
+    final messages = (history ?? context)
+        .where(
+          (m) =>
+              m.sessionId == _currentSessionId &&
+              m.text.trim().isNotEmpty &&
+              m.messageType != MessageType.loading &&
+              m.messageType != MessageType.system,
+        )
+        .toList();
+
+    for (var m in messages) {
+      try {
+        if (m.isUser) {
+          content.add(Content.text(m.text));
+        } else if (m.isAI) {
+          content.add(Content.model([TextPart(m.text)]));
         }
       } catch (_) {
         _diagnostic(_AiDiagnostic.historyItemDropped);
       }
     }
-    return content.length > 8 ? content.sublist(content.length - 8) : content;
+
+    return content;
   }
 
-  Future<ChatMessage> handleAssistantResponse(
+  Future<ChatMessage> handleGeminiResponse(
     String msg,
     List<ChatMessage>? history,
   ) async {
     final expectedEpoch = _epoch;
-    final sessionId = currentSessionId;
-    final token = _sessionToken;
-    final client = _client;
-    if (!isSignedIn || token == null || client == null) {
+    const apiKey = String.fromEnvironment('GEMINI_API_KEY');
+    if (_testModel == null && apiKey.trim().isEmpty) {
       _diagnostic(_AiDiagnostic.providerUnavailable);
       return ChatMessage.ai(
-        text: 'AI service not configured. Please sign in or try later.',
-        sessionId: sessionId,
+        text: 'AI service not configured. Please contact support.',
+        sessionId: currentSessionId,
         category: 'ai_offline',
       );
     }
-    if (msg.trim().isEmpty || msg.trim().length > 2000) {
-      _diagnostic(_AiDiagnostic.messageFailed);
-      return ChatMessage.error(
-        text: 'Please keep your message within 2,000 characters.',
-        sessionId: sessionId,
-        errorMessage: 'AI_REQUEST_INVALID',
-      );
-    }
+
     try {
-      var operation = _pendingOperation;
-      if (operation == null) {
-        final visible = List<ChatMessage>.of(history ?? context);
-        // The current input is a separate request field, not duplicate history.
-        if (visible.isNotEmpty &&
-            visible.last.isUser &&
-            visible.last.text.trim() == msg.trim())
-          visible.removeLast();
-        final chatHistory = await buildChatHistory(visible);
-        _requireCurrent(expectedEpoch);
-        operation =
-            _pendingOperation ??
-            (
-              id: const Uuid().v4(),
-              submitted: false,
-              prompt: msg.trim(),
-              history: List<BuyerAssistantHistoryMessage>.unmodifiable(
-                chatHistory,
-              ),
-            );
-        _pendingOperation = operation;
-        if (operation.prompt != msg.trim()) {
-          return ChatMessage.ai(
-            text: 'An earlier request has an unresolved outcome.',
-            sessionId: sessionId,
-            category: 'ai_pending',
-          );
-        }
-      } else if (operation.prompt != msg.trim()) {
-        return ChatMessage.ai(
-          text:
-              'An earlier request has an unresolved outcome. Check it with the same message or start a new chat deliberately.',
-          sessionId: sessionId,
-          category: 'ai_pending',
-        );
-      }
-      _diagnostic(_AiDiagnostic.providerRequestStarted);
-      // Same-epoch callers share the same captured transport future. A fresh
-      // token/epoch gets its own request with the same logical operation ID;
-      // the server receipt remains the cross-device dispatch authority.
-      final previouslySubmitted = operation.submitted;
-      var flight = _inFlight;
-      if (flight == null ||
-          flight.epoch != expectedEpoch ||
-          flight.id != operation.id) {
-        operation = (
-          id: operation.id,
-          prompt: operation.prompt,
-          history: operation.history,
-          submitted: true,
-        );
-        _pendingOperation = operation;
-        flight = (
-          epoch: expectedEpoch,
-          id: operation.id,
-          future: BuyerAssistantApi(client).submit(
-            token,
-            requestId: operation.id,
-            conversationId: sessionId,
-            prompt: operation.prompt,
-            history: operation.history,
-          ),
-        );
-        _inFlight = flight;
-      }
-      late final BuyerAssistantResult result;
-      try {
-        result = await flight.future;
-      } finally {
-        if (identical(_inFlight?.future, flight.future)) _inFlight = null;
-      }
+      final systemPrompt = await buildSystemPrompt();
       _requireCurrent(expectedEpoch);
-      switch (result.status) {
-        case 'completed':
-          if (_pendingOperation?.id == operation.id) _pendingOperation = null;
-          _diagnostic(_AiDiagnostic.providerResponseReady);
-          return ChatMessage.ai(
-            text: result.text!,
-            sessionId: sessionId,
-            category: 'ai_text',
+
+      final model =
+          _testModel ??
+          GenerativeModel(
+            model: 'gemini-2.0-flash-exp', // Or your preferred model
+            apiKey: apiKey,
+            tools: tools,
+            systemInstruction: Content.text(systemPrompt),
+            generationConfig: GenerationConfig(
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 2048,
+            ),
           );
-        case 'unavailable':
-          if (!previouslySubmitted && _pendingOperation?.id == operation.id)
-            _pendingOperation = null;
-          _diagnostic(_AiDiagnostic.providerUnavailable);
-          return ChatMessage.ai(
-            text: previouslySubmitted
-                ? 'The service is unavailable, and the earlier request outcome is unresolved. Checking again keeps the same request.'
-                : 'AI service is unavailable until its server profile and limits are approved.',
-            sessionId: sessionId,
-            category: 'ai_offline',
-          );
-        case 'quota_exceeded':
-          if (!previouslySubmitted && _pendingOperation?.id == operation.id)
-            _pendingOperation = null;
-          _diagnostic(_AiDiagnostic.providerUnavailable);
-          return ChatMessage.ai(
-            text: previouslySubmitted
-                ? 'The allowance is unavailable, and the earlier request outcome remains unresolved. Checking again keeps the same request.'
-                : 'The assistant request allowance is unavailable. Please try later.',
-            sessionId: sessionId,
-            category: 'ai_quota',
-          );
-        case 'result_unavailable':
-          _diagnostic(_AiDiagnostic.providerUnavailable);
-          return ChatMessage.ai(
-            text:
-                'This request completed, but its answer was not retained. It will not be generated again automatically.',
-            sessionId: sessionId,
-            category: 'ai_pending',
-          );
-        default:
-          _diagnostic(_AiDiagnostic.providerUnavailable);
-          return ChatMessage.ai(
-            text:
-                'The request may still be processing or its outcome is unknown. Checking again will not resend it.',
-            sessionId: sessionId,
-            category: 'ai_pending',
-          );
+
+      final chatHistory = await buildChatHistory(history);
+      _requireCurrent(expectedEpoch);
+      final chat = model.startChat(history: chatHistory);
+
+      _diagnostic(_AiDiagnostic.providerRequestStarted);
+      final response = await chat.sendMessage(Content.text(msg));
+      _requireCurrent(expectedEpoch);
+
+      if (response.candidates.isEmpty) {
+        _diagnostic(_AiDiagnostic.providerEmpty);
+        return ChatMessage.ai(
+          text: 'I couldn\'t process that. Could you rephrase?',
+          sessionId: currentSessionId,
+          category: 'ai_empty',
+        );
       }
+
+      final candidate = response.candidates.first;
+      final functionCalls = candidate.content.parts
+          .whereType<FunctionCall>()
+          .toList();
+
+      if (functionCalls.isEmpty) {
+        final text = response.text ?? 'I couldn\'t generate a response.';
+        _diagnostic(_AiDiagnostic.providerResponseReady);
+        return ChatMessage.ai(
+          text: text,
+          sessionId: currentSessionId,
+          category: 'ai_text',
+        );
+      }
+
+      _diagnostic(_AiDiagnostic.toolStarted);
+      return await _executeFunctionCall(
+        functionCalls.first,
+        chat,
+        msg,
+        expectedEpoch,
+      );
     } on AIChatContextChanged {
       rethrow;
     } catch (_) {
       _requireCurrent(expectedEpoch);
       _diagnostic(_AiDiagnostic.providerFailed);
       return ChatMessage.error(
-        text:
-            'The assistant request outcome is unknown. Retry checks the same request without sending it again.',
-        sessionId: sessionId,
+        text: 'An error occurred. Please try again.',
+        sessionId: currentSessionId,
         errorMessage: 'AI_PROVIDER_FAILED',
+      );
+    }
+  }
+
+  Future<ChatMessage> _executeFunctionCall(
+    FunctionCall call,
+    ChatSession chat,
+    String originalMsg,
+    int expectedEpoch,
+  ) async {
+    _requireCurrent(expectedEpoch);
+    final args = call.args ?? {};
+    Map<String, dynamic> resultData = {};
+
+    try {
+      _diagnostic(_AiDiagnostic.toolStarted);
+
+      switch (call.name) {
+        case 'searchProducts':
+          final query = getString(args['query']) ?? originalMsg;
+          resultData = await handleProductSearch(
+            query,
+            categoryId: getString(args['categoryId']),
+            limit: (getInt(args['limit']) ?? 8).clamp(1, 20),
+          );
+          break;
+
+        case 'getProductDetails':
+          resultData = await handleProductDetails(
+            getString(args['productId']) ?? '',
+          );
+          break;
+
+        case 'getOrders':
+          resultData = await handleGetOrders(
+            limit: (getInt(args['limit']) ?? 5).clamp(1, 20),
+            status: getString(args['status']),
+          );
+          break;
+
+        case 'getOrderDetails':
+          resultData = await handleOrderDetails(
+            getString(args['orderId']) ?? '',
+          );
+          break;
+
+        case 'getUserProfile':
+          resultData = await handleUserProfile();
+          break;
+
+        case 'getCategories':
+          resultData = await handleGetCategories();
+          break;
+
+        case 'getAvailableCoupons':
+          resultData = await handleGetCoupons();
+          break;
+
+        default:
+          resultData = {'error': 'Unsupported AI action.'};
+      }
+
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolCompleted);
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolFailed);
+      resultData = {'error': 'AI action could not be completed.'};
+    }
+
+    try {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolResponseStarted);
+      final finalResponse = await chat.sendMessage(
+        Content.functionResponse(call.name, resultData),
+      );
+      _requireCurrent(expectedEpoch);
+
+      final responseText = finalResponse.text ?? 'Could not process results.';
+      _diagnostic(_AiDiagnostic.providerResponseReady);
+
+      return ChatMessage.ai(
+        text: responseText,
+        sessionId: currentSessionId,
+        category: 'ai_function_response',
+        products: resultData['products'] as List<Map<String, dynamic>>?,
+        orders: resultData['orders'] as List<Map<String, dynamic>>?,
+        quickReplies: suggestReplies(call.name, resultData),
+      );
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolResponseFailed);
+      return ChatMessage.error(
+        text: 'Could not complete that request.',
+        sessionId: currentSessionId,
+        errorMessage: 'AI_TOOL_RESPONSE_FAILED',
       );
     }
   }

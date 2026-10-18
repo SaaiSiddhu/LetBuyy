@@ -75,8 +75,6 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import operationsMarketplaceReviewsRouter from './routes/operations/marketplace-reviews';
 import operationsMarketplaceListingsRouter from './routes/operations/marketplace-listings';
-import reelsRouter from './routes/reels';
-import operationsReelsRouter from './routes/operations/reels';
 import operationsBuyerLinksRouter from './routes/operations/buyer-links';
 import operationsMarketplaceCategoriesRouter from './routes/operations/marketplace-categories';
 import operationsMarketplaceBannersRouter from './routes/operations/marketplace-banners';
@@ -140,8 +138,6 @@ export interface Env {
     LETBUYY_COD_MODE?: 'sandbox' | 'live';
     LETBUYY_AUTOPAY_MODE?: 'sandbox' | 'live';
     LETBUYY_GST_IRP_MODE?: 'sandbox' | 'live';
-    /** Server-only approved subscription supplier profile; no default registration or tax facts. */
-    LETBUYY_SUBSCRIPTION_TAX_PROFILE?: string;
     RAZORPAY_ROUTE_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_ACCOUNT_ID?: string;
     RAZORPAY_ROUTE_KEY_SECRET?: string;
@@ -150,10 +146,6 @@ export interface Env {
     KYC_PROVIDER?: 'signzy' | 'hyperverge' | 'manual';
     KYC_PROVIDER_API_KEY?: string;
     KYC_PROVIDER_ACCOUNT_ID?: string;
-    BUYER_AI_ENABLED?: 'true' | 'false';
-    BUYER_AI_PROFILE?: string;
-    BUYER_AI_API_KEY?: string;
-    BUYER_AI_FINGERPRINT_KEY?: string;
     AI_PROVIDER_MODE?: 'sandbox' | 'live';
     AI_PROVIDER?: 'letbuyy_sandbox' | 'openai_compatible' | 'manual';
     AI_PROVIDER_API_KEY?: string;
@@ -238,9 +230,6 @@ export interface Env {
     PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
-    /** Approved server-only private-original profile. No default account/binding activation. */
-    REEL_CUSTODY_PROFILE?: string;
-    REEL_ORIGINALS_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;
     RUNTIME_COORDINATOR?: DurableObjectNamespace;
@@ -808,9 +797,6 @@ api.route('/', contactPublicRouter);
 api.use('/internal/*', internalPerimeter);
 api.route('/internal/identity/operator', internalOperatorIdentityRouter);
 api.route('/internal/console', internalConsoleRouter);
-// Inherits the canonical Console perimeter/token middleware; the adapter also
-// verifies the bound human session and current permission inside the transaction.
-api.route('/internal/console/reels', operationsReelsRouter);
 api.route('/internal/billing', internalBillingRouter);
 api.route('/internal/founding', internalFoundingRouter);
 api.route('/internal/events', internalEventsRouter);
@@ -838,7 +824,6 @@ api.route('/custom', customDomainsRouter);
 api.route('/store-access', storeAccessRouter);
 api.route('/products', productsRouter);
 api.route('/channel-listings', channelListingsRouter);
-api.route('/reels', reelsRouter);
 api.route('/loyalty', loyaltyRouter);
 api.route('/ads', adsRouter);
 api.route('/orders', ordersRouter);

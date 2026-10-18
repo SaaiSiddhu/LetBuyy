@@ -20,7 +20,6 @@ import {
     planProductUpdate,
 } from '@letbuyy/commerce-core';
 
-const mutation = { version: 1, idempotency_key: '22222222-2222-4222-8222-222222222222' };
 const PROFILE = '11111111-1111-4111-8111-111111111111';
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const migration = readFileSync(join(root, 'database/supabase/migrations/226_product_shipping_profile.sql'), 'utf8');
@@ -32,7 +31,7 @@ const migration = readFileSync(join(root, 'database/supabase/migrations/226_prod
 const migrationCode = migration.replace(/^\s*--.*$/gm, '');
 
 test('a shipping profile passes BOTH gates, not just the schema', () => {
-    assert.ok(UpdateProductSchema.safeParse({ ...mutation, shipping_profile_id: PROFILE }).success, 'schema must accept it');
+    assert.ok(UpdateProductSchema.safeParse({ shipping_profile_id: PROFILE }).success, 'schema must accept it');
     assert.ok(
         (PRODUCT_UPDATE_FIELDS as readonly string[]).includes('shipping_profile_id'),
         'PRODUCT_UPDATE_FIELDS is the second gate — omitting it drops the value silently',
@@ -46,12 +45,12 @@ test('a shipping profile passes BOTH gates, not just the schema', () => {
 test('null is preserved — it resets a product to the site default', () => {
     // Dropping null instead of writing it would make "use the site default again" impossible to
     // express, and the merchant would see the old profile stay assigned with no error.
-    assert.ok(UpdateProductSchema.safeParse({ ...mutation, shipping_profile_id: null }).success);
+    assert.ok(UpdateProductSchema.safeParse({ shipping_profile_id: null }).success);
     assert.ok('shipping_profile_id' in planProductUpdate({ shipping_profile_id: null }).safeUpdates);
 });
 
 test('a non-uuid is refused', () => {
-    assert.ok(!UpdateProductSchema.safeParse({ ...mutation, shipping_profile_id: 'not-a-uuid' }).success);
+    assert.ok(!UpdateProductSchema.safeParse({ shipping_profile_id: 'not-a-uuid' }).success);
 });
 
 test('the cross-site guard is a COMPOSITE foreign key, not application code', () => {

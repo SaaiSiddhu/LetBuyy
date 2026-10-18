@@ -216,7 +216,7 @@ test('loadCurrentReleaseBundle: ForbiddenError when site not found (cross-tenant
     // sites table returns no row → verifyStoreOwner throws ForbiddenError BEFORE any
     // theme_releases query. This is the cross-tenant isolation guarantee for the update path.
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: null },
+        sites: { data: null, error: { message: 'not found' } },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');

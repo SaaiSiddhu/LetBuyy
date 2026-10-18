@@ -1,4 +1,3 @@
-import {publicSubscriptionBillingRecord} from '../lib/subscription-checkout-source';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -38,7 +37,7 @@ import {
     planBillingAmountMinor,
 } from '@letbuyy/billing-core';
 import { createMerchantSubscriptionCheckout, previewSubscriptionCoupon, recordSubscriptionCouponRedemption } from '../lib/subscription-checkout';
-import {readSubscriptionCheckoutSource,verifyNativeSubscriptionInvoice} from '../lib/subscription-checkout-source';
+import {readSubscriptionCheckoutSource} from '../lib/subscription-checkout-source';
 import {resolveFoundingCheckoutLock} from '../lib/founding-pricing';
 import { sendFoundingMerchantWelcomeEmail } from '../lib/founding-merchant-email';
 import {
@@ -883,7 +882,7 @@ router.get('/subscription/history', validate('query', StoreSubscriptionQuerySche
 
     const { data, error } = await db
         .from('billing_history')
-        .select('id, subscription_id, invoice_number, description, amount, currency, tax_amount, total_amount, payment_status, billing_period, period_start, period_end, created_at, subscription_tax_snapshot')
+        .select('id, subscription_id, invoice_number, description, amount, currency, tax_amount, total_amount, payment_status, billing_period, period_start, period_end, created_at')
         .eq('store_id', store_id)
         .not('subscription_id', 'is', null)
         .order('created_at', { ascending: false })
@@ -893,7 +892,7 @@ router.get('/subscription/history', validate('query', StoreSubscriptionQuerySche
         return c.json(dbErrorBody(), 500);
     }
 
-    return c.json({ data: (data || []).map(row => ({ ...publicSubscriptionBillingRecord(row), amount_paid: row.amount, status: row.payment_status })) });
+    return c.json({ data: (data || []).map(row => ({ ...row, amount_paid: row.amount, status: row.payment_status })) });
 });
 
 // POST /payments/subscription/cancel — Cancel active store subscription
@@ -1065,28 +1064,18 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         storedProviderOrderId:source.subscription_checkout_reference,providerPaymentId:body.razorpay_payment_id,
         signature:body.razorpay_signature,referenceKind:body.razorpay_subscription_id?'subscription':'order'});
     if(!proof.ok)return c.json({error:{code:'PAYMENT_SIGNATURE_INVALID',message:'Payment verification failed'}},400);
-    const retainedInvoice=source.retained_invoice_evidence;
-    const plan=source.plan;let amountPaid=retainedInvoice?.gross_minor??source.amount;
-    const nativeInvoice=source.subscription_checkout.mode==='razorpay_subscription'&&!source.legacy_completed
-        ?await verifyNativeSubscriptionInvoice({keyId:c.env.RAZORPAY_KEY_ID,keySecret:c.env.RAZORPAY_KEY_SECRET},source,
-            {paymentId:body.razorpay_payment_id,subscriptionId:body.razorpay_subscription_id||'',orderId:body.razorpay_order_id}):null;
-    if(nativeInvoice)amountPaid=nativeInvoice.gross_minor;
-    let captureOk=false,amountOk=false,orderBindingOk=false;
-    if(nativeInvoice){
-        captureOk=true;amountOk=true;orderBindingOk=true;
-    }else if(retainedInvoice){
-        captureOk=retainedInvoice.payment_id===body.razorpay_payment_id
-            &&retainedInvoice.subscription_reference===body.razorpay_subscription_id&&source.currency==='INR';
-        amountOk=retainedInvoice.gross_minor===amountPaid;
-        orderBindingOk=!body.razorpay_order_id||retainedInvoice.order_id===body.razorpay_order_id;
-    }else{
-        const capturedPayment = await fetchRazorpayPayment(
-            { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },body.razorpay_payment_id);
-        const capturedStatus=(capturedPayment.status||'').toLowerCase();
-        captureOk=!capturedPayment.error&&capturedStatus==='captured'&&capturedPayment.id===body.razorpay_payment_id&&capturedPayment.currency===source.currency;
-        amountOk=typeof capturedPayment.amount==='number'&&capturedPayment.amount===amountPaid;
-        orderBindingOk=!body.razorpay_order_id||capturedPayment.order_id===body.razorpay_order_id;
-    }
+    const plan=source.plan,amountPaid=source.amount;
+    const capturedPayment = await fetchRazorpayPayment(
+        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+        body.razorpay_payment_id,
+    );
+    const capturedStatus = (capturedPayment.status || '').toLowerCase();
+    const capturedAmount = typeof capturedPayment.amount === 'number' ? capturedPayment.amount : null;
+    const captureOk = !capturedPayment.error && capturedStatus === 'captured' && capturedPayment.id===body.razorpay_payment_id && capturedPayment.currency===source.currency;
+    const amountOk = capturedAmount !== null && capturedAmount === amountPaid;
+    // One-time order mode: the captured payment must belong to the submitted order.
+    const orderBindingOk = !body.razorpay_order_id
+        || capturedPayment.order_id === body.razorpay_order_id;
     if (!captureOk || !amountOk || !orderBindingOk) {
         return c.json(
             { error: { code: 'PAYMENT_VERIFICATION_FAILED', message: 'Payment could not be verified with the provider' } },
@@ -1104,10 +1093,8 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
             amountPaid,
             paymentGateway: 'razorpay',
             externalSubscriptionId: body.razorpay_subscription_id || body.razorpay_order_id || null,
-            razorpayOrderId: nativeInvoice?.order_id || body.razorpay_order_id || null,
+            razorpayOrderId: body.razorpay_order_id || null,
             razorpayPaymentId: body.razorpay_payment_id,
-            taxSource: source,
-            ...(nativeInvoice?{verifiedInvoice:nativeInvoice}:{}),
         });
     } catch (error) {
         if(error instanceof AppError)throw error;
@@ -1116,8 +1103,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
 
     // Record the coupon redemption now that payment is verified and the plan is active
     // (best-effort + idempotent on the payment id — never blocks activation).
-    const savedCoupon=source.subscription_checkout_request?.coupon_code;
-    if (typeof savedCoupon==='string'&&savedCoupon) {
+    if (body.coupon_code) {
         await recordSubscriptionCouponRedemption({
             db,
             storeId: body.store_id,
@@ -1125,8 +1111,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
             siteType: body.site_type,
             planSlug: body.plan_slug,
             billingPeriod: body.billing_period,
-            couponCode: savedCoupon,
-            checkoutSource: source,
+            couponCode: body.coupon_code,
             razorpayOrderId: body.razorpay_order_id || null,
             razorpayPaymentId: body.razorpay_payment_id,
         });

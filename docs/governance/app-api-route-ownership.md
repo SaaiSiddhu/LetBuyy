@@ -129,15 +129,3 @@ N1.7 (2026-10-15): adds `apps/platform/identity/src/app/api/buyer/privacy/[opera
 ### N1.5 merchant loyalty settings — 2026-10-16
 
 `apps/merchant/web/src/app/api/stores/[store]/loyalty/route.ts` is a thin `gateway-proxy`, increasing the reviewed inventory and matching lint baseline from216 to217. It resolves the signed-in merchant and store, refuses stale captured-account forms and cross-origin mutations, and forwards GET/PUT through the shared API client with the exact version and stable retry key. Gateway334 retains live ownership, point-value policy, concurrency, private aggregate reads, audit and atomic receipts. No local database access, balance, provider action or issuer is added. The shared merchant-origin guard now also backs the existing staff compatibility wrapper.
-
-
-### N5 private reel review transport — 2026-10-18
-
-`apps/merchant/web/src/app/api/stores/[store]/reels/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/reels/[reelId]/route.ts` are thin `gateway-proxy` routes, taking the reviewed inventory and matching lint baseline from217 to219. They resolve the current signed-in merchant and owned store, reject stale captured-account forms and cross-origin mutations, bound the request bytes and forward the CMS-owned command through the shared SDK. Gateway345 owns live scope, canonical media/listing/variant resolution, immutable revisions, assigned reviewer/CAS checks and the atomic receipt/audit/outbox transaction. The app has no database writer, ready-receipt authority, public feed, upload, playback or provider action. Provider custody, actual inspection/rights policy and phase acceptance remain separate.
-
-The main coordinator reviewed and granted these scoped registry edits on 18 October 2026 under N5-PERSIST-ROUTE-OWNERS. This records transport ownership review only; package, provider and release acceptance remain open.
-
-
-### Private reel intake proxies — 2026-10-18 complete local integration
-
-The three merchant routes under `stores/[store]/reels/uploads` (collection, `[intentId]`, and `[intentId]/content`) are reviewed `gateway-proxy` transports, increasing the inventory and lint baseline from 219 to 222. They resolve the current merchant and owned store, bind the captured actor, enforce mutation origin and stable request keys, bound metadata and streamed bytes, and forward through the shared API client. Gateway359 owns reservation, current authority, retry/version checks and custody receipts; the infrastructure adapter owns private provider bytes. The app does not issue credentials, write a database, grant readiness, expose a public object URL or perform live provider activation.

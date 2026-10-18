@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal browser password sign-in through Identity, Merchant BFF and real Gateway/ownedDB.
 // Existing verified synthetic accounts are fixture inputs, not proof of email/inbox delivery.
 // Official Turnstile test keys exercise the widget/Siteverify transport, not production anti-bot.

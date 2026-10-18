@@ -64,7 +64,7 @@ test('PLAN_NOT_PURCHASABLE guard + founding price lock applied at every charge s
     assert.match(checkout, /applyFoundingLockToPlan/);
     // Verify consumes the original founding quote; catalog/offer movement cannot reprice it.
     assert.match(payments, /readSubscriptionCheckoutSource/);
-    assert.match(checkout, /mode:checkout.mode,plan:effectivePlan,subscription_tax_snapshot:tax,amount_minor:orderSpec.amount/);
+    assert.match(checkout, /mode:checkout.mode,plan:effectivePlan,amount_minor:orderSpec.amount/);
     const verification=payments.slice(payments.indexOf("router.post('/subscription/verify'"));
     assert.doesNotMatch(verification, /resolveMerchantPricing|resolveFoundingCheckoutLock/);
     assert.match(billing, /applyFoundingLockToPlan/);

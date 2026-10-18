@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // N1.3: normal Chromium UI -> Identity issuer -> Commerce PKCE callback -> actual Gateway/ownedDB.
 // Cloudflare's official test keys exercise real widget/Siteverify transport. They cannot prove
 // production anti-bot behavior. No app dev auth bypass, token injection, fake API or route interception.

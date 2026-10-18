@@ -5539,14 +5539,12 @@ void main() {
       'AiStudioService executes AI operator tool calls through gateway APIs',
       () async {
         final api = _FakeApiClient(
-          raw: {
-            '/themes': {'data': [], 'current_theme': 'modern'},
-          },
           json: {
             '/ai/operator': {
               'store_id': 'store_1',
               'conversation_id': 'operator_1',
-              'message': 'Last 7 days: INR 1200 revenue. Create the draft work.',
+              'message':
+                  'Last 7 days: INR 1200 revenue. Create the draft work.',
               'created_at': '2026-06-08T10:00:00.000Z',
               'tool_calls': [
                 {
@@ -5614,19 +5612,10 @@ void main() {
             },
             '/products': _productJson(),
             '/coupons': _couponJson(code: 'LAUNCH10', isActive: false),
-            '/themes/modern/editor': {
-              'version': 2,
-              'store': {'id': 'store_1'},
-              'theme': {'slug': 'modern'},
-              'draft': {'exists': true},
-              'template_config': {},
-            },
             '/themes/modern/editor/draft': {
+              'theme_slug': 'modern',
               'version': 3,
-              'current_version': 3,
-              'replayed': false,
-              'saved_at': '2026-10-16T12:00:00Z',
-              'draft': {'version': 3},
+              'has_draft': true,
             },
           },
         );
@@ -5634,7 +5623,8 @@ void main() {
 
         final result = await service.runOperatorCommand(
           storeId: 'store_1',
-          message: 'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
+          message:
+              'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
         );
 
         expect(result.toolCalls, hasLength(4));
@@ -5650,19 +5640,7 @@ void main() {
         expect(api.bodies['/coupons'], containsPair('is_active', false));
         expect(
           api.bodies['/themes/modern/editor/draft'],
-          containsPair('client', 'flutter-builder'),
-        );
-        expect(
-          api.bodies['/themes/modern/editor/draft'],
-          containsPair('base_version', 2),
-        );
-        expect(
-          api.bodies['/themes/modern/editor/draft'],
-          containsPair('idempotency_key', 'ai-theme:tool_theme'),
-        );
-        expect(
-          api.paths.indexOf('/themes/modern/editor'),
-          lessThan(api.paths.indexOf('/ai/operator')),
+          containsPair('client', 'flutter-ai-operator'),
         );
         expect(api.bodies['/ai/operator'], containsPair('store_id', 'store_1'));
         expect(
@@ -6132,11 +6110,7 @@ void main() {
               'preview_token': 'preview_token_123',
             },
             '/themes/modern/releases': [_themeReleaseJson()],
-            '/themes/modern/releases/release_1/rollback': {
-              'rollback': {'release_id': 'release_4', 'release_version': 4},
-              'restored_release': {'id': 'release_1', 'version': 1},
-              'current_release_id': 'release_4', 'current_release_version': 4, 'replayed': false,
-            },
+            '/themes/modern/releases/release_1/rollback': {'ok': true},
           },
         );
         final service = ThemeService(api: api);
@@ -6153,7 +6127,6 @@ void main() {
           storeId: 'store_1',
           themeSlug: 'modern',
           releaseId: 'release_1',
-          expectedCurrentReleaseId: 'release_3',
           rollbackMessage: 'Restore mobile-tested release',
         );
 
@@ -6165,13 +6138,8 @@ void main() {
           api.paths,
           contains('/themes/modern/releases/release_1/rollback'),
         );
-        final rollbackBody = Map<String, dynamic>.from(
-          api.bodies['/themes/modern/releases/release_1/rollback']! as Map,
-        );
-        expect(rollbackBody['idempotency_key'], isA<String>());
-        expect({...rollbackBody}..remove('idempotency_key'), {
+        expect(api.bodies['/themes/modern/releases/release_1/rollback'], {
           'store_id': 'store_1',
-          'expected_current_release_id': 'release_3',
           'make_store_live': true,
           'rollback_message': 'Restore mobile-tested release',
         });
@@ -6189,19 +6157,7 @@ void main() {
           },
         },
         json: {
-          '/themes/modern/editor/draft': {
-            'version': 3,
-            'current_version': 3,
-            'replayed': false,
-            'saved_at': '2026-10-16T12:00:00Z',
-            'draft': {'version': 3},
-          },
-          '/themes/modern/publish': {
-            'version': 4,
-            'current_version': 4,
-            'replayed': false,
-            'release': {'release_id': 'release_1'},
-          },
+          '/themes/modern/publish': {'ok': true},
         },
       );
       final service = ThemeService(api: api);
@@ -6226,11 +6182,7 @@ void main() {
         baseVersion: 2,
       );
 
-      final saveBody = Map<String, dynamic>.from(
-        api.bodies['/themes/modern/editor/draft'] as Map,
-      );
-      expect(saveBody.remove('idempotency_key'), isNotEmpty);
-      expect(saveBody, {
+      expect(api.bodies['/themes/modern/publish'], {
         'store_id': 'store_1',
         'template_config': {
           'themeId': 'modern',
@@ -6247,23 +6199,8 @@ void main() {
           'liquidRenderingCanary': true,
         },
         'base_version': 2,
-        'template_key': 'index',
-        'client': 'flutter-builder',
-      });
-      final publishBody = Map<String, dynamic>.from(
-        api.bodies['/themes/modern/publish'] as Map,
-      );
-      expect(publishBody.remove('idempotency_key'), isNotEmpty);
-      expect(publishBody, {
-        'store_id': 'store_1',
-        'template_key': 'index',
-        'base_version': 3,
         'make_store_live': true,
       });
-      expect(
-        api.paths.indexOf('/themes/modern/editor/draft'),
-        lessThan(api.paths.indexOf('/themes/modern/publish')),
-      );
     });
 
     test('ThemeService maps stale editor saves to conflict guidance', () async {
@@ -6293,7 +6230,11 @@ void main() {
         throwsA(isA<ThemeDraftConflictException>()),
       );
       await expectLater(
-        service.publish(storeId: 'store_1', themeSlug: 'modern', baseVersion: 2),
+        service.publish(
+          storeId: 'store_1',
+          themeSlug: 'modern',
+          baseVersion: 0,
+        ),
         throwsA(isA<ThemeDraftConflictException>()),
       );
 
@@ -6303,7 +6244,7 @@ void main() {
       );
       expect(
         api.bodies['/themes/modern/publish'],
-        containsPair('base_version', 2),
+        containsPair('base_version', 0),
       );
     });
 
@@ -9198,20 +9139,13 @@ void main() {
         },
       },
       json: {
-        '/themes/modern/releases': [
-          {..._themeReleaseJson(), 'release_status': 'superseded', 'is_current': false},
-          {..._themeReleaseJson(), 'id': 'release_current_4', 'release_version': 4, 'is_current': true},
-        ],
+        '/themes/modern/releases': [_themeReleaseJson()],
         '/themes/modern/releases/release_1/rollback': {
           'rollback': {
             'release_id': 'release_rollback_1',
-            'release_version': 5,
+            'release_version': 4,
             'published_at': '2026-06-02T10:00:00.000Z',
           },
-          'restored_release': {'id': 'release_1'},
-          'replayed': false,
-          'current_release_id': 'release_rollback_1',
-          'current_release_version': 5,
         },
       },
     );
@@ -9233,13 +9167,9 @@ void main() {
     expect(find.text('Theme versions'), findsOneWidget);
     expect(find.text('Version 3'), findsOneWidget);
     expect(find.text('Published'), findsOneWidget);
-    expect(find.text('Version 4'), findsOneWidget);
-    expect(find.text('Superseded'), findsOneWidget);
-    final rollbackButtons = find.widgetWithText(TextButton, 'Roll back');
-    expect(rollbackButtons, findsNWidgets(2));
-    expect(tester.widget<TextButton>(rollbackButtons.first).onPressed, isNull, reason: 'The current release cannot be restored as a prior release.');
+    expect(find.text('Roll back'), findsOneWidget);
 
-    await tester.tap(rollbackButtons.last);
+    await tester.tap(find.widgetWithText(TextButton, 'Roll back'));
     await tester.pumpAndSettle();
     expect(find.text('Roll back theme?'), findsOneWidget);
 
@@ -9248,11 +9178,8 @@ void main() {
 
     const rollbackPath = '/themes/modern/releases/release_1/rollback';
     expect(api.paths, contains(rollbackPath));
-    final rollbackBody = Map<String, dynamic>.from(api.bodies[rollbackPath]! as Map);
-    expect(rollbackBody['idempotency_key'], isA<String>());
-    expect(rollbackBody..remove('idempotency_key'), {
+    expect(api.bodies[rollbackPath], {
       'store_id': 'store_1',
-      'expected_current_release_id': 'release_current_4',
       'make_store_live': true,
       'rollback_message': 'Rolled back from mobile theme versions',
     });

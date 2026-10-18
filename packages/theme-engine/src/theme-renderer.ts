@@ -1,5 +1,4 @@
 /// <reference path="./jsdom-runtime.d.ts" />
-import { loadThemeServerDom } from '@letbuyy/theme-engine/server-dom';
 import { Liquid } from 'liquidjs';
 import type { Config as DOMPurifyConfig, DOMPurify, WindowLike } from 'dompurify';
 import type {
@@ -1690,9 +1689,12 @@ async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
   const s7InitStart = Date.now();
   domPurifyPromise ||= (async () => {
     const s7ImportStart = Date.now();
-    // Package conditions keep Node DOM dependencies out of worker/client
-    // bundles. Unsupported runtimes fail closed instead of skipping sanitization.
-    const { createDOMPurify, JSDOM } = await loadThemeServerDom();
+    const [{ default: createDOMPurify }, { JSDOM }] = await Promise.all([
+      import('dompurify'),
+      // jsdom is server-only (this runs during SSR sanitization). webpackIgnore keeps it
+      // a runtime require so bundlers never pull jsdom's node:* deps into a client build.
+      import(/* webpackIgnore: true */ 'jsdom'),
+    ]);
     s7ProfileMark('getThemeDomPurify:dynamic import(dompurify)+import(jsdom)', s7ImportStart);
     const s7WindowStart = Date.now();
     const { window } = new JSDOM('<!doctype html><html><body></body></html>');

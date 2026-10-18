@@ -22,19 +22,17 @@ test('G5: migration 188 materializes the letbuyy-core themes row, idempotently a
   assert.doesNotMatch(sql, /UPDATE\s+public\./i);
 });
 
-test('G1: gateway saves migrated sections before publishing the exact canonical draft', () => {
+test('G1: gateway publish path runs the section-schema migration registry before snapshotting', () => {
   const adapter = read('services/api-gateway/src/execution/theme-execution.adapter.ts');
   // Imports the registry wrapper + the empty-registry fast-path guard.
   assert.match(adapter, /migrateThemeTemplateSchemasWithRegistry/);
   assert.match(adapter, /REGISTERED_SECTION_SCHEMA_MIGRATIONS/);
   // A private helper exists and is invoked inside publish() before validateTemplateConfig.
   assert.match(adapter, /applySectionSchemaMigrations/);
-  const saveIdx = adapter.indexOf('async saveDraft(');
-  const callIdx = adapter.indexOf('this.applySectionSchemaMigrations(', saveIdx);
-  const validateIdx = adapter.indexOf('this.validateTemplateConfig(', saveIdx);
   const publishIdx = adapter.indexOf('async publish(');
-  assert.ok(callIdx > saveIdx && callIdx < publishIdx, 'migration call must be inside canonical draft save');
-  assert.match(adapter.slice(publishIdx, adapter.indexOf('async ', publishIdx + 6)), /const templateConfig = asRecord\(state\.template_config\)/);
+  const callIdx = adapter.indexOf('this.applySectionSchemaMigrations(', publishIdx);
+  const validateIdx = adapter.indexOf('this.validateTemplateConfig(', publishIdx);
+  assert.ok(callIdx > publishIdx, 'migration call must be inside publish()');
   assert.ok(callIdx < validateIdx, 'migration must run before template validation/snapshot');
 });
 

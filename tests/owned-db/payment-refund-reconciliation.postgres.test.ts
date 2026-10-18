@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // F8 refund lifecycle: real worker → internal refund event route → owned PostgREST/Postgres
 // → one atomic payment-attempt/payment/canonical-ledger mutation. The fixture is disposable and
 // owns every synthetic order, payment and provider reference created here.

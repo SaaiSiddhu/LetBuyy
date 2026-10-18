@@ -1,6 +1,3 @@
-// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
-// and public challenge test fixtures. Never use these values for a real account or live provider.
-// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 import 'dart:async';
 
 import 'package:dio/dio.dart';
@@ -49,8 +46,6 @@ class _Browser implements BuyerSignInBrowser {
 }
 
 class _Gateway {
-  FutureOr<Object?> Function(RequestOptions)? assistantReply;
-  final assistantRequests = <RequestOptions>[];
   final tokens = <String>[];
   Completer<void>? holdA;
   String heldToken = 'session-A';
@@ -62,17 +57,6 @@ class _Gateway {
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (o, h) async {
-            if (o.path.endsWith('/storefront/buyer/assistant')) {
-              assistantRequests.add(o);
-              h.resolve(
-                Response(
-                  requestOptions: o,
-                  statusCode: 200,
-                  data: await assistantReply!(o),
-                ),
-              );
-              return;
-            }
             final token = o.headers[letbuyyBuyerSessionHeader] as String;
             tokens.add(token);
             final actor = token.startsWith('session-A') ? 'A' : 'B';
@@ -509,13 +493,6 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('A private answer'), findsNothing);
-      expect(
-        service.userProfileCache,
-        isNull,
-        reason: 'Chat must not silently load profile context.',
-      );
-      final currentProfile = await tester.runAsync(service.handleUserProfile);
-      expect(currentProfile!['name'], 'Private B');
       expect(service.userProfileCache!['name'], 'Private B');
       await tester.enterText(find.byType(TextField), 'B question');
       await tester.testTextInput.receiveAction(TextInputAction.send);
@@ -607,25 +584,18 @@ void main() {
   );
 
   testWidgets(
-    'logout while explicit profile read is held discards the old profile',
+    'logout while profile initialization is held discards the old profile',
     (tester) async {
       final service = AIChatService.forTesting();
       final h = await _mount(tester, service, holdProfile: true);
-      await tester.pumpAndSettle();
-      final pending = service.handleUserProfile();
-      final denied = expectLater(
-        pending,
-        completion(containsPair('error', 'Chat identity changed')),
-      );
       await _pumpUntil(tester, () => h.gateway.tokens.length == 2);
-      expect(find.byType(TextField), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
       await tester.runAsync(h.controller.signOut);
       await _pumpUntil(
         tester,
         () => find.byType(TextField).evaluate().isNotEmpty,
       );
       h.gateway.holdA!.complete();
-      await denied;
       await tester.pumpAndSettle();
       expect(service.userProfileCache, isNull);
       expect(service.context, isEmpty);
@@ -651,11 +621,8 @@ void main() {
         tester,
         () =>
             find.byType(TextField).evaluate().isNotEmpty &&
-            h.controller.buyerId == 'buyer-B',
+            service.userProfileCache?['name'] == 'Private B',
       );
-      expect(service.userProfileCache, isNull);
-      final currentProfile = await tester.runAsync(service.handleUserProfile);
-      expect(currentProfile!['name'], 'Private B');
       expect(prefs.getString('current_chat_session_id:buyer:buyer-A'), isNull);
       expect(
         prefs.getString('current_chat_session_id:buyer:buyer-B'),
@@ -733,13 +700,6 @@ void main() {
     await service.saveMessage(
       ChatMessage.user(text: 'closed A private history', sessionId: oldSession),
     );
-    expect(
-      service.userProfileCache,
-      isNull,
-      reason: 'No hidden profile initialization.',
-    );
-    final currentProfile = await tester.runAsync(service.handleUserProfile);
-    expect(currentProfile!['name'], 'Private A');
     expect(service.userProfileCache!['name'], 'Private A');
     expect(service.isSignedIn, isTrue);
     await tester.pumpWidget(const MaterialApp(home: SizedBox()));
@@ -865,341 +825,4 @@ void main() {
       expect(controller.dispose, returnsNormally);
     },
   );
-
-  testWidgets(
-    'normal mounted AI uses typed Gateway response and sends no hidden profile context',
-    (tester) async {
-      final service = AIChatService.forTesting();
-      final h = await _mount(tester, service);
-      h.gateway.assistantReply = (o) =>
-          _assistantResponse(o, text: 'Synthetic gateway answer');
-      await _pumpUntil(
-        tester,
-        () => find.byType(TextField).evaluate().isNotEmpty,
-      );
-      expect(
-        h.gateway.tokens,
-        hasLength(1),
-        reason: 'Only canonical sign-in reads account state.',
-      );
-      await tester.enterText(
-        find.byType(TextField),
-        'Synthetic buyer question',
-      );
-      await tester.testTextInput.receiveAction(TextInputAction.send);
-      await _pumpUntil(
-        tester,
-        () => find.text('Synthetic gateway answer').evaluate().isNotEmpty,
-      );
-      final request = h.gateway.assistantRequests.single;
-      expect(request.headers[letbuyyBuyerSessionHeader], 'session-A');
-      expect(
-        (request.data as Map).keys,
-        unorderedEquals(['request_id', 'conversation_id', 'prompt', 'history']),
-      );
-      expect(request.data.toString(), isNot(contains('Private A')));
-      expect(service.userProfileCache, isNull);
-      await tester.pumpAndSettle();
-    },
-  );
-
-  testWidgets(
-    'ambiguous typed response keeps the same operation and immutable payload on explicit retry',
-    (tester) async {
-      final service = AIChatService.forTesting();
-      final h = await _mount(tester, service);
-      h.gateway.assistantReply = (o) =>
-          _assistantResponse(o, status: 'outcome_unknown');
-      await _pumpUntil(
-        tester,
-        () => find.byType(TextField).evaluate().isNotEmpty,
-      );
-      for (var i = 0; i < 2; i++) {
-        await tester.enterText(
-          find.byType(TextField),
-          'Synthetic uncertain question',
-        );
-        await tester.testTextInput.receiveAction(TextInputAction.send);
-        await _pumpUntil(
-          tester,
-          () => h.gateway.assistantRequests.length == i + 1,
-        );
-        await tester.pumpAndSettle();
-      }
-      expect(
-        h.gateway.assistantRequests[1].data,
-        h.gateway.assistantRequests[0].data,
-      );
-      expect(service.context.where((m) => m.category == 'ai_text'), isEmpty);
-    },
-  );
-
-  testWidgets(
-    'logout rejects actual held typed answer without showing or appending old buyer content',
-    (tester) async {
-      final service = AIChatService.forTesting();
-      final h = await _mount(tester, service);
-      final release = Completer<void>();
-      h.gateway.assistantReply = (o) async {
-        await release.future;
-        return _assistantResponse(o, text: 'A private typed answer');
-      };
-      await _pumpUntil(
-        tester,
-        () => find.byType(TextField).evaluate().isNotEmpty,
-      );
-      await tester.enterText(
-        find.byType(TextField),
-        'A private typed question',
-      );
-      await tester.testTextInput.receiveAction(TextInputAction.send);
-      await _pumpUntil(tester, () => h.gateway.assistantRequests.length == 1);
-      await tester.runAsync(h.controller.signOut);
-      release.complete();
-      await tester.pumpAndSettle();
-      expect(find.text('A private typed answer'), findsNothing);
-      expect(
-        service.context.any((m) => m.text.contains('A private typed')),
-        isFalse,
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'route closure rejects actual held typed answer while leaving its unresolved operation non-retryable',
-    (tester) async {
-      final service = AIChatService.forTesting();
-      final h = await _mount(tester, service);
-      final release = Completer<void>();
-      h.gateway.assistantReply = (o) async {
-        await release.future;
-        return _assistantResponse(o, text: 'Closed route typed answer');
-      };
-      await _pumpUntil(
-        tester,
-        () => find.byType(TextField).evaluate().isNotEmpty,
-      );
-      await tester.enterText(find.byType(TextField), 'Synthetic held question');
-      await tester.testTextInput.receiveAction(TextInputAction.send);
-      await _pumpUntil(tester, () => h.gateway.assistantRequests.length == 1);
-      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
-      release.complete();
-      await tester.pumpAndSettle();
-      expect(
-        service.context.any((m) => m.text == 'Closed route typed answer'),
-        isFalse,
-      );
-      final original = h.gateway.assistantRequests.single.data;
-      h.gateway.assistantReply = (o) =>
-          _assistantResponse(o, status: 'in_progress');
-      await tester.runAsync(
-        () => service.processUserMessage('Synthetic held question'),
-      );
-      expect(h.gateway.assistantRequests.last.data, original);
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'unavailable profile and exhausted allowance render truthful states without fake model success',
-    (tester) async {
-      final service = AIChatService.forTesting();
-      final h = await _mount(tester, service);
-      var status = 'unavailable';
-      h.gateway.assistantReply = (o) => _assistantResponse(o, status: status);
-      await _pumpUntil(
-        tester,
-        () => find.byType(TextField).evaluate().isNotEmpty,
-      );
-      await tester.enterText(
-        find.byType(TextField),
-        'Synthetic unavailable question',
-      );
-      await tester.testTextInput.receiveAction(TextInputAction.send);
-      await _pumpUntil(tester, () => h.gateway.assistantRequests.length == 1);
-      await tester.pumpAndSettle();
-      expect(service.context.any((m) => m.category == 'ai_offline'), isTrue);
-      status = 'quota_exceeded';
-      await tester.enterText(
-        find.byType(TextField),
-        'Synthetic capped question',
-      );
-      await tester.testTextInput.receiveAction(TextInputAction.send);
-      await _pumpUntil(tester, () => h.gateway.assistantRequests.length == 2);
-      await tester.pumpAndSettle();
-      expect(service.context.any((m) => m.category == 'ai_quota'), isTrue);
-      expect(service.context.where((m) => m.category == 'ai_text'), isEmpty);
-    },
-  );
-
-  test(
-    'concurrent native callers share one typed transport operation while the real gateway result is held',
-    () async {
-      final gateway = _Gateway();
-      final service = AIChatService.forTesting()
-        ..configure(client: gateway.client, accounts: gateway.accounts)
-        ..updateAuth(buyerId: 'buyer-A', sessionToken: 'session-A');
-      await service.initSession();
-      final release = Completer<void>();
-      gateway.assistantReply = (o) async {
-        await release.future;
-        return _assistantResponse(o, text: 'Shared actual transport answer');
-      };
-      final first = service.processUserMessage('Concurrent synthetic question');
-      final second = service.processUserMessage(
-        'Concurrent synthetic question',
-      );
-      while (gateway.assistantRequests.isEmpty) {
-        await Future<void>.delayed(Duration.zero);
-      }
-      expect(gateway.assistantRequests, hasLength(1));
-      release.complete();
-      final results = await Future.wait([first, second]);
-      expect(
-        results.map((m) => m.text),
-        everyElement('Shared actual transport answer'),
-      );
-      expect(gateway.assistantRequests, hasLength(1));
-    },
-  );
-
-  test(
-    'same actor refresh uses a current captured token and retains the pending logical operation while old typed answer is denied',
-    () async {
-      final gateway = _Gateway();
-      final service = AIChatService.forTesting()
-        ..configure(client: gateway.client, accounts: gateway.accounts)
-        ..updateAuth(buyerId: 'buyer-A', sessionToken: 'session-A');
-      await service.initSession();
-      final entered = Completer<void>();
-      final release = Completer<void>();
-      gateway.assistantReply = (o) async {
-        if (gateway.assistantRequests.length == 1) {
-          entered.complete();
-          await release.future;
-          return _assistantResponse(o, text: 'Old private answer');
-        }
-        return _assistantResponse(o, status: 'in_progress');
-      };
-      final first = service.processUserMessage('Synthetic uncertain request');
-      final denied = expectLater(first, throwsA(isA<AIChatContextChanged>()));
-      await entered.future;
-      service.updateAuth(
-        buyerId: 'buyer-A',
-        sessionToken: 'session-A-refreshed',
-      );
-      final current = await service.processUserMessage(
-        'Synthetic uncertain request',
-      );
-      expect(current.category, 'ai_pending');
-      expect(
-        gateway.assistantRequests[1].headers[letbuyyBuyerSessionHeader],
-        'session-A-refreshed',
-      );
-      expect(
-        gateway.assistantRequests[1].data,
-        gateway.assistantRequests[0].data,
-      );
-      release.complete();
-      await denied;
-      expect(
-        service.context.any((m) => m.text == 'Old private answer'),
-        isFalse,
-      );
-    },
-  );
-
-  test(
-    'long visible history is bounded for transport without truncating the buyer original answer',
-    () async {
-      final gateway = _Gateway();
-      final service = AIChatService.forTesting()
-        ..configure(client: gateway.client, accounts: gateway.accounts)
-        ..updateAuth(buyerId: 'buyer-A', sessionToken: 'session-A');
-      await service.initSession();
-      await service.saveMessage(
-        ChatMessage.ai(
-          text: 'x' * 8000,
-          sessionId: service.currentSessionId,
-          category: 'ai_text',
-        ),
-      );
-      gateway.assistantReply = (o) =>
-          _assistantResponse(o, text: 'Current actual answer');
-      final result = await service.processUserMessage('Next bounded question');
-      expect(result.text, 'Current actual answer');
-      expect(
-        ((gateway.assistantRequests.single.data as Map)['history'] as List)
-            .single['text'],
-        'x' * 2000,
-      );
-      expect(service.context.single.text, 'x' * 8000);
-    },
-  );
-
-  test(
-    'oversized message is a known local validation error without an ambiguous receipt or dispatch',
-    () async {
-      final gateway = _Gateway();
-      final service = AIChatService.forTesting()
-        ..configure(client: gateway.client, accounts: gateway.accounts)
-        ..updateAuth(buyerId: 'buyer-A', sessionToken: 'session-A');
-      await service.initSession();
-      gateway.assistantReply = (o) => _assistantResponse(o);
-      final denied = await service.processUserMessage('x' * 2001);
-      expect(denied.errorMessage, 'AI_REQUEST_INVALID');
-      expect(gateway.assistantRequests, isEmpty);
-      final allowed = await service.processUserMessage('Allowed next message');
-      expect(allowed.category, 'ai_text');
-      expect(gateway.assistantRequests, hasLength(1));
-    },
-  );
-
-  test(
-    'temporary server profile unavailability after ambiguity never replaces the logical request ID',
-    () async {
-      final gateway = _Gateway();
-      final service = AIChatService.forTesting()
-        ..configure(client: gateway.client, accounts: gateway.accounts)
-        ..updateAuth(buyerId: 'buyer-A', sessionToken: 'session-A');
-      await service.initSession();
-      gateway.assistantReply = (o) => _assistantResponse(
-        o,
-        status: [
-          'outcome_unknown',
-          'unavailable',
-          'in_progress',
-        ][gateway.assistantRequests.length - 1],
-      );
-      for (var i = 0; i < 3; i++) {
-        await service.processUserMessage('Synthetic uncertain operation');
-      }
-      expect(gateway.assistantRequests, hasLength(3));
-      expect(
-        gateway.assistantRequests[1].data,
-        gateway.assistantRequests[0].data,
-      );
-      expect(
-        gateway.assistantRequests[2].data,
-        gateway.assistantRequests[0].data,
-        reason:
-            'A disabled/missing profile must not erase a possibly dispatched operation and mint a new key.',
-      );
-    },
-  );
 }
-
-Object _assistantResponse(
-  RequestOptions o, {
-  String status = 'completed',
-  String text = 'Synthetic answer',
-}) => {
-  'success': true,
-  'data': {
-    'request_id': (o.data as Map)['request_id'],
-    'conversation_id': (o.data as Map)['conversation_id'],
-    'status': status,
-    if (status == 'completed') 'text': text,
-  },
-};

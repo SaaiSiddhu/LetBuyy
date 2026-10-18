@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef, type SyntheticEvent } from 'react'
+import { useState, useEffect, useCallback, useMemo, type SyntheticEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import type { Product as SharedProduct } from '@letbuyy/shared-types'
-import { Badge, Button, Input, Table, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
+import { Badge, Button, Input, Table, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
 
 type ProductRow = Pick<
     SharedProduct,
-    'version' | 'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' | 'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at'
+    'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' | 'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at'
 >
 
 type TabFilter = 'all' | 'active' | 'draft' | 'archived'
@@ -40,36 +39,6 @@ const productStatusBadge = {
     draft:    'warning'  as const,
     archived: 'critical' as const,
 } as const
-
-type StatusOutcome = 'not_sent' | 'uncertain' | 'confirmed' | 'conflict' | 'failed'
-type StatusCommand = {
-    id: string; name: string; target: ProductStatus; key: string; version: number; payload: string
-    outcome: StatusOutcome; message?: string; reviewed?: ProductRow
-}
-type StatusJob = { actorId: string; store: string; items: StatusCommand[] }
-const positiveVersion = (value: unknown): value is number => Number.isInteger(value) && Number(value) > 0
-const statusLabel = (status: ProductStatus) => status.charAt(0).toUpperCase() + status.slice(1)
-const pendingJob = (job: StatusJob | null) => !!job?.items.some(item => ['not_sent', 'uncertain', 'conflict'].includes(item.outcome))
-
-function restoreStatusJob(raw: string, actorId: string, store: string): StatusJob {
-    const job = JSON.parse(raw) as StatusJob
-    if (!job || job.actorId !== actorId || job.store !== store || !Array.isArray(job.items) || !job.items.length || job.items.length > 100) throw new Error('Invalid saved status changes')
-    const ids = new Set<string>()
-    for (const item of job.items) {
-        const body = JSON.parse(item.payload)
-        if (typeof item.id !== 'string' || !item.id || ids.has(item.id) || typeof item.name !== 'string'
-            || !['active', 'draft', 'archived'].includes(item.target) || !positiveVersion(item.version)
-            || typeof item.key !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.key)
-            || !['not_sent', 'uncertain', 'confirmed', 'conflict', 'failed'].includes(item.outcome)
-            || (item.message !== undefined && typeof item.message !== 'string')
-            || !body || Object.keys(body).sort().join(',') !== 'idempotency_key,is_active,status,version'
-            || body.version !== item.version || body.idempotency_key !== item.key || body.status !== item.target || body.is_active !== (item.target === 'active')) throw new Error('Invalid saved status changes')
-        ids.add(item.id)
-        // Reviewing a conflict is a new explicit read in this page, never a stored approval.
-        delete item.reviewed
-    }
-    return job
-}
 
 function normalizeProductStatus(product: ProductRow): ProductStatus {
     const status = (product.status || (product.is_active ? 'active' : 'draft')).toLowerCase()
@@ -114,20 +83,8 @@ function stopTableAction(event: SyntheticEvent) {
 export default function ProductsPage() {
     const { store } = useParams<{ store: string }>()
     const router = useRouter()
+    const { notify } = useToast()
 
-    const { actorId } = useMerchantSecurityContext(store)
-    const storageKey = `letbuyy.product-status.v1:${actorId}:${store}`
-    const scope = useRef({ key: storageKey, epoch: 0 })
-    if (scope.current.key !== storageKey) scope.current = { key: storageKey, epoch: scope.current.epoch + 1 }
-    const mounted = useRef(true)
-    const readSequence = useRef(0)
-    const busy = useRef(false)
-    const [working, setWorking] = useState(false)
-    const [job, setJob] = useState<StatusJob | null>(null)
-    const jobRef = useRef<StatusJob | null>(null)
-    const [readyScope, setReadyScope] = useState<string | null>(null)
-    const [storageError, setStorageError] = useState<string | null>(null)
-    const [accessChanged, setAccessChanged] = useState(false)
     const [products, setProducts] = useState<ProductRow[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -135,142 +92,105 @@ export default function ProductsPage() {
     const [searchQuery, setSearchQuery] = useState('')
     const [sortKey, setSortKey] = useState<ProductSortKey>('name')
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
-
-    useEffect(() => { mounted.current = true; return () => { mounted.current = false; readSequence.current++ } }, [])
-    useEffect(() => {
-        setReadyScope(null); setStorageError(null); setAccessChanged(false); setWorking(false); busy.current = false
-        let restored: StatusJob | null = null
-        try { const raw = window.sessionStorage.getItem(storageKey); if (raw) restored = restoreStatusJob(raw, actorId, store) }
-        catch { setStorageError('Saved status changes could not be read. Reload this tab or recover the saved request before starting another change.') }
-        jobRef.current = restored; setJob(restored); setProducts([]); setReadyScope(storageKey)
-    }, [storageKey, actorId, store])
-    const currentScope = useCallback((captured: { key: string; epoch: number }) => mounted.current && scope.current === captured, [])
-    const retainJob = useCallback((next: StatusJob, captured: { key: string; epoch: number }) => {
-        if (!currentScope(captured)) return false
-        try {
-            if (pendingJob(next)) window.sessionStorage.setItem(captured.key, JSON.stringify(next))
-            else window.sessionStorage.removeItem(captured.key)
-        } catch {
-            setStorageError('Status changes could not be saved in this tab. Keep this page open and recover the pending request before continuing.')
-            // Keep every command in memory even if storage becomes unavailable after a reply.
-            jobRef.current = next; setJob(next); return false
-        }
-        jobRef.current = next; setJob(next); return true
-    }, [currentScope])
+    const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null)
+    const [bulkActionKey, setBulkActionKey] = useState<ProductStatus | null>(null)
 
     const loadProducts = useCallback(async () => {
-        const captured = scope.current, sequence = ++readSequence.current
-        setLoading(true); setError(null)
-        const query = new URLSearchParams({ status: activeTab, limit: '100', sort: 'created_at', order: 'desc' })
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?${query}`, {
-                cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId },
-            })
-            if (!response.ok) throw new Error('Unable to load products')
-            const payload = await response.json() as ProductsPayload
-            if (currentScope(captured) && sequence === readSequence.current) setProducts(Array.isArray(payload.data) ? payload.data : [])
-        } catch {
-            if (currentScope(captured) && sequence === readSequence.current) setError('Products could not be loaded. Try again when the catalog service is reachable.')
-        } finally { if (currentScope(captured) && sequence === readSequence.current) setLoading(false) }
-    }, [store, actorId, activeTab, currentScope])
-    useEffect(() => { void loadProducts(); return () => { readSequence.current++ } }, [loadProducts])
+        setLoading(true)
+        setError(null)
+        const query = new URLSearchParams({
+            status: activeTab,
+            limit: '100',
+            sort: 'created_at',
+            order: 'desc',
+        })
 
-    const makeCommand = (product: ProductRow, target: ProductStatus): StatusCommand => {
-        if (!positiveVersion(product.version)) throw new Error(`Refresh ${product.name} to load its current version before changing status.`)
-        const key = crypto.randomUUID()
-        return { id: product.id, name: product.name, target, key, version: product.version,
-            payload: JSON.stringify({ status: target, is_active: target === 'active', version: product.version, idempotency_key: key }), outcome: 'not_sent' }
-    }
-    const sendCommands = useCallback(async (initial: StatusJob, indexes: number[]) => {
-        if (busy.current || storageError || accessChanged) return
-        const captured = scope.current
-        busy.current = true; setWorking(true); setError(null)
-        let next = initial
-        const update = (index: number, patch: Partial<StatusCommand>) => {
-            next = { ...next, items: next.items.map((item, i) => i === index ? { ...item, ...patch } : item) }
-            return retainJob(next, captured)
-        }
         try {
-            if (!retainJob(next, captured)) return
-            for (const index of indexes) {
-                if (!currentScope(captured)) return
-                const command = next.items[index], wasUncertain = command.outcome === 'uncertain'
-                // Persist the exact command before dispatch: an unload can lose any acknowledgement.
-                if (!update(index, { outcome: 'uncertain', message: undefined })) return
-                try {
-                    const response = await fetch(`/api/stores/${encodeURIComponent(initial.store)}/products/${encodeURIComponent(command.id)}`, {
-                        method: 'PATCH', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': command.key, 'X-LetBuyy-Merchant-Context': initial.actorId }, body: command.payload,
-                    })
-                    const payload = await response.json().catch(() => null)
-                    if (!currentScope(captured)) return
-                    const code = payload?.error?.code
-                    if ([401, 403, 404].includes(response.status) || code === 'SESSION_CONTEXT_CHANGED') {
-                        update(index, { outcome: wasUncertain ? 'uncertain' : 'failed', message: 'This change was refused. Reload the store with the intended account.' })
-                        setAccessChanged(true); break
-                    }
-                    if (response.status === 409 && code === 'PRODUCT_VERSION_CONFLICT') {
-                        if (!update(index, { outcome: 'conflict', message: 'Review the latest product before applying your requested status.' })) return
-                    } else if (response.ok) {
-                        const product = payload?.data as ProductRow | undefined
-                        if (!product || product.id !== command.id || !positiveVersion(product.version) || product.status !== command.target || product.is_active !== (command.target === 'active')) {
-                            if (!update(index, { outcome: 'uncertain', message: 'The response could not confirm this change. Retry the saved request.' })) return
-                        } else {
-                            readSequence.current++
-                            setLoading(false)
-                            setProducts(rows => rows.map(row => row.id === product.id && (!positiveVersion(row.version) || product.version >= row.version) ? { ...row, ...product } : row))
-                            if (!update(index, { outcome: 'confirmed', reviewed: undefined })) return
-                        }
-                    } else if (response.status >= 500 || wasUncertain) {
-                        if (!update(index, { outcome: 'uncertain', message: 'The outcome is unknown. Retry the saved request.' })) return
-                    } else {
-                        if (!update(index, { outcome: 'failed', message: payload?.error?.message || 'This change was refused.' })) return
-                    }
-                } catch {
-                    if (!currentScope(captured)) return
-                    if (!update(index, { outcome: 'uncertain', message: 'The reply was lost. Retry the saved request.' })) return
-                }
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?${query.toString()}`)
+            if (!response.ok) {
+                throw new Error('Unable to load products')
             }
-        } finally { if (currentScope(captured)) { busy.current = false; setWorking(false) } }
-    }, [accessChanged, storageError, retainJob, currentScope])
+            const payload = await response.json() as ProductsPayload
+            setProducts(Array.isArray(payload.data) ? payload.data : [])
+        } catch {
+            setProducts([])
+            setError('Products could not be loaded. Try again when the catalog service is reachable.')
+        } finally {
+            setLoading(false)
+        }
+    }, [store, activeTab])
 
-    const startChanges = useCallback((rows: ProductRow[], target: ProductStatus) => {
-        if (readyScope !== storageKey || busy.current || storageError || accessChanged || pendingJob(jobRef.current) || !rows.length) return
+    useEffect(() => {
+        loadProducts()
+    }, [loadProducts])
+
+    const patchProductStatus = useCallback(async (productId: string, status: ProductStatus) => {
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                status,
+                is_active: status === 'active',
+            }),
+        })
+        if (!response.ok) throw new Error('Unable to update product status')
+    }, [store])
+
+    const updateProductStatus = useCallback(async (product: ProductRow, status: ProductStatus) => {
+        if (normalizeProductStatus(product) === status) return
+        setUpdatingStatusId(product.id)
+        setError(null)
         try {
-            // Capture every selected row before the first effect. A failed capture sends none.
-            const next = { actorId, store, items: rows.map(row => makeCommand(row, target)) }
-            void sendCommands(next, next.items.map((_, index) => index))
-        } catch (err) { setError(err instanceof Error ? err.message : 'Refresh products before changing status.') }
-    }, [readyScope, storageKey, storageError, accessChanged, actorId, store, sendCommands])
-    const updateProductStatus = useCallback((product: ProductRow, target: ProductStatus) => {
-        if (normalizeProductStatus(product) !== target) startChanges([product], target)
-    }, [startChanges])
-    const updateSelectedProducts = useCallback((rows: ProductRow[], target: ProductStatus) => startChanges(rows, target), [startChanges])
-    const reviewLatest = async (index: number) => {
-        if (busy.current || accessChanged || storageError) return
-        const captured = scope.current, original = jobRef.current, command = original?.items[index]
-        if (!original || command?.outcome !== 'conflict') return
-        busy.current = true; setWorking(true)
-        try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(command.id)}`, {
-                cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId },
+            await patchProductStatus(product.id, status)
+            await loadProducts()
+            notify({
+                title: 'Product status updated',
+                description: `${product.name} is now ${status}.`,
+                variant: 'success',
             })
-            const payload = await response.json().catch(() => null)
-            if (!currentScope(captured)) return
-            if ([401, 403, 404].includes(response.status) || payload?.error?.code === 'SESSION_CONTEXT_CHANGED') { setAccessChanged(true); return }
-            const product = payload?.data as ProductRow | undefined
-            if (!response.ok || !product || product.id !== command.id || !positiveVersion(product.version)) { setError('The latest product could not be read. Your requested status is kept.'); return }
-            retainJob({ ...original, items: original.items.map((item, i) => i === index ? { ...item, reviewed: product } : item) }, captured)
-        } catch { if (currentScope(captured)) setError('The latest product could not be read. Your requested status is kept.') }
-        finally { if (currentScope(captured)) { busy.current = false; setWorking(false) } }
-    }
-    const applyReviewed = (index: number) => {
-        if (busy.current || accessChanged || storageError) return
-        const original = jobRef.current, command = original?.items[index]
-        if (!original || command?.outcome !== 'conflict' || !command.reviewed) return
-        const next = { ...original, items: original.items.map((item, i) => i === index ? makeCommand(command.reviewed!, command.target) : item) }
-        void sendCommands(next, [index])
-    }
-    const statusActionsBlocked = readyScope !== storageKey || working || !!storageError || accessChanged || pendingJob(job)
+        } catch {
+            notify({
+                title: 'Product update failed',
+                description: `Unable to set ${product.name} to ${status}.`,
+                variant: 'critical',
+            })
+        } finally {
+            setUpdatingStatusId(null)
+        }
+    }, [loadProducts, notify, patchProductStatus])
+
+    const updateSelectedProducts = useCallback(async (rows: ProductRow[], status: ProductStatus) => {
+        if (rows.length === 0) return
+        setBulkActionKey(status)
+        setError(null)
+        let failures = 0
+
+        for (const product of rows) {
+            try {
+                await patchProductStatus(product.id, status)
+            } catch {
+                failures += 1
+            }
+        }
+
+        await loadProducts()
+        setBulkActionKey(null)
+
+        if (failures > 0) {
+            notify({
+                title: 'Some products were not updated',
+                description: `${rows.length - failures} of ${rows.length} products were set to ${status}.`,
+                variant: 'warning',
+            })
+            return
+        }
+
+        notify({
+            title: 'Products updated',
+            description: `${rows.length} ${rows.length === 1 ? 'product' : 'products'} set to ${status}.`,
+            variant: 'success',
+        })
+    }, [loadProducts, notify, patchProductStatus])
 
     const filteredProducts = useMemo(() => {
         const normalizedQuery = searchQuery.trim().toLowerCase()
@@ -308,14 +228,14 @@ export default function ProductsPage() {
 
     const bulkActions = useMemo<Array<TableBulkAction<ProductRow>>>(() => [
         {
-            label: 'Publish selected',
+            label: bulkActionKey === 'active' ? 'Publishing...' : 'Publish selected',
             onAction: rows => { void updateSelectedProducts(rows, 'active') },
         },
         {
-            label: 'Set as draft',
+            label: bulkActionKey === 'draft' ? 'Drafting...' : 'Set as draft',
             onAction: rows => { void updateSelectedProducts(rows, 'draft') },
         },
-    ], [updateSelectedProducts])
+    ], [bulkActionKey, updateSelectedProducts])
 
     const columns = useMemo<Array<TableColumn<ProductRow>>>(() => [
         {
@@ -377,7 +297,7 @@ export default function ProductsPage() {
                         />
                         <select
                             aria-label={`Change status for ${product.name}`}
-                            disabled={statusActionsBlocked}
+                            disabled={updatingStatusId === product.id}
                             value={status}
                             onChange={(e) => {
                                 e.stopPropagation()
@@ -418,7 +338,7 @@ export default function ProductsPage() {
             shrink: true,
             render: (product) => product.vendor || 'No vendor',
         },
-    ], [store, updateProductStatus, statusActionsBlocked])
+    ], [store, updateProductStatus, updatingStatusId])
 
     const emptyTitle = searchQuery.trim() ? 'No matching products' : 'Add your first product'
     const emptyBody = searchQuery.trim()
@@ -435,27 +355,6 @@ export default function ProductsPage() {
                 primaryAction={{ label: 'Add product', href: `/${store}/products/new`, icon: <MaterialIcon name="add" /> }}
                 secondaryActions={[{ label: 'Collections', href: `/${store}/products/collections` }]}
             />
-
-            {accessChanged && <Banner title="Account or store access changed" variant="critical">Reload this store with the intended account before continuing.</Banner>}
-            {storageError && <Banner title="Saved status changes need recovery" variant="critical">{storageError}</Banner>}
-            {job && <Card><Section title="Status changes" description="Each product is saved separately. Confirmed changes will not be repeated.">
-                <div aria-live="polite">
-                    {(['confirmed', 'uncertain', 'conflict', 'not_sent', 'failed'] as StatusOutcome[]).map(outcome => <p key={outcome}>{job.items.filter(item => item.outcome === outcome).length} {outcome === 'conflict' ? 'needs review' : outcome === 'not_sent' ? 'not sent' : outcome}</p>)}
-                </div>
-                {job.items.some(item => item.outcome === 'uncertain') && <Button disabled={working || accessChanged || !!storageError} onClick={() => void sendCommands(jobRef.current!, jobRef.current!.items.flatMap((item, index) => item.outcome === 'uncertain' ? [index] : []))}>Retry uncertain changes</Button>}
-                {job.items.some(item => item.outcome === 'not_sent') && <Button disabled={working || !!storageError} onClick={() => {
-                    if (busy.current || !jobRef.current) return
-                    retainJob({ ...jobRef.current, items: jobRef.current.items.filter(item => item.outcome !== 'not_sent') }, scope.current)
-                }}>Discard changes not sent</Button>}
-                {job.items.map((item, index) => item.outcome !== 'confirmed' && <div key={item.id}>
-                    <p>Requested {statusLabel(item.target)} for {item.name}</p>
-                    {item.message && <p>{item.message}</p>}
-                    {item.outcome === 'conflict' && <>
-                        <Button disabled={working || accessChanged || !!storageError} onClick={() => void reviewLatest(index)}>Review latest for {item.name}</Button>
-                        {item.reviewed && <><p>Latest status: {statusLabel(normalizeProductStatus(item.reviewed))}. Applying your request will use the reviewed version.</p><Button disabled={working || accessChanged || !!storageError} onClick={() => applyReviewed(index)}>Apply requested status for {item.name}</Button></>}
-                    </>}
-                </div>)}
-            </Section></Card>}
 
             {loading ? (
                 <Card>
@@ -498,7 +397,7 @@ export default function ProductsPage() {
                                 activeView={activeTab}
                                 onViewChange={(value) => setActiveTab(value as TabFilter)}
                                 filterChips={activeFilters}
-                                bulkActions={statusActionsBlocked ? [] : bulkActions}
+                                bulkActions={bulkActions}
                                 sortKey={sortKey}
                                 sortDirection={sortDirection}
                                 onSort={handleSort}

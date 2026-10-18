@@ -1,17 +1,26 @@
 import { z } from 'zod';
-import { ReelReviewSubmissionSchema, type ReelReviewPayload } from '@letbuyy/shared-types';
-export {
-  REEL_REVIEW_REQUEST_BYTES, ReelReviewSubmissionSchema, ReelDraftSelectionSchema, ReelMerchantCommandSchema, ReelReviewerCommandSchema,
-  type ReelReviewSubmission, type ReelDraftSelection, type ReelMerchantCommand, type ReelReviewerCommand,
-  type ReelSummary, type ReelReadback, type ReelReferenceOptions, type ReelReviewPage, type ReelReviewPayload,
-} from '@letbuyy/shared-types';
-
 
 const uuid = z.string().uuid().transform((value) => value.toLowerCase());
 const sha256 = z.string().regex(/^[a-f0-9]{64}$/, 'Expected an exact SHA-256 fingerprint');
 // Opaque, immutable provider/storage version, never a URL or a playback credential.
 const version = z.string().min(1).max(200).regex(/^[A-Za-z0-9._:-]+$/);
 const providerAssetId = z.string().min(1).max(200).regex(/^[A-Za-z0-9_-]+$/, 'Expected an opaque provider asset ID');
+
+/** Untrusted merchant selection/text only. Scope, content proof and approval are never caller fields. */
+export const ReelReviewSubmissionSchema = z.object({
+  media_asset_id: uuid,
+  listing_id: uuid,
+  variant_id: uuid.nullable(),
+  thumbnail_asset_id: uuid,
+  caption: z.string(),
+  rights_evidence_ids: z.array(uuid),
+}).strict().superRefine((input, ctx) => {
+  if (new Set(input.rights_evidence_ids).size !== input.rights_evidence_ids.length) {
+    ctx.addIssue({ code: 'custom', path: ['rights_evidence_ids'], message: 'Duplicate rights evidence' });
+  }
+});
+
+export type ReelReviewSubmission = z.infer<typeof ReelReviewSubmissionSchema>;
 
 const assetSchema = z.object({
   id: uuid,
@@ -166,6 +175,8 @@ export function buildReelReviewPayload(
     }))),
   });
 }
+
+export type ReelReviewPayload = ReturnType<typeof buildReelReviewPayload>;
 
 /** Digest is revision identity only, never approval or proof of provenance. No provider I/O. */
 export async function fingerprintReelReviewPayload(

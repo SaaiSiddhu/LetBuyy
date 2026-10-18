@@ -9,9 +9,7 @@
 import {
   createUrbanKicksLiquidThemeBundleFixture,
   parseLiquidThemePackageBundle,
-  MAX_BUNDLE_BLOCK_NESTING_DEPTH,
   type LiquidThemePackageBundle,
-  type ThemeBundleJson,
 } from './theme-bundle';
 import { createLetbuyyCoreLiquidThemeBundleFixture } from './theme-bundle-core';
 import { BLOCKED_DROP_KEYS } from './theme-renderer';
@@ -26,10 +24,6 @@ export interface PortableSectionInstance {
 export interface PortableThemeTemplateConfig {
   themeId?: string;
   themeSettings?: Record<string, unknown>;
-  templates?: Record<string, unknown>;
-  sectionGroups?: Record<string, unknown>;
-  settings_data?: Record<string, unknown>;
-  config?: Record<string, unknown>;
   sections?: {
     header?: PortableSectionInstance;
     template?: PortableSectionInstance[];
@@ -38,8 +32,6 @@ export interface PortableThemeTemplateConfig {
 }
 
 export interface CompilePortableToLiquidOptions {
-  /** Preserve the captured release's Liquid files while projecting its portable settings/templates. */
-  baseBundle?: LiquidThemePackageBundle;
   slug?: string;
   name?: string;
   /**
@@ -94,9 +86,9 @@ function resolveLiquidSectionType(portableType: string, available: ReadonlySet<s
 
 // Reduce merchant-supplied settings to plain JSON with safe keys. Values are not escaped here — the
 // renderer escapes them at output time — but anything non-serializable / unsafe-keyed is dropped.
-function plainSettings(settings: unknown): Record<string, ThemeBundleJson> {
+function plainSettings(settings: unknown): Record<string, unknown> {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return {};
-  const out: Record<string, ThemeBundleJson> = {};
+  const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(settings as Record<string, unknown>)) {
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) || BLOCKED_DROP_KEYS.has(key)) continue;
     try {
@@ -117,7 +109,6 @@ export function compilePortableToLiquidBundle(
   templateConfig: PortableThemeTemplateConfig,
   options: CompilePortableToLiquidOptions = {},
 ): CompilePortableToLiquidResult {
-  if (options.baseBundle) return projectExistingLiquidBundle(templateConfig, options.baseBundle);
   // Canonical first-party section/block/layout files. Core is the default so every compiled storefront
   // inherits neutral LetBuyy branding rather than the Urban Kicks demo strings (see baseTheme above).
   const base = options.baseTheme === 'urban-kicks'
@@ -227,133 +218,4 @@ export function compilePortableConfigForPublish(
     },
     warnings,
   };
-}
-
-
-// Project a saved portable document onto its own immutable Liquid code bundle.
-// Existing files and untouched templates remain byte-for-byte; no stock fixture
-// or new rendering authority is introduced on this branch.
-function projectExistingLiquidBundle(
-  input: PortableThemeTemplateConfig,
-  source: LiquidThemePackageBundle,
-): CompilePortableToLiquidResult {
-  const base = parseLiquidThemePackageBundle(source);
-  const object = (value: unknown): Record<string, unknown> =>
-    value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-  const own = (value: object, key: string) => Object.prototype.hasOwnProperty.call(value, key);
-  const id = (value: string) => {
-    if (!value || value.length > 120 || BLOCKED_DROP_KEYS.has(value) || /[\x00-\x1f\x7f]/.test(value)) throw new Error('Invalid portable Liquid instance id');
-    return value;
-  };
-  const collection = (value: unknown): Record<string, unknown> => {
-    if (Array.isArray(value)) {
-      const rows = value.map(value => {
-        const row = object(value);
-        if (typeof row.id !== 'string') throw new Error('Portable Liquid instances require stable ids');
-        return [id(row.id), row] as const;
-      });
-      if (new Set(rows.map(([key]) => key)).size !== rows.length) throw new Error('Portable Liquid instance ids must be distinct');
-      return Object.fromEntries(rows);
-    }
-    if (!value || typeof value !== 'object') throw new Error('Portable Liquid instances must be an object or array');
-    return Object.fromEntries(Object.entries(value).map(([key, row]) => [id(key), row]));
-  };
-  const ordered = (value: unknown, rows: Record<string, unknown>): string[] => {
-    if (value === undefined) return Object.keys(rows);
-    if (!Array.isArray(value) || value.some(key => typeof key !== 'string' || !own(rows, key)) || new Set(value).size !== value.length) {
-      throw new Error('Portable Liquid order must reference distinct existing instances');
-    }
-    return value as string[];
-  };
-  const disabled = (row: Record<string, unknown>, fallback = false): boolean => {
-    if (row.disabled === true) return true;
-    if (typeof row.visible === 'boolean') return !row.visible;
-    if (typeof row.isVisible === 'boolean') return !row.isVisible;
-    return typeof row.disabled === 'boolean' ? row.disabled : fallback;
-  };
-  type Section = LiquidThemePackageBundle['templates'][string]['sections'][string];
-  type Block = Section['blocks'][string];
-  const blocks = (value: unknown, order: unknown, previous: Section['blocks'], allowed: ReadonlySet<string>, depth = 0, aliases: Readonly<Record<string, string>> = {}): { blocks: Section['blocks']; block_order: string[] } => {
-    if (value === undefined) return { blocks: previous, block_order: order === undefined ? Object.keys(previous) : ordered(order, previous) };
-    const rows = collection(value);
-    if (depth >= MAX_BUNDLE_BLOCK_NESTING_DEPTH && Object.keys(rows).length > 0) throw new Error('Portable Liquid block nesting exceeds the canonical maximum');
-    const next: Section['blocks'] = Object.fromEntries(Object.entries(rows).map(([key, value]) => {
-      const row = object(value), old = previous[key];
-      const rawType = typeof row.type === 'string' ? row.type : old?.type;
-      if (!rawType) throw new Error('Portable Liquid block type is missing');
-      const existingType = allowed.has(rawType) || base.blocks[rawType] ? rawType :
-        allowed.has(toKebabCase(rawType)) || base.blocks[toKebabCase(rawType)] ? toKebabCase(rawType) : null;
-      const alias = aliases[rawType] || aliases[toKebabCase(rawType)];
-      const type = existingType ?? (alias && allowed.has(alias) ? alias : rawType);
-      const nestedOrder = row.blocks === undefined && row.block_order === undefined ? old?.block_order : row.block_order;
-      const nested = blocks(row.blocks, nestedOrder, old?.blocks || {}, new Set(Object.keys(base.blocks)), depth + 1);
-      const result: Block = { type, settings: own(row, 'settings') ? plainSettings(row.settings) : old?.settings || {},
-        disabled: disabled(row, old?.disabled), ...nested };
-      return [key, result];
-    }));
-    return { blocks: next, block_order: ordered(order, next) };
-  };
-  const section = (value: unknown, previous?: Section): Section => {
-    const row = object(value), rawType = typeof row.type === 'string' ? row.type : previous?.type;
-    if (!rawType) throw new Error('Portable Liquid section type is missing');
-    const type = resolveLiquidSectionType(rawType, new Set(Object.keys(base.sections)));
-    if (!type) throw new Error('Portable section has no section file in the captured Liquid bundle: ' + rawType);
-    const inlineTypes = new Set(base.sections[type].schema.blocks.map(block => block.type));
-    const allowed = new Set([...Object.keys(base.blocks), ...inlineTypes]);
-    // Canonical portable navigation names share label/href with these first-party inline links.
-    // Existing captured definitions win; no alias is invented without the containing section's code.
-    const aliases: Readonly<Record<string, string>> = !inlineTypes.has('link') ? {} : type === 'header'
-      ? { navPage: 'link', 'nav-page': 'link' } : type === 'footer'
-        ? { footerLink: 'link', 'footer-link': 'link' } : {};
-    const nested = own(row, 'blocks') ? blocks(row.blocks, row.block_order, previous?.blocks || {}, allowed, 0, aliases) :
-      { blocks: previous?.blocks || {}, block_order: row.block_order === undefined ? previous?.block_order || [] : ordered(row.block_order, previous?.blocks || {}) };
-    return { type, settings: own(row, 'settings') ? plainSettings(row.settings) : previous?.settings || {},
-      disabled: disabled(row, previous?.disabled), ...nested };
-  };
-  const templates = { ...base.templates };
-  const projectTemplate = (key: string, value: unknown) => {
-    id(key);
-    const row = object(value), previous = templates[key];
-    if (!own(row, 'sections')) return;
-    const rows = collection(row.sections);
-    const next = Object.fromEntries(Object.entries(rows).map(([key, value]) => [key, section(value, previous?.sections[key])]));
-    templates[key] = { ...(previous || {}),
-      ...(typeof row.name === 'string' ? { name: row.name } : {}),
-      ...(typeof row.layout === 'string' ? { layout: row.layout } : {}),
-      sections: next, order: ordered(row.order, next) };
-  };
-  const portableTemplates = object(input.templates);
-  for (const [key, value] of Object.entries(portableTemplates)) {
-    projectTemplate(key === 'home' && !own(portableTemplates, 'index') && !own(base.templates, 'home') ? 'index' : key, value);
-  }
-  const groups = object(input.sectionGroups);
-  for (const key of ['header', 'footer']) {
-    if (!own(portableTemplates, key) && own(groups, key)) projectTemplate(key, groups[key]);
-  }
-  const root = object(input.sections);
-  if (Object.keys(portableTemplates).length === 0 && own(root, 'template')) {
-    projectTemplate('index', { sections: root.template });
-  }
-  for (const key of ['header', 'footer']) {
-    if (!own(root, key)) continue;
-    const value = root[key], row = object(value), current = templates[key];
-    if (!current) {
-      if (value === null) continue;
-      projectTemplate(key, { sections: [row] });
-      continue;
-    }
-    const desiredType = typeof row.type === 'string' ? resolveLiquidSectionType(row.type, new Set(Object.keys(base.sections))) : key;
-    const matches = Object.keys(current.sections).filter(id => current.sections[id].type === desiredType);
-    const target = typeof row.id === 'string' && own(current.sections, row.id) ? row.id : matches.length === 1 ? matches[0] : null;
-    if (!target) throw new Error('Review the captured global Liquid section before changing it');
-    templates[key] = { ...current, sections: { ...current.sections,
-      [target]: value === null ? { ...current.sections[target], disabled: true } : section(row, current.sections[target]) } };
-  }
-  const settings = object(input.settings_data), config = object(input.config), nestedSettings = object(config.settings_data);
-  const current = { ...base.config.settings_data?.current,
-    ...plainSettings(nestedSettings.current), ...plainSettings(settings.current), ...plainSettings(input.themeSettings) };
-  const bundle = parseLiquidThemePackageBundle({ ...base, templates,
-    config: { ...base.config, settings_data: { ...base.config.settings_data, current,
-      presets: { ...base.config.settings_data?.presets, ...object(nestedSettings.presets), ...object(settings.presets) } } } });
-  return { bundle, warnings: [] };
 }

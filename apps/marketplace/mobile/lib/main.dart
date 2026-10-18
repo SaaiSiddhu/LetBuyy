@@ -10,7 +10,6 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 // Canonical gateway wiring (FB-2)
 import 'data/canonical_api.dart';
-import 'data/buyer_support_commands.dart';
 import 'data/marketplace_repository.dart';
 
 // Sign in with LetBuyy (APPID-P4d) — the app's sole sign-in as of Phase 1R
@@ -252,7 +251,6 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         Provider<BuyerAddressApi>(create: (_) => buildBuyerAddressApi()),
         Provider<BuyerOrdersApi>(create: (_) => buildBuyerOrdersApi()),
         Provider<BuyerSupportApi>(create: (_) => buildBuyerSupportApi()),
-        Provider<BuyerSupportCommands>(create: (_) => BuyerSupportCommands()),
         Provider<BuyerLoyaltyApi>(create: (_) => buildBuyerLoyaltyApi()),
       ],
       child: Consumer<ThemeProvider>(

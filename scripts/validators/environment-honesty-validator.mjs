@@ -88,37 +88,10 @@ reporter.assert(
 
 const mobileTemplate = readFile("config/env/templates/mobile.dart-defines.example");
 const mobileSchema = readFile("config/env/schemas/mobile.schema.json");
-// Native builds must never receive provider credentials/model configuration.
-// Buyer purpose/profile/caps live only at the canonical server boundary.
-export function buyerAiConfigurationProblems(input) {
-  const problems = [];
-  for (const key of ["GEMINI_API_KEY", "GEMINI_BASE_URL", "GEMINI_MODEL", "BUYER_AI_API_KEY", "BUYER_AI_PROFILE", "BUYER_AI_FINGERPRINT_KEY"]) {
-    if (input.mobileTemplate.includes(key) || input.mobileSchema.includes(key)) problems.push(`Native provider configuration is forbidden: ${key}`);
-  }
-  if (/gemini_config|GeminiConfig/.test(input.coreExports)) problems.push("Native core must not export retired provider configuration");
-  if (/google_generative_ai|GenerativeModel|GEMINI_(API_KEY|BASE_URL|MODEL)|generativelanguage\.googleapis\.com|generateContent/.test(input.nativeSource)) problems.push("Native source must not contain provider key/model/endpoint or SDK calls");
-  let worker;
-  try { worker = JSON.parse(input.workerSchema); } catch { problems.push("Worker schema must be valid"); return problems; }
-  const required = ["BUYER_AI_PROFILE", "BUYER_AI_API_KEY", "BUYER_AI_FINGERPRINT_KEY"];
-  const gated = worker.allOf?.some(rule => rule.if?.properties?.BUYER_AI_ENABLED?.const === "true" &&
-    required.every(key => rule.then?.required?.includes(key)));
-  if (!gated) problems.push("Enabled buyer AI must require server-only profile and secrets");
-  const profile = worker.$defs?.BuyerAiProfile;
-  if (profile?.properties?.approved?.const !== true || profile?.properties?.purpose?.const !== "buyer_shopping_public" ||
-      profile?.properties?.content_scope?.const !== "submitted_message_and_visible_chat") problems.push("Buyer AI must require its explicitly approved purpose/content profile");
-  for (const cap of ["requests_per_day", "token_bound_per_day", "max_input_bytes", "max_output_tokens", "timeout_ms", "input_token_bound_per_byte", "input_framing_token_bound"]) {
-    const limit = profile?.properties?.[cap];
-    if (!profile?.required?.includes(cap) || limit?.type !== "integer" || !(limit.minimum > 0) || !Number.isFinite(limit.maximum)) problems.push(`Buyer AI must require bounded server cap: ${cap}`);
-  }
-  return problems;
+for (const key of ["GEMINI_API_KEY", "GEMINI_BASE_URL", "GEMINI_MODEL"]) {
+  reporter.assert(mobileTemplate.includes(`${key}=`), `Mobile env template missing ${key}`);
+  reporter.assert(mobileSchema.includes(`"${key}"`), `Mobile env schema missing ${key}`);
 }
-const buyerProblems = buyerAiConfigurationProblems({
-  mobileTemplate, mobileSchema,
-  coreExports: [readFile("packages/dart/core/lib/letbuyy_core.dart"), readFile("packages/dart/marketplace_core/lib/letbuyy_marketplace_core.dart")].join("\n"),
-  nativeSource: [readFile("packages/dart/core/lib/src/config/gemini_config.dart"), readFile("packages/dart/marketplace_core/lib/src/config/gemini_config.dart"), readFile("packages/dart/marketplace_services/lib/src/ai_chat_service.dart")].join("\n"),
-  workerSchema: readFile("config/env/schemas/worker.schema.json"),
-});
-for (const problem of buyerProblems) reporter.assert(false, problem);
 
 const nextTemplate = readFile("config/env/templates/next-app.env.example");
 const nextSchema = readFile("config/env/schemas/next-app.schema.json");

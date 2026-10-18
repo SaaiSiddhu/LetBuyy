@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path';
 import { lookup } from 'node:dns/promises';
 import { verifyOwnedFixture, OWNED_FIXTURE_ENV } from './owned-fixture-guard.mjs';
 
-const TYPES = new Set(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
+const TYPES = new Set(['commerce-next', 'identity-next', 'merchant-next', 'console-next', 'commerce-next-production', 'identity-next-production', 'merchant-next-production', 'commerce-session-smoke', 'marketplace-flutter', 'buyer-orders-dart', 'lifecycle-probe']);
 const isNextKind = kind => kind.endsWith('-next') || kind.endsWith('-next-production');
 const [kind, parentText, rootText, portText] = process.argv.slice(2);
 let client;
@@ -111,10 +111,6 @@ try {
         command = 'dart';
         cwd = join(root, 'packages/dart/api_client');
         args = ['test', 'owned_test/buyer_orders_owned_gateway_test.dart'];
-    } else if (kind === 'money-ledger-scheduled-probe') {
-        args = ['--import','tsx',join(root,'scripts/governance/owned-money-ledger-scheduled-probe.mjs')];
-    } else if (kind === 'subscription-restart') {
-        args = ['--import','tsx',join(root,'scripts/governance/owned-subscription-restart-probe.mjs')];
     } else {
         args = ['--import','tsx',join(root,'scripts/governance/owned-client-lifecycle-probe.mjs')];
     }

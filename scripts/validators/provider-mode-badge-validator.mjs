@@ -20,14 +20,11 @@ for (const required of [
   "apps/merchant/web/src/app/[store]/settings/shipping/page.tsx",
   "apps/merchant/web/src/app/[store]/orders/page.tsx",
   "apps/merchant/mobile/lib/screens/money/money_screen.dart",
+  "apps/merchant/mobile/lib/screens/settings/billing_screen.dart",
   "apps/merchant/mobile/lib/screens/orders/order_detail_screen.dart",
   "apps/merchant/mobile/lib/screens/dashboard/home_screen.dart",
 ]) {
   reporter.assert(readFile(required).includes("provider_mode"), `${required} must expose provider_mode honesty evidence`);
-}
-const mobileBilling = readFile("apps/merchant/mobile/lib/screens/settings/billing_screen.dart");
-for (const evidence of ["ProviderMode.parse(_subscription?.providerMode)", "ProviderModeBadge(mode: providerMode", "Provider status unavailable"]) {
-  reporter.assert(mobileBilling.includes(evidence), `Mobile billing must render confirmed provider mode or its honest unavailable state: ${evidence}`);
 }
 
 for (const required of [
@@ -333,8 +330,7 @@ reporter.assert(storefrontCartRoutes.includes("letbuyy-local-sandbox-checkout-ha
 // produced. There is no longer a media-route local fallback secret to badge.
 reporter.assert(!mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route must not reintroduce the deleted local upload secret");
 reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
-reporter.assert(!shippingRoute.includes("sandbox-standard"), "shipping must not fabricate a fallback rate when stored rates are unavailable");
-reporter.assert(shippingRoute.includes("SHIPPING_CONFIGURATION_UNAVAILABLE") && shippingRoute.includes(".from('shipping_rates')"), "shipping must read configured rates and report unavailable configuration");
+reporter.assert(shippingRoute.includes("sandbox-standard"), "shipping route local fallback rate must expose sandbox-standard");
 reporter.assert(logisticsAdapter.includes("LOGISTICS_LIVE_PROVIDER_UNAVAILABLE"), "logistics adapter live mode must fail closed while real carrier clients are absent");
 reporter.assert(logisticsAdapter.includes("assertSandboxMode"), "logistics adapter must restrict non-live labels to sandbox mode");
 for (const [label, source] of [

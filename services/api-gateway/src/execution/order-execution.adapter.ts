@@ -10,7 +10,7 @@ import {
 } from '@letbuyy/shared-types';
 import { AppError, NotFoundError, ForbiddenError, ValidationError, ConflictError } from '../lib/errors';
 import type { TenantContext } from '../lib/tenant-context';
-import { SaasExecutionAdapter, assertResolvedCreationEntitlements } from './saas-execution.adapter';
+import { SaasExecutionAdapter } from './saas-execution.adapter';
 import {
     planOrderStatusTransition,
     type CompleteRefundCommand,
@@ -251,7 +251,6 @@ export class OrderExecutionAdapter {
 
     private async assertOrderQuota(siteId: string): Promise<void> {
         const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(siteId);
-        assertResolvedCreationEntitlements(entitlements);
         const rawLimit = entitlements.limits.orders_monthly;
         if (rawLimit === null || rawLimit === undefined) return;
 

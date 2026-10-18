@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { SubscriptionTaxSummarySchema, type SubscriptionTaxSummary } from '@letbuyy/api-client'
 import { useRouter } from 'next/navigation'
 import { SUBSCRIPTION_OFFERS, type SubscriptionPlanView } from '@/lib/billing/plan-ui'
-import { Button, Input, MaterialIcon } from '@letbuyy/ui'
-import { retainSubscriptionCheckoutIntent, completeSubscriptionCheckoutIntent, readPendingSubscriptionCheckoutIntent, PendingSubscriptionCheckoutError, type SubscriptionCheckoutIntent } from '@/lib/billing/subscription-checkout-intent'
+import { Button, Input, Select, MaterialIcon } from '@letbuyy/ui'
+import { retainSubscriptionCheckoutIntent, completeSubscriptionCheckoutIntent } from '@/lib/billing/subscription-checkout-intent'
 
 declare global {
     interface Window {
@@ -36,6 +35,19 @@ interface AppliedCoupon {
     amount_minor: number
     description: string | null
 }
+
+const STATES = [
+    'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar',
+    'Chandigarh', 'Chhattisgarh', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh',
+    'Jammu and Kashmir', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra',
+    'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim',
+    'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+]
+
+const stateOptions = [
+    { value: '', label: 'Select state' },
+    ...STATES.map((stateName) => ({ value: stateName, label: stateName })),
+]
 
 function cx(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(' ')
@@ -82,21 +94,6 @@ function coerceNumber(value: unknown) {
     return Number.isFinite(amount) ? amount : 0
 }
 
-// Validate only the public canonical DTO; supplier/recipient facts stay server-side.
-function validateSubscriptionTaxQuote(payload: unknown): SubscriptionTaxSummary {
-    const data = isRecord(payload) ? payload : {}
-    const parsed = SubscriptionTaxSummarySchema.safeParse(data.tax)
-    if (!parsed.success || !Number.isSafeInteger(data.amount) || data.currency !== 'INR'
-        || parsed.data.gross_minor !== data.amount) {
-        throw new Error('The saved subscription quote needs review. Recover the original checkout or contact support.')
-    }
-    return parsed.data
-}
-
-function formatMinor(value: number) {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 100)
-}
-
 function normalizeOrderData(payload: unknown) {
     const data = isRecord(payload) ? payload : {}
 
@@ -124,28 +121,23 @@ export default function CheckoutClient({
     const [billingPeriod, setBillingPeriod] = useState(initialBillingPeriod)
     const [isProcessing, setIsProcessing] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [serverQuote, setServerQuote] = useState<{ tax: SubscriptionTaxSummary; planSlug: string; period: string } | null>(null)
-    const [pendingCheckout, setPendingCheckout] = useState<SubscriptionCheckoutIntent | null>(null)
-    useEffect(() => {
-        let current = true
-        if (navigator.locks) {
-            void readPendingSubscriptionCheckoutIntent(userId, localStorage, navigator.locks).then(intent => {
-                if (current) setPendingCheckout(intent)
-            }).catch(() => { if (current) setError('Pending checkout details are unavailable. Keep browser data and contact support.') })
-        }
-        return () => { current = false }
-    }, [userId])
 
-    // Optional Razorpay contact prefill. Invoice facts come from the saved store profile.
+    // Billing address (used for payment + GST invoicing)
     const [fullName, setFullName] = useState('')
+    const [businessName, setBusinessName] = useState('')
+    const [gstin, setGstin] = useState('')
     const [phone, setPhone] = useState('')
+    const [address1, setAddress1] = useState('')
+    const [address2, setAddress2] = useState('')
+    const [city, setCity] = useState('')
+    const [pinCode, setPinCode] = useState('')
+    const [state, setState] = useState('')
 
     // Coupon
     const [couponInput, setCouponInput] = useState('')
     const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
     const [couponError, setCouponError] = useState<string | null>(null)
     const [couponLoading, setCouponLoading] = useState(false)
-    useEffect(() => { setServerQuote(null) }, [billingPeriod, appliedCoupon])
 
     const monthlyCents = coerceNumber(plan.price_monthly_inr)
     const yearlyCents = coerceNumber(plan.price_yearly_inr)
@@ -265,55 +257,36 @@ export default function CheckoutClient({
         setCouponError(null)
     }
 
-    const handleSubscribe = async (recovery?: SubscriptionCheckoutIntent) => {
+    const handleSubscribe = async () => {
         setIsProcessing(true)
         setError(null)
-        setServerQuote(null)
 
         try {
             if (!navigator.locks) throw new Error('Please use an updated browser to keep checkout progress safe.')
-            const requestedBody = {
+            const orderBody = {
                 store_id: storeId,
                 plan_slug: plan.slug,
                 billing_period: billingPeriod,
                 site_type: siteType,
                 ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
             }
-            if (recovery && recovery.actorId !== userId) throw new Error('Your account changed. Reopen checkout in the current account.')
-            const intent = recovery || await retainSubscriptionCheckoutIntent(userId, requestedBody, localStorage, navigator.locks, undefined,
-                `/${storeSlug}/dashboard?subscribed=${plan.slug}`)
-            setPendingCheckout(intent)
-            const orderBody = intent.body
-            const destination = intent.returnPath || (orderBody.store_id === storeId ? `/${storeSlug}/dashboard?subscribed=${orderBody.plan_slug}` : '/')
+            const intent = await retainSubscriptionCheckoutIntent(userId, orderBody, localStorage, navigator.locks)
             const orderRes = await fetch('/api/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': intent.key },
-                body: JSON.stringify({...orderBody, expected_actor_id: userId}),
+                body: JSON.stringify(orderBody),
             })
 
             const orderPayload = await orderRes.json().catch(() => null)
-            if (!orderRes.ok) {
-                const code = isRecord(orderPayload) && isRecord(orderPayload.error) ? orderPayload.error.code : null
-                // Only named validation failures prove this request had no effect.
-                // Network/5xx/source conflicts retain the immutable pending intent.
-                if (orderRes.status === 400 && ['VALIDATION_ERROR', 'INVALID_INPUT', 'CHECKOUT_ACTOR_REQUIRED', 'IDEMPOTENCY_KEY_REQUIRED'].includes(String(code))) {
-                    await completeSubscriptionCheckoutIntent(intent, localStorage, navigator.locks)
-                    setPendingCheckout(null)
-                }
-                throw new Error(paymentErrorMessage(orderPayload, 'Checkout is pending. Recover the original checkout to retry safely.'))
-            }
+            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderPayload, 'Failed to create order'))
 
             const orderData = normalizeOrderData(orderPayload)
 
             if (orderData.activated || orderData.checkout_mode === 'free_activation') {
                 await completeSubscriptionCheckoutIntent(intent, localStorage, navigator.locks).catch(() => {})
-                setPendingCheckout(null)
-                router.push(destination)
+                router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
                 return
             }
-
-            const tax = validateSubscriptionTaxQuote(orderPayload)
-            setServerQuote({ tax, planSlug: orderBody.plan_slug, period: orderBody.billing_period })
 
             if (!orderData.key_id || (!orderData.razorpay_order_id && !orderData.razorpay_subscription_id)) {
                 throw new Error('Payment gateway is not configured for subscription checkout')
@@ -337,16 +310,16 @@ export default function CheckoutClient({
                 amount: orderData.amount,
                 currency: 'INR',
                 name: 'LetBuyy',
-                description: `${orderBody.plan_slug} Plan - ${orderBody.billing_period === 'yearly' ? 'Annual' : 'Monthly'}`,
+                description: `${plan.name} Plan - ${billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
                 prefill: {
                     name: fullName || undefined,
                     email: userEmail,
                     contact: phone || undefined,
                 },
                 notes: {
-                    store_id: orderBody.store_id,
-                    plan_slug: orderBody.plan_slug,
-                    ...(orderBody.coupon_code ? { coupon_code: orderBody.coupon_code } : {}),
+                    store_id: storeId,
+                    plan_slug: plan.slug,
+                    ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
                 },
                 theme: { color: checkoutThemeColor() },
                 modal: {
@@ -369,12 +342,15 @@ export default function CheckoutClient({
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': `subscription-verify:${response.razorpay_payment_id}` },
                             body: JSON.stringify({
-                                expected_actor_id: userId,
                                 razorpay_order_id: response.razorpay_order_id || orderData.razorpay_order_id || undefined,
                                 razorpay_subscription_id: response.razorpay_subscription_id || orderData.razorpay_subscription_id || undefined,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
-                                ...orderBody,
+                                store_id: storeId,
+                                plan_slug: plan.slug,
+                                billing_period: billingPeriod,
+                                site_type: siteType,
+                                ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
                             }),
                         })
                         const verifyData = await verifyRes.json().catch(() => null)
@@ -384,8 +360,7 @@ export default function CheckoutClient({
                             return
                         }
                         await completeSubscriptionCheckoutIntent(intent, localStorage, navigator.locks).catch(() => {})
-                        setPendingCheckout(null)
-                        router.push(destination)
+                        router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
                     } catch {
                         setError('Payment verification failed. Contact support.')
                         setIsProcessing(false)
@@ -400,14 +375,12 @@ export default function CheckoutClient({
 
             razorpay.open()
         } catch (err) {
-            if (err instanceof PendingSubscriptionCheckoutError) setPendingCheckout(err.intent)
-            setError(err instanceof Error ? err.message : 'Checkout is pending. Recover the original checkout to retry safely.')
+            setError(err instanceof Error ? err.message : 'Something went wrong')
             setIsProcessing(false)
         }
     }
 
     const cadenceLabel = billingPeriod === 'yearly' ? 'Annual subscription' : 'Monthly subscription'
-    const pendingStoreName = pendingCheckout?.body.store_id === storeId ? storeName : pendingCheckout?.returnPath?.split('/')[1] || 'the original store'
 
     return (
         <div className="select-plan-page">
@@ -556,11 +529,11 @@ export default function CheckoutClient({
                     )}
 
                     {!isFreePlan && (
-                        <section className="checkout-card" aria-label="Payment contact">
+                        <section className="checkout-card" aria-label="Billing address">
                             <div className="checkout-card-head">
                                 <div>
-                                    <h2 className="checkout-card-title">Payment contact</h2>
-                                    <p className="checkout-card-sub">Optional details to prefill your payment window.</p>
+                                    <h2 className="checkout-card-title">Billing details</h2>
+                                    <p className="checkout-card-sub">Used for payment and your GST invoice.</p>
                                 </div>
                             </div>
                             <div className="checkout-fields checkout-fields--stack">
@@ -569,7 +542,7 @@ export default function CheckoutClient({
                                         label="Full name"
                                         value={fullName}
                                         onChange={(event) => setFullName(event.target.value)}
-                                        placeholder="Contact name"
+                                        placeholder="Name on the invoice"
                                         autoComplete="name"
                                     />
                                     <Input
@@ -581,12 +554,62 @@ export default function CheckoutClient({
                                         autoComplete="tel"
                                     />
                                 </div>
-                                <p className="checkout-card-sub">
-                                    Invoices use your saved business name, tax ID and billing address.
-                                    {' '}Review <Link href={`/${storeSlug}/settings/general`}>Business details</Link>
-                                    {' '}and <Link href={`/${storeSlug}/settings/billing/profile`}>Billing profile</Link> before paying.
-                                    {' '}Advertised subscription prices include applicable tax. A GSTIN alone does not create an exemption.
-                                </p>
+                                <div className="checkout-fields">
+                                    <Input
+                                        label="Business name"
+                                        value={businessName}
+                                        onChange={(event) => setBusinessName(event.target.value)}
+                                        placeholder="Registered business (optional)"
+                                        autoComplete="organization"
+                                    />
+                                    <Input
+                                        label="GSTIN"
+                                        value={gstin}
+                                        onChange={(event) => setGstin(event.target.value.toUpperCase())}
+                                        placeholder="15-digit GSTIN (optional)"
+                                        maxLength={15}
+                                    />
+                                </div>
+                                <Input
+                                    label="Address line 1"
+                                    value={address1}
+                                    onChange={(event) => setAddress1(event.target.value)}
+                                    placeholder="Street address"
+                                    autoComplete="address-line1"
+                                />
+                                <Input
+                                    label="Address line 2"
+                                    value={address2}
+                                    onChange={(event) => setAddress2(event.target.value)}
+                                    placeholder="Apartment, suite, etc. (optional)"
+                                    autoComplete="address-line2"
+                                />
+                                <div className="checkout-fields">
+                                    <Input
+                                        label="City"
+                                        value={city}
+                                        onChange={(event) => setCity(event.target.value)}
+                                        placeholder="City"
+                                        autoComplete="address-level2"
+                                    />
+                                    <Input
+                                        label="PIN code"
+                                        value={pinCode}
+                                        onChange={(event) => setPinCode(event.target.value)}
+                                        placeholder="6-digit PIN"
+                                        maxLength={6}
+                                        autoComplete="postal-code"
+                                    />
+                                </div>
+                                <div className="checkout-fields">
+                                    <Select
+                                        label="State"
+                                        value={state}
+                                        onChange={(event) => setState(event.target.value)}
+                                        options={stateOptions}
+                                    />
+                                    <Input label="Country" value="India" disabled />
+                                </div>
                             </div>
                         </section>
                     )}
@@ -599,45 +622,31 @@ export default function CheckoutClient({
                                 <MaterialIcon name="storefront" size={20} />
                             </span>
                             <div className="checkout-brand-copy">
-                                <span className="checkout-brand-name">{serverQuote ? serverQuote.planSlug : plan.name} plan</span>
-                                <span className="checkout-brand-sub">{serverQuote ? `Saved ${serverQuote.period} checkout` : cadenceLabel}</span>
+                                <span className="checkout-brand-name">{plan.name} plan</span>
+                                <span className="checkout-brand-sub">{cadenceLabel}</span>
                             </div>
                         </div>
 
                         <div className="checkout-amount-row">
                             <span className="checkout-amount-label">Amount due today</span>
                             <span className="checkout-amount-stack">
-                                {!serverQuote && appliedCoupon && discountDue > 0 && (
+                                {appliedCoupon && discountDue > 0 && (
                                     <span className="checkout-amount-was">{formatRupees(baseDue)}</span>
                                 )}
-                                <span className="checkout-amount">{serverQuote ? formatMinor(serverQuote.tax.gross_minor) : isFreePlan ? 'Free' : formatRupees(finalDue)}</span>
+                                <span className="checkout-amount">{isFreePlan ? 'Free' : formatRupees(finalDue)}</span>
                             </span>
                         </div>
 
-                        {!serverQuote && appliedCoupon && discountDue > 0 && (
+                        {appliedCoupon && discountDue > 0 && (
                             <div className="checkout-summary-discount">
                                 <span><MaterialIcon name="local_offer" size={14} /> {appliedCoupon.code}</span>
                                 <span>−{formatRupees(discountDue)}</span>
                             </div>
                         )}
 
-                        {serverQuote && (
-                            <section aria-label="Saved subscription tax quote" aria-live="polite">
-                                <p>Tax is included in this saved subscription total.</p>
-                                <dl>
-                                    <div><dt>Taxable value</dt><dd>{formatMinor(serverQuote.tax.taxable_minor)}</dd></div>
-                                    {serverQuote.tax.supply_type === 'intra_state' ? <>
-                                        <div><dt>CGST</dt><dd>{formatMinor(serverQuote.tax.cgst_minor)}</dd></div>
-                                        <div><dt>SGST</dt><dd>{formatMinor(serverQuote.tax.sgst_minor)}</dd></div>
-                                    </> : <div><dt>IGST</dt><dd>{formatMinor(serverQuote.tax.igst_minor)}</dd></div>}
-                                    <div><dt>Final total</dt><dd>{formatMinor(serverQuote.tax.gross_minor)}</dd></div>
-                                </dl>
-                            </section>
-                        )}
-
                         <div className="checkout-divider" />
 
-                        {!serverQuote && <ol className="checkout-timeline">
+                        <ol className="checkout-timeline">
                             {timeline.map((entry, index) => (
                                 <li key={`${entry.label}-${index}`} className="checkout-timeline-item">
                                     <span className={cx('checkout-timeline-dot', entry.isActive && 'is-active')}>
@@ -655,9 +664,9 @@ export default function CheckoutClient({
                                     </span>
                                 </li>
                             ))}
-                        </ol>}
+                        </ol>
 
-                        {!serverQuote && !isFreePlan && SUBSCRIPTION_OFFERS.length > 0 && (
+                        {!isFreePlan && SUBSCRIPTION_OFFERS.length > 0 && (
                             <>
                                 <div className="checkout-divider" />
                                 <details className="checkout-offers">
@@ -686,16 +695,8 @@ export default function CheckoutClient({
                             </div>
                         )}
 
-                        {pendingCheckout && (
-                            <div role="status" className="checkout-pending">
-                                <p>A checkout for {pendingStoreName} may still be pending. Recover its original {pendingCheckout.body.billing_period} {pendingCheckout.body.plan_slug} request.</p>
-                                <Button type="button" onClick={() => void handleSubscribe(pendingCheckout)} disabled={isProcessing} fullWidth>
-                                    Recover pending checkout
-                                </Button>
-                            </div>
-                        )}
-                        <Button type="button" onClick={() => void handleSubscribe(serverQuote && pendingCheckout ? pendingCheckout : undefined)} loading={isProcessing} fullWidth>
-                            {isFreePlan && !serverQuote ? (
+                        <Button type="button" onClick={handleSubscribe} loading={isProcessing} fullWidth>
+                            {isFreePlan ? (
                                 <>
                                     <MaterialIcon name="check_circle" size={18} />
                                     Activate {plan.name} plan
@@ -703,7 +704,7 @@ export default function CheckoutClient({
                             ) : (
                                 <>
                                     <MaterialIcon name="lock" size={18} />
-                                    {serverQuote ? 'Continue saved checkout' : 'Subscribe'} — {serverQuote ? formatMinor(serverQuote.tax.gross_minor) : formatRupees(finalDue)}
+                                    Subscribe — {formatRupees(finalDue)}
                                 </>
                             )}
                         </Button>

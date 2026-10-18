@@ -46,7 +46,7 @@ test('products are isolated by owned store for read, update, and delete paths', 
     // assertStaffPermission) -- not re-derived through an owner-only lookup, which used to reject a
     // real, permitted staff member's already-authorized request (see routes/products.ts:1170's
     // "routing note" and docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md).
-    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>,/);
+    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>\)/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*productStoreId,\s*customUser\.id\)/);
     assert.match(adapterSource, /private async loadProductScopedToStore/);
     // APPID-FIX2 (still holds, in a tighter form): the lookup carries an EXACT store predicate
@@ -207,10 +207,10 @@ test('theme editor instances, drafts, releases, and installs are isolated by own
     const routeSource = source('routes/themes.ts');
     const adapterSource = source('execution/theme-execution.adapter.ts');
 
-    assert.match(routeSource, /service\.verifyThemeEditorStore\(queryResult\.data\.store_id,\s*customUser\.id\)/);
+    assert.match(routeSource, /service\.verifyStoreOwner\(queryResult\.data\.store_id,\s*customUser\.id\)/);
     assert.match(routeSource, /service\.loadEditor\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*parsed\.data\.template_key\)/);
     assert.match(routeSource, /service\.saveDraft\(slug,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
-    assert.match(routeSource, /service\.deleteDraft\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*getRequestId\(c\),\s*parsed\.data\.template_key,\s*parsed\.data\)/);
+    assert.match(routeSource, /service\.deleteDraft\(slug,\s*parsed\.data\.store_id,\s*customUser\.id,\s*getRequestId\(c\),\s*parsed\.data\.template_key\)/);
     assert.match(routeSource, /service\.publish\(slug,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
     assert.match(routeSource, /service\.rollbackRelease\(slug,\s*releaseId,\s*body,\s*customUser\.id,\s*getRequestId\(c\)\)/);
     assert.match(adapterSource, /async verifyStoreOwner\(storeId: string,\s*userId: string\)/);

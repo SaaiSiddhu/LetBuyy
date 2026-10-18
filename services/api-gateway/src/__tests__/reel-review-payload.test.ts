@@ -1,12 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { Hono } from 'hono';
-import * as publicReelContracts from '@letbuyy/shared-types';
-import { parseDomainEventPayload, getDomainEventContract, queueNamesForEvent } from '@letbuyy/event-core';
-import { ReelMerchantCommandSchema, ReelReviewerCommandSchema, REEL_REVIEW_REQUEST_BYTES } from '../schemas/reel.schema';
-import { readReelRequest } from '../execution/reel-review.adapter';
-import { createReelReviewSdk, type LetbuyyRequestOptions } from '@letbuyy/api-client';
 import {
   ReelReviewSubmissionSchema,
   ReelReviewBindingError,
@@ -19,64 +13,6 @@ import {
 
 const id = (number: number) => `00000000-0000-4000-8000-${number.toString().padStart(12, '0')}`;
 const hash = (letter: string) => letter.repeat(64);
-
-type SameType<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
-const publicPayloadMatchesBuilder: SameType<publicReelContracts.ReelReviewPayload, ReturnType<typeof buildReelReviewPayload>> = true;
-test('public reel contracts have one shared owner and CMS remains a compatible facade', () => {
-  assert.equal(ReelReviewSubmissionSchema, publicReelContracts.ReelReviewSubmissionSchema);
-  assert.equal(ReelMerchantCommandSchema, publicReelContracts.ReelMerchantCommandSchema);
-  assert.equal(ReelReviewerCommandSchema, publicReelContracts.ReelReviewerCommandSchema);
-  assert.equal(publicPayloadMatchesBuilder, true);
-  assert.equal('buildReelReviewPayload' in publicReelContracts, false);
-});
-
-test('private HTTP command budgets reject authority injection, oversized caption/evidence and illegal decisions', () => {
-  const command = { action: 'save', expected_version: 0, idempotency_key: 'owned-request-key', selection: {
-    media_asset_id: null, listing_id: null, variant_id: null, thumbnail_asset_id: null, caption: '', rights_evidence_ids: [],
-  } };
-  assert.equal(ReelMerchantCommandSchema.safeParse(command).success, true);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, idempotency_key: 'k'.repeat(200) }).success, true);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, idempotency_key: 'k'.repeat(201) }).success, false);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, action: 'submit' }).success, false);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, serverResolved: fixture().context }).success, false);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, selection: { ...command.selection, caption: 'x'.repeat(4001) } }).success, false);
-  assert.equal(ReelMerchantCommandSchema.safeParse({ ...command, selection: { ...command.selection, rights_evidence_ids: Array.from({ length: 21 }, (_, n) => id(n + 1)) } }).success, false);
-  assert.equal(ReelReviewerCommandSchema.safeParse({ action: 'reject', expected_version: 2, idempotency_key: 'owned-review-key', reason: 'short' }).success, false);
-  assert.equal(ReelReviewerCommandSchema.safeParse({ action: 'approve', expected_version: 2, idempotency_key: 'owned-review-key', inspected: true }).success, false);
-});
-
-test('private review catalogue accepts metadata only and declares no queue or external consumer', () => {
-  const payload = { site_id: id(1), reel_id: id(2), revision_id: id(3), action: 'save', version: 1 };
-  for (const action of ['save', 'submit', 'claim', 'reject', 'approve', 'take_down']) assert.equal(parseDomainEventPayload('reel.review.changed', { ...payload, action }).action, action);
-  for (const extra of [{ caption: 'private content' }, { provider_asset_id: 'private-provider-asset' }, { ready: true }]) assert.throws(() => parseDomainEventPayload('reel.review.changed', { ...payload, ...extra }));
-  assert.throws(() => parseDomainEventPayload('reel.review.changed', { ...payload, version: 0 }));
-  assert.deepEqual(getDomainEventContract('reel.review.changed')?.consumers, []);
-  assert.deepEqual(queueNamesForEvent('reel.review.changed'), []);
-});
-
-test('streaming intake enforces actual UTF8 byte limit without trusting Content-Length', async () => {
-  const app = new Hono();
-  app.post('/', async c => c.json(await readReelRequest(c as never)));
-  app.onError((error, c) => c.json({ failed: true }, ('statusCode' in error ? Number(error.statusCode) : 'status' in error ? Number(error.status) : 500) as 400));
-  const valid = await app.request('/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"caption":"தமிழ்"}' });
-  assert.equal(valid.status, 200);
-  const over = await app.request('/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': '1' }, body: JSON.stringify({ caption: '界'.repeat(REEL_REVIEW_REQUEST_BYTES / 2) }) });
-  assert.equal(over.status, 413);
-  assert.equal((await app.request('/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{invalid' })).status, 400);
-});
-
-test('canonical SDK preserves private scope and exact mutation command key across retries', async () => {
-  const calls: Array<{ path: string; options: unknown }> = [];
-  const sdk = createReelReviewSdk({ async requestData<T>(path: string, options?: LetbuyyRequestOptions) { calls.push({ path, options }); return {} as T; } });
-  const command = { action: 'save' as const, expected_version: 0, idempotency_key: 'owned-same-request', selection: {
-    media_asset_id: null, listing_id: null, variant_id: null, thumbnail_asset_id: null, caption: 'private', rights_evidence_ids: [],
-  } };
-  await sdk.mutate(id(1), id(2), command); await sdk.mutate(id(1), id(2), command);
-  assert.deepEqual(calls[0], calls[1]);
-  assert.deepEqual(calls[0], { path: `/reels/${id(2)}`, options: { method: 'POST', query: { store_id: id(1) }, body: command, idempotencyKey: command.idempotency_key } });
-  await sdk.operatorList(2);
-  assert.deepEqual(calls[2], { path: '/internal/console/reels', options: { query: { page: 2 } } });
-});
 
 function fixture(): { request: ReelReviewSubmission; context: ServerResolvedReelReviewContext } {
   return {

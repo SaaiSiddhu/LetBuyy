@@ -1,9 +1,4 @@
-export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
-import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
-import { createReelReviewSdk } from './reels';
-export { createReelReviewSdk } from './reels';
-export type { ReelMerchantCommand, ReelReviewerCommand, ReelReadback, ReelReviewPage, ReelDraftSelection, ReelSummary } from './reels';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
   AICreditBalance,
@@ -209,7 +204,6 @@ import type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
-  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,
@@ -3188,10 +3182,7 @@ export interface MediaListQuery extends StoreScopedQuery {
 export type CreateMediaInput = Pick<MediaAsset, 'store_id' | 'filename' | 'url' | 'mime_type'> & Partial<MediaAsset>;
 export type UpdateMediaInput = Partial<Pick<MediaAsset, 'alt_text' | 'caption' | 'folder' | 'tags' | 'filename'>>;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
-export type UpdateProductInput = NewRecord<Product> & Pick<Product, 'version'> & {
-  /** Retain one UUID for this exact edit through transport retries. */
-  idempotency_key: string;
-};
+export type UpdateProductInput = NewRecord<Product>;
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
 export type UpdateCollectionInput = Partial<Pick<Collection, 'title' | 'description' | 'image_url'>> & {
   is_active?: boolean;
@@ -3427,17 +3418,14 @@ export type SaveThemeDraftInput = {
   store_id: string;
   template_key?: string;
   template_config: JsonRecord;
-  base_version: number;
-  idempotency_key: string;
+  base_version?: number;
   client?: 'admin-web' | 'flutter-builder' | 'api';
 };
-export type ReorderThemeDraftInput = Omit<SaveThemeDraftInput, 'template_config'> & { section_order: string[] };
 export type PublishThemeInput = {
   store_id: string;
   template_key?: string;
   template_config?: JsonRecord;
-  base_version: number;
-  idempotency_key: string;
+  base_version?: number;
   make_store_live?: boolean;
   publish_message?: string;
 };
@@ -3448,8 +3436,6 @@ export type ThemePreviewSessionInput = {
 };
 export type RollbackThemeReleaseInput = {
   store_id: string;
-  expected_current_release_id: string;
-  idempotency_key: string;
   make_store_live?: boolean;
   rollback_message?: string;
 };
@@ -3916,7 +3902,6 @@ export class LetbuyyApiClient {
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
-  readonly reels = createReelReviewSdk(this);
 
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>
@@ -4878,7 +4863,7 @@ export class LetbuyyApiClient {
     sample: (input: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>('/products/sample', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateProductInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, idempotencyKey: input.idempotency_key }),
+      this.requestData<Product>(`/products/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ id: string }>(`/products/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     bulk: (input: { store_id: string; action: string; product_ids: string[] }, options?: LetbuyyRequestOptions) =>
@@ -4894,10 +4879,10 @@ export class LetbuyyApiClient {
         this.requestData<Collection>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
       remove: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean; id: string }>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
-      listProducts: async (id: string, options: LetbuyyRequestOptions & { storeId: string }) =>
-        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, options)),
-      replaceProducts: async (id: string, input: ReplaceCollectionMembershipInput, options: LetbuyyRequestOptions & { storeId: string }) =>
-        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input, idempotencyKey: input.idempotency_key })),
+      listProducts: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ collection_id: string; product_ids: string[]; products: Product[] }>(`/products/collections/${encodePathSegment(id)}/products`, options),
+      replaceProducts: (id: string, input: { product_ids: string[] }, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ collection_id: string; product_ids: string[]; count: number }>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input }),
     },
     giftCards: {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -5389,8 +5374,6 @@ export class LetbuyyApiClient {
       this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { ...(options?.query || {}), store_id: storeId } }),
     saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeDraftSaveResult>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'PUT', body: input }),
-    reorderDraft: (slug: string, input: ReorderThemeDraftInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ThemeDraftSaveResult & { section_order: string[] }>(`/themes/${encodePathSegment(slug)}/editor/reorder`, { ...options, method: 'PUT', body: input }),
     deleteDraft: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     publish: (slug: string, input: PublishThemeInput, options?: LetbuyyRequestOptions) =>
@@ -5926,7 +5909,6 @@ export type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
-  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,

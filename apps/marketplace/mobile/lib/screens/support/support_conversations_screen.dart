@@ -10,7 +10,7 @@ import '../../auth/buyer_sign_in_controller.dart';
 import 'support_chat_screen.dart';
 
 class SupportConversationsScreen extends StatefulWidget {
-  // Prefill remains an unsent draft until the buyer reviews and submits it.
+  // Keep existing routes/prefill intent; readback never submits these values.
   final bool showNewChatButton;
   final SupportTicketType? newChatType;
   final String? newChatSubject;
@@ -38,9 +38,6 @@ class _SupportConversationsScreenState
   int _generation = 0;
   List<JsonMap> _tickets = const [];
   bool _loading = false;
-  bool _loadingMore = false;
-  bool _hasMore = false;
-  String? _cursor;
   String? _error;
 
   @override
@@ -68,9 +65,6 @@ class _SupportConversationsScreenState
       _tickets = const [];
       _error = null;
       _loading = false;
-      _loadingMore = false;
-      _hasMore = false;
-      _cursor = null;
     });
     if (identity.token != null && identity.buyerId != null) unawaited(_load());
   }
@@ -82,49 +76,27 @@ class _SupportConversationsScreenState
       _auth?.token == identity.token &&
       _auth?.buyerId == identity.buyerId;
 
-  Future<void> _load({bool more = false}) async {
+  Future<void> _load() async {
     final identity = _identity;
     final token = identity.token;
-    if (_loading ||
-        _loadingMore ||
-        token == null ||
-        identity.buyerId == null ||
-        (more && !_hasMore))
-      return;
-    final cursor = more ? _cursor : null;
+    if (_loading || token == null || identity.buyerId == null) return;
     final generation = ++_generation;
     setState(() {
-      if (!more) _tickets = const [];
+      _tickets = const [];
       _error = null;
-      _loading = !more;
-      _loadingMore = more;
+      _loading = true;
     });
     try {
-      final page = await context.read<BuyerSupportApi>().listTicketPage(
-        token,
-        cursor: cursor,
-      );
+      final tickets = await context.read<BuyerSupportApi>().listTickets(token);
       if (!_current(identity, generation)) return;
       setState(() {
-        if (more &&
-            page.items.any(
-              (row) => _tickets.any((prior) => prior['id'] == row['id']),
-            )) {
-          _error =
-              'Your ticket history changed. Refresh the list before continuing.';
-        } else {
-          _tickets = [if (more) ..._tickets, ...page.items];
-          _hasMore = page.hasMore;
-          _cursor = page.nextCursor;
-        }
+        _tickets = tickets;
         _loading = false;
-        _loadingMore = false;
       });
     } on ApiException catch (error) {
       if (!_current(identity, generation)) return;
       setState(() {
         _loading = false;
-        _loadingMore = false;
         _error = error.statusCode == 401 || error.statusCode == 403
             ? 'Your LetBuyy sign-in has ended. Sign in again from Profile.'
             : error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT'
@@ -135,7 +107,6 @@ class _SupportConversationsScreenState
       if (!_current(identity, generation)) return;
       setState(() {
         _loading = false;
-        _loadingMore = false;
         _error = 'We couldn’t load your support tickets. Please try again.';
       });
     }
@@ -170,33 +141,12 @@ class _SupportConversationsScreenState
                 padding: const EdgeInsets.all(16),
                 children: [
                   const Text(
-                    'Your tickets, newest first. Load older tickets to continue through your history.',
+                    'Showing up to 50 most recent tickets. Full history is not available in this view.',
                   ),
                   if (widget.showNewChatButton) ...[
                     const SizedBox(height: 8),
-                    FilledButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text('New support request'),
-                      onPressed: () {
-                        if (!_current(identity, generation)) return;
-                        Navigator.of(context)
-                            .push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => SupportChatScreen(
-                                  ticketType: widget.newChatType,
-                                  subject: widget.newChatSubject,
-                                  initialMessage: widget.newChatMessage,
-                                  metadata: widget.newChatMetadata,
-                                ),
-                              ),
-                            )
-                            .then((_) {
-                              if (_auth?.buyerId == identity.buyerId &&
-                                  _auth?.token == identity.token &&
-                                  mounted)
-                                unawaited(_load());
-                            });
-                      },
+                    const Text(
+                      'New tickets, replies and attachments are not available in this view yet. No new request has been sent.',
                     ),
                   ],
                   const SizedBox(height: 16),
@@ -207,14 +157,6 @@ class _SupportConversationsScreenState
                       message:
                           'Tickets recorded for your LetBuyy account will appear here.',
                     ),
-                  if (_loadingMore)
-                    const Center(child: CircularProgressIndicator()),
-                  if (_hasMore && !_loadingMore)
-                    TextButton(
-                      onPressed: () => _load(more: true),
-                      child: const Text('Load older tickets'),
-                    ),
-                  const Text('Attachments are not available yet.'),
                   for (final ticket in _tickets)
                     Card(
                       child: ListTile(

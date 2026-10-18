@@ -45,13 +45,8 @@ function harness(opts: { ownedBy?: string } = {}) {
         // Models the real query: scoped by BOTH ids, so another buyer's ticket simply does not match.
         getTicket: async (_c, buyer, ticket) => { calls.get.push({ buyer, ticket }); return { data: buyer === owner && ticket === TICKET ? TICKET_ROW : null, error: null }; },
         listPublicMessages: async (_c, ticket) => { calls.messages.push(ticket); return { data: [PUBLIC_MSG], error: null }; },
-        mutate: async (_c, input) => {
-            if (input.operation === 'create') return { data: { ...TICKET_ROW, subject: input.payload.subject,
-                complaint_copy: { subject: input.payload.subject, body: input.payload.body, recorded_at: '2026-09-06T00:00:01.000Z' },
-                receipt_confirmed_at: '2026-09-06T00:00:01.000Z' }, error: null };
-            calls.inserted.push(input.payload.body);
-            return { data: { id: 'm2', author_type: 'requester', body: input.payload.body, created_at: 'now' }, error: null };
-        },
+        openTicket: async (_c, _buyer, input) => ({ data: { ...TICKET_ROW, subject: input.subject }, complaintCopy: { id: 'm0', author_type: 'requester', body: input.body, created_at: '2026-09-06T00:00:01.000Z' }, error: null }),
+        addRequesterMessage: async (_c, ticket, body) => { calls.inserted.push(body); return { data: { id: 'm2', author_type: 'requester', body, created_at: 'now' }, error: null }; },
     });
     const app = new Hono<{ Bindings: Env }>();
     installBuyerSessionState(app);
@@ -131,21 +126,6 @@ test('support routes require a buyer session', async () => {
     assert.deepEqual(h.calls.list, []);
 });
 
-test('malformed cursor and scalar mutation JSON are rejected before a support dependency',async()=>{
-    const {privateKey,jwks}=await keys();
-    const headers={'Content-Type':'application/json','X-LetBuyy-Buyer-Session':await tok(privateKey,BUYER)};
-    for(const query of ['pagination=cursor&cursor=','pagination=cursor&cursor=bad','cursor=bad','pagination=unknown']){
-        const h=harness();
-        assert.equal((await h.app.request(`/storefront/buyer/support/tickets?${query}`,{headers},env(jwks))).status,400);
-        assert.deepEqual(h.calls.list,[]);
-    }
-    for(const payload of [null,[],true])for(const path of ['/storefront/buyer/support/tickets',`/storefront/buyer/support/tickets/${TICKET}/messages`]){
-        const h=harness();
-        assert.equal((await h.app.request(path,{method:'POST',headers,body:JSON.stringify(payload)},env(jwks))).status,400);
-        assert.deepEqual(h.calls.inserted,[]);
-    }
-});
-
 // ── Source contracts ────────────────────────────────────────────────────────────
 function code(s: string) { return s.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1 ').replace(/`(?:[^`\\]|\\.)*`/g, '` `'); }
 const wiring = code(readFileSync(join(SRC, 'routes/storefront/buyer-realm-wiring.ts'), 'utf8'));
@@ -154,7 +134,7 @@ const block = (() => {
     assert.ok(at > 0);
     return wiring.slice(at, wiring.indexOf('registerPersonalizationRoutes(router', at));
 })();
-const KEYS = ['listTickets', 'getTicket', 'listPublicMessages', 'mutate'];
+const KEYS = ['listTickets', 'getTicket', 'listPublicMessages', 'openTicket', 'addRequesterMessage'];
 function dep(name: string) {
     const at = block.indexOf(`${name}:`);
     assert.ok(at > 0, `${name} should be wired`);
@@ -166,7 +146,7 @@ function dep(name: string) {
 test('the dependency extractor stops at the next dependency', () => {
     const body = dep('listPublicMessages');
     assert.match(body, /ticket_messages/);
-    assert.doesNotMatch(body, /mutate:|support_tickets/, 'must not run past into a neighbour');
+    assert.doesNotMatch(body, /openTicket|support_tickets/, 'must not run past into a neighbour');
 });
 
 test('SOURCE: the buyer message query excludes INTERNAL agent notes', () => {
@@ -186,15 +166,14 @@ test('SOURCE: every ticket read is scoped by the requester, not by the ticket al
 });
 
 test('SOURCE: the server sets author_type and visibility on every buyer write', () => {
-    const writer = code(readFileSync(join(SRC, 'lib/buyer-support-mutations.ts'), 'utf8'));
+    const open = dep('openTicket');
     const intakeMigration = code(readFileSync(join(SRC, '../../../database/supabase/migrations/287_buyer_support_intake_atomic.sql'), 'utf8'));
-    const mutationMigration = code(readFileSync(join(SRC, '../../../database/supabase/migrations/348_buyer_support_mutation_receipts.sql'), 'utf8'));
-    assert.match(dep('mutate'), /executeBuyerSupportMutation/);
-    assert.match(writer, /rpc\('execute_buyer_support_mutation'/);
-    assert.match(mutationMigration, /open_buyer_support_ticket_with_complaint/, 'initial ticket and complaint reuse the canonical transaction');
+    const append = dep('addRequesterMessage');
+    assert.match(open, /open_buyer_support_ticket_with_complaint/, 'initial ticket and complaint are created by one database transaction');
     assert.match(intakeMigration, /'customer', p_requester_user_id,[\s\S]*?'chat', 'open'/);
     assert.match(intakeMigration, /'requester', p_requester_user_id, 'public'/);
-    assert.match(mutationMigration, /VALUES\(v_ticket.id,'requester',p_buyer_account_id,'public',v_body/, 'follow-up messages fix author and visibility inside the transaction');
+    assert.match(append, /author_type: 'requester'/, 'follow-up messages must fix the author type');
+    assert.match(append, /visibility: 'public'/, 'follow-up messages must fix the visibility');
     // requester_type is fixed too: a buyer must not be able to open a ticket as a merchant.
     assert.match(intakeMigration, /'customer', p_requester_user_id/);
 });
@@ -215,8 +194,6 @@ test('SOURCE: support routes accept the canonical shared buyer data-session cont
 
 test('SOURCE: the buyer surface reuses the operator ticket-reference generator', () => {
     // One ticket system must not grow two human-facing reference formats.
-    const writer = code(readFileSync(join(SRC, 'lib/buyer-support-mutations.ts'), 'utf8'));
-    assert.match(dep('mutate'), /executeBuyerSupportMutation/);
-    assert.match(writer, /p_ticket_ref: generateTicketRef\(/);
-    assert.match(writer, /from '\.\.\/routes\/operations\/support'/);
+    assert.match(block, /ticket_ref: generateTicketRef\(/);
+    assert.match(wiring, /from '\.\.\/operations\/support'/);
 });

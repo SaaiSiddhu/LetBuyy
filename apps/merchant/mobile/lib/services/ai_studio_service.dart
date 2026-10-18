@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
-import 'theme_service.dart';
-import '../models/theme_editor_models.dart';
 
 class AiCreditsContract {
   const AiCreditsContract({
@@ -342,9 +340,7 @@ class AiOperatorUnavailableException implements Exception {
 }
 
 class AiStudioService extends ChangeNotifier {
-  AiStudioService({required ApiClient api})
-    : _api = api,
-      _themeService = ThemeService(api: api);
+  AiStudioService({required ApiClient api}) : _api = api;
 
   static const tools = [
     AiToolContract(
@@ -372,7 +368,6 @@ class AiStudioService extends ChangeNotifier {
   ];
 
   final ApiClient _api;
-  final ThemeService _themeService;
 
   AiCreditsContract? _credits;
   AiCreditsContract? get credits => _credits;
@@ -542,31 +537,12 @@ class AiStudioService extends ChangeNotifier {
       throw ArgumentError.value(message, 'message', 'Message is required');
     }
 
-    final requestContext = _api.captureRequestContext();
-    ThemeEditorPayload? themeBase;
-    // Capture a canonical draft revision BEFORE planning. A later load must not
-    // silently authorize a generated document over another session's edits.
-    try {
-      final catalog = await _themeService.fetchThemes(storeId);
-      if (catalog.currentTheme != null) {
-        themeBase = await _themeService.loadEditor(
-          storeId: storeId,
-          themeSlug: catalog.currentTheme!,
-        );
-      }
-    } catch (_) {
-      /* Other operator tools can still run; theme writes require this snapshot. */
-    }
-    if (_api.captureRequestContext() != requestContext)
-      throw StateError('The active account or store changed.');
     try {
       final payload = await _api.ai.operator({
         'store_id': storeId,
         'message': cleanedMessage,
         'execute': true,
       });
-      if (_api.captureRequestContext() != requestContext)
-        throw StateError('The active account or store changed.');
       final planned = AiOperatorResult.fromJson(payload);
       final completedCalls = <AiOperatorToolCall>[];
       for (final call in planned.toolCalls) {
@@ -575,12 +551,7 @@ class AiStudioService extends ChangeNotifier {
           continue;
         }
         try {
-          final result = await _executeOperatorTool(
-            storeId,
-            call,
-            themeBase: themeBase,
-            requestContext: requestContext,
-          );
+          final result = await _executeOperatorTool(storeId, call);
           completedCalls.add(
             call.copyWith(
               status: 'completed',
@@ -613,12 +584,8 @@ class AiStudioService extends ChangeNotifier {
 
   Future<Map<String, dynamic>> _executeOperatorTool(
     String storeId,
-    AiOperatorToolCall call, {
-    ThemeEditorPayload? themeBase,
-    Object? requestContext,
-  }) async {
-    if (_api.captureRequestContext() != requestContext)
-      throw StateError('The active account or store changed.');
+    AiOperatorToolCall call,
+  ) async {
     final payload = Map<String, dynamic>.from(call.payload);
     payload['store_id'] = _stringValue(payload['store_id'], fallback: storeId);
     switch (call.tool) {
@@ -633,34 +600,13 @@ class AiStudioService extends ChangeNotifier {
           payload['theme_slug'],
           fallback: 'minimal_modern',
         );
-        if (themeBase == null ||
-            themeBase.store['id'] != storeId ||
-            themeBase.theme['slug'] != themeSlug ||
-            call.id.isEmpty ||
-            call.id.length > 180 ||
-            call.id.trim() != call.id ||
-            RegExp(r'[\x00-\x1f\x7f]').hasMatch(call.id)) {
-          throw StateError(
-            'Reload the owned theme before planning this change.',
-          );
-        }
-        if (_themeService.hasPendingSave(storeId, themeSlug)) {
-          await _themeService.retryPendingSave(
-            storeId: storeId,
-            themeSlug: themeSlug,
-          );
-        }
-        final saved = await _themeService.saveDraft(
-          storeId: storeId,
-          themeSlug: themeSlug,
-          templateConfig: _mapValue(payload['template_config']),
-          baseVersion: themeBase.version,
-          idempotencyKey: 'ai-theme:${call.id}',
+        return _mapValue(
+          await _api.themes.saveDraft(themeSlug, {
+            'store_id': storeId,
+            'template_config': _mapValue(payload['template_config']),
+            'client': 'flutter-ai-operator',
+          }),
         );
-        return {
-          'version': saved.version,
-          'saved_at': saved.savedAt?.toIso8601String(),
-        };
       default:
         throw UnsupportedError('Unsupported AI operator tool');
     }

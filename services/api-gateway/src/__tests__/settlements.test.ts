@@ -107,7 +107,7 @@ test('Task 013 live PA split remains human-gated and no rejected service topolog
     assert.match(settlementRoute, /isLivePASplitProviderReady\('razorpay_route'/);
     assert.match(settlementRoute, /input\.rail === 'cod_remittance'[\s\S]*input\.provider === 'cod'[\s\S]*Live COD remittance records must use the COD or manual provider classification/);
     assert.match(settlementRoute, /input\.rail === 'pa_split'[\s\S]*input\.provider === 'razorpay_route'/);
-    assert.match(settlementRoute, /input\.rail === 'pa_split' && input\.provider !== 'razorpay_route'[\s\S]*provider-specific execution and reconciliation adapter/);
+    assert.match(settlementRoute, /input\.provider === 'cashfree'[\s\S]*provider-specific execution and reconciliation adapter/);
     assert.match(humanRequired, /HR-PA-SPLIT-LIVE/);
     assert.match(humanRequired, /services\/api-gateway\/src\/routes\/settlements\.ts/);
 

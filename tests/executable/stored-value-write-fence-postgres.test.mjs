@@ -61,21 +61,6 @@ const ORDER_ID = '33333333-3333-4333-8333-3333333333a3';
 const CAMPAIGN_ID = '44444444-4444-4444-8444-4444444444a4';
 const PRODUCT_ID = '55555555-5555-4555-8555-5555555555a5';
 
-//355 fixture authority: canonical synthetic owner and same-statement captured
-//context. The materialized CTE executes before the volatile budget RPC. It
-//does not grant authority, mint credit, or replace the role under test.
-const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
-const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
-function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
-    return `WITH captured_budget_context AS MATERIALIZED (
-      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
-             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
-    ) SELECT public.${operation}_ad_campaign_budget(
-      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
-      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
-      FROM captured_budget_context`;
-}
-
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -139,8 +124,6 @@ function bootstrapDatabase() {
 // Seeded as postgres, so the fixtures themselves never depend on the privileges under test.
 function seedFixtures() {
     psql(`
-    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid');
-    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published)
     VALUES (${sqlString(SITE_ID)}::uuid, 'Fence Store', 'Fence Store', 'store', 'fence-store', true);
 
@@ -153,8 +136,6 @@ function seedFixtures() {
     -- An ACTIVE programme with a real rate, so award_loyalty_points has work to do.
     INSERT INTO public.loyalty_programs (site_id, is_active, earn_rate_bps)
     VALUES (${sqlString(SITE_ID)}::uuid, true, 1000);
-
-    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE_ID)}::uuid);
 
     INSERT INTO public.ad_campaigns (id, site_id, name, status)
     VALUES (${sqlString(CAMPAIGN_ID)}::uuid, ${sqlString(SITE_ID)}::uuid, 'Fence Campaign', 'draft');
@@ -281,7 +262,8 @@ test('the SECURITY DEFINER RPCs still write through the fence — ad credits', {
     psql(`SET ROLE service_role;
 SELECT public.record_ad_credit_purchase(
   ${sqlString(SITE_ID)}::uuid, 100000, 'pay_fence_1', 'fence:purchase:1', 'req-fence-1', NULL);
-${budgetRpc('allocate', SITE_ID, CAMPAIGN_ID, 40000, 'fence:allocate:1', 'req-fence-2', SITE_ID)};
+SELECT public.allocate_ad_campaign_budget(
+  ${sqlString(SITE_ID)}::uuid, ${sqlString(CAMPAIGN_ID)}::uuid, 40000, 'fence:allocate:1', 'req-fence-2', NULL);
 RESET ROLE;`);
 
     assert.equal(
