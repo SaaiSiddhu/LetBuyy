@@ -12,8 +12,13 @@ if (!existsSync(DOCS)) mkdirSync(DOCS, { recursive: true });
 
 const db = buildDbIntel();
 const s = db.summary;
-const g = JSON.parse(readFileSync(join(ROOT, 'graphify-out/graph.json'), 'utf8'));
-const gstat = { nodes: (g.nodes || []).length, edges: (g.links || []).length, commit: g.built_at_commit };
+let g = null;
+try {
+  g = JSON.parse(readFileSync(join(ROOT, 'graphify-out/graph.json'), 'utf8'));
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+const gstat = g && { nodes: (g.nodes || []).length, edges: (g.links || []).length, commit: g.built_at_commit };
 
 const money = db.functions.filter((f) => f.money);
 const fmt = (n) => Number(n).toLocaleString();
@@ -51,7 +56,7 @@ ${Object.entries(db.routeRpc).filter(([r]) => /routes\/(orders|gift-cards|payout
 - **Tenant tables without a regex-detected RLS \`ENABLE\`:** ${s.tenantTablesWithoutRls.length} → ${s.tenantTablesWithoutRls.slice(0, 12).join(', ')}. *These are NOT confirmed violations — \`rls-force-coverage-validator\` passes, so they are either service-role-only/ledger tables or use an RLS pattern this parser does not detect. Verify before acting.*
 - **Policies matching \`USING (true)\` (excluding service_role):** ${s.publicPolicies}. *\`no-public-using-true-validator\` passes, so these are service-role-scoped; this heuristic over-counts. Authoritative source is the validator.*
 
-_Graph: ${fmt(gstat.nodes)} nodes / ${fmt(gstat.edges)} edges @ ${(gstat.commit || '').slice(0, 8)} · DB intel generated ${s.generatedAt}._
+_${gstat ? `Graph: ${fmt(gstat.nodes)} nodes / ${fmt(gstat.edges)} edges @ ${(gstat.commit || '').slice(0, 8)}` : 'Code graph unavailable (graphify-out/graph.json has not been generated)'} · DB intel generated ${s.generatedAt}._
 `;
 
 writeFileSync(join(DOCS, 'DATABASE_INTELLIGENCE_REPORT.generated.md'), dbReport);

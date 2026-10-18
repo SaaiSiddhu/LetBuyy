@@ -239,3 +239,5 @@ owner's first push of `develop`/`staging`/`main` is a fast-forward on every ref.
 |---|---|---|---|---|---|
 | 2026-09-04 | `a751a2ff` | `staging` (created) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
 | 2026-09-04 | `a751a2ff` | `main` (fast-forward from `5c984eaa`) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
+
+| `letbuyy/machine-handoff-ci` | `7b8aacac6211102effb400bd04ae7defc86e3fb4` | ACTIVE | 2026-10-18 | Owner-authorized proper merge/push and machine handoff | Repair graph-report fresh-checkout ENOENT without fabricating code-graph counts; scope tools/graph-server/gen-reports.mjs and tests/governance/graph-report-ci.test.mjs. Existing local integration evidence and runtime artifacts remain untouched. | N/A — pending |
