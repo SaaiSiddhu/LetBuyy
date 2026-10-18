@@ -291,7 +291,7 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
     try{
         const deadline=Date.now()+15000;while(Date.now()<deadline){writerPid=Number(psql('SELECT pid FROM pg_stat_activity WHERE datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';"));if(writerPid>1){witnessed=true;break;}await new Promise(resolve=>setTimeout(resolve,25));}
         assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();
-        const held=()=>psql('SELECT count(*)FROM pg_stat_activity WHERE pid='+writerPid+'AND datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';");
+        const held=()=>psql('SELECT count(*)FROM pg_stat_activity WHERE pid='+writerPid+' AND datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';");
         assert.equal(held(),'1','the writer must remain active after catalog collection');
         assert.equal(owned.exec(rollback361),null);
         assert.equal(held(),'1','the real writer remains held through retirement refusal');
@@ -299,7 +299,7 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
     }finally{
         // If startup failed, find only this run's uniquely named owned backend.
         const pid=writerPid||Number(psql('SELECT pid FROM pg_stat_activity WHERE datname=current_database()AND application_name='+q(name)+';'));
-        if(pid>1)assert.equal(psql('SELECT pg_cancel_backend(pid)FROM pg_stat_activity WHERE pid='+pid+'AND datname=current_database()AND application_name='+q(name)+';'),'t');
+        if(pid>1)assert.equal(psql('SELECT pg_cancel_backend(pid)FROM pg_stat_activity WHERE pid='+pid+' AND datname=current_database()AND application_name='+q(name)+';'),'t');
         const outcome=await writer;
         assert.match(outcome.error?.message||'',/canceling statement due to user request/,'only explicit cancellation ends the held writer');
     }
