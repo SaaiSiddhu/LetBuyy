@@ -55,6 +55,9 @@ const onlineRateId = crypto.randomUUID();
 const productId = crypto.randomUUID();
 const cartId = crypto.randomUUID();
 const cartToken = `ct_${crypto.randomUUID().replace(/-/g, '')}`;
+// Cold CI compilation can exceed Playwright's 30-second navigation default.
+// Keep navigation bounded and require the actual hosted handoff before using its form.
+const coldNavigationTimeout = 90_000;
 const appEnv = {
     NODE_ENV: 'development',
     CI: '1',
@@ -184,6 +187,7 @@ after(async () => {
 test('buyer selects actual saved storefront rate and completes normal hosted COD checkout', async () => {
     assert.ok(browser);
     const context = await browser.newContext();
+    context.setDefaultNavigationTimeout(coldNavigationTimeout);
     await context.addInitScript(({ token, items }) => {
         (globalThis as any).localStorage.setItem('lb_cart_token', token);
         (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
@@ -203,7 +207,7 @@ test('buyer selects actual saved storefront rate and completes normal hosted COD
     page.on('response', async response => { if (response.url().includes('/api/checkout/')) checkoutApiTrace.push(`response ${response.status()} ${response.url()} ${(await response.text().catch(() => '')).slice(0, 400)}`); });
     await page.goto(`http://${site.subdomain}.localhost:${appPort}/checkout`, { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => (globalThis as any).location.hostname.startsWith('checkout.localhost')
-        || (globalThis as any).document.body.innerText.includes('temporarily unavailable'), { timeout: 15_000 }).catch(() => undefined);
+        || (globalThis as any).document.body.innerText.includes('temporarily unavailable'), { timeout: coldNavigationTimeout }).catch(() => undefined);
     assert.ok(page.url().includes('checkout.localhost'), `storefront did not hand off to hosted checkout (url=${page.url()}, cart=${await page.evaluate(() => (globalThis as any).localStorage.getItem('lb_cart_token'))}, body=${(await page.locator('body').innerText()).slice(0, 500)}, errors=${pageErrors.join(' | ')}, handoff=${handoffTrace.join(' | ')})`);
     await page.waitForLoadState('networkidle');
     await page.getByPlaceholder('John Doe').fill('Synthetic Browser Buyer');
@@ -264,6 +268,7 @@ test('buyer reviews a refreshed storefront quote before recovering from a change
         'active','web',now()+interval '1 day');
     `);
     const context = await browser.newContext();
+    context.setDefaultNavigationTimeout(coldNavigationTimeout);
     await context.addInitScript(({ token, items }) => {
         (globalThis as any).localStorage.setItem('lb_cart_token', token);
         (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
@@ -362,6 +367,7 @@ test('buyer completes hosted Razorpay through the signed checkout API and canoni
         'active','web',now()+interval '1 day');
     `);
     const context = await browser.newContext();
+    context.setDefaultNavigationTimeout(coldNavigationTimeout);
     await context.addInitScript(({ token, items }) => {
         (globalThis as any).localStorage.setItem('lb_cart_token', token);
         (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
@@ -440,6 +446,7 @@ test('buyer sees a safe recoverable message when inventory changes before COD co
         'active','web',now()+interval '1 day');
     `);
     const context = await browser.newContext();
+    context.setDefaultNavigationTimeout(coldNavigationTimeout);
     await context.addInitScript(({ token, items }) => {
         (globalThis as any).localStorage.setItem('lb_cart_token', token);
         (globalThis as any).localStorage.setItem('lb_cart', JSON.stringify(items));
