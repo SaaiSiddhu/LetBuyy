@@ -73,6 +73,12 @@ try {
     env.NEXT_PUBLIC_SUPABASE_URL = fixture.restUrl;
     env.SUPABASE_SERVICE_ROLE_KEY = process.env.LETBUYY_OWNED_REST_SERVICE_KEY;
     for (const name of Object.values(OWNED_FIXTURE_ENV)) env[name] = process.env[name];
+    // Carry the already verified image binding through nested owned clients.
+    // A caller's application environment cannot replace this configuration.
+    for (const name of ['LETBUYY_EXECUTABLE_PG_IMAGE', 'LETBUYY_EXECUTABLE_REST_IMAGE']) {
+        if (process.env[name] !== undefined) env[name] = process.env[name];
+        else delete env[name];
+    }
     delete env.DATABASE_URL;
     for (const key of Object.keys(env)) if (/^PG/.test(key)) delete env[key];
     env.LETBUYY_OWNED_CLIENT_RUNTIME = '1';

@@ -169,11 +169,56 @@ async function runVaryingCodeReplay(key) {
   // Three concurrent callers, ONE idempotency key, THREE DIFFERENT codes --
   // exactly what a retrying caller that regenerates its code on every
   // attempt produces (services/api-gateway/src/routes/gift-cards.ts:86-87).
-  const attempts = await Promise.allSettled([
-    psqlAsync(issueGiftCardSql({ code: `R5-VARY-CODE-A-${key}`, key })),
-    psqlAsync(issueGiftCardSql({ code: `R5-VARY-CODE-B-${key}`, key })),
-    psqlAsync(issueGiftCardSql({ code: `R5-VARY-CODE-C-${key}`, key })),
-  ]);
+  // Hold the INSERT lock until every real caller reaches a PostgreSQL lock
+  // boundary. This exposes the historical pre-check race on every platform;
+  // after 207 the additional callers wait for the same advisory lock instead.
+  const prefix = `syn-gift-${process.pid}-${key}`;
+  const holderName = `${prefix}-holder`;
+  const callers = ['A', 'B', 'C'].map(suffix => `${prefix}-${suffix}`);
+  const holder = spawn('docker', [
+    'exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', databaseName,
+    '-v', 'ON_ERROR_STOP=1', '-qAt',
+  ], { stdio: ['pipe', 'ignore', 'pipe'] });
+  let holderError = '';
+  holder.stderr.on('data', chunk => { holderError += chunk; });
+  const holderClosed = new Promise(resolve => {
+    holder.once('error', error => resolve({ code: -1, error: error.message }));
+    holder.once('close', code => resolve({ code, error: holderError }));
+  });
+  holder.stdin.on('error', () => {});
+  holder.stdin.write(`SET application_name=${sqlString(holderName)};
+    BEGIN; LOCK TABLE public.gift_card_accounts IN SHARE MODE;\n`);
+  const waitFor = async (query, message) => {
+    const deadline = Date.now() + 15000;
+    while (Date.now() < deadline) {
+      if (psql(query) === 't') return;
+      await new Promise(resolve => setTimeout(resolve, 25));
+    }
+    assert.fail(message);
+  };
+  let pending;
+  let attempts;
+  try {
+    await waitFor(`SELECT EXISTS(SELECT 1 FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid
+      WHERE a.application_name=${sqlString(holderName)} AND l.relation='public.gift_card_accounts'::regclass
+      AND l.mode='ShareLock' AND l.granted);`, 'gift-card barrier must hold its actual table lock');
+    pending = Promise.allSettled(callers.map((name, index) => psqlAsync(
+      `SET application_name=${sqlString(name)};\n` +
+      issueGiftCardSql({ code: `R5-VARY-CODE-${['A', 'B', 'C'][index]}-${key}`, key }),
+    )));
+    await waitFor(`WITH owned AS (
+      SELECT pid,application_name,wait_event_type,pg_blocking_pids(pid) blockers
+      FROM pg_stat_activity WHERE application_name IN(${[holderName, ...callers].map(sqlString).join(',')})
+    ) SELECT count(*)=3 AND bool_and(wait_event_type='Lock' AND cardinality(blockers)>0
+      AND blockers <@ ARRAY(SELECT pid FROM owned))
+      FROM owned WHERE application_name<>${sqlString(holderName)};`,
+    'all three gift-card callers must reach locks held by this controlled race');
+  } finally {
+    holder.stdin.end('COMMIT;\n\\q\n');
+    const closed = await holderClosed;
+    if (pending) attempts = await pending;
+    assert.equal(closed.code, 0, closed.error || 'gift-card barrier must release cleanly');
+  }
 
   const fulfilled = attempts.filter((a) => a.status === 'fulfilled');
   const rejected = attempts.filter((a) => a.status === 'rejected');

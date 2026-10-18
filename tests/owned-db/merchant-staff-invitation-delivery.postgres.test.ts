@@ -52,10 +52,14 @@ test('expired invitation leases recover through canonical failure/backoff; activ
 
 test('the dedicated minute cron recovers a missing wakeup without running unrelated sweepers',async()=>{
  const j=await fixture(),created=await j.create();assert.equal(created.status,201);
+ const frozen=crypto.randomUUID();
+ owned.psql(`INSERT INTO platform_queue_jobs(id,site_id,event_id,queue_name,job_type,payload,idempotency_key)
+ VALUES('${frozen}','${j.tenant.siteId}','${crypto.randomUUID()}','payment-events','app.charge.activated','{}','syn-invite-frozen-${frozen}');`);
  const tasks:Promise<unknown>[]=[];
  await queueWorker.scheduled!({cron:'* * * * *',scheduledTime:Date.now(),noRetry(){}} as never,j.env as never,
   {waitUntil(task:Promise<unknown>){tasks.push(task);},passThroughOnException(){}} as never);
- assert.equal(tasks.length,1,'the invitation tick must not accelerate money, analytics or other established jobs');
+ assert.equal(tasks.length,2,'the minute tick dispatches notification recovery and canonical loyalty refunds only');
  await Promise.all(tasks);
  assert.equal(owned.psql(`SELECT status||'|'||attempts::text FROM platform_queue_jobs WHERE event_id='${created.json?.data.invitation.id}';`),'failed|1');
+ assert.equal(owned.psql(`SELECT status||'|'||attempts::text FROM platform_queue_jobs WHERE id='${frozen}';`),'queued|0','the invitation tick must not execute frozen app/payment jobs');
 });

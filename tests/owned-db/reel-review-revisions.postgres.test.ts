@@ -18,7 +18,7 @@ import { evaluateStaffPermission } from '../../services/api-gateway/src/lib/staf
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { OutboxExecutionAdapter } from '../../services/api-gateway/src/execution/outbox-execution.adapter';
 import { withConsoleBrowser } from '../../services/api-gateway/src/__tests__/owned-db/console-browser-fixture';
-import { requireOwnedDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import { consoleFixture } from '../../services/api-gateway/src/__tests__/owned-db/console-session-fixture';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, newBarrier, tapRest, INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
@@ -118,7 +118,7 @@ test('canonical private reel revision lifecycle, denial, races, fault recovery a
       ['table-owner', 'ALTER TABLE public.commerce_reels OWNER TO service_role;', /REEL_ROLLBACK_UNKNOWN_TYPE_FAMILY/],
       ['raw-table-grant', 'GRANT SELECT ON public.commerce_reels TO app_tenant;', /REEL_ROLLBACK_UNKNOWN_INHERITED_TABLE_PRIVILEGE/],
       ['column-grant', 'GRANT SELECT(id) ON public.commerce_reels TO authenticated;', /REEL_ROLLBACK_UNKNOWN_SCHEMA_ATTRIBUTES/],
-      ['namespace-acl', 'GRANT CREATE ON SCHEMA public TO authenticated;', profile],
+      ['namespace-acl-at-head', 'GRANT CREATE ON SCHEMA public TO authenticated;', /360 refuses untrusted public CREATE/],
       ['namespace-owner', 'ALTER SCHEMA public OWNER TO postgres;', profile],
       ['annotation', "COMMENT ON TABLE public.commerce_reels IS 'synthetic retained annotation';", /REEL_ROLLBACK_UNKNOWN_SCHEMA_ATTRIBUTES/],
       ['index', 'CREATE INDEX n5_owned_unknown_index ON public.commerce_reels(status);', profile],
@@ -129,6 +129,13 @@ test('canonical private reel revision lifecycle, denial, races, fault recovery a
       ['parent-fk-trigger', `DO $$DECLARE target record;BEGIN SELECT t.tgname,c.relname INTO STRICT target FROM pg_trigger t JOIN pg_constraint fk ON fk.oid=t.tgconstraint JOIN pg_class c ON c.oid=t.tgrelid WHERE fk.conrelid='public.commerce_reels'::regclass AND fk.confrelid='public.sites'::regclass AND t.tgrelid=fk.confrelid ORDER BY t.tgname LIMIT 1;EXECUTE format('ALTER TABLE public.%I DISABLE TRIGGER %I',target.relname,target.tgname);END$$;`, /REEL_ROLLBACK_UNKNOWN_FOREIGN_KEY_TRIGGER_PROFILE/],
     ];
     for (const [label, setup, message] of cases) refuse(setup, message, label);
+    // Current 360 rejects CREATE escalation before 345 can inspect it. Also
+    // retain the older rollback's own ACL denial at a reviewed SQL-only point.
+    const historical = requireOwnedHistoricalSqlDatabase(357);
+    const historicalBefore = historical.psql(reelRetirementCatalogSql());
+    assert.match(historical.psqlExpectError(`BEGIN; GRANT CREATE ON SCHEMA public TO authenticated;
+      ${retirementBody}\nROLLBACK;`), profile);
+    assert.equal(historical.psql(reelRetirementCatalogSql()), historicalBefore);
     globalThis.console.info('OWNED_N5_SCHEMA_REFUSALS ' + JSON.stringify({ cases: cases.map(x => x[0]), allConserved: true }));
   });
   await t.test('a named sql_drop fault aborts an otherwise eligible empty retirement atomically', () => {

@@ -791,6 +791,9 @@ try {
       await context.close();
 
       const linkContext = await browser.newContext();
+      // These real Next pages compile on first navigation. Bound cold startup
+      // separately from the existing UI, session-refresh and denial deadlines.
+      linkContext.setDefaultNavigationTimeout(90_000);
       await linkContext.setExtraHTTPHeaders({ 'x-forwarded-host': browserStoreHost });
       await linkContext.addCookies([
         { name: 'lb_customer_session', value: token, url: storeOrigin, httpOnly: true, sameSite: 'Lax' },
@@ -1409,7 +1412,7 @@ try {
             status: 200, contentType: 'application/json',
             headers: { 'cache-control': 'no-store' },
             body: JSON.stringify(buyerASessionSnapshot),
-          }), { times: 1 });
+          }));
           const staleAddressProfileRead = await installStaleProfileSnapshot(staleAddressPage);
           await staleAddressPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/addresses`, { waitUntil: 'domcontentloaded' });
           await staleAddressPage.getByRole('button', { name: 'Add Address' }).click();

@@ -261,9 +261,11 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     await expect(buyer.getByRole('heading', { level: 1 }).first()).toHaveText(marker);
     // Browse the real data-bound catalog; captured home product-grid code is block-driven.
     await buyer.getByRole('link', { name: 'Catalog', exact: true }).click();
+    await buyer.waitForURL(url => url.pathname === '/products');
     assert.equal(new URL(buyer.url()).pathname, '/products');
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     await buyer.getByRole('link').filter({ hasText: 'Synthetic published Liquid product' }).first().click();
+    await buyer.waitForURL(url => url.pathname === `/product/${f.product}`);
     assert.equal(new URL(buyer.url()).pathname, `/product/${f.product}`);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     const [handoff] = await Promise.all([buyer.waitForResponse(r => new URL(r.url()).pathname === '/api/checkout-handoff' && r.request().method() === 'POST'),
@@ -283,6 +285,13 @@ for (const operation of ['save', 'publish'] as const) {
         // Compile the normal logout route while this fresh context has no session or editor document.
         // No reload is blocked; the original same-document guard and effect baseline remain strict.
         const warmLogout = await f.context.request.post(merchantOrigin + '/api/auth/logout'); assert.equal(warmLogout.status(), 200);
+        // Compile the normal staff dashboard before capturing the original A
+        // document. Cold Next development compilation can otherwise reload it
+        // during B's later sign-in; no navigation is blocked or ignored below.
+        const warmStaff = await f.context.newPage();
+        await signIn(warmStaff, f.staffEmail);
+        const endWarmup = await f.context.request.post(merchantOrigin + '/api/auth/logout'); assert.equal(endWarmup.status(), 200);
+        await warmStaff.close();
         await signIn(f.page, f.email); await openEditor(f);
         const originalDocumentTimeOrigin = await f.page.evaluate(() => performance.timeOrigin);
         trace.phase('loaded-A-before-logout');
