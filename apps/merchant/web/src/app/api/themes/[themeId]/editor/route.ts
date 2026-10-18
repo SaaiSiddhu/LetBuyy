@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { PublishThemeSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
         ? value.trim()
         : 'index'
-}
-
-function readPositiveInt(value: unknown): number | undefined {
-    const numeric = typeof value === 'number'
-        ? value
-        : typeof value === 'string' ? Number(value) : Number.NaN
-
-    return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -65,11 +59,14 @@ export async function GET(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in to load the editor.' } }, { status: 401 })
         const editor = await createMerchantApiClient().themes.editor(themeId, resolved.storeId, {
             query: { template_key: templateKey },
         })
 
         return NextResponse.json({
+            actorId: actor.id,
             store: editor.store,
             theme: editor.theme,
             templateKey: editor.template_key || templateKey,
@@ -113,32 +110,43 @@ export async function PUT(
         const rawBody = await request.json().catch(() => ({}))
         const body = isRecord(rawBody) ? rawBody : {}
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
-        const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
+        const baseVersion = body.baseVersion ?? body.base_version
+        const idempotencyKey = body.idempotencyKey ?? body.idempotency_key
         const publishMessage = typeof body?.publishMessage === 'string'
             ? body.publishMessage
             : typeof body?.publish_message === 'string' ? body.publish_message : undefined
         const templateConfig = readPublishTemplateConfig(body)
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in before publishing.' } }, { status: 401 })
+        if (body.actorId !== actor.id) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'Your account changed. Reload the editor before publishing.' } }, { status: 403 })
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
+        if (body.storeId !== resolved.storeId) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'The editor store changed. Reload before publishing.' } }, { status: 403 })
 
         const api = createMerchantApiClient()
-        const publishPayload = await api.themes.publish(themeId, {
+        const parsed = PublishThemeSchema.safeParse({
             store_id: resolved.storeId,
             template_key: templateKey,
             ...(templateConfig ? { template_config: templateConfig } : {}),
             base_version: baseVersion,
+            idempotency_key: idempotencyKey,
             make_store_live: true,
             publish_message: publishMessage,
         })
+        if (!parsed.success) return NextResponse.json({ error: 'The saved draft version and retry key are required.' }, { status: 400 })
+        const publishPayload = await api.themes.publish(themeId, parsed.data)
 
-        const savedAt = new Date().toISOString()
+        const savedAt = publishPayload.release.published_at
 
         return NextResponse.json({
             success: true,
             savedAt,
             templateKey,
-            release: publishPayload.release || null,
+            release: publishPayload.release,
+            version: publishPayload.version,
+            replayed: publishPayload.replayed,
+            currentVersion: publishPayload.current_version,
         })
     } catch (err) {
         return merchantApiErrorResponse(err)

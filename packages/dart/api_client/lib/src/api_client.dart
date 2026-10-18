@@ -893,28 +893,11 @@ class ProductsApi {
   Future<JsonMap> update(
     String id,
     JsonMap input, {
-    required int version,
-    required String idempotencyKey,
     ApiRequestOptions? options,
-  }) {
-    if (version <= 0 ||
-        !RegExp(
-          r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
-        ).hasMatch(idempotencyKey)) {
-      throw ArgumentError(
-        'A current product version and stable save UUID are required.',
-      );
-    }
-    return _client.requestJson(
-      '/products/${_encodePathSegment(id)}',
-      options: _mergeOptions(
-        options,
-        method: HttpMethod.patch,
-        body: {...input, 'version': version, 'idempotency_key': idempotencyKey},
-        idempotencyKey: idempotencyKey,
-      ),
-    );
-  }
+  }) => _client.requestJson(
+    '/products/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
 
   Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -1812,7 +1795,7 @@ class ThemesApi {
     options: _mergeOptions(
       options,
       method: HttpMethod.delete,
-      query: {'store_id': storeId},
+      query: {...?options?.query, 'store_id': storeId},
     ),
   );
 

@@ -249,7 +249,6 @@ function CollectionModal({ open, onClose, onSaved, store, editing }: CollectionM
             notify({ title: 'Save the collection first to preview matching products.', variant: 'info' })
             return
         }
-        setError(null)
         setPreviewing(true)
         setPreview(null)
         try {
@@ -397,7 +396,7 @@ function CollectionModal({ open, onClose, onSaved, store, editing }: CollectionM
                             >
                                 {previewing
                                     ? <><Spinner size="sm" />&nbsp;Loading preview…</>
-                                    : <><MaterialIcon name="visibility" size={16} style={{ marginRight: 'var(--lb-space-1)' }} />Preview saved rules</>
+                                    : <><MaterialIcon name="visibility" size={16} style={{ marginRight: 'var(--lb-space-1)' }} />Preview matching products</>
                                 }
                             </Button>
                         </div>
@@ -412,9 +411,9 @@ function CollectionModal({ open, onClose, onSaved, store, editing }: CollectionM
                                     border: '1px solid var(--lb-color-border)',
                                 }}
                             >
-                                Saved rules: <strong>{preview.count}</strong> product{preview.count !== 1 ? 's' : ''} match
+                                <strong>{preview.count}</strong> product{preview.count !== 1 ? 's' : ''} match
                                 {' '}(evaluated {preview.evaluated_of} active products
-                                {preview.evaluated_of >= preview.capped_at ? `, evaluation limited to ${preview.capped_at}` : ''}).
+                                {preview.evaluated_of >= preview.capped_at ? `, showing top ${preview.capped_at}` : ''}).
                                 {preview.sample_product_ids.length > 0 && (
                                     <p style={{ marginTop: 'var(--lb-space-1)', color: 'var(--lb-color-text-subdued)', fontSize: 'var(--lb-font-size-caption)' }}>
                                         Sample IDs: {preview.sample_product_ids.slice(0, 5).join(', ')}

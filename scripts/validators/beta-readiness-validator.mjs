@@ -197,35 +197,69 @@ if (exists('apps/merchant/mobile/lib/widgets/editor/website_preview.dart')) {
   }
 
   const merchantEditorPage = readFile('apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+  const webPublishStart = merchantEditorPage.indexOf('const handlePublish =');
+  const webPublishEnd = merchantEditorPage.indexOf('const recoverConflict =', webPublishStart);
+  reporter.assert(webPublishStart >= 0 && webPublishEnd > webPublishStart, 'CAP-C12 web publication action must be identifiable');
+  const webPublishAction = merchantEditorPage.slice(webPublishStart, webPublishEnd);
   for (const fragment of [
-    'const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)',
-    'templateConfig,',
+    'if (isDirty && !client.hasPendingPublication)',
+    'const snapshot = savedState',
+    'client.publish(async (intent)',
+    'body: JSON.stringify({ templateKey: selectedTemplateKey, ...intent, actorId: client.actorId, storeId: client.storeId })',
   ]) {
-    reporter.assert(merchantEditorPage.includes(fragment), `CAP-C12 merchant editor page publish payload missing: ${fragment}`);
+    reporter.assert(webPublishAction.includes(fragment), `CAP-C12 merchant editor page publish payload missing: ${fragment}`);
   }
 
   const themeExecutionAdapter = readFile('services/api-gateway/src/execution/theme-execution.adapter.ts');
   for (const fragment of [
-    'const suppliedPublishConfig = hasRenderableThemeTemplate(input.template_config)',
-    'mergeThemeIdentity(suppliedPublishConfig, theme)',
+    'const state = await this.readOwnedDraft(slug, input.store_id, userId, templateKey)',
+    'const templateConfig = asRecord(state.template_config)',
+    'p_template_key: templateKey, p_base_version: input.base_version, p_key: input.idempotency_key',
+    "p_operation: 'publish', p_config: input.template_config || null, p_runtime: artifacts",
   ]) {
     reporter.assert(themeExecutionAdapter.includes(fragment), `CAP-C12 theme execution publish path missing: ${fragment}`);
   }
 
   const mobileThemeService = readFile('apps/merchant/mobile/lib/services/theme_service.dart');
+  const nativePublishServiceStart = mobileThemeService.indexOf('  Future<Map<String, dynamic>> publish({');
+  const nativePublishServiceEnd = mobileThemeService.indexOf('  static String buildStorefrontPreviewUrl', nativePublishServiceStart);
+  reporter.assert(nativePublishServiceStart >= 0 && nativePublishServiceEnd > nativePublishServiceStart, 'CAP-C12 native publication service must be identifiable');
+  const nativePublishService = mobileThemeService.slice(nativePublishServiceStart, nativePublishServiceEnd);
   for (const fragment of [
     'Map<String, dynamic>? templateConfig',
     'Map<String, dynamic>? liquidBundle',
-    "'template_config': publishConfig",
+    'pending.savedVersion ??= config == null',
+    'templateConfig: pending.config!',
+    "'base_version': pending.savedVersion",
+    "'idempotency_key': pending.key",
   ]) {
-    reporter.assert(mobileThemeService.includes(fragment), `CAP-C12 mobile theme publish service missing: ${fragment}`);
+    reporter.assert(nativePublishService.includes(fragment), `CAP-C12 mobile theme publish service missing: ${fragment}`);
   }
 
   const mobileThemeScreen = readFile('apps/merchant/mobile/lib/screens/customize/theme_screen.dart');
-  reporter.assert(
-    mobileThemeScreen.includes('_editorPayload?.templateConfig') && mobileThemeScreen.includes('templateConfig: templateConfig'),
-    'CAP-C12 mobile theme screen must pass canonical template config into publish',
-  );
+  const nativePublishStart = mobileThemeScreen.indexOf('  Future<void> _publishTheme()');
+  const nativePublishEnd = mobileThemeScreen.indexOf('  Future<void> _discardDraft()', nativePublishStart);
+  reporter.assert(nativePublishStart >= 0 && nativePublishEnd > nativePublishStart, 'CAP-C12 native publication action must be identifiable');
+  const nativePublishAction = mobileThemeScreen.slice(nativePublishStart, nativePublishEnd);
+  for (const fragment of [
+    'final store = _store!,',
+    'slug = _activeThemeSlug,',
+    'captured = service.captureContext();',
+    'final editor = _editorPayload',
+    '!editor.hasDraft',
+    "editor.store['id'] != store.id",
+    "editor.theme['slug'] != slug",
+    'baseVersion: editor.version',
+    'service.recoverPublication(',
+  ]) {
+    reporter.assert(nativePublishAction.includes(fragment), `CAP-C12 mobile theme publish must use an owned saved draft or recover its receipt: ${fragment}`);
+  }
+
+  // Publication consumes the versioned saved document. Local edits must travel
+  // through save first; neither UI may smuggle an unsaved document into publish.
+  const nativePublishRequest = mobileThemeService.slice(mobileThemeService.indexOf('final published = await _api.themes.publish('), mobileThemeService.indexOf("final release = published['release'];"));
+  reporter.assert(webPublishAction.length > 0 && !webPublishAction.includes('buildDraftConfig('), 'CAP-C12 web publish must not serialize newer unsaved edits');
+  reporter.assert(nativePublishRequest.length > 0 && !nativePublishRequest.includes("'template_config'"), 'CAP-C12 native publish must not serialize newer unsaved edits');
 
   assertRecordedCapabilityGap(
     'CAP-C12',

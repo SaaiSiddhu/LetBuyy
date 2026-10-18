@@ -1334,7 +1334,6 @@ export const VariantSchema = AuditedEntitySchema.extend({
 
 export const ProductSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
-  version: z.number().int().positive(),
   name: z.string().min(1).max(256),
   slug: SlugSchema,
   description: z.string().max(10000).optional().nullable(),
@@ -1411,38 +1410,6 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
 });
-
-// Complete manual membership and an explicit ordered replacement intent. These
-// contracts do not change the metadata Collection shape or public projections.
-export const CollectionMembershipProductSchema = ProductSchema.pick({id: true, name: true, price: true, is_active: true}).extend({
-  thumbnail_url: UrlSchema.optional().nullable(),
-});
-export const CollectionMembershipIdsSchema = z.array(UuidSchema).max(500).refine(ids => new Set(ids).size === ids.length, 'Product IDs must be unique');
-export const ReplaceCollectionMembershipSchema = z.object({
-  product_ids: CollectionMembershipIdsSchema,
-  expected_version: z.number().int().positive(),
-  idempotency_key: UuidSchema,
-}).strict();
-export const CollectionMembershipSnapshotSchema = z.object({
-  collection_id: UuidSchema,
-  store_id: UuidSchema,
-  membership_version: z.number().int().positive(),
-  product_ids: CollectionMembershipIdsSchema,
-  products: z.array(CollectionMembershipProductSchema).max(500),
-  unavailable_product_ids: CollectionMembershipIdsSchema,
-}).strict().superRefine((data, ctx) => {
-  const ids = new Set(data.product_ids), products = new Set<string>();
-  for (const product of data.products) {
-    if (!ids.has(product.id) || products.has(product.id)) ctx.addIssue({code: 'custom', path: ['products'], message: 'Products must belong to the loaded membership'});
-    products.add(product.id);
-  }
-  for (const id of data.unavailable_product_ids) {
-    if (!ids.has(id) || products.has(id)) ctx.addIssue({code: 'custom', path: ['unavailable_product_ids'], message: 'Unavailable products must be an explicit disjoint part of membership'});
-  }
-  if (products.size + data.unavailable_product_ids.length !== ids.size) ctx.addIssue({code: 'custom', path: ['products'], message: 'Every assigned ID must have a product or an explicit unavailable representation'});
-});
-export type ReplaceCollectionMembershipInput = z.infer<typeof ReplaceCollectionMembershipSchema>;
-export type CollectionMembershipSnapshot = z.infer<typeof CollectionMembershipSnapshotSchema>;
 
 export const GiftCardSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
@@ -2680,7 +2647,7 @@ export const ThemeEditorPayloadSchema = z.object({
     exists: z.boolean(),
     template_key: z.string().min(1).max(80).optional(),
     updated_at: z.string().datetime().optional().nullable(),
-    version: z.number().int().positive(),
+    version: z.number().int().nonnegative(),
   }).passthrough(),
   release: z.object({
     id: UuidSchema,
@@ -2690,10 +2657,12 @@ export const ThemeEditorPayloadSchema = z.object({
   schemas: ThemeEditableSchemaResponseSchema.shape.schemas,
   renderer_manifest: MetadataSchema.optional().nullable(),
   approved_renderer_keys: z.array(z.string()).default([]),
-  version: z.number().int().positive(),
+  version: z.number().int().nonnegative(),
 });
 
 export const ThemeDraftSaveResultSchema = z.object({
+  replayed: z.boolean(),
+  current_version: z.number().int().positive(),
   saved_at: z.string().datetime(),
   version: z.number().int().positive(),
   template_key: z.string().min(1).max(80).default('index'),
@@ -2711,6 +2680,9 @@ export const ThemePublishedReleaseSchema = z.object({
 }).passthrough();
 
 export const ThemePublishResultSchema = z.object({
+  version: z.number().int().positive(),
+  replayed: z.boolean(),
+  current_version: z.number().int().positive(),
   store: z.object({
     id: UuidSchema,
     status: z.string(),
@@ -2756,6 +2728,9 @@ export const ThemeReleaseSchema = z.object({
 
 export const ThemeRollbackResultSchema = z.object({
   rollback: ThemePublishedReleaseSchema,
+  replayed: z.boolean(),
+  current_release_id: UuidSchema,
+  current_release_version: z.number().int().positive(),
   restored_release: z.object({
     id: UuidSchema,
     version: z.number().int().positive(),

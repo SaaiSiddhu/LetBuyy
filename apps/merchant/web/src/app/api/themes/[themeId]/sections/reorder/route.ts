@@ -1,83 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ReorderThemeDraftSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
-/**
- * PUT /api/themes/[themeId]/sections/reorder?store_name=xxx
- *
- * Reorder template sections (not header/footer, which are pinned).
- * Body: { sectionOrder: string[] } — array of section IDs in new order
- */
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: Promise<{ themeId: string }> }
-) {
+/** Reorder the selected template through the canonical draft CAS writer.
+ * The caller retains sectionOrder, baseVersion and idempotencyKey on retry. */
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ themeId: string }> }) {
     try {
-        await params // consume params for Next.js
-        const { searchParams } = new URL(request.url)
-        const storeName = searchParams.get('store_name')
-
-        if (!storeName) {
-            return NextResponse.json(
-                { error: 'store_name query parameter is required' },
-                { status: 400 }
-            )
-        }
-
-        const body = await request.json()
-        const { sectionOrder } = body
-
-        if (!Array.isArray(sectionOrder)) {
-            return NextResponse.json(
-                { error: 'sectionOrder must be an array of section IDs' },
-                { status: 400 }
-            )
-        }
-
+        const storeName = new URL(request.url).searchParams.get('store_name')
+        if (!storeName) return NextResponse.json({ error: 'store_name query parameter is required' }, { status: 400 })
+        const { sectionOrder, baseVersion, idempotencyKey, templateKey } = await request.json()
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
-
+        const parsed = ReorderThemeDraftSchema.safeParse({
+            store_id: resolved.storeId, template_key: templateKey || 'index', section_order: sectionOrder,
+            base_version: baseVersion, idempotency_key: idempotencyKey, client: 'admin-web',
+        })
+        if (!parsed.success) return NextResponse.json({ error: 'A valid section order, current version and stable retry key are required.' }, { status: 400 })
         const { themeId } = await params
-        const api = createMerchantApiClient()
-        const editorPayload = await api.themes.editor(themeId, resolved.storeId)
-        const config = (editorPayload.template_config || {}) as Record<string, unknown>
-        const sections = (config.sections || {}) as Record<string, unknown>
-        const templateSections = (sections.template || []) as Array<{ id: string;[key: string]: unknown }>
-
-        // Reorder template sections based on the new order
-        const sectionMap = new Map(templateSections.map(s => [s.id, s]))
-        const reordered = sectionOrder
-            .map(id => sectionMap.get(id))
-            .filter(Boolean) as typeof templateSections
-
-        // Append any sections not in the order (safety net)
-        const orderedIds = new Set(sectionOrder)
-        for (const section of templateSections) {
-            if (!orderedIds.has(section.id)) {
-                reordered.push(section)
-            }
-        }
-
-        // Update config with reordered sections
-        const updatedConfig = {
-            ...config,
-            sections: {
-                ...sections,
-                template: reordered,
-            },
-        }
-
-        await api.themes.saveDraft(themeId, {
-            store_id: resolved.storeId,
-            template_config: updatedConfig,
-            client: 'admin-web',
-        })
-
-        return NextResponse.json({
-            success: true,
-            sectionOrder: reordered.map(s => s.id),
-        })
-    } catch (err) {
-        return merchantApiErrorResponse(err)
-    }
+        const saved = await createMerchantApiClient().themes.reorderDraft(themeId, parsed.data)
+        return NextResponse.json({ success: true, version: saved.version, currentVersion: saved.current_version,
+            replayed: saved.replayed, sectionOrder: saved.section_order })
+    } catch (err) { return merchantApiErrorResponse(err) }
 }

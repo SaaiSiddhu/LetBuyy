@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
@@ -26,8 +27,13 @@ export async function POST(
             )
         }
 
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in before previewing.' } }, { status: 401 })
+        if (body.actorId !== actor.id) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'Your account changed. Reload the editor before previewing.' } }, { status: 403 })
+
         const resolved = await resolveOwnedStoreId(String(storeName))
         if (resolved.error) return resolved.error
+        if (body.storeId !== resolved.storeId) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'The editor store changed. Reload before previewing.' } }, { status: 403 })
 
         const payload = await createMerchantApiClient().themes.previewSession(themeId, {
             store_id: resolved.storeId,

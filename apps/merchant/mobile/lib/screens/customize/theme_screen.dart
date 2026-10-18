@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
@@ -27,6 +28,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
   List<Map<String, dynamic>> _releases = const [];
   bool _isLoading = true;
   bool _isBusy = false;
+  Object? _ownedContext;
+  int _loadGeneration = 0;
   late AppThemeColors colors;
 
   String get _activeThemeSlug =>
@@ -49,6 +52,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
   }
 
   Future<void> _loadThemes() async {
+    final generation = ++_loadGeneration;
     setState(() => _isLoading = true);
     try {
       final themeService = context.read<ThemeService>();
@@ -58,6 +62,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
         return;
       }
 
+      final requestContext = themeService.captureContext();
       final catalog = await themeService.fetchThemes(store.id);
       ThemeEditorPayload? editor;
       List<Map<String, dynamic>> releases = const [];
@@ -80,8 +85,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
         editor = null;
       }
 
-      if (!mounted) return;
+      if (!mounted ||
+          generation != _loadGeneration ||
+          themeService.captureContext() != requestContext)
+        return;
       setState(() {
+        _ownedContext = requestContext;
         _store = store;
         _catalog = catalog;
         _editorPayload = editor;
@@ -90,12 +99,16 @@ class _ThemeScreenState extends State<ThemeScreen> {
     } catch (error) {
       if (mounted) _showMessage('Unable to load themes: $error', isError: true);
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && generation == _loadGeneration)
+        setState(() => _isLoading = false);
     }
   }
 
   Future<void> _runThemeAction(Future<void> Function() action) async {
-    if (_store == null || _isBusy) return;
+    if (_store == null ||
+        _isBusy ||
+        _ownedContext != context.read<ThemeService>().captureContext())
+      return;
     setState(() => _isBusy = true);
     try {
       await action();
@@ -105,7 +118,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
       if (mounted) _showMessage(error.toString(), isError: true);
     } catch (_) {
       if (mounted)
-        _showMessage('Theme action could not be completed.', isError: true);
+        _showMessage(
+          'Theme action was not confirmed. Retry it to recover the result.',
+          isError: true,
+        );
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
@@ -123,25 +139,86 @@ class _ThemeScreenState extends State<ThemeScreen> {
 
   Future<void> _publishTheme() {
     return _runThemeAction(() async {
-      final templateConfig =
-          _editorPayload?.templateConfig ?? _store?.templateConfig?.toMap();
-      await context.read<ThemeService>().publish(
-        storeId: _store!.id,
-        themeSlug: _activeThemeSlug,
-        templateConfig: templateConfig,
-        baseVersion: _editorPayload?.version,
+      final service = context.read<ThemeService>();
+      final store = _store!,
+          slug = _activeThemeSlug,
+          captured = service.captureContext();
+      late final Map<String, dynamic> confirmed;
+      if (service.hasPendingPublication(store.id, slug)) {
+        confirmed = await service.recoverPublication(
+          storeId: store.id,
+          themeSlug: slug,
+        );
+      } else {
+        final editor = _editorPayload;
+        if (editor == null ||
+            !editor.hasDraft ||
+            editor.store['id'] != store.id ||
+            editor.theme['slug'] != slug) {
+          throw StateError(
+            'Load and save this owned theme draft before publishing.',
+          );
+        }
+        confirmed = await service.publish(
+          storeId: store.id,
+          themeSlug: slug,
+          baseVersion: editor.version,
+        );
+      }
+      if (!mounted ||
+          service.captureContext() != captured ||
+          _store?.id != store.id ||
+          _activeThemeSlug != slug)
+        return;
+      _showMessage(
+        service.hasPendingPublication(store.id, slug)
+            ? 'Publication confirmed. Recover this request before publishing another draft.'
+            : confirmed['current_version'] == confirmed['version']
+            ? 'Publication confirmed'
+            : 'The earlier publication is confirmed. Review the latest theme state before publishing again.',
+        isSuccess: true,
       );
-      _showMessage('Theme published', isSuccess: true);
     });
   }
 
-  Future<void> _discardDraft() {
-    return _runThemeAction(() async {
-      await context.read<ThemeService>().discardDraft(
-        storeId: _store!.id,
-        themeSlug: _activeThemeSlug,
+  Future<void> _discardDraft() async {
+    final store = _store,
+        editor = _editorPayload,
+        service = context.read<ThemeService>();
+    if (store == null || editor == null) return;
+    final slug = _activeThemeSlug, requestContext = service.captureContext();
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard saved theme draft?'),
+        content: Text(
+          'Discard all unpublished theme edits at version ${editor.version}? Your published storefront stays available.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Keep draft'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Discard draft'),
+          ),
+        ],
+      ),
+    );
+    if (discard != true ||
+        !mounted ||
+        _store?.id != store.id ||
+        _activeThemeSlug != slug ||
+        service.captureContext() != requestContext)
+      return;
+    await _runThemeAction(() async {
+      await service.discardDraft(
+        storeId: store.id,
+        themeSlug: slug,
+        baseVersion: editor.version,
       );
-      _showMessage('Draft discarded', isSuccess: true);
+      _showMessage('Draft discard confirmed', isSuccess: true);
     });
   }
 
@@ -218,12 +295,27 @@ class _ThemeScreenState extends State<ThemeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const SectionEditorScreen()),
-    ).then((_) => _loadThemes()); // Reload after editor closes in case draft changed
+    ).then(
+      (_) => _loadThemes(),
+    ); // Reload after editor closes in case draft changed
   }
 
   @override
   Widget build(BuildContext context) {
+    context.watch<StoreContext>();
     colors = AppThemeColors.of(context);
+    if (_store != null &&
+        _ownedContext != context.read<ThemeService>().captureContext()) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Themes')),
+        body: Center(
+          child: FilledButton(
+            onPressed: _loadThemes,
+            child: const Text('Reload themes for the current account'),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: colors.bgStart,
       body: Container(
@@ -297,6 +389,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
     final theme = activeTheme.isEmpty ? null : activeTheme.first;
     final hasDraft = _editorPayload?.hasDraft == true;
+    final recoverPublish =
+        _store != null &&
+        context.read<ThemeService>().hasPendingPublication(
+          _store!.id,
+          _activeThemeSlug,
+        );
     final releaseCount = _releases.length;
 
     return Container(
@@ -372,10 +470,10 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 enabled: !_isBusy,
               ),
               _ActionChipButton(
-                label: 'Publish',
+                label: recoverPublish ? 'Recover publish' : 'Publish',
                 icon: Icons.cloud_upload_outlined,
-                onTap: hasDraft ? _publishTheme : null,
-                enabled: hasDraft && !_isBusy,
+                onTap: hasDraft || recoverPublish ? _publishTheme : null,
+                enabled: (hasDraft || recoverPublish) && !_isBusy,
               ),
               _ActionChipButton(
                 label: 'Discard',

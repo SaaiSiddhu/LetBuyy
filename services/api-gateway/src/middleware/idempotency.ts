@@ -179,12 +179,7 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const routeOwnedOrderReceipt = (method === 'PATCH' && /^\/orders\/[^/]+$/.test(orderPath))
         || (method === 'POST' && /^\/(?:orders|returns)\/[^/]+\/refund\/complete$/.test(orderPath));
     const routeOwnedMoneyClaim = method === 'POST' && (/^\/payments\/[^/]+\/refund$/.test(orderPath) || /^\/payouts\/[^/]+\/settle$/.test(orderPath));
-    // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
-    const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
-    const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
-    // Membership commands own live-owner/version/payload-bound SQL receipts.
-    const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
-    if (routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    if (routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

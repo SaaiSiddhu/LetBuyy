@@ -165,15 +165,7 @@ test('product gateway mutations emit registered product events', () => {
 
   assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
   assert.match(source, /eventType: 'product\.created'/);
-  // The maintained PATCH route delegates to the canonical transactional
-  // writer; product.updated is inserted with its receipt in SQL, not twice.
-  assert.match(source, /service\.updateProduct\(productId, productStoreId/);
-  assert.match(read('services/api-gateway/src/execution/product-execution.adapter.ts'), /return executeProductMutation\(/);
-  assert.match(read('services/api-gateway/src/execution/product-mutation.adapter.ts'), /SELECT public\.apply_product_edit_v1/);
-  const editSql = read('database/supabase/migrations/346_product_atomic_edits.sql');
-  assert.match(editSql, /INSERT INTO public\.outbox_events/);
-  assert.match(editSql, /'product\.updated'/);
-  assert.match(editSql, /'product\.updated:'\|\|p_idempotency_key/);
+  assert.match(source, /eventType: 'product\.updated'/);
   assert.match(source, /eventType: 'product\.deleted'/);
   assert.match(source, /aggregateType: 'product'/);
   assert.match(source, /site_id: storeId/);

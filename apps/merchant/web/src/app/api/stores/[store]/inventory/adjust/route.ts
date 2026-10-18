@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { merchantSecurityScope } from '@/lib/api/merchant-security-scope'
+import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import type { InventoryAdjustInput } from '@letbuyy/api-client'
 
 type InventoryAdjustBody = {
@@ -17,8 +17,10 @@ export async function POST(
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
-        const scope = await merchantSecurityScope(request, params)
-        if (scope.error) return scope.error
+        const { store } = await params
+        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+
+        if (resolved.error) return resolved.error
 
         const idempotencyKey = request.headers.get('X-Idempotency-Key')?.trim()
         if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 200) {
@@ -38,9 +40,9 @@ export async function POST(
             adjustment: body.adjustment,
             reason: body.reason || 'correction',
             notes: body.notes || null,
-        } as InventoryAdjustInput, { idempotencyKey, storeId: scope.storeId })
+        } as InventoryAdjustInput, { idempotencyKey, storeId: resolved.storeId })
 
-        return NextResponse.json({ data: payload }, { headers: { 'Cache-Control': 'private, no-store' } })
+        return NextResponse.json({ data: payload })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to adjust inventory')
     }

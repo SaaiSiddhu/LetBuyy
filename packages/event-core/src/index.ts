@@ -77,7 +77,6 @@ export const DOMAIN_EVENT_TYPES = [
   'store.created',
   'product.created',
   'product.updated',
-  'collection.membership.updated',
   'product.deleted',
   'cart.created',
   'cart.email_captured',
@@ -183,7 +182,6 @@ export interface DomainEventContract {
   aggregateType:
     | 'store'
     | 'product'
-    | 'collection'
     | 'cart'
     | 'checkout'
     | 'order'
@@ -226,12 +224,6 @@ const ProductPayloadSchema = z.object({
   handle: z.string().trim().min(1).max(160).optional(),
   status: z.enum(['draft', 'active', 'archived', 'deleted']).optional(),
 });
-
-const CollectionMembershipPayloadSchema = z.object({
-  site_id: UuidSchema,
-  collection_id: UuidSchema,
-  membership_version: z.number().int().positive(),
-}).strict();
 
 const OrderPayloadSchema = z.object({
   site_id: UuidSchema,
@@ -469,7 +461,6 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'product',
     payloadSchema: ProductPayloadSchema,
   },
-  'collection.membership.updated': activeGatewayContract('collection.membership.updated', 'collection', CollectionMembershipPayloadSchema, ['analytics', 'webhook-service']),
   'product.deleted': {
     eventType: 'product.deleted',
     schemaVersion: 1,

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { DiscardThemeDraftSchema } from '@letbuyy/theme-engine';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
@@ -24,6 +25,7 @@ import {
     RenameSiteThemeSchema,
     RollbackThemeReleaseSchema,
     SaveThemeDraftSchema,
+    ReorderThemeDraftSchema,
     ThemePurchaseOrderSchema,
     ThemePurchaseVerifySchema,
     ThemeReviewCreateSchema,
@@ -42,6 +44,7 @@ import {
     type RenameSiteThemeInput,
     type RollbackThemeReleaseInput,
     type SaveThemeDraftInput,
+    type ReorderThemeDraftInput,
     type ThemePurchaseOrderInput,
     type ThemePurchaseVerifyInput,
     type ThemeReviewCreateInput,
@@ -467,12 +470,12 @@ router.get('/', async (c) => {
         );
     }
 
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     const customUser = await resolveCustomUser(db, auth.user);
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const store = await service.verifyStoreOwner(queryResult.data.store_id, customUser.id);
+    const store = await service.verifyThemeEditorStore(queryResult.data.store_id, customUser.id);
 
     const { data: installations } = await db
         .from('store_themes')
@@ -584,7 +587,7 @@ router.get('/:slug/editor', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id, parsed.data.template_key)));
 });
 
@@ -598,16 +601,28 @@ router.put('/:slug/editor/draft', validate('json', SaveThemeDraftSchema), async 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     return c.json(success(await service.saveDraft(slug, body, customUser.id, getRequestId(c))));
+});
+
+router.put('/:slug/editor/reorder', validate('json', ReorderThemeDraftSchema), async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
+    return c.json(success(await service.reorderDraft(c.req.param('slug'), c.get('validatedBody') as ReorderThemeDraftInput, customUser.id, getRequestId(c))));
 });
 
 // DELETE /themes/:slug/editor/draft?store_id=... — Discard a store-scoped draft
 router.delete('/:slug/editor/draft', async (c) => {
     const auth = c.get('auth');
     const slug = c.req.param('slug');
-    const parsed = ThemeStoreQuerySchema.safeParse({
+    const version = c.req.query('base_version');
+    const parsed = DiscardThemeDraftSchema.safeParse({
         store_id: c.req.query('store_id'),
+        base_version: version !== undefined && /^\d+$/.test(version) ? Number(version) : undefined,
+        idempotency_key: c.req.query('idempotency_key'),
         template_key: c.req.query('template_key') || c.req.query('template') || 'index',
     });
 
@@ -623,8 +638,8 @@ router.delete('/:slug/editor/draft', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c), parsed.data.template_key)));
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
+    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c), parsed.data.template_key, parsed.data)));
 });
 
 // POST /themes/:slug/publish — Publish a saved draft to the live store config
@@ -637,7 +652,7 @@ router.post('/:slug/publish', validate('json', PublishThemeSchema), async (c) =>
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     const published = await service.publish(slug, body, customUser.id, getRequestId(c));
     await purgeThemeStorefrontCache(c, body.store_id);
     return c.json(success(published));
@@ -653,7 +668,7 @@ router.post('/:slug/preview-session', validate('json', PreviewTokenSchema), asyn
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     return c.json(success(await service.createPreviewSession(slug, body, customUser.id, getRequestId(c))), 201);
 });
 
@@ -677,7 +692,7 @@ router.get('/:slug/releases', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     return c.json(success(await service.listReleases(slug, parsed.data.store_id, customUser.id)));
 });
 
@@ -692,7 +707,7 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     const rollback = await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c));
     await purgeThemeStorefrontCache(c, body.store_id);
     return c.json(success(rollback));

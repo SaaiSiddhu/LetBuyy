@@ -54,9 +54,11 @@ class ThemeCatalogResponse {
     final rawThemes = json['data'] as List? ?? const [];
     return ThemeCatalogResponse(
       themes: rawThemes
-          .map((item) => ThemeCatalogItem.fromJson(
-                Map<String, dynamic>.from(item as Map),
-              ))
+          .map(
+            (item) => ThemeCatalogItem.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
           .toList(),
       currentTheme: json['current_theme']?.toString(),
       storeStatus: json['store_status']?.toString(),
@@ -90,28 +92,34 @@ class ThemeEditorPayload {
   factory ThemeEditorPayload.fromJson(Map<String, dynamic> json) {
     final data = Map<String, dynamic>.from(json['data'] as Map? ?? const {});
     final draft = Map<String, dynamic>.from(data['draft'] as Map? ?? const {});
-    final schemas = Map<String, dynamic>.from(data['schemas'] as Map? ?? const {});
+    final schemas = Map<String, dynamic>.from(
+      data['schemas'] as Map? ?? const {},
+    );
     final release = data['release'] is Map
         ? ThemeReleaseSummary.fromJson(
             Map<String, dynamic>.from(data['release'] as Map),
           )
         : null;
     final updatedAt = draft['updated_at']?.toString();
+    final revision = data['version'];
+    if (revision is! int || revision < 0)
+      throw const FormatException('The current theme revision is missing.');
 
     return ThemeEditorPayload(
       store: Map<String, dynamic>.from(data['store'] as Map? ?? const {}),
       theme: Map<String, dynamic>.from(data['theme'] as Map? ?? const {}),
-      templateConfig:
-          Map<String, dynamic>.from(data['template_config'] as Map? ?? const {}),
-      sectionSchemas:
-          Map<String, dynamic>.from(schemas['sections'] as Map? ?? const {}),
-      settingsSchema:
-          Map<String, dynamic>.from(schemas['settings'] as Map? ?? const {}),
+      templateConfig: Map<String, dynamic>.from(
+        data['template_config'] as Map? ?? const {},
+      ),
+      sectionSchemas: Map<String, dynamic>.from(
+        schemas['sections'] as Map? ?? const {},
+      ),
+      settingsSchema: Map<String, dynamic>.from(
+        schemas['settings'] as Map? ?? const {},
+      ),
       release: release,
       hasDraft: draft['exists'] == true,
-      version: (data['version'] as num?)?.toInt() ??
-          (draft['version'] as num?)?.toInt() ??
-          1,
+      version: revision,
       draftUpdatedAt: updatedAt != null ? DateTime.tryParse(updatedAt) : null,
     );
   }
@@ -132,7 +140,8 @@ class ThemeReleaseSummary {
     final publishedAt = json['published_at']?.toString();
     return ThemeReleaseSummary(
       id: json['id']?.toString() ?? '',
-      version: (json['version'] as num?)?.toInt() ??
+      version:
+          (json['version'] as num?)?.toInt() ??
           (json['release_version'] as num?)?.toInt() ??
           0,
       publishedAt: publishedAt != null ? DateTime.tryParse(publishedAt) : null,
@@ -144,17 +153,23 @@ class ThemeDraftSaveResult {
   final int version;
   final DateTime? savedAt;
 
-  const ThemeDraftSaveResult({
-    required this.version,
-    this.savedAt,
-  });
+  const ThemeDraftSaveResult({required this.version, this.savedAt});
 
   factory ThemeDraftSaveResult.fromJson(Map<String, dynamic> json) {
     final data = Map<String, dynamic>.from(json['data'] as Map? ?? const {});
     final savedAt = data['saved_at']?.toString();
+    final revision = data['version'];
+    if (revision is! int ||
+        revision <= 0 ||
+        savedAt == null ||
+        DateTime.tryParse(savedAt) == null) {
+      throw const FormatException(
+        'A confirmed theme save receipt is required.',
+      );
+    }
     return ThemeDraftSaveResult(
-      version: (data['version'] as num?)?.toInt() ?? 1,
-      savedAt: savedAt != null ? DateTime.tryParse(savedAt) : null,
+      version: revision,
+      savedAt: DateTime.parse(savedAt),
     );
   }
 }
