@@ -213,6 +213,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Authenticator',
                         subtitle:
                             'Two-factor authentication and recovery codes',
+                        trailing: Icon(
+                          Icons.chevron_right_rounded,
+                          color: colors.textTertiary,
+                          size: 20,
+                        ),
                         onTap: () =>
                             Navigator.pushNamed(context, AppRoutes.twoFactor),
                       ),

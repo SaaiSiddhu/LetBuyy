@@ -34,7 +34,7 @@ test('web theme editor persists draft changes before minting preview tokens', ()
     assert.match(editorPageSource, /\/api\/themes\/\$\{themeId\}\/editor\/draft/);
     assert.match(editorPageSource, /\/api\/themes\/\$\{themeId\}\/preview-session/);
     assert.match(editorPageSource, /setPreviewToken\(nextPreviewToken\)/);
-    assert.match(editorPageSource, /setPreviewError\(error instanceof Error/);
+    assert.match(editorPageSource, /setPreviewError\(err instanceof Error/);
     assert.match(editorPageSource, /window\.setTimeout\(\(\) => \{/);
     assert.match(editorPageSource, /isDirty \? 900 : 0/);
 });

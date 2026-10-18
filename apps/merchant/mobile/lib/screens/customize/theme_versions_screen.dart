@@ -27,8 +27,6 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
   bool _isLoading = true;
   bool _isRollingBack = false;
   bool _changed = false;
-  Object? _loadedContext;
-  bool _hasLoadedContext = false;
   String? _error;
 
   @override
@@ -44,9 +42,7 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
     });
 
     try {
-      final service = context.read<ThemeService>();
-      final captured = service.captureContext();
-      final rows = await service.fetchReleases(
+      final rows = await context.read<ThemeService>().fetchReleases(
         storeId: widget.storeId,
         themeSlug: widget.themeSlug,
       );
@@ -66,15 +62,7 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
             });
 
       if (!mounted) return;
-      if (service.captureContext() != captured)
-        throw StateError(
-          'The active account or store changed. Reload releases.',
-        );
-      setState(() {
-        _releases = releases;
-        _loadedContext = captured;
-        _hasLoadedContext = true;
-      });
+      setState(() => _releases = releases);
     } catch (error) {
       if (!mounted) return;
       setState(
@@ -87,133 +75,25 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
   }
 
   Future<void> _rollbackRelease(_ThemeReleaseView release) async {
-    final service = context.read<ThemeService>();
-    final captured = _loadedContext;
-    if (!_hasLoadedContext || service.captureContext() != captured) {
-      _showMessage(
-        'The active account or store changed. Reload releases.',
-        isError: true,
-      );
-      return;
-    }
-    final pending = service.pendingRollbackTarget(
-      widget.storeId,
-      widget.themeSlug,
-    );
-    if (pending != null && pending != release.id) {
-      _showMessage(
-        'Recover the previous rollback before restoring another release.',
-        isError: true,
-      );
-      return;
-    }
-    if (pending != null) {
-      await _recoverPendingRollback();
-      return;
-    }
-    final current = _releases.where((item) => item.isCurrent).toList();
-    if (pending == null && (current.length != 1 || release.isCurrent)) {
-      _showMessage(
-        'Refresh and review a previous release before restoring.',
-        isError: true,
-      );
-      return;
-    }
     final confirmed = await _confirmRollback(release);
-    if (confirmed != true || _isRollingBack || !mounted) return;
+    if (confirmed != true || _isRollingBack) return;
+
     setState(() => _isRollingBack = true);
     try {
-      if (service.captureContext() != captured)
-        throw StateError(
-          'The active account or store changed. Reload releases.',
-        );
-      final result = await service.rollbackRelease(
+      await context.read<ThemeService>().rollbackRelease(
         storeId: widget.storeId,
         themeSlug: widget.themeSlug,
         releaseId: release.id,
-        expectedCurrentReleaseId: current.single.id,
-        expectedContext: captured,
         rollbackMessage: 'Rolled back from mobile theme versions',
       );
-      if (service.captureContext() != captured)
-        throw StateError(
-          'The active account or store changed. Reload releases.',
-        );
       _changed = true;
       await _loadReleases();
-      if (!mounted || service.captureContext() != captured) return;
-      final committed = result['rollback'] as Map;
-      _showMessage(
-        result['current_release_id'] == committed['release_id']
-            ? 'Theme rolled back to v${release.version}'
-            : 'Rollback confirmed; a newer release is now live.',
-        isSuccess: true,
-      );
+      if (!mounted) return;
+      _showMessage('Theme rolled back to v${release.version}', isSuccess: true);
     } catch (error) {
-      if (mounted && service.captureContext() == captured)
-        _showMessage(
-          'Rollback was not confirmed. Recover the same request before trying another release.',
-          isError: true,
-        );
-    } finally {
-      if (mounted) setState(() => _isRollingBack = false);
-    }
-  }
-
-  Future<void> _recoverPendingRollback() async {
-    final service = context.read<ThemeService>(), captured = _loadedContext;
-    if (!_hasLoadedContext ||
-        _isRollingBack ||
-        service.captureContext() != captured ||
-        service.pendingRollbackTarget(widget.storeId, widget.themeSlug) == null)
-      return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Recover rollback?'),
-        content: const Text(
-          'Recover the saved request for your earlier rollback.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Recover rollback'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true ||
-        !mounted ||
-        service.captureContext() != captured ||
-        _isRollingBack)
-      return;
-    setState(() => _isRollingBack = true);
-    try {
-      final result = await service.recoverRollback(
-        storeId: widget.storeId,
-        themeSlug: widget.themeSlug,
-      );
-      if (!mounted || service.captureContext() != captured) return;
-      _changed = true;
-      await _loadReleases();
-      if (!mounted || service.captureContext() != captured) return;
-      final committed = result['rollback'] as Map;
-      _showMessage(
-        result['current_release_id'] == committed['release_id']
-            ? 'Rollback confirmed.'
-            : 'Rollback confirmed; a newer release is now live.',
-        isSuccess: true,
-      );
-    } catch (_) {
-      if (mounted && service.captureContext() == captured)
-        _showMessage(
-          'Rollback was not confirmed. Recover the same request before restoring another release.',
-          isError: true,
-        );
+      if (mounted) {
+        _showMessage('Theme rollback could not complete.', isError: true);
+      }
     } finally {
       if (mounted) setState(() => _isRollingBack = false);
     }
@@ -262,26 +142,6 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
               children: [
                 _buildHeader(colors),
                 const SizedBox(height: 16),
-                if (!_isLoading &&
-                    _error == null &&
-                    context.read<ThemeService>().pendingRollbackTarget(
-                          widget.storeId,
-                          widget.themeSlug,
-                        ) !=
-                        null &&
-                    !_releases.any(
-                      (release) =>
-                          release.id ==
-                          context.read<ThemeService>().pendingRollbackTarget(
-                            widget.storeId,
-                            widget.themeSlug,
-                          ),
-                    ))
-                  TextButton.icon(
-                    onPressed: _isRollingBack ? null : _recoverPendingRollback,
-                    icon: const Icon(Icons.restore_rounded),
-                    label: const Text('Recover rollback'),
-                  ),
                 if (_isLoading)
                   _buildLoading(colors)
                 else if (_error != null)
@@ -395,12 +255,6 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
 
   Widget _buildReleaseCard(_ThemeReleaseView release) {
     final colors = AppThemeColors.of(context);
-    final recovering =
-        context.read<ThemeService>().pendingRollbackTarget(
-          widget.storeId,
-          widget.themeSlug,
-        ) ==
-        release.id;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -450,11 +304,11 @@ class _ThemeVersionsScreenState extends State<ThemeVersionsScreen> {
                 ),
               ),
               TextButton.icon(
-                onPressed: _isRollingBack || (release.isCurrent && !recovering)
+                onPressed: _isRollingBack
                     ? null
                     : () => _rollbackRelease(release),
                 icon: const Icon(Icons.restore_rounded, size: 16),
-                label: Text(recovering ? 'Recover rollback' : 'Roll back'),
+                label: const Text('Roll back'),
                 style: TextButton.styleFrom(
                   foregroundColor: LetbuyyColorTokens.brandPrimary,
                 ),
@@ -500,7 +354,6 @@ class _ThemeReleaseView {
     required this.id,
     required this.version,
     required this.status,
-    required this.isCurrent,
     required this.publishedAt,
     required this.message,
   });
@@ -508,7 +361,6 @@ class _ThemeReleaseView {
   final String id;
   final int version;
   final String status;
-  final bool isCurrent;
   final DateTime? publishedAt;
   final String message;
 
@@ -536,7 +388,6 @@ class _ThemeReleaseView {
           (json['version'] as num?)?.toInt() ??
           0,
       status: rawStatus,
-      isCurrent: json['is_current'] == true || rawStatus == 'current',
       publishedAt: rawDate == null ? null : DateTime.tryParse(rawDate),
       message:
           json['rollback_message']?.toString() ??

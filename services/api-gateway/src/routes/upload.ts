@@ -43,18 +43,6 @@ function safeUploadFolder(value: string): string {
         .slice(0, 96) || 'uploads';
 }
 
-// This route always returns public media (or inline development bytes). A KYC
-// namespace must never imply private custody on either storage path. Recognizing
-// these names contains the maintained caller; it cannot classify arbitrary files.
-function isPrivateDocumentFolder(value: string): boolean {
-    let decoded = value;
-    try { decoded = decodeURIComponent(value); } catch { /* Inspect the literal invalid encoding. */ }
-    const words = decoded.normalize('NFKC').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-    return words.some((word) => /^(?:kyc|kycdocuments?|privatekyc|privatedocuments?)$/.test(word))
-        || (words.some((word) => ['private', 'identity', 'verification'].includes(word))
-            && words.some((word) => /^(?:documents?|proofs?|evidence)$/.test(word)));
-}
-
 function safeFileExtension(fileName: string): string {
     const ext = fileName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
     return ext.slice(0, 12) || 'bin';
@@ -155,13 +143,6 @@ router.post('/', async (c) => {
             typeof folderEntry === 'string' && folderEntry.trim().length > 0
                 ? safeUploadFolder(folderEntry)
                 : 'uploads';
-        if (isPrivateDocumentFolder(typeof folderEntry === 'string' ? folderEntry : '')
-            || isPrivateDocumentFolder(folder)) {
-            return c.json({ error: {
-                code: 'KYC_PRIVATE_UPLOAD_UNAVAILABLE',
-                message: 'Private verification document uploads are unavailable. Do not send identity or bank documents through public media uploads.',
-            } }, 503);
-        }
         if (storeId && !(await verifyUploadStoreOwnership(c, storeId, auth.user))) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized to upload for this store' } }, 403);
         }

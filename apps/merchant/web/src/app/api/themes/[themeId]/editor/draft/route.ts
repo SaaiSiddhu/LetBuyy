@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SaveThemeDraftSchema, DiscardThemeDraftSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
-import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
         ? value.trim()
         : 'index'
+}
+
+function readPositiveInt(value: unknown): number | undefined {
+    const numeric = typeof value === 'number'
+        ? value
+        : typeof value === 'string' ? Number(value) : Number.NaN
+
+    return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -56,11 +62,7 @@ export async function POST(
         const body = isRecord(rawBody) ? rawBody : {}
         const draftConfig = isRecord(body.draftConfig) ? body.draftConfig : undefined
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
-        const baseVersion = body.baseVersion ?? body.base_version
-        const idempotencyKey = body.idempotencyKey ?? body.idempotency_key
-        const actor = await getSessionUser()
-        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in before saving.' } }, { status: 401 })
-        if (body.actorId !== actor.id) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'Your account changed. Reload the editor before saving.' } }, { status: 403 })
+        const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
 
         if (!draftConfig) {
             return NextResponse.json(
@@ -71,26 +73,20 @@ export async function POST(
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
-        if (body.storeId !== resolved.storeId) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'The editor store changed. Reload before saving.' } }, { status: 403 })
 
-        const parsed = SaveThemeDraftSchema.safeParse({
+        const payload = await createMerchantApiClient().themes.saveDraft(themeId, {
             store_id: resolved.storeId,
             template_key: templateKey,
             template_config: mergeLiquidDraftConfig(body, draftConfig),
             base_version: baseVersion,
             client: 'admin-web',
-            idempotency_key: idempotencyKey,
         })
-        if (!parsed.success) return NextResponse.json({ error: 'A valid draft, current version and retry key are required.' }, { status: 400 })
-        const payload = await createMerchantApiClient().themes.saveDraft(themeId, parsed.data)
 
         return NextResponse.json({
             success: true,
-            savedAt: payload.saved_at,
+            savedAt: payload.saved_at || new Date().toISOString(),
             version: payload.version,
             templateKey,
-            replayed: payload.replayed,
-            currentVersion: payload.current_version,
         })
     } catch (err) {
         return merchantApiErrorResponse(err)
@@ -122,18 +118,11 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const body = await request.json().catch(() => ({})) as Record<string, unknown>
-        const parsed = DiscardThemeDraftSchema.safeParse({
-            store_id: resolved.storeId, template_key: templateKey,
-            base_version: body.baseVersion ?? body.base_version,
-            idempotency_key: body.idempotencyKey ?? body.idempotency_key,
-        })
-        if (!parsed.success) return NextResponse.json({ error: 'The current draft version and retry key are required.' }, { status: 400 })
-        const result = await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId, {
-            query: { template_key: templateKey, base_version: parsed.data.base_version, idempotency_key: parsed.data.idempotency_key },
+        await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId, {
+            query: { template_key: templateKey },
         })
 
-        return NextResponse.json({ success: true, templateKey, ...result })
+        return NextResponse.json({ success: true, templateKey })
     } catch (err) {
         return merchantApiErrorResponse(err)
     }

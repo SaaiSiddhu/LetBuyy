@@ -101,3 +101,7 @@ export function planSignedR2UploadIntent(input: SignedR2UploadIntentInput): Sign
     },
   };
 }
+
+export { transferPrivateOriginal, inspectPrivateOriginal, originalKey, privateOriginalRuntimeAvailable,
+  type OriginalIntent as PrivateReelOriginalIntent, type TransferBudget as PrivateReelTransferBudget,
+  type VerifiedOriginal as VerifiedPrivateReelOriginal, type PrivateR2Binding } from './reel-private-r2';

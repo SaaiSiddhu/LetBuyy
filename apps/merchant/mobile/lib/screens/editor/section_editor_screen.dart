@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
-
 import '../../app/store_context.dart';
 
 import '../../models/store_model.dart';
@@ -37,9 +34,6 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   StoreModel? _store;
   List<SectionModel> _sections = [];
   bool _isLoading = true;
-  String? _loadError;
-  int _loadGeneration = 0;
-  Object? _ownedContext;
   bool _isSaving = false;
   bool _isGeneratingHomepage = false;
   bool _hasChanges = false;
@@ -203,48 +197,51 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   }
 
   Future<void> _loadStore() async {
-    final generation = ++_loadGeneration;
-    setState(() {
-      _isLoading = true;
-      _loadError = null;
-    });
+    setState(() => _isLoading = true);
     try {
       final themeService = context.read<ThemeService>();
       final store = await context.read<StoreContext>().ensureSelectedStore();
 
       if (store != null) {
         final themeSlug = _resolveThemeSlug(store);
-        final requestContext = themeService.captureContext();
-        final editorPayload = await themeService.loadEditor(
-          storeId: store.id,
-          themeSlug: themeSlug,
-        );
-        if (!mounted ||
-            generation != _loadGeneration ||
-            themeService.captureContext() != requestContext)
-          return;
-        if (editorPayload.store['id'] != store.id ||
-            editorPayload.theme['slug'] != themeSlug ||
-            editorPayload.version < 0) {
-          throw StateError('The owned theme draft could not be confirmed.');
+        ThemeEditorPayload? editorPayload;
+        StoreTemplateModel templateConfig;
+
+        try {
+          editorPayload = await themeService.loadEditor(
+            storeId: store.id,
+            themeSlug: themeSlug,
+          );
+          templateConfig = _templateFromGatewayPayload(
+            store: store,
+            themeSlug: themeSlug,
+            payload: editorPayload,
+          );
+        } catch (_) {
+          templateConfig =
+              store.templateConfig ??
+              StoreTemplateModel(
+                storeId: store.id,
+                themeId: themeSlug,
+                themeSettings: const ThemeSettings(),
+                sections: DefaultStoreTemplate.createMinimalSections(),
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
         }
-        final templateConfig = _templateFromGatewayPayload(
-          store: store,
-          themeSlug: themeSlug,
-          payload: editorPayload,
-        );
+
         final sections = _ensureRequiredSections(templateConfig.sections);
         final editorStore = store.copyWith(templateConfig: templateConfig);
 
         setState(() {
           _store = editorStore;
-          _ownedContext = requestContext;
           _sections = sections;
           _themeSlug = themeSlug;
           _editorPayload = editorPayload;
-          _baseVersion = editorPayload.version;
-          _templateConfigData = editorPayload.templateConfig;
-          _draftExists = editorPayload.hasDraft;
+          _baseVersion = editorPayload?.version;
+          _templateConfigData =
+              editorPayload?.templateConfig ?? templateConfig.toMap();
+          _draftExists = editorPayload?.hasDraft == true;
           _hasChanges = false;
         });
 
@@ -256,14 +253,8 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         await _refreshPreviewToken();
       }
     } catch (_) {
-      if (mounted && generation == _loadGeneration)
-        setState(() {
-          _loadError = 'The owned theme draft could not be loaded. Retry before editing.';
-          _baseVersion = null;
-        });
     } finally {
-      if (mounted && generation == _loadGeneration)
-        setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 
@@ -372,8 +363,9 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           .map((s) => s.order)
           .fold<int>(0, (a, b) => a > b ? a : b);
       sections.add(
-        SectionDefaults.createDefault(SectionType.productGrid)
-            .copyWith(order: maxOrder + 1),
+        SectionDefaults.createDefault(
+          SectionType.productGrid,
+        ).copyWith(order: maxOrder + 1),
       );
     }
 
@@ -382,8 +374,9 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           .map((s) => s.order)
           .fold<int>(0, (a, b) => a > b ? a : b);
       sections.add(
-        SectionDefaults.createDefault(SectionType.footer)
-            .copyWith(order: maxOrder + 1),
+        SectionDefaults.createDefault(
+          SectionType.footer,
+        ).copyWith(order: maxOrder + 1),
       );
     }
 
@@ -550,6 +543,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
     config['themeId'] = _themeSlug;
     config['themeSettings'] = themeSettings.toMap();
     config['sections'] = _buildThemeEngineSections(_sections);
+    config['updatedAt'] = DateTime.now().toIso8601String();
     return config;
   }
 
@@ -604,13 +598,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
   }
 
   Future<void> _saveChanges() async {
-    if (_store == null ||
-        _isSaving ||
-        _baseVersion == null ||
-        _ownedContext != context.read<ThemeService>().captureContext())
-      return;
-    final storeId = _store!.id, themeSlug = _themeSlug;
-    final requestContext = context.read<ThemeService>().captureContext();
+    if (_store == null || _isSaving) return;
 
     setState(() => _isSaving = true);
     try {
@@ -622,13 +610,6 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         templateConfig: templateConfig,
         baseVersion: _baseVersion,
       );
-      if (!mounted ||
-          _store?.id != storeId ||
-          _themeSlug != themeSlug ||
-          themeService.captureContext() != requestContext)
-        return;
-      final stillCurrent =
-          jsonEncode(_buildThemeDraftConfig()) == jsonEncode(templateConfig);
       final templateModel = StoreTemplateModel.fromMap({
         'storeId': _store!.id,
         'themeId': _themeSlug,
@@ -645,89 +626,19 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         _templateConfigData = templateConfig;
         _editorPayload = null;
         _draftExists = true;
-        _hasChanges = !stillCurrent;
+        _hasChanges = false;
       });
       await _refreshPreviewToken();
 
       _showMessage('Draft saved', isSuccess: true);
       HapticFeedback.heavyImpact();
-    } on ThemeDraftConflictException {
-      await _showDraftConflict();
-    } on ThemeDraftRetryRequiredException {
-      _showPendingDraftRetry();
+    } on ThemeDraftConflictException catch (error) {
+      _showMessage(error.toString(), isError: true);
     } catch (_) {
-      _showPendingDraftRetry();
+      _showMessage('Draft could not be saved.', isError: true);
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      setState(() => _isSaving = false);
     }
-  }
-
-  Future<void> _showDraftConflict() async {
-    if (!mounted) return;
-    final reload = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Theme draft changed'),
-        content: const Text(
-          'Your local edits are still here. Reload the latest saved draft to continue from the other session’s changes.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep editing locally'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reload latest'),
-          ),
-        ],
-      ),
-    );
-    if (reload == true && mounted) await _loadStore();
-  }
-
-  void _showPendingDraftRetry() {
-    if (!mounted) return;
-    final service = context.read<ThemeService>(), store = _store;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Save was not confirmed. Your local edits are retained.',
-        ),
-        action: store != null && service.hasPendingSave(store.id, _themeSlug)
-            ? SnackBarAction(
-                label: 'Recover save',
-                onPressed: () async {
-                  final requestContext = service.captureContext(),
-                      slug = _themeSlug;
-                  try {
-                    final saved = await service.retryPendingSave(
-                      storeId: store.id,
-                      themeSlug: slug,
-                    );
-                    if (!mounted ||
-                        _store?.id != store.id ||
-                        _themeSlug != slug ||
-                        service.captureContext() != requestContext)
-                      return;
-                    setState(() {
-                      _baseVersion = saved.version;
-                      _hasChanges = true;
-                      _draftExists = true;
-                    });
-                    _showMessage(
-                      'Previous save recovered. Save again to include your latest local edits.',
-                    );
-                  } on ThemeDraftConflictException {
-                    await _showDraftConflict();
-                  } catch (_) {
-                    _showPendingDraftRetry();
-                  }
-                },
-              )
-            : null,
-      ),
-    );
   }
 
   void _showMessage(
@@ -835,14 +746,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
 
   Future<void> _generateAiHomepageDraft(String prompt) async {
     final store = _store;
-    if (store == null ||
-        _isGeneratingHomepage ||
-        _baseVersion == null ||
-        _ownedContext != context.read<ThemeService>().captureContext())
-      return;
-    final requestContext = context.read<ThemeService>().captureContext();
-    final originalThemeSlug = _themeSlug, originalVersion = _baseVersion;
-    final originalConfig = jsonEncode(_buildThemeDraftConfig());
+    if (store == null || _isGeneratingHomepage) return;
 
     setState(() => _isGeneratingHomepage = true);
     try {
@@ -856,18 +760,6 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         templateConfig: currentTemplateConfig,
         sectionCount: 4,
       );
-      if (!mounted ||
-          _store?.id != store.id ||
-          themeService.captureContext() != requestContext)
-        return;
-      if (draft.themeSlug != originalThemeSlug ||
-          jsonEncode(_buildThemeDraftConfig()) != originalConfig) {
-        _showMessage(
-          'The theme changed during generation. Your current local edits are retained.',
-          isError: true,
-        );
-        return;
-      }
       final normalizedConfig = Map<String, dynamic>.from(draft.templateConfig);
       normalizedConfig['storeId'] = store.id;
       normalizedConfig['themeId'] = draft.themeSlug;
@@ -887,34 +779,30 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         'sections': _buildThemeEngineSections(sections),
         'updatedAt': DateTime.now().toIso8601String(),
       };
-      final updatedStore = store.copyWith(templateConfig: templateModel);
-      setState(() {
-        _store = updatedStore;
-        _sections = sections;
-        _themeSlug = draft.themeSlug;
-        _templateConfigData = templateConfig;
-        _selectedSection = null;
-        _showLayers = false;
-        _hasChanges = true;
-      });
-      _pushHistory();
-      final savedFingerprint = jsonEncode(_buildThemeDraftConfig());
       final saved = await themeService.saveDraft(
         storeId: store.id,
         themeSlug: draft.themeSlug,
         templateConfig: templateConfig,
-        baseVersion: originalVersion,
+        baseVersion: _baseVersion,
       );
-      if (!mounted ||
-          _store?.id != store.id ||
-          themeService.captureContext() != requestContext)
-        return;
+      final updatedStore = store.copyWith(templateConfig: templateModel);
+
       setState(() {
+        _store = updatedStore;
+        _sections = sections;
+        _themeSlug = draft.themeSlug;
         _baseVersion = saved.version;
+        _templateConfigData = templateConfig;
         _editorPayload = null;
         _draftExists = true;
-        _hasChanges = jsonEncode(_buildThemeDraftConfig()) != savedFingerprint;
+        _selectedSection = null;
+        _showLayers = false;
+        _hasChanges = false;
       });
+      _history
+        ..clear()
+        ..add(sections.map((s) => s.copyWith()).toList());
+      _historyIndex = 0;
       await _refreshPreviewToken();
       _showMessage('Homepage draft saved', isSuccess: true);
       HapticFeedback.mediumImpact();
@@ -923,12 +811,8 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
         'AI homepage generation is temporarily unavailable.',
         isError: true,
       );
-    } on ThemeDraftConflictException {
-      await _showDraftConflict();
-    } on ThemeDraftRetryRequiredException {
-      _showPendingDraftRetry();
     } catch (_) {
-      _showPendingDraftRetry();
+      _showMessage('Homepage draft could not be generated.', isError: true);
     } finally {
       if (mounted) setState(() => _isGeneratingHomepage = false);
     }
@@ -981,7 +865,6 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<StoreContext>();
     colors = AppThemeColors.of(context);
     if (_isLoading) {
       return Scaffold(
@@ -990,33 +873,6 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
           decoration: colors.backgroundGradient,
           child: const Center(
             child: CircularProgressIndicator(color: Colors.white),
-          ),
-        ),
-      );
-    }
-
-    if (_loadError != null ||
-        _baseVersion == null ||
-        _ownedContext != context.read<ThemeService>().captureContext()) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Theme editor')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _loadError ?? 'The owned theme draft is unavailable.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: _loadStore,
-                  child: const Text('Retry loading draft'),
-                ),
-              ],
-            ),
           ),
         ),
       );
@@ -1303,7 +1159,8 @@ class _AiHomepagePromptSheetState extends State<_AiHomepagePromptSheet> {
                 textInputAction: TextInputAction.newline,
                 style: TextStyle(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Example: A clean homepage for handmade cotton kurtas with a warm hero, newest products, and a short brand story.',
+                  hintText:
+                      'Example: A clean homepage for handmade cotton kurtas with a warm hero, newest products, and a short brand story.',
                   hintStyle: TextStyle(color: colors.textTertiary),
                   filled: true,
                   fillColor: colors.surfaceVariant,

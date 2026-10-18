@@ -148,6 +148,8 @@ export const DOMAIN_EVENT_TYPES = [
   'customer.updated',
   'customer.dsr_requested',
   'media.processed',
+  'reel.review.changed',
+  'reel.upload.changed',
   'audit.recorded',
   'payout.ledger_entry.created',
   'payout.released',
@@ -198,6 +200,7 @@ export interface DomainEventContract {
     | 'customer'
     | 'auth'
     | 'media'
+    | 'reel'
     | 'audit'
     | 'app'
     | 'app_charge'
@@ -437,6 +440,18 @@ function activeGatewayContract(
 }
 
 export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract> = {
+  'reel.upload.changed': {
+    eventType: 'reel.upload.changed', schemaVersion: 1, producer: 'api-gateway',
+    consumers: [], aggregateType: 'media',
+    payloadSchema: z.object({ site_id: UuidSchema, intent_id: UuidSchema,
+      state: z.enum(['reserved', 'receiving', 'transfer_unknown', 'received_unprocessed', 'expired']), version: z.number().int().positive() }).strict(),
+  },
+  'reel.review.changed': {
+    eventType: 'reel.review.changed', schemaVersion: 1, producer: 'api-gateway',
+    consumers: [], aggregateType: 'reel',
+    payloadSchema: z.object({ site_id: UuidSchema, reel_id: UuidSchema, revision_id: UuidSchema,
+      action: z.enum(['save', 'submit', 'claim', 'reject', 'approve', 'take_down']), version: z.number().int().positive() }).strict(),
+  },
   'store.created': {
     eventType: 'store.created',
     schemaVersion: 1,

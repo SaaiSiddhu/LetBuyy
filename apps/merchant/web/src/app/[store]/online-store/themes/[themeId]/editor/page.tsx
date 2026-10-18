@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type React
 import {
     ArrowLeft,
     Blocks,
+    Bot,
     CheckCircle2,
     ChevronDown,
     ChevronRight,
@@ -42,10 +43,8 @@ import {
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
-import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import ExperiencePicker from '@/components/theme-editor/ExperiencePicker'
 import ConflictDialog from '@/components/theme-editor/ConflictDialog'
-import { ThemeDraftClient, ThemeDraftConflictError, ThemeDraftValidationError } from '@/lib/theme-draft-client'
 import SectionTreePanel, { TreeGroup } from '@/components/theme-editor/SectionTreePanel'
 import type { BlockSchema, SchemaField, SectionSchema, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
@@ -90,9 +89,7 @@ type EditorHistory = {
 }
 
 type ApiEditorResponse = {
-    actorId?: string
     store?: {
-        id?: string
         name?: string
         subdomain?: string
         status?: string
@@ -691,13 +688,6 @@ function releaseVersion(release: ReleaseEntry): number | null {
     return typeof version === 'number' ? version : null
 }
 
-function currentReleaseVersionFromRows(releases: ReleaseEntry[]): number | null {
-    const current = releases.filter(release => release.is_current === true && release.release_status === 'published')
-    if (current.length !== 1) return null
-    const version = releaseVersion(current[0])
-    return Number.isInteger(version) && Number(version) > 0 ? Number(version) : null
-}
-
 function releaseId(release: ReleaseEntry): string {
     return stringValue(release.release_id, stringValue(release.id, 'release'))
 }
@@ -707,13 +697,10 @@ function releaseDate(release: ReleaseEntry): string {
     return new Date(release.published_at).toLocaleString()
 }
 
-
-
 function ThemeEditorInner() {
     const params = useParams()
     const store = params?.store as string
     const themeId = params?.themeId as string
-    const { actorId: editorActorId } = useMerchantSecurityContext(store)
     const { notify } = useToast()
 
     const [settingsSchema, setSettingsSchema] = useState<ThemeSettingsSchema>(() => normalizeSettingsSchema(getThemeSettingsSchema(themeId || 'urban-kicks')))
@@ -749,18 +736,6 @@ function ThemeEditorInner() {
     const [hasConflict, setHasConflict] = useState(false)
     const [conflictSource, setConflictSource] = useState<'autosave' | 'manual-save'>('autosave')
     const previewRequestCounter = useRef(0)
-    const loadRequestCounter = useRef(0)
-    const releaseRequestCounter = useRef(0)
-    const draftClientRef = useRef<ThemeDraftClient | null>(null)
-    const draftClientScopeRef = useRef('')
-    const latestEditorState = useRef(editorState)
-    latestEditorState.current = editorState
-    const [replacementVersion, setReplacementVersion] = useState<number | null>(null)
-    const [isReviewingConflict, setIsReviewingConflict] = useState(false)
-    const conflictRecoveryBusy = useRef(false)
-
-    useEffect(() => () => { draftClientRef.current?.dispose(); loadRequestCounter.current += 1 }, [])
-
 
     const canUndo = history.past.length > 0
     const canRedo = history.future.length > 0
@@ -838,13 +813,11 @@ function ThemeEditorInner() {
 
     const loadReleases = useCallback(async () => {
         if (!store || !themeId) return
-        const scope = draftClientScopeRef.current, generation = loadRequestCounter.current, request = ++releaseRequestCounter.current
 
         try {
             const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
             const payload = await res.json().catch(() => ({}))
-            if (scope !== draftClientScopeRef.current || generation !== loadRequestCounter.current || request !== releaseRequestCounter.current) return
-            if (!res.ok) { setReleases([]); setCurrentReleaseVersion(null); return }
+            if (!res.ok) return
             const rawData = asRecord(payload).data
             const releaseValue: unknown = Array.isArray(rawData)
                 ? rawData
@@ -852,20 +825,15 @@ function ThemeEditorInner() {
                     ? asRecord(rawData).releases
                     : []
             const releaseList = Array.isArray(releaseValue) ? releaseValue : []
-            const rows = releaseList.map((release: unknown) => asRecord(release) as ReleaseEntry)
-            setReleases(rows)
-            setCurrentReleaseVersion(currentReleaseVersionFromRows(rows))
+            setReleases(releaseList.map((release: unknown) => asRecord(release) as ReleaseEntry))
         } catch {
-            if (scope !== draftClientScopeRef.current || generation !== loadRequestCounter.current || request !== releaseRequestCounter.current) return
             setReleases([])
-            setCurrentReleaseVersion(null)
         }
     }, [store, themeId])
 
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
 
-        const loadId = ++loadRequestCounter.current
         setIsLoading(true)
         setLoadError(null)
 
@@ -878,7 +846,6 @@ function ThemeEditorInner() {
 
             const sectionsPayload = sectionsRes ? await sectionsRes.json().catch(() => ({})) : {}
             const editorPayload = await editorRes.json().catch(() => ({})) as ApiEditorResponse
-            if (loadRequestCounter.current !== loadId) return
 
             if (!editorRes.ok) {
                 const errorRecord = asRecord((editorPayload as { error?: unknown }).error)
@@ -911,42 +878,6 @@ function ThemeEditorInner() {
                     settingsCount: Object.keys(schema.settings_schema || {}).length,
                 }))
 
-            const loadedVersion = editorPayload.version
-            if (!Number.isInteger(loadedVersion) || Number(loadedVersion) < 0) throw new Error('The current draft revision is missing. Retry loading the editor.')
-            const loadedActorId = editorPayload.actorId
-            if (typeof loadedActorId !== 'string' || !loadedActorId) throw new Error('The editor account could not be confirmed. Retry loading it.')
-            if (loadedActorId !== editorActorId) {
-                if (draftClientRef.current) {
-                    notify({ title: 'Account changed', description: 'Reload this editor before continuing. Your draft has been kept with the original account.', variant: 'critical' })
-                    return
-                }
-                throw new Error('Your account changed. Reload this editor before continuing.')
-            }
-            const loadedStoreId = editorPayload.store?.id
-            if (typeof loadedStoreId !== 'string' || !loadedStoreId) throw new Error('The editor store could not be confirmed. Retry loading it.')
-            const editorScope = `${loadedActorId}:${loadedStoreId}:${themeId}:${nextTemplateKey}`
-            const loadedConfig = buildDraftConfig(loadedBaseConfig, themeId, nextState, nextTemplateKey)
-            if (draftClientRef.current && (draftClientRef.current.actorId !== loadedActorId || draftClientRef.current.storeId !== loadedStoreId)) {
-                notify({ title: 'Editor context changed', description: 'Reload this editor before continuing. Your current draft has been kept.', variant: 'critical' })
-                return
-            }
-            draftClientRef.current?.dispose()
-            draftClientRef.current = null
-            const client = new ThemeDraftClient(Number(loadedVersion), async (intent) => {
-                const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(nextTemplateKey)}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
-                    body: JSON.stringify({ ...intent, templateKey: nextTemplateKey, actorId: loadedActorId, storeId: loadedStoreId }),
-                })
-                const result = await res.json().catch(() => ({}))
-                if (res.status === 409) throw new ThemeDraftConflictError()
-                if (res.status === 400) throw new ThemeDraftValidationError(stringValue(asRecord(asRecord(result).error).message, 'Correct the draft values before saving again.'))
-                if (!res.ok) throw new Error(stringValue(asRecord(asRecord(result).error).message, 'Draft save was not confirmed. Retry this request.'))
-                return { version: result.version, currentVersion: result.currentVersion, savedAt: result.savedAt }
-            }, loadedConfig, Boolean(editorPayload.draftConfig), () => crypto.randomUUID(), loadedActorId, loadedStoreId, { scope: editorScope, storage: window.localStorage })
-            draftClientRef.current = client
-            draftClientScopeRef.current = `${editorScope}:${store}`
-            setReplacementVersion(null)
-            setHasConflict(false)
             setSectionSchemas(apiSectionSchemas)
             setAvailableSections(sectionCatalog)
             setTemplateOptions(nextTemplateOptions)
@@ -965,7 +896,6 @@ function ThemeEditorInner() {
             setCurrentReleaseVersion(typeof editorPayload.release?.version === 'number' ? editorPayload.release.version : null)
             void loadReleases()
         } catch (err) {
-            if (loadRequestCounter.current !== loadId) return
             const message = err instanceof Error ? err.message : 'Failed to load theme editor'
             setLoadError(message)
             notify({
@@ -974,9 +904,9 @@ function ThemeEditorInner() {
                 variant: 'critical',
             })
         } finally {
-            if (loadRequestCounter.current === loadId) setIsLoading(false)
+            setIsLoading(false)
         }
-    }, [editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
+    }, [loadReleases, notify, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         void loadEditor()
@@ -1038,66 +968,109 @@ function ThemeEditorInner() {
         })
     }, [editorState])
 
-    const saveDraft = useCallback(async (reviewedVersion?: number) => {
-        const client = draftClientRef.current
-        if (!client || draftClientScopeRef.current !== `${client.actorId}:${client.storeId}:${themeId}:${selectedTemplateKey}:${store}`) throw new Error('Reload the current owned editor before saving.')
-        const snapshot = editorState
-        const draftConfig = buildDraftConfig(baseConfig, themeId, snapshot, selectedTemplateKey)
-        try {
-            const ack = await client.save(draftConfig, reviewedVersion)
-            if (draftClientRef.current !== client) return ack
-            setBaseConfig((current) => JSON.stringify(current) === JSON.stringify(draftConfig) ? current : draftConfig)
-            setSavedState(snapshot)
-            setDraftVersion(ack.version)
-            if (ack.savedAt) setSavedAt(ack.savedAt)
-            if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
-            setIsDirty(latestEditorState.current !== snapshot)
-            return ack
-        } catch (error) {
-            if (error instanceof ThemeDraftConflictError && draftClientRef.current === client) {
-                setReplacementVersion(null)
-                setHasConflict(true)
-                setConflictSource('manual-save')
-            }
-            throw error
+    // Phase R: accept optional force flag so ConflictDialog "Keep my changes" can bypass
+    // the base_version check (overwrite the server draft) without waiting for a state flush.
+    const saveDraft = useCallback(async (force = false) => {
+        const draftConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+        const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: force ? undefined : (draftVersion ?? undefined) }),
+        })
+        const payload = await res.json().catch(() => ({}))
+        // Phase R: 409 = CONFLICT — surface the ConflictDialog instead of a generic toast.
+        if (res.status === 409) {
+            setHasConflict(true)
+            setConflictSource('manual-save')
+            const conflictErr = new Error('CONFLICT: A newer draft version exists on the server.')
+            conflictErr.name = 'ConflictError'
+            throw conflictErr
         }
-    }, [baseConfig, editorState, selectedTemplateKey, store, themeId])
+        if (!res.ok) {
+            const errorRecord = asRecord(asRecord(payload).error)
+            throw new Error(stringValue(errorRecord.message, stringValue(asRecord(payload).error, res.statusText)))
+        }
+        setBaseConfig(draftConfig)
+        setSavedState(editorState)
+        setDraftVersion(typeof asRecord(payload).version === 'number' ? (asRecord(payload).version as number) : draftVersion)
+        setSavedAt(stringValue(asRecord(payload).savedAt, new Date().toISOString()))
+        setHistory({ past: [], future: [] })
+        setIsDirty(false)
+    }, [baseConfig, draftVersion, editorState, selectedTemplateKey, store, themeId])
 
     const syncPreviewDraft = useCallback(async () => {
-        const client = draftClientRef.current
-        if (!store || !themeId || !client || latestEditorState.current !== editorState) return
-        if (client.paused) { setHasConflict(true); return }
-        const requestId = ++previewRequestCounter.current
+        if (!store || !themeId) return
+
+        const requestId = previewRequestCounter.current + 1
+        previewRequestCounter.current = requestId
         setIsPreviewRefreshing(true)
         setPreviewError(null)
+
         try {
-            await saveDraft()
-            if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
-            if (!client.hasDraft) { setPreviewToken(null); return }
+            const draftConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+            const draftRes = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
+            })
+            const draftPayload = await draftRes.json().catch(() => ({}))
+            // Phase R: 409 = CONFLICT — pause autosave and surface the ConflictDialog.
+            if (draftRes.status === 409) {
+                setHasConflict(true)
+                setConflictSource('autosave')
+                return
+            }
+            if (!draftRes.ok) {
+                const errorRecord = asRecord(asRecord(draftPayload).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(draftPayload).error, draftRes.statusText)))
+            }
+
             const sessionRes = await fetch(`/api/themes/${themeId}/preview-session`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
-                body: JSON.stringify({ store_name: store, actorId: client.actorId, storeId: client.storeId, ttl_seconds: 900, templateKey: selectedTemplateKey }),
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    store_name: store,
+                    ttl_seconds: 900,
+                    templateKey: selectedTemplateKey,
+                }),
             })
             const sessionPayload = await sessionRes.json().catch(() => ({}))
-            if (!sessionRes.ok) throw new Error(stringValue(asRecord(asRecord(sessionPayload).error).message, 'Unable to refresh the storefront preview.'))
-            const nextPreviewToken = stringValue(asRecord(asRecord(sessionPayload).data).preview_token)
+            if (!sessionRes.ok) {
+                const errorRecord = asRecord(asRecord(sessionPayload).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(sessionPayload).error, sessionRes.statusText)))
+            }
+
+            const sessionData = asRecord(asRecord(sessionPayload).data)
+            const nextPreviewToken = stringValue(sessionData.preview_token)
             if (!nextPreviewToken) throw new Error('Preview session did not return a token.')
-            if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
+            if (previewRequestCounter.current !== requestId) return
+
             setPreviewToken(nextPreviewToken)
-        } catch (error) {
-            if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
-            if (error instanceof ThemeDraftConflictError) setConflictSource('autosave')
-            setPreviewError(error instanceof Error ? error.message : 'Unable to refresh the storefront preview.')
+            setPreviewError(null)
+            if (typeof asRecord(draftPayload).version === 'number') {
+                setDraftVersion(asRecord(draftPayload).version as number)
+            }
+            const nextSavedAt = stringValue(asRecord(draftPayload).savedAt)
+            if (nextSavedAt) setSavedAt(nextSavedAt)
+        } catch (err) {
+            if (previewRequestCounter.current !== requestId) return
+            setPreviewError(err instanceof Error ? err.message : 'Unable to refresh the storefront preview.')
         } finally {
-            if (previewRequestCounter.current === requestId) setIsPreviewRefreshing(false)
+            if (previewRequestCounter.current === requestId) {
+                setIsPreviewRefreshing(false)
+            }
         }
-    }, [editorState, saveDraft, selectedTemplateKey, store, themeId])
+    }, [baseConfig, draftVersion, editorState, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
-        if (isLoading || loadError || !store || !themeId || hasConflict || draftClientRef.current?.paused || isPublishing) return
-        const timeout = window.setTimeout(() => { void syncPreviewDraft() }, isDirty ? 900 : 0)
+        if (isLoading || loadError || !store || !themeId) return
+
+        const timeout = window.setTimeout(() => {
+            void syncPreviewDraft()
+        }, isDirty ? 900 : 0)
+
         return () => window.clearTimeout(timeout)
-    }, [hasConflict, isDirty, isLoading, isPublishing, loadError, store, syncPreviewDraft, themeId])
+    }, [isDirty, isLoading, loadError, store, syncPreviewDraft, themeId])
 
     const handleSave = useCallback(async () => {
         if (!store || !themeId || isSaving) return
@@ -1123,65 +1096,54 @@ function ThemeEditorInner() {
     }, [isSaving, notify, saveDraft, selectedTemplate.label, store, themeId])
 
     const handlePublish = useCallback(async () => {
-        const client = draftClientRef.current
-        if (!store || !themeId || !client || isPublishing) return
-        if (isDirty && !client.hasPendingPublication) {
-            notify({ title: 'Save draft before publishing', description: 'Publishing uses the last saved draft.', variant: 'warning' })
+        if (!store || !themeId || isPublishing) return
+        if (isDirty) {
+            notify({
+                title: 'Save draft before publishing',
+                description: 'Publishing uses the last saved draft so concurrent edits cannot be overwritten.',
+                variant: 'warning',
+            })
             return
         }
-        const snapshot = savedState
         setIsPublishing(true)
         try {
-            const ack = await client.publish(async (intent) => {
-                const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(15000),
-                    body: JSON.stringify({ templateKey: selectedTemplateKey, ...intent, actorId: client.actorId, storeId: client.storeId }),
-                })
-                const payload = await res.json().catch(() => ({}))
-                if (res.status === 409) throw new ThemeDraftConflictError()
-                if (res.status === 400) throw new ThemeDraftValidationError(stringValue(asRecord(asRecord(payload).error).message, 'Correct and save the draft before publishing again.'))
-                if (!res.ok) throw new Error(stringValue(asRecord(asRecord(payload).error).message, 'Publication was not confirmed. Retry this request.'))
-                return { version: payload.version, currentVersion: payload.currentVersion, savedAt: payload.savedAt, release: asRecord(payload.release), replayed: payload.replayed }
+            const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+            const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    templateKey: selectedTemplateKey,
+                    templateConfig,
+                    baseVersion: draftVersion ?? undefined,
+                }),
             })
-            if (draftClientRef.current !== client) return
-            const release = asRecord(ack.release)
-            setDraftVersion(ack.currentVersion)
-            if (ack.currentVersion > ack.version) { setReplacementVersion(null); setHasConflict(true); setConflictSource('manual-save') }
-            if (ack.currentVersion === ack.version && ack.replayed !== true) setCurrentReleaseVersion(typeof release.release_version === 'number' ? release.release_version : currentReleaseVersion)
-            if (ack.savedAt && ack.currentVersion === ack.version) setSavedAt(ack.savedAt)
-            setPreviewToken(null)
-            setIsDirty(latestEditorState.current !== snapshot)
-            if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
-            void loadReleases()
-            notify({ title: ack.replayed === true || ack.currentVersion > ack.version ? 'Theme publication recovered' : 'Theme published', description: ack.currentVersion > ack.version ? 'The saved version was published. A newer draft revision exists; review it before editing further.' : ack.replayed === true ? 'The earlier publication is confirmed. Review the latest live version and saved draft.' : latestEditorState.current === snapshot ? `${selectedTemplate.label} is now included in the live storefront version.` : 'The previously saved version is live. Your newer edits remain a draft.', variant: 'success' })
-        } catch (error) {
-            if (draftClientRef.current !== client) return
-            if (error instanceof ThemeDraftConflictError) { setReplacementVersion(null); setHasConflict(true); setConflictSource('manual-save') }
-            notify({ title: 'Theme publish not confirmed', description: error instanceof Error ? error.message : 'Retry publication to recover its result.', variant: 'critical' })
-        } finally { if (draftClientRef.current === client) setIsPublishing(false) }
-    }, [currentReleaseVersion, savedState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
-
-    const recoverConflict = useCallback(async () => {
-        if (conflictRecoveryBusy.current) return
-        const client = draftClientRef.current
-        if (!client) return
-        conflictRecoveryBusy.current = true
-        setIsReviewingConflict(true)
-        try {
-            if (replacementVersion === null) {
-                const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) })
-                const payload = await res.json().catch(() => ({}))
-                if (!res.ok || !Number.isInteger(payload.version) || payload.version < 0) throw new Error('The latest draft version could not be loaded. Your local edits are retained.')
-                if (draftClientRef.current === client) setReplacementVersion(payload.version)
-            } else {
-                await saveDraft(replacementVersion)
-                if (draftClientRef.current === client) { setHasConflict(false); setReplacementVersion(null) }
+            const payload = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                const errorRecord = asRecord(asRecord(payload).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(payload).error, res.statusText)))
             }
-        } catch (error) {
-            if (draftClientRef.current !== client) return
-            if (!(error instanceof ThemeDraftConflictError)) notify({ title: 'Draft recovery not confirmed', description: error instanceof Error ? error.message : 'Retry this request.', variant: 'critical' })
-        } finally { conflictRecoveryBusy.current = false; if (draftClientRef.current === client) setIsReviewingConflict(false) }
-    }, [notify, replacementVersion, saveDraft, selectedTemplateKey, store, themeId])
+            const release = asRecord(payload.release)
+            setSavedState(editorState)
+            setCurrentReleaseVersion(typeof release.release_version === 'number' ? release.release_version : currentReleaseVersion)
+            setSavedAt(new Date().toISOString())
+            setHistory({ past: [], future: [] })
+            setIsDirty(false)
+            void loadReleases()
+            notify({
+                title: 'Theme published',
+                description: `${selectedTemplate.label} is now included in the live storefront version.`,
+                variant: 'success',
+            })
+        } catch (err) {
+            notify({
+                title: 'Theme publish failed',
+                description: err instanceof Error ? err.message : 'Unable to publish this theme.',
+                variant: 'critical',
+            })
+        } finally {
+            setIsPublishing(false)
+        }
+    }, [baseConfig, currentReleaseVersion, draftVersion, editorState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
 
     const handleTemplateChange = useCallback((nextTemplateKey: string) => {
         const normalized = normalizeTemplateKey(nextTemplateKey)
@@ -1340,7 +1302,7 @@ function ThemeEditorInner() {
                     enableShadows: true,
                 },
             }))
-            notify({ title: 'Smart defaults applied', description: 'Preset motion and depth settings were applied.', variant: 'success' })
+            notify({ title: 'AI hook applied', description: 'Theme motion and depth settings were tuned.', variant: 'success' })
             return
         }
 
@@ -1352,11 +1314,11 @@ function ThemeEditorInner() {
             const schema = sectionSchemas[section.type]
             const firstBlockType = Object.keys(schema?.blocks_schema || {})[0]
             if (!firstBlockType) {
-                notify({ title: 'No block defaults available', description: 'This section has no block schema.', variant: 'warning' })
+                notify({ title: 'No block hook available', description: 'This section has no block schema.', variant: 'warning' })
                 return
             }
             addBlock(section.id, firstBlockType)
-            notify({ title: 'Smart defaults applied', description: 'A default content block was inserted from the section schema.', variant: 'success' })
+            notify({ title: 'AI hook applied', description: 'A schema-valid content block was inserted.', variant: 'success' })
             return
         }
 
@@ -1376,7 +1338,7 @@ function ThemeEditorInner() {
             }
             return { ...targetSection, settings: nextSettings }
         }))
-        notify({ title: 'Smart defaults applied', description: 'Preset values were applied to the selected section.', variant: 'success' })
+        notify({ title: 'AI hook applied', description: 'The selected schema node was updated.', variant: 'success' })
     }, [addBlock, applyChange, editorState, notify, sectionSchemas, selection])
 
     if (isLoading) return <EditorLoading />
@@ -1469,9 +1431,9 @@ function ThemeEditorInner() {
                         {isSaving ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Save size={15} aria-hidden="true" />}
                         Save
                     </Button>
-                    <Button unstyled className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing || (isDirty && !draftClientRef.current?.hasPendingPublication)}>
+                    <Button unstyled className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing || isDirty}>
                         {isPublishing ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Rocket size={15} aria-hidden="true" />}
-                        {draftClientRef.current?.hasPendingPublication ? 'Recover publish' : 'Publish'}
+                        Publish
                     </Button>
                 </div>
             </header>
@@ -1622,10 +1584,22 @@ function ThemeEditorInner() {
                     setHasConflict(false)
                     void loadEditor()
                 }}
-                replacementVersion={replacementVersion}
-                busy={isReviewingConflict}
-                onForce={() => { void recoverConflict() }}
-                onDismiss={() => setHasConflict(false)}
+                onForce={() => {
+                    setHasConflict(false)
+                    // Phase R hardening: catch force-save failures so a network error or
+                    // unexpected 5xx doesn't silently drop — surface a toast and leave
+                    // the editor in a usable state. ConflictError re-raises are swallowed
+                    // (conflict dialog handles its own re-open flow).
+                    saveDraft(true).catch((err) => {
+                        if (err instanceof Error && err.name !== 'ConflictError') {
+                            notify({
+                                title: 'Force-save failed',
+                                description: err.message || 'Could not save your changes. Please try again.',
+                                variant: 'critical',
+                            })
+                        }
+                    })
+                }}
             />
         </main>
     )
@@ -1757,26 +1731,23 @@ function PropertyPanel({
             </div>
 
             <div className="theme-os-properties__body">
-                <section className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
+                <section className="theme-os-ai-card">
                     <div>
-                        <Settings size={16} aria-hidden="true" />
-                        <strong>Smart defaults</strong>
+                        <Bot size={16} aria-hidden="true" />
+                        <strong>AI hooks</strong>
                     </div>
-                    <Button unstyled type="button" aria-label="Apply copy defaults" onClick={() => onAiHook('copy')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('copy')}>
                         <WandSparkles size={14} aria-hidden="true" />
                         Copy
                     </Button>
-                    <Button unstyled type="button" aria-label="Apply layout defaults" onClick={() => onAiHook('layout')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('layout')}>
                         <Sparkles size={14} aria-hidden="true" />
                         Layout
                     </Button>
-                    <Button unstyled type="button" aria-label="Add a default block" onClick={() => onAiHook('blocks')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('blocks')}>
                         <Plus size={14} aria-hidden="true" />
                         Block
                     </Button>
-                    <p id="theme-smart-defaults-description" className="theme-os-muted col-span-full">
-                        Apply fixed defaults to your theme settings or section.
-                    </p>
                 </section>
 
                 {selection.kind === 'theme' && selectedThemeGroup ? (

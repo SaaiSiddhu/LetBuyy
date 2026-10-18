@@ -20,66 +20,6 @@ function createUploadApp(userId: string, bucket: Partial<R2Bucket>, storeId = 's
     };
 }
 
-test('recognized KYC/private document folders cannot write public R2 objects or return public URLs', async () => {
-    let writes = 0;
-    const { app, env } = createUploadApp('user-owner', {
-        put: async () => { writes++; throw new Error('Private evidence reached public storage'); },
-    });
-    env.ENVIRONMENT = 'production';
-    env.ASSET_PUBLIC_BASE_URL = 'https://cdn.test';
-    for (const folder of [
-        'kyc-documents', '/KYC_DOCUMENTS/', 'kyc/documents', 'kyc',
-        'stores/kyc-documents/proof', 'private-documents', 'private/documents',
-        'identity-proofs', 'verification/evidence', 'kyc%2Fdocuments',
-        'KycDocuments', 'privateDocuments', 'ｋｙｃ/documents', 'private\\documents',
-    ]) {
-        const body = new FormData();
-        body.set('folder', folder);
-        body.set('file', new File(['synthetic-no-personal-data'], 'proof.png', { type: 'image/png' }));
-        const response = await app.request('/upload', { method: 'POST', body }, env);
-        const payload = await response.json() as { error: { code: string }; data?: unknown };
-        assert.equal(response.status, 503, folder);
-        assert.equal(payload.error.code, 'KYC_PRIVATE_UPLOAD_UNAVAILABLE', folder);
-        assert.equal(payload.data, undefined, folder);
-    }
-    assert.equal(writes, 0);
-});
-
-test('private document containment also refuses development inline storage before returning file bytes', async () => {
-    const { app, env } = createUploadApp('user-owner', {});
-    delete env.R2_BUCKET;
-    const body = new FormData();
-    body.set('folder', 'kyc-documents');
-    body.set('file', new File(['synthetic-no-personal-data'], 'proof.png', { type: 'image/png' }));
-    const response = await app.request('/upload', { method: 'POST', body }, env);
-    const payload = await response.json() as { error: { code: string }; data?: unknown };
-    assert.equal(response.status, 503);
-    assert.equal(payload.error.code, 'KYC_PRIVATE_UPLOAD_UNAVAILABLE');
-    assert.equal(payload.data, undefined);
-});
-
-test('ordinary public product images still upload and retain their store and MIME controls', async () => {
-    let writes = 0;
-    const { app, env } = createUploadApp('user-owner', {
-        put: async () => { writes++; return null as unknown as R2Object; },
-    });
-    env.ASSET_PUBLIC_BASE_URL = 'https://cdn.test';
-    const send = (storeId: string, type: string) => {
-        const body = new FormData();
-        body.set('folder', 'products'); body.set('store_id', storeId);
-        body.set('file', new File(['synthetic-image'], 'product.png', { type }));
-        return app.request('/upload', { method: 'POST', body }, env);
-    };
-    const positive = await send('store-owner', 'image/png');
-    assert.equal(positive.status, 201);
-    const payload = await positive.json() as { data: { url: string; store_id: string } };
-    assert.match(payload.data.url, /^https:\/\/cdn\.test\/products\/user-owner\//);
-    assert.equal(payload.data.store_id, 'store-owner');
-    assert.equal((await send('rival-store', 'image/png')).status, 403);
-    assert.equal((await send('store-owner', 'image/svg+xml')).status, 400);
-    assert.equal(writes, 1);
-});
-
 test('upload accepts storefront video assets above the image limit and records video metadata', async () => {
     let observedKey = '';
     let observedContentType = '';

@@ -210,13 +210,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
 
         const payload = JSON.stringify(items.map(cartLineInputFromItem));
-        // Opening a storefront or editor preview is a read. Create the server
-        // cart when a real line exists; an existing cart can still be cleared.
-        if (!cartToken && items.length === 0) { lastSyncPayloadRef.current = payload; return; }
         if (payload === lastSyncPayloadRef.current) return;
         lastSyncPayloadRef.current = payload;
         void syncCartToServer(items);
-    }, [items, hasLoadedStorage, cartToken]);
+    }, [items, hasLoadedStorage]);
 
     const addToCart = (product: ProductModel, variantContext?: CartVariantContext) => {
         setItems(prev => {

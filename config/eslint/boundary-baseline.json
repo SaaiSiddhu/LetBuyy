@@ -140,6 +140,8 @@
     "apps/merchant/web/src/app/api/stores/[store]/products/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/purchase-orders/[id]/receive/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/purchase-orders/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/reels/[reelId]/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/reels/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/resource-search/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/reviews/[reviewId]/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/reviews/route.ts",

@@ -74,8 +74,6 @@ export const ResubmitRejectedChannelListingSchema = z.object({
 // for too much; the RPC clamps again server-side (217: GREATEST(1, LEAST(COALESCE(p_limit, 20), 100))).
 export const MarketplaceFeedQuery = z
     .object({
-        // Public seller discovery; the SQL feed applies this before its limit and eligibility fence.
-        site_id: uuid.optional(),
         category: slug.optional(),
         search: z.string().trim().max(120).optional(),
         country_of_origin: z.string().trim().min(1).max(100).optional(),

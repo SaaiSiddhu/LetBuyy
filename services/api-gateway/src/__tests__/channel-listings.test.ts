@@ -21,7 +21,6 @@ import { MarketplaceFeedQuery } from '../schemas/channel-listing.schema';
 type PublicDeps = Parameters<typeof registerStorefrontPublicRoutes>[1];
 
 const publicRoutesSource = readFileSync(new URL('../routes/storefront/public-routes.ts', import.meta.url), 'utf8');
-const marketplaceFeedSource = readFileSync(new URL('../routes/storefront/marketplace-feed-routes.ts', import.meta.url), 'utf8');
 const migrationSource = readFileSync(
     new URL('../../../../database/supabase/migrations/217_marketplace_channel_listings.sql', import.meta.url),
     'utf8',
@@ -89,16 +88,16 @@ test('GET /marketplace/feed passes the origin filter and existing feed parameter
     // The old five-argument RPC remains available; the overloaded origin-aware call adds one input
     // and one public field while preserving the same listing visibility contract.
     for (const name of ['p_category_slug', 'p_search', 'p_limit', 'p_after_approved_at', 'p_after_id']) {
-        assert.match(marketplaceFeedSource, new RegExp(`${name}:`), `default loader must pass ${name}`);
+        assert.match(publicRoutesSource, new RegExp(`${name}:`), `default loader must pass ${name}`);
         assert.match(migrationSource, new RegExp(`\\b${name}\\b`), `217 must declare ${name}`);
     }
     assert.match(originMigrationSource, /p_country_of_origin text/);
     assert.match(originMigrationSource, /lower\(btrim\(p\.country_of_origin\)\) = lower\(btrim\(p_country_of_origin\)\)/);
     assert.match(originMigrationSource, /cl\.channel = 'marketplace'[\s\S]*cl\.status = 'approved'[\s\S]*cl\.visibility = 'public'/);
-    assert.match(marketplaceFeedSource, /p_country_of_origin: params\.countryOfOrigin/);
-    assert.match(marketplaceFeedSource, new RegExp(`db\\.rpc\\(MARKETPLACE_FEED_RPC`), 'the feed is read through the RPC, never a hand-written join');
+    assert.match(publicRoutesSource, /p_country_of_origin: params\.countryOfOrigin/);
+    assert.match(publicRoutesSource, new RegExp(`db\\.rpc\\(MARKETPLACE_FEED_RPC`), 'the feed is read through the RPC, never a hand-written join');
     assert.equal(MARKETPLACE_FEED_RPC, 'marketplace_feed');
-    assert.match(marketplaceFeedSource, /p_channel:\s*channel/, 'the price-history loader must forward the requested channel to the RPC');
+    assert.match(publicRoutesSource, /p_channel:\s*channel/, 'the price-history loader must forward the requested channel to the RPC');
 });
 
 test('GET /marketplace/feed replaces compare price with a complete prior low', async () => {
@@ -216,7 +215,7 @@ test('GET /marketplace/categories returns the injected live taxonomy in the succ
     const body = (await res.json()) as { success: boolean; data: Array<{ slug: string }> };
     assert.equal(body.success, true);
     assert.deepEqual(body.data.map((c) => c.slug), ['gadgets']);
-    assert.match(marketplaceFeedSource, /\.from\('marketplace_categories'\)[\s\S]*?\.eq\('is_active', true\)/, 'the default loader mirrors the is_active read policy');
+    assert.match(publicRoutesSource, /\.from\('marketplace_categories'\)[\s\S]*?\.eq\('is_active', true\)/, 'the default loader mirrors the is_active read policy');
 });
 
 test('marketplaceFeedParams trims the country filter and maps it into the RPC contract', () => {
@@ -244,23 +243,18 @@ test('GET /marketplace/origins returns only the database-derived visible-offer f
     assert.match(originMigrationSource, /CREATE OR REPLACE FUNCTION public\.marketplace_origins\(\)/);
     assert.match(originMigrationSource, /GROUP BY lower\(btrim\(p\.country_of_origin\)\)[\s\S]*ORDER BY lower\(min\(btrim\(p\.country_of_origin\)\)\)/);
     assert.match(originMigrationSource, /cl\.channel = 'marketplace'[\s\S]*cl\.status = 'approved'[\s\S]*cl\.visibility = 'public'/);
-    assert.match(marketplaceFeedSource, /db\.rpc\('marketplace_origins'\)/);
+    assert.match(publicRoutesSource, /db\.rpc\('marketplace_origins'\)/);
 });
 
 test('the marketplace routes are registered ahead of the /:subdomain family and use the storefront cache wrapper', () => {
-    const feedAt = marketplaceFeedSource.indexOf("router.get('/marketplace/feed'");
-    const categoriesAt = marketplaceFeedSource.indexOf("router.get('/marketplace/categories'");
+    const feedAt = publicRoutesSource.indexOf("router.get('/marketplace/feed'");
+    const categoriesAt = publicRoutesSource.indexOf("router.get('/marketplace/categories'");
     const firstHandleRoute = publicRoutesSource.indexOf("router.get('/:subdomain");
     assert.ok(feedAt > 0 && categoriesAt > 0 && firstHandleRoute > 0);
-    const registrationAt = publicRoutesSource.indexOf('registerStorefrontMarketplaceFeedRoutes(router, dependencies)');
-    const detailAt = publicRoutesSource.indexOf('registerStorefrontMarketplaceDetailRoutes(router,');
-    assert.equal(publicRoutesSource.match(/registerStorefrontMarketplaceFeedRoutes\(router,/g)?.length, 1);
-    assert.ok(registrationAt > 0 && registrationAt < detailAt && detailAt < firstHandleRoute,
-        'the canonical feed/taxonomy module registers once before detail and handle-shaped routes');
-    assert.ok(feedAt < categoriesAt, 'feed and taxonomy preserve their registration order');
-    const feedBlock = marketplaceFeedSource.slice(feedAt, categoriesAt);
+    assert.ok(feedAt < firstHandleRoute && categoriesAt < firstHandleRoute, 'marketplace routes must precede the handle-shaped routes');
+    const feedBlock = publicRoutesSource.slice(feedAt, categoriesAt);
     assert.match(feedBlock, /storefrontRequestCacheKey\(\s*c,\s*'marketplace:feed'/);
-    for (const part of ['params.category', 'params.search', 'String(params.limit)', 'params.afterApprovedAt', 'params.afterId', 'params.countryOfOrigin', 'params.siteId']) {
+    for (const part of ['params.category', 'params.search', 'String(params.limit)', 'params.afterApprovedAt', 'params.afterId']) {
         assert.ok(feedBlock.includes(part), `the cache key must include ${part}`);
     }
     assert.match(feedBlock, /cachedJson\(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS/);

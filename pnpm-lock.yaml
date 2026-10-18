@@ -21,6 +21,9 @@ importers:
 
   .:
     devDependencies:
+      miniflare:
+        specifier: 4.20260611.0
+        version: 4.20260611.0
       '@cloudflare/workers-types':
         specifier: 4.20260525.1
         version: 4.20260525.1
@@ -33,6 +36,9 @@ importers:
       '@letbuyy/commerce-core':
         specifier: workspace:*
         version: link:packages/commerce-core
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:packages/event-core
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:packages/infrastructure
@@ -511,6 +517,9 @@ importers:
 
   apps/merchant/web:
     dependencies:
+      hash-wasm:
+        specifier: 4.12.0
+        version: 4.12.0
       '@letbuyy/api-client':
         specifier: workspace:*
         version: link:../../../packages/typescript/api-client

@@ -1,4 +1,7 @@
 import { createLetbuyyGraphQLSdk } from './graphql';
+import { createReelReviewSdk } from './reels';
+export { createReelReviewSdk } from './reels';
+export type { ReelMerchantCommand, ReelReviewerCommand, ReelReadback, ReelReviewPage, ReelDraftSelection, ReelSummary } from './reels';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
   AICreditBalance,
@@ -3418,17 +3421,14 @@ export type SaveThemeDraftInput = {
   store_id: string;
   template_key?: string;
   template_config: JsonRecord;
-  base_version: number;
-  idempotency_key: string;
+  base_version?: number;
   client?: 'admin-web' | 'flutter-builder' | 'api';
 };
-export type ReorderThemeDraftInput = Omit<SaveThemeDraftInput, 'template_config'> & { section_order: string[] };
 export type PublishThemeInput = {
   store_id: string;
   template_key?: string;
   template_config?: JsonRecord;
-  base_version: number;
-  idempotency_key: string;
+  base_version?: number;
   make_store_live?: boolean;
   publish_message?: string;
 };
@@ -3439,8 +3439,6 @@ export type ThemePreviewSessionInput = {
 };
 export type RollbackThemeReleaseInput = {
   store_id: string;
-  expected_current_release_id: string;
-  idempotency_key: string;
   make_store_live?: boolean;
   rollback_message?: string;
 };
@@ -3907,6 +3905,7 @@ export class LetbuyyApiClient {
   }
 
   readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
+  readonly reels = createReelReviewSdk(this);
 
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>
@@ -5379,8 +5378,6 @@ export class LetbuyyApiClient {
       this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { ...(options?.query || {}), store_id: storeId } }),
     saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeDraftSaveResult>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'PUT', body: input }),
-    reorderDraft: (slug: string, input: ReorderThemeDraftInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<ThemeDraftSaveResult & { section_order: string[] }>(`/themes/${encodePathSegment(slug)}/editor/reorder`, { ...options, method: 'PUT', body: input }),
     deleteDraft: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     publish: (slug: string, input: PublishThemeInput, options?: LetbuyyRequestOptions) =>

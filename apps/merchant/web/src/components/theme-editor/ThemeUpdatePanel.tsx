@@ -54,7 +54,7 @@
  *   - apps/merchant/web/src/app/[store]/settings/localization/page.tsx
  */
 
-import { useState, useCallback, useId, useEffect, useRef } from 'react'
+import { useState, useCallback, useId } from 'react'
 import {
     AlertTriangle,
     ArrowUp,
@@ -142,29 +142,10 @@ export interface ThemeUpdatePanelProps {
      * Required for the Rollback action. When undefined, rollback button is hidden.
      */
     currentReleaseId?: string
-    rollbackTargetReleaseId?: string
-    rollbackTargetVersion?: number
-    actorId?: string
     /** Called after the update is successfully applied (for caller to refresh). */
     onUpdateApplied?: () => void
     /** Called after a rollback is applied (for caller to refresh). */
     onRollbackApplied?: () => void
-}
-
-type RollbackIntent = { actorId: string; storeId: string; themeSlug: string; targetReleaseId: string;
-    targetVersion: number; expectedCurrentReleaseId: string; idempotencyKey: string }
-
-function parseRollbackIntent(raw: string | null, actorId: string, storeId: string, themeSlug: string): RollbackIntent | null {
-    if (raw === null) return null
-    const saved = JSON.parse(raw) as RollbackIntent
-    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    if (!saved || Object.keys(saved).sort().join(',') !== 'actorId,expectedCurrentReleaseId,idempotencyKey,storeId,targetReleaseId,targetVersion,themeSlug'
-        || saved.actorId !== actorId || saved.storeId !== storeId || saved.themeSlug !== themeSlug
-        || ![saved.targetReleaseId, saved.expectedCurrentReleaseId, saved.idempotencyKey].every(value => typeof value === 'string' && uuid.test(value))
-        || saved.targetReleaseId === saved.expectedCurrentReleaseId || !Number.isInteger(saved.targetVersion) || saved.targetVersion < 1) {
-        throw new Error('Pending rollback metadata could not be confirmed. Keep it for recovery before restoring another release.')
-    }
-    return Object.freeze(saved)
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -228,9 +209,6 @@ export default function ThemeUpdatePanel({
     availableVersionId,
     apiBase = '',
     currentReleaseId,
-    rollbackTargetReleaseId,
-    rollbackTargetVersion,
-    actorId,
     onUpdateApplied,
     onRollbackApplied,
 }: ThemeUpdatePanelProps) {
@@ -248,26 +226,6 @@ export default function ThemeUpdatePanel({
     const [showRollbackConfirm, setShowRollbackConfirm] = useState(false)
     const [rollingBack, setRollingBack] = useState(false)
     const [diffExpanded, setDiffExpanded] = useState(true)
-    const [pendingRollback, setPendingRollback] = useState<RollbackIntent | null>(null)
-    const rollbackIntentRef = useRef<RollbackIntent | null>(null)
-    const [rollbackRecoveryError, setRollbackRecoveryError] = useState<string | null>(null)
-    const [loadedRollbackStorageKey, setLoadedRollbackStorageKey] = useState<string | null>(null)
-    const rollbackStorageKey = actorId ? `letbuyy:theme-rollback:v1:${actorId}:${storeId}:${themeSlug}` : null
-    useEffect(() => {
-        rollbackIntentRef.current = null
-        setPendingRollback(null)
-        setRollbackRecoveryError(null)
-        setLoadedRollbackStorageKey(null)
-        if (!rollbackStorageKey || !actorId) return
-        try {
-            const saved = parseRollbackIntent(window.localStorage.getItem(rollbackStorageKey), actorId, storeId, themeSlug)
-            rollbackIntentRef.current = saved
-            setPendingRollback(saved)
-        } catch (error) {
-            setRollbackRecoveryError(error instanceof Error ? error.message : 'Rollback recovery storage is unavailable. Retry loading releases.')
-        } finally { setLoadedRollbackStorageKey(rollbackStorageKey) }
-    }, [rollbackStorageKey, actorId, storeId, themeSlug])
-
 
     // ── canApply: Apply button gating (NO-DATA-LOSS enforcement) ─────────────
     //
@@ -380,63 +338,45 @@ export default function ThemeUpdatePanel({
     // ── Rollback ──────────────────────────────────────────────────────────────
 
     const handleRollbackConfirm = useCallback(async () => {
-        if (!actorId || !rollbackStorageKey || loadedRollbackStorageKey !== rollbackStorageKey || rollbackRecoveryError || rollingBack) return
+        if (!currentReleaseId || rollingBack) return
         setRollingBack(true)
         setShowRollbackConfirm(false)
         try {
-            let intent = rollbackIntentRef.current
-            if (!intent) {
-                if (!currentReleaseId || !rollbackTargetReleaseId || !rollbackTargetVersion || rollbackTargetReleaseId === currentReleaseId) throw new Error('Review a previous release before restoring it.')
-                intent = Object.freeze({ actorId, storeId, themeSlug, targetReleaseId: rollbackTargetReleaseId,
-                    targetVersion: rollbackTargetVersion, expectedCurrentReleaseId: currentReleaseId, idempotencyKey: crypto.randomUUID() })
-                // Only immutable retry metadata is stored; no session or theme content.
-                window.localStorage.setItem(rollbackStorageKey, JSON.stringify(intent))
-                rollbackIntentRef.current = intent
-                setPendingRollback(intent)
-            }
-            if (intent.actorId !== actorId || intent.storeId !== storeId || intent.themeSlug !== themeSlug) throw new Error('Your account or store changed. Reload releases.')
-            const url = `${apiBase}/api/themes/${encodeURIComponent(intent.themeSlug)}/releases/${encodeURIComponent(intent.targetReleaseId)}/rollback`
-            const res = await fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ actorId: intent.actorId, store_name: intent.storeId, make_store_live: true,
-                    expected_current_release_id: intent.expectedCurrentReleaseId, idempotency_key: intent.idempotencyKey }) })
-            const payload = await res.json().catch(() => null) as Record<string, unknown> | null
-            if (!res.ok) {
-                if (res.status === 400 || res.status === 409) {
-                    try { window.localStorage.removeItem(rollbackStorageKey) } catch { /* A retained old key can only replay the same intent. */ }
-                    rollbackIntentRef.current = null
-                    setPendingRollback(null)
-                }
-                throw new Error(friendlyError(payload, 'Rollback was not confirmed. Recover the same request before trying another release.'))
-            }
-            const result = payload?.data as Record<string, unknown> | undefined
-            const release = result?.rollback as Record<string, unknown> | undefined
-            const target = result?.restored_release as Record<string, unknown> | undefined
-            if (typeof result?.replayed !== 'boolean' || typeof release?.release_id !== 'string' || target?.id !== intent.targetReleaseId ||
-                typeof result.current_release_id !== 'string' || !Number.isInteger(result.current_release_version)) throw new Error('No confirmed rollback receipt was returned. Recover the same request.')
-            try { window.localStorage.removeItem(rollbackStorageKey) } catch { /* Replaying a retained completed key is safe. */ }
-            rollbackIntentRef.current = null
-            setPendingRollback(null)
-            notify({ title: 'Rollback confirmed', description: result.current_release_id === release.release_id
-                ? `Version ${intent.targetVersion} is restored. Your newer saved draft remains available.`
-                : 'The rollback was committed. A newer release is now live.', variant: 'success' })
-            try { onRollbackApplied?.() } catch { /* A refresh failure cannot turn a confirmed rollback into a failed mutation. */ }
-        } catch (err) {
-            notify({ title: 'Rollback not confirmed', description: err instanceof Error ? err.message : 'Recover the same rollback request.', variant: 'critical' })
-        } finally { setRollingBack(false) }
-    }, [actorId, rollbackStorageKey, loadedRollbackStorageKey, rollbackRecoveryError, currentReleaseId, rollbackTargetReleaseId, rollbackTargetVersion, rollingBack, apiBase, themeSlug, storeId, notify, onRollbackApplied])
+            // Reuses the existing Phase P rollback proxy unchanged
+            const url =
+                `${apiBase}/api/themes/${encodeURIComponent(themeSlug)}` +
+                `/releases/${encodeURIComponent(currentReleaseId)}/rollback`
 
-    const rollbackAvailable = Boolean(pendingRollback || (actorId && currentReleaseId && rollbackTargetReleaseId && rollbackTargetVersion))
-    const rollbackAction = rollbackAvailable ? <>
-        {rollbackRecoveryError && <Banner variant="critical" title="Rollback recovery unavailable" aria-live="assertive">{rollbackRecoveryError}</Banner>}
-        <Button unstyled type="button" className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-subdued)] disabled:opacity-50"
-            onClick={() => setShowRollbackConfirm(true)} disabled={rollingBack || loadedRollbackStorageKey !== rollbackStorageKey || Boolean(rollbackRecoveryError)} aria-label="Rollback to the previous theme release" aria-busy={rollingBack}>
-            <RotateCcw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-            {rollingBack ? 'Restoring...' : pendingRollback ? 'Recover rollback' : 'Rollback'}
-        </Button>
-        <ConfirmDialog open={showRollbackConfirm} title={pendingRollback ? 'Recover previous rollback?' : 'Restore reviewed release?'}
-            description={`Restore version ${pendingRollback?.targetVersion ?? rollbackTargetVersion} as a new live release. Your newer saved draft will remain available.`}
-            confirmLabel={pendingRollback ? 'Recover rollback' : 'Rollback'} destructive onClose={() => setShowRollbackConfirm(false)} onConfirm={() => void handleRollbackConfirm()} />
-    </> : null
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    store_name: storeId,
+                    make_store_live: true,
+                }),
+            })
+            const payload = await res.json().catch(() => null) as Record<string, unknown> | null
+
+            if (!res.ok) {
+                const msg = friendlyError(payload, 'Rollback failed. Try again.')
+                notify({ title: 'Rollback failed', description: msg, variant: 'critical' })
+                return
+            }
+
+            notify({
+                title: 'Rollback applied',
+                description: 'The previous theme release has been restored.',
+                variant: 'success',
+            })
+            onRollbackApplied?.()
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Rollback request failed.'
+            notify({ title: 'Rollback failed', description: msg, variant: 'critical' })
+        } finally {
+            setRollingBack(false)
+        }
+    }, [currentReleaseId, rollingBack, apiBase, themeSlug, storeId, notify, onRollbackApplied])
 
     // ── Render: no-update state ───────────────────────────────────────────────
 
@@ -454,7 +394,6 @@ export default function ThemeUpdatePanel({
                 <span className="text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                     This theme is up to date.
                 </span>
-                {rollbackAction}
             </section>
         )
     }
@@ -493,7 +432,24 @@ export default function ThemeUpdatePanel({
                     )}
                 </div>
 
-                {panelState !== 'updating' && rollbackAction}
+                {/* Rollback — reuses Phase P rollback proxy unchanged */}
+                {currentReleaseId && panelState !== 'updating' && (
+                    <Button
+                        unstyled
+                        type="button"
+                        className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-hovered)] focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                        onClick={() => setShowRollbackConfirm(true)}
+                        disabled={rollingBack}
+                        aria-label="Rollback to the previous theme release"
+                        aria-busy={rollingBack}
+                    >
+                        <RotateCcw
+                            className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]"
+                            aria-hidden="true"
+                        />
+                        {rollingBack ? 'Rolling back...' : 'Rollback'}
+                    </Button>
+                )}
             </div>
 
             {/* ── Version info ───────────────────────────────────────────── */}
@@ -793,7 +749,16 @@ export default function ThemeUpdatePanel({
                 )}
             </div>
 
-
+            {/* ── Rollback confirm dialog ────────────────────────────────── */}
+            <ConfirmDialog
+                open={showRollbackConfirm}
+                title="Rollback to previous release?"
+                description="This will restore the previous theme release and make it live immediately. Customers will see the rolled-back version."
+                confirmLabel="Rollback"
+                destructive
+                onClose={() => setShowRollbackConfirm(false)}
+                onConfirm={() => void handleRollbackConfirm()}
+            />
         </section>
     )
 }

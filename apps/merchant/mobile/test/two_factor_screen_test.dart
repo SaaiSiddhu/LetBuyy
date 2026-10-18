@@ -11,6 +11,15 @@ import 'package:letbuyy_store/screens/security/two_factor_screen.dart';
 import 'two_factor_security_test.dart' show FactorTransport;
 import 'support/loyalty_fixture.dart' show MemoryStorage;
 
+class SecurityPopObserver extends NavigatorObserver {
+  int pops = 0;
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    pops++;
+    super.didPop(route, previousRoute);
+  }
+}
+
 class SecurityHarness {
   String actor = 'actor-a';
   final storage = MemoryStorage();
@@ -32,12 +41,13 @@ class SecurityHarness {
     );
   }
 
-  Widget app({String? action}) => MultiProvider(
+  Widget app({String? action, NavigatorObserver? observer}) => MultiProvider(
     providers: [
       ChangeNotifierProvider<StoreContext>.value(value: stores),
       ChangeNotifierProvider<TwoFactorService>.value(value: service),
     ],
     child: MaterialApp(
+      navigatorObservers: [if (observer != null) observer],
       home: Builder(
         builder: (context) => Scaffold(
           body: TextButton(
@@ -107,6 +117,23 @@ void main() {
     },
   );
   testWidgets(
+    'restart recovery submits the saved factor when enrollment is no longer in memory',
+    (t) async {
+      final h = await harness(t);
+      await h.service.verifyTotp(factorId: 'factor-a', code: '123456');
+      await t.pumpWidget(h.app());
+      await press(t, 'Open security');
+      expect(find.text('Recover your activation result'), findsOneWidget);
+      final previous = h.api.calls.where((call) => call.path == '/2fa/totp/verify').length;
+      await t.enterText(find.byType(TextField), '123456');
+      await press(t, 'Verify and enable');
+      expect(h.api.calls.where((call) => call.path == '/2fa/totp/verify').length, previous + 1);
+      expect(find.text('Save your recovery codes'), findsOneWidget);
+      expect(find.text('synthetic-code-a'), findsOneWidget);
+      expect(t.takeException(), isNull);
+    },
+  );
+  testWidgets(
     'a mounted secret is cleared and blocked when its account/store epoch changes',
     (t) async {
       final h = await harness(t, enrolled: false);
@@ -120,6 +147,27 @@ void main() {
       expect(find.text(h.api.seed), findsNothing);
       expect(find.text('Account or store access changed'), findsOneWidget);
       expect(find.text('Verify and enable'), findsNothing);
+      expect(t.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'a reply during the closing animation cannot pop the underlying route',
+    (t) async {
+      final h = await harness(t), observer = SecurityPopObserver();
+      await t.pumpWidget(h.app(action: 'refund.approve', observer: observer));
+      await press(t, 'Open security');
+      h.api.holdMutation = Completer<void>();
+      h.api.mutationEntered = Completer<void>();
+      await t.enterText(find.byType(TextField), '123456');
+      await t.tap(find.text('Verify approval'));
+      await t.pump();
+      expect(h.api.mutationEntered!.isCompleted, true);
+      await t.tap(find.text('Close security'));
+      h.api.holdMutation!.complete();
+      await settle(t);
+      expect(observer.pops, 1);
+      expect(h.proof, isNull);
+      expect(find.text('Open security'), findsOneWidget);
       expect(t.takeException(), isNull);
     },
   );

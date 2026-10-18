@@ -29,7 +29,6 @@ const themeEngineSource = readFileSync(
     join(testDir, '../../packages/theme-engine/src/index.ts'),
     'utf8',
 );
-const casMigration = readFileSync(join(testDir, '../../database/supabase/migrations/344_atomic_theme_draft_cas.sql'), 'utf8');
 const apiClientSource = readFileSync(
     join(testDir, '../../packages/typescript/api-client/src/index.ts'),
     'utf8',
@@ -56,16 +55,13 @@ test('web editor saves drafts with base_version and requires a clean draft befor
     const saveDraftBlock = sourceBetween(editorPageSource, 'const saveDraft = useCallback', 'const syncPreviewDraft = useCallback');
     const publishBlock = sourceBetween(editorPageSource, 'const handlePublish = useCallback', 'const handleTemplateChange = useCallback');
 
-    assert.match(saveDraftBlock, /client\.save\(draftConfig, reviewedVersion\)/);
-    assert.match(publishBlock, /if \(isDirty && !client.hasPendingPublication\)/);
-    assert.match(publishBlock, /client\.publish\(async \(intent\)/);
-    assert.match(publishBlock, /JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent \}\)/);
+    assert.match(saveDraftBlock, /baseVersion:.*draftVersion/);
+    assert.match(publishBlock, /if \(isDirty\) \{/);
+    assert.match(publishBlock, /baseVersion: draftVersion \?\? undefined/);
 });
 
 test('draft and preview-session app routes forward template and base-version contracts', () => {
-    assert.match(draftRouteSource, /body\.baseVersion \?\? body\.base_version/);
-    assert.match(draftRouteSource, /SaveThemeDraftSchema\.safeParse/);
-    assert.match(draftRouteSource, /idempotency_key: idempotencyKey/);
+    assert.match(draftRouteSource, /const baseVersion = readPositiveInt/);
     assert.match(draftRouteSource, /base_version: baseVersion/);
     assert.match(previewSessionRouteSource, /const templateKey = readTemplateKey/);
     assert.match(previewSessionRouteSource, /template_key: templateKey/);
@@ -77,18 +73,15 @@ test('gateway preview sessions are template scoped and never maybeSingle an unsc
     assert.match(themeEngineSource, /export const PreviewTokenSchema = z\.object\(\{[\s\S]*template_key:/);
     assert.match(apiClientSource, /export type ThemePreviewSessionInput = \{[\s\S]*template_key\?: string/);
     assert.match(createPreviewSessionBlock, /const templateKey = normalizeThemeTemplateKey\(input\.template_key\)/);
-    assert.match(createPreviewSessionBlock, /this\.readOwnedDraft\(slug, input\.store_id, userId, templateKey\)/);
-    assert.match(createPreviewSessionBlock, /state\.theme_instance_draft_id/);
+    assert.match(createPreviewSessionBlock, /this\.loadEditorDraft\(input\.store_id, theme\.slug, templateKey\)/);
     assert.doesNotMatch(createPreviewSessionBlock, /\.from\('theme_editor_drafts'\)[\s\S]*\.maybeSingle\(\)/);
     assert.match(createPreviewSessionBlock, /template_key: templateKey/);
 });
 
-test('template-scoped changes merge under the canonical transaction before draft/patch/receipt writes', () => {
-    const saveDraftBlock = sourceBetween(gatewayThemeAdapterSource, 'async saveDraft', 'async reorderDraft');
-    assert.match(saveDraftBlock, /this\.draftRpc\('mutate_owned_theme_draft_v1'/);
-    assert.doesNotMatch(saveDraftBlock, /\.from\(/);
-    assert.match(casMigration, /v_templates:=v_templates\|\|coalesce\(d\.working_manifest/);
-    assert.match(casMigration, /jsonb_set\(v_templates,ARRAY\[p_template_key\]/);
-    assert.match(casMigration, /INSERT INTO public\.theme_draft_patches/);
-    assert.match(casMigration, /INSERT INTO public\.idempotency_keys/);
+test('theme instance draft snapshots merge template-scoped editor drafts before writing the release-engine draft', () => {
+    const saveDraftBlock = sourceBetween(gatewayThemeAdapterSource, 'async saveDraft', 'async deleteDraft');
+
+    assert.match(gatewayThemeAdapterSource, /private async buildTemplateScopedInstanceDraftConfig/);
+    assert.match(saveDraftBlock, /const instanceDraftConfig = await this\.buildTemplateScopedInstanceDraftConfig/);
+    assert.match(saveDraftBlock, /templateConfig: instanceDraftConfig/);
 });

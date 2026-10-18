@@ -284,7 +284,7 @@ const newsletter: SectionSchema = {
     name: 'Newsletter',
     type: 'newsletter',
     description: 'Email signup section with heading, subtext, and subscribe button',
-    defaults: { title: 'Stay in the Loop', subtitle: 'Get early access to new drops and exclusive discounts.', buttonText: 'Subscribe', placeholder: 'Enter your email', backgroundColor: '#00000000', successMessage: 'Thanks for subscribing!' },
+    defaults: { title: 'Stay in the Loop', subtitle: 'Get early access to new drops and exclusive discounts.', buttonText: 'Subscribe', placeholder: 'Enter your email', backgroundColor: 'transparent', successMessage: 'Thanks for subscribing!' },
     presets: [
         { name: 'Default', settings: { title: 'Stay in the Loop', subtitle: 'Get early access to new drops and exclusive discounts.', buttonText: 'Subscribe', placeholder: 'Enter your email' } },
         { name: 'Minimal', settings: { title: 'Join the Club', subtitle: 'No spam, just drops.', buttonText: 'Sign Up', placeholder: 'Your email' } },

@@ -67,6 +67,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
 
   bool _current(int generation) =>
       mounted &&
+      ModalRoute.of(context)?.isCurrent == true &&
       !_blocked &&
       _generation == generation &&
       _context != null &&
@@ -130,8 +131,9 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
     });
   });
   Future<void> _activate() => _run((security, generation) async {
-    final id =
-        asJsonMap(_enrollment?['factor'])['id']?.toString() ?? _recoverId;
+    final id = _enrollment == null
+        ? _recoverId
+        : asJsonMap(_enrollment!['factor'])['id']?.toString();
     if (id == null) return;
     final data = await security.verifyTotp(
       factorId: id,
