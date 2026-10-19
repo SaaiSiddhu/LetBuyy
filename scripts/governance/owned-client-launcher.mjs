@@ -6,6 +6,7 @@ import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { lookup } from 'node:dns/promises';
 import { verifyOwnedFixture, OWNED_FIXTURE_ENV } from './owned-fixture-guard.mjs';
+import { claimOwnedNextDirectory, ownedNextDirectoryName, removeOwnedNextDirectory } from './owned-next-directory.mjs';
 
 const TYPES = new Set(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
 const isNextKind = kind => kind.endsWith('-next') || kind.endsWith('-next-production');
@@ -13,6 +14,7 @@ const [kind, parentText, rootText, portText] = process.argv.slice(2);
 let client;
 let closing = false;
 let watchdog;
+let nextDirectory;
 const alive = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
 const groupAlive = pid => alive(-pid);
 const delay = ms => new Promise(resolveDelay => setTimeout(resolveDelay, ms));
@@ -33,6 +35,10 @@ async function finish(code) {
             process.stderr.write('owned client runtime: its process group did not stop\n');
             code = 71;
         }
+    }
+    if (nextDirectory && (!client?.pid || !groupAlive(client.pid))) {
+        try { removeOwnedNextDirectory(nextDirectory); }
+        catch (error) { process.stderr.write(`owned Next cleanup refused: ${error.message}\n`); code = 71; }
     }
     process.exit(code);
 }
@@ -98,14 +104,12 @@ try {
     if (['commerce-next-production','identity-next-production','merchant-next-production'].includes(kind)) {
         cwd = join(root, { 'commerce-next-production':'apps/commerce/web','identity-next-production':'apps/platform/identity','merchant-next-production':'apps/merchant/web' }[kind]);
         env.NODE_ENV = 'production';
-        env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR = `.next-session-runtime-${process.pid}-${kind}`;
         args = [join(root, 'scripts/governance/owned-next-production.mjs'), String(port)];
     } else if (kind.endsWith('-next')) {
         const roots = { 'commerce-next':'apps/commerce/web', 'identity-next':'apps/platform/identity', 'merchant-next':'apps/merchant/web', 'console-next':'apps/internal/console' };
         cwd = join(root, roots[kind]);
         if (kind === 'console-next') env.NODE_ENV = 'development';
         args = [join(cwd,'node_modules/next/dist/bin/next'),'dev','--webpack','--hostname','localhost','-p',String(port)];
-        env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR = `.next-session-runtime-${process.pid}-${kind}`;
     } else if (kind === 'commerce-session-smoke') {
         cwd = join(root,'apps/commerce/web');
         args = ['--import','tsx','scripts/customer-session-runtime-smoke.mjs'];
@@ -123,6 +127,14 @@ try {
         args = ['--import','tsx',join(root,'scripts/governance/owned-subscription-restart-probe.mjs')];
     } else {
         args = ['--import','tsx',join(root,'scripts/governance/owned-client-lifecycle-probe.mjs')];
+    }
+    if (isNextKind(kind)) {
+        nextDirectory = claimOwnedNextDirectory({ root, kind, runId:fixture.runId, supervisorPid:process.pid, parentPid });
+        env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR = ownedNextDirectoryName(nextDirectory);
+        // Deliver proof before spawning a writer. The registered launching parent
+        // can finish cleanup if this supervisor is SIGKILLed.
+        await new Promise((done, reject) => process.send({ type:'owned-next-directory', receipt:nextDirectory }, error => error ? reject(error) : done()));
+        if (closing || !alive(parentPid)) throw new Error('client owner stopped before Next launch');
     }
     client = spawn(command, args, { cwd, env, stdio:['ignore','pipe','pipe'], detached:true });
     client.stdout.pipe(process.stdout);

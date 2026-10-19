@@ -121,6 +121,37 @@ default/catalog deadlines retain their previous behavior. This avoids terminatin
 the 1050-second payout test at the unrelated generic 600-second limit; actual MFA,
 actor, statement, replay and provider-evidence requirements stay in the tests.
 
+The next Linux merge-safety run reached disk exhaustion: GitHub reported only
+52 MB free, subscription compilation reported `ENOSPC`, and the owned runner
+could not write its aggregate report. Owned Next development and production
+directories previously survived shutdown, accumulating across browser suites.
+Each verified supervisor now allocates a fresh directory with an adjacent
+private receipt bound to its run, app, parent and supervisor. Cleanup waits for
+its process group to stop; the registered parent uses the same receipt after a
+killed supervisor. It never scans other runtime directories or shared caches.
+Missing/replaced proof and symlink replacements refuse deletion. Filesystem
+refusal controls and real Next normal/forced-shutdown checks cover this lifecycle.
+The two earlier browser timeouts have explicit cold-start boundaries: onboarding
+navigation receives 90 seconds, and the customer hydration response waiter shares
+the navigation's existing 90-second budget instead of expiring after 30 seconds
+while that navigation is still compiling. Expected HTTP status, hydration and
+access assertions remain mandatory; final Linux reruns establish their outcome.
+
+Completed Unit diagnostics also showed a collection retirement probe's four-second
+writer ending during its whole-catalog snapshot. Its real owned backend is now
+held through the refusal and conservation assertions, then explicitly canceled
+by its observed PID and unique run binding. The prepared-transaction controls,
+complete retirement SQL and schema/data/ACL comparisons remain intact.
+CI runs one owned-suite worker on its small hosted runner to give real browser
+builds and catalog probes adequate capacity. The complete 198-suite catalog and
+136-suite Gateway acceptance inventory are unchanged; each suite's actual
+internal races and named fault/denial controls still execute.
+
+GitHub separately refused to start the current macOS Mobile job because of its
+account payment/spending limit. That zero-step account block requires the owner
+to resolve Billing & plans and a successful rerun; historical native passes and
+local builds do not count as the current Mobile CI result.
+
 ## Continuation prerequisites
 
 Use `develop` from the verified remote and Node22 (`nvm use` when available).

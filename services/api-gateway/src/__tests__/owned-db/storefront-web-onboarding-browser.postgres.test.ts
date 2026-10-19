@@ -213,6 +213,8 @@ test('merchant resumes the real onboarding form and creates one completed store'
     assert.ok(browser);
     const merchantOrigin = `http://localhost:${merchantPort}`;
     const context = await browser.newContext();
+    // The first authenticated route compiles on a cold owned Next runtime.
+    context.setDefaultNavigationTimeout(90_000);
     await context.addCookies([
         { name: sessionCookie, value: sessionToken, url: `http://localhost:${appPort}`, httpOnly: true, sameSite: 'Lax' },
         { name: csrfCookie, value: csrfToken, url: `http://localhost:${appPort}`, sameSite: 'Strict' },

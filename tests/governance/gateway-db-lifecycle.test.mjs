@@ -132,6 +132,54 @@ test('holds the owned database open', async () => {
 
 const run = (args, options = {}) => spawnSync(process.execPath, [runner, ...args], { cwd: repoRoot, encoding: 'utf8', ...options });
 
+test('owned Next output is removed after normal shutdown and a killed registered supervisor', { skip:needsDocker, timeout:420000 }, () => {
+    const body=`${HEAD}
+const { startOwnedClientRuntime, stopOwnedClientRuntime } = require(${JSON.stringify(SUPPORT)});
+const { createServer } = require('node:net');
+const { existsSync, readFileSync } = require('node:fs');
+const { join } = require('node:path');
+test('both owned Next lifecycle endings remove only their own directory', {timeout:360000}, async () => {
+  for (const killed of [false,true]) {
+    const server=createServer();
+    await new Promise(done=>server.listen(0,'127.0.0.1',done));
+    const port=server.address().port;await new Promise(done=>server.close(done));
+    const child=startOwnedClientRuntime(owned,'commerce-next',{port,env:{NODE_ENV:'test'}});
+    let output='';child.stdout.on('data',chunk=>output+=chunk);child.stderr.on('data',chunk=>output+=chunk);
+    const directory=join(process.cwd(),'apps/commerce/web','.next-session-runtime-'+child.pid+'-commerce-next');
+    const marker=directory+'.owner.json';
+    try {
+      const deadline=Date.now()+150000;let ready=false;
+      while(Date.now()<deadline) {
+        assert.equal(child.exitCode,null,output.slice(-2000));
+        try {const response=await fetch('http://localhost:'+port+'/api/buyer-auth/session',{signal:AbortSignal.timeout(20000)});
+          const payload=await response.json();if(response.status===200 && payload.buyer===null){ready=true;break;}
+        } catch {}
+        await new Promise(done=>setTimeout(done,200));
+      }
+      assert.ok(ready,output.slice(-2000));assert.ok(existsSync(directory));assert.ok(existsSync(marker));
+      const receipt=JSON.parse(readFileSync(marker,'utf8'));
+      assert.equal(receipt.supervisorPid,child.pid);assert.equal(receipt.parentPid,process.pid);assert.equal(receipt.runId,owned.runId);
+      console.log('OWNED_NEXT_LIFECYCLE',killed?'forced':'normal',child.pid);
+      if(killed)child.kill('SIGKILL');
+    } finally {await stopOwnedClientRuntime(child);}
+    if(killed)assert.equal(child.signalCode,'SIGKILL');else assert.equal(child.exitCode,0,output.slice(-2000));
+    assert.equal(existsSync(directory),false,'completed Next output must not accumulate');
+    assert.equal(existsSync(marker),false,'the adjacent ownership receipt is removed too');
+  }
+});`;
+    const dir=suiteDir({'next-output.test.ts':body});
+    try {
+        const logs=join(dir,'logs');
+        const result=run(['--suite-dir',dir,'--kind','gateway-db','--jobs','1','--no-reap','--json','--log-dir',logs,'--timeout','370'],{timeout:400000});
+        const output=join(logs,'next-output.log');
+        assert.equal(result.status,0,`${result.stderr}\n${existsSync(output)?readFileSync(output,'utf8').slice(-8000):result.stdout.slice(-6000)}`);
+        const report=JSON.parse(result.stdout);
+        assert.equal(report.suites,1);assert.equal(report.failedSuites,0);
+        assert.equal(report.results[0].pass,1);assert.equal(report.results[0].skipped,0);
+        assert.deepEqual(everything(resourcesOfRun(report.runId)),[]);
+    } finally {rmSync(dir,{recursive:true,force:true});}
+});
+
 test('a red suite, a skipping suite and an empty suite are all red; a suite starts from a pristine clone; and the run leaves nothing behind', { skip: needsDocker }, () => {
     const dir = suiteDir({
         'a-writes.test.ts': WRITES,

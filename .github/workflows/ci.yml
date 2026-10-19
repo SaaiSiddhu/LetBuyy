@@ -29,6 +29,9 @@ concurrency:
 env:
   NODE_VERSION: "22"
   PNPM_VERSION: "10.6.2"
+  # Keep one browser/catalog suite at a time on the small hosted Linux runner.
+  # Each suite still exercises its real internal races and prepared transactions.
+  LETBUYY_EXECUTABLE_PG_JOBS: "1"
   # Official Supabase mirror, same v16.2 multi-architecture image. Avoid the
   # anonymous ECR download limit shared by GitHub-hosted runners.
   LETBUYY_EXECUTABLE_REST_IMAGE: ghcr.io/supabase/postgrest:v16.2@sha256:85258123312dc496ad4c2ed832154a65e9746f84df0d6d09b44229ff9230c08e

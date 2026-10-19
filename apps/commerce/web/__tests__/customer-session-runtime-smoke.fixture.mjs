@@ -701,7 +701,7 @@ try {
         'a normal buyer sign-in keeps the separate legacy store-customer session intact');
       runtimeProgress('canonical-buyer-login-and-consent-completed');
 
-      await page.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/support`, { waitUntil: 'commit', timeout: 60_000 });
+      await page.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/support`, { waitUntil: 'commit', timeout: 90_000 });
       runtimeProgress('buyer-support-page-response-committed');
       await page.getByRole('heading', { name: 'Support', exact: true }).waitFor({ state: 'visible', timeout: 15_000 });
       runtimeProgress('buyer-support-page-rendered');
@@ -806,7 +806,8 @@ try {
       // A visible server-rendered submit button can precede hydration. Wait
       // for the real client session read before exercising its submit handler.
       const hydratedLegacySession = linkPage.waitForResponse(response =>
-        new URL(response.url()).pathname === '/api/customer/session' && response.request().method() === 'GET');
+        new URL(response.url()).pathname === '/api/customer/session' && response.request().method() === 'GET',
+      { timeout:90_000 }); // Includes the cold navigation before hydration starts.
       await linkPage.goto(`${storeOrigin}/store/${STORE_A_HOSTNAME}/account/settings`, { waitUntil: 'domcontentloaded' });
       const legacySessionResponse = await hydratedLegacySession;
       assert.equal(legacySessionResponse.status(), 200);

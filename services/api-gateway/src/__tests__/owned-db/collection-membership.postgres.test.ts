@@ -281,12 +281,28 @@ test('361 real prepared transactions and a real concurrent writer refuse retirem
         assert.equal(Number(psql('SELECT count(*)FROM pg_prepared_xacts WHERE database=current_database()AND gid IN('+gids.map(q).join(',')+');')),2);
         const before=rawState361();assert.equal(owned.exec(rollback361),null,'The actual whole retirement file refuses real prepared state');assertWholeState361(rawState361(),before);
     }finally{for(const gid of prepared)owned.script('ROLLBACK PREPARED '+q(gid)+';');}
-    const name='syn_cm361_writer_'+owned.runId;const writer=owned.psqlAsync('BEGIN;SET LOCAL application_name='+q(name)+';LOCK TABLE collections IN ROW EXCLUSIVE MODE;SELECT txid_current();SELECT pg_sleep(4);COMMIT;');
-    let witnessed=false;
+    // A fixed four-second sleep expired during the real whole-catalog snapshot
+    // on CI. Hold this exact owned backend until the refusal is checked, then
+    // cancel only its observed PID in finally (connection exit rolls it back).
+    const name='syn_cm361_writer_'+owned.runId;
+    const writer=owned.psqlAsync('BEGIN;SET LOCAL application_name='+q(name)+';LOCK TABLE collections IN ROW EXCLUSIVE MODE;SELECT txid_current();SELECT pg_sleep(600);COMMIT;')
+        .then(()=>({error:null as Error|null}),error=>({error:error as Error}));
+    let witnessed=false,writerPid=0;
     try{
-        const deadline=Date.now()+2500;while(Date.now()<deadline){if(psql('SELECT count(*)FROM pg_stat_activity WHERE application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';")==='1'){witnessed=true;break;}await new Promise(resolve=>setTimeout(resolve,25));}
-        assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),before);
-    }finally{await writer;}
+        const deadline=Date.now()+15000;while(Date.now()<deadline){writerPid=Number(psql('SELECT pid FROM pg_stat_activity WHERE datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';"));if(writerPid>1){witnessed=true;break;}await new Promise(resolve=>setTimeout(resolve,25));}
+        assert.ok(witnessed,'An observed real writer barrier is mandatory');const before=rawState361();
+        const held=()=>psql('SELECT count(*)FROM pg_stat_activity WHERE pid='+writerPid+' AND datname=current_database()AND application_name='+q(name)+"AND backend_xid IS NOT NULL AND wait_event='PgSleep';");
+        assert.equal(held(),'1','the writer must remain active after catalog collection');
+        assert.equal(owned.exec(rollback361),null);
+        assert.equal(held(),'1','the real writer remains held through retirement refusal');
+        assertWholeState361(rawState361(),before);
+    }finally{
+        // If startup failed, find only this run's uniquely named owned backend.
+        const pid=writerPid||Number(psql('SELECT pid FROM pg_stat_activity WHERE datname=current_database()AND application_name='+q(name)+';'));
+        if(pid>1)assert.equal(psql('SELECT pg_cancel_backend(pid)FROM pg_stat_activity WHERE pid='+pid+' AND datname=current_database()AND application_name='+q(name)+';'),'t');
+        const outcome=await writer;
+        assert.match(outcome.error?.message||'',/canceling statement due to user request/,'only explicit cancellation ends the held writer');
+    }
     console.info('OWNED361_QUIESCENCE '+JSON.stringify({preparedTransactions:2,writerBarrier:witnessed,syntheticPositiveSubstitution:false}));
 });
 
