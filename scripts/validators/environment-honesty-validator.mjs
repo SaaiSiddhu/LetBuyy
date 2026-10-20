@@ -73,12 +73,18 @@ reporter.assert(
   "Platform operations API client must fail loudly without an API URL outside production",
 );
 
-const uploadRoute = readFile("services/api-gateway/src/routes/upload.ts");
-reporter.assert(
-  uploadRoute.includes("Public asset base URL is not configured") &&
-    !uploadRoute.includes("cdn-staging.letbuyy.com"),
-  "Upload route must require ASSET_PUBLIC_BASE_URL outside production instead of defaulting to staging CDN",
-);
+// Source contract supplements the owned runtime tests; it must follow the
+// scoped upload delivery owner, not the unrelated legacy media CDN setting.
+export function uploadDeliveryConfigurationProblems(source) {
+  const problems = [];
+  if (!/c\.env\.UPLOAD_PUBLIC_BASE_URL\?\.trim\(\)/.test(source)) problems.push('Scoped public upload base is required');
+  if (!/if\s*\(\s*isProductionEnv\(c\.env\)\s*\|\|\s*requestUrl\.hostname\.endsWith\(['"]\.internal['"]\)\s*\)\s*return\s+null/.test(source)) problems.push('Production/internal uploads cannot default to their request host');
+  if (!source.includes('Public upload delivery URL is not configured')) problems.push('Missing delivery configuration must be unavailable');
+  if (/https:\/\/cdn-staging\.letbuyy\.(?:com|store)\b/.test(source)) problems.push('Upload delivery must not default to a staging CDN');
+  return problems;
+}
+const uploadProblems = uploadDeliveryConfigurationProblems(readFile('services/api-gateway/src/routes/upload.ts'));
+reporter.assert(uploadProblems.length === 0, `Upload delivery configuration: ${uploadProblems.join('; ')}`);
 
 const gatewayCors = readFile("services/api-gateway/src/lib/cors.ts");
 reporter.assert(

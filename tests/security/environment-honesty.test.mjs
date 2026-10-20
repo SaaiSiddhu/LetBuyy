@@ -71,3 +71,14 @@ test('native provider key/export/endpoint mutation controls fail while approved 
   const noCaps = JSON.parse(base.workerSchema); noCaps.$defs.BuyerAiProfile.required = [];
   assert.ok(buyerAiConfigurationProblems({ ...base, workerSchema: JSON.stringify(noCaps) }).some(p => p.includes('bounded server cap')));
 });
+
+test('upload delivery configuration guard rejects the legacy CDN, missing production/internal fence and staging defaults', async () => {
+  const { uploadDeliveryConfigurationProblems: check } = await import('../../scripts/validators/environment-honesty-validator.mjs');
+  const source = read('services/api-gateway/src/routes/upload.ts');
+  assert.deepEqual(check(source), []);
+  const legacy = source.replace('c.env.UPLOAD_PUBLIC_BASE_URL', 'c.env.ASSET_PUBLIC_BASE_URL');
+  assert.notEqual(legacy, source);assert.ok(check(legacy).some(message => message.includes('Scoped')));
+  const unfenced = source.replace("if (isProductionEnv(c.env) || requestUrl.hostname.endsWith('.internal')) return null;", '');
+  assert.notEqual(unfenced, source);assert.ok(check(unfenced).some(message => message.includes('Production/internal')));
+  assert.ok(check(source + '\nconst stagingFallback = "https://cdn-staging.letbuyy.com";').some(message => message.includes('staging CDN')));
+});
