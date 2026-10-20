@@ -2,7 +2,7 @@
 // output and never follow generated/dependency links into another tree.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { readFileSync, copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -161,3 +161,32 @@ for (const [name, imports, body, wrap] of deniedOwnershipFixtures) {
         assert.match(result.stderr, /tenant-table handlers without an ownership/);
     });
 }
+
+// Run the real checker on the actual shipping/tax module and deliberate unsafe
+// call-site mutations. Runtime owner/scoping behavior is independently exercised
+// by shipping-tax-settings.postgres.test.ts against owned PostgreSQL.
+test('shipping/tax ownership recognition is file-bound, awaited and ordered before tenant access', () => {
+    const source = readFileSync(fileURLToPath(new URL('../../services/api-gateway/src/routes/shipping-tax.ts', import.meta.url)), 'utf8');
+    const dir = mkdtempSync(join(tmpdir(), 'letbuyy-shipping-guard-'));
+    const root = join(dir, 'services/api-gateway/src/routes'); mkdirSync(root, { recursive: true });
+    try {
+        const run = (body, filename = 'shipping-tax.ts') => {
+            const file = join(root, filename); writeFileSync(file, body);
+            try { return spawnSync(process.execPath, [ownershipValidator], { cwd: dir, encoding: 'utf8', timeout: 10000 }); }
+            finally { rmSync(file); }
+        };
+        assert.equal(run(source).status, 0, 'the reviewed real transport is recognized');
+        const cases = [
+            ['another filename', source, 'unreviewed.ts'],
+            ['unawaited scope', source.replaceAll('await resolveShippingTaxResourceScope(c,', 'resolveShippingTaxResourceScope(c,')],
+            ['wrong context', source.replaceAll('resolveShippingTaxResourceScope(c,', 'resolveShippingTaxResourceScope(foreign,')],
+            ['mention only', source.replaceAll('await resolveShippingTaxResourceScope(c,', '/* await resolveShippingTaxResourceScope(c, */ await unchecked(c,')],
+            ['shadowed helper', source.replaceAll('const { db, storeId, scopeColumn } = await resolveShippingTaxResourceScope', 'const resolveShippingTaxResourceScope = fake; const { db, storeId, scopeColumn } = await resolveShippingTaxResourceScope')],
+            ['unchecked resource type', source.replaceAll("resolveShippingTaxResourceScope(c, 'tax_rates'", "resolveShippingTaxResourceScope(c, 'unreviewed_table'")],
+            ['read before scope', source.replaceAll("    const { db, storeId, scopeColumn } = await resolveShippingTaxResourceScope", "    await unsafe.from('tax_rates').select('*'); const { db, storeId, scopeColumn } = await resolveShippingTaxResourceScope")],
+        ];
+        for (const [label, body, filename] of cases) {
+            const result = run(body, filename); assert.equal(result.status, 1, label); assert.match(result.stderr, /tenant-table handlers without an ownership/, label);
+        }
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+});

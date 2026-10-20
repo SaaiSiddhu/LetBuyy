@@ -265,6 +265,24 @@ function boundedCanonicalGuard(sourceFile, filePath, handler) {
   };
   for (const statement of statements.slice(0, firstRead)) {
     for (const expression of calls(statement)) {
+      // This reviewed local helper verifies the current owner and returns a
+      // tenant-scoped resource. Recognize only its direct awaited call before
+      // access in its own route module; a mention, callback or shadow is no gate.
+      if (path.relative(routesRoot, filePath) === 'shipping-tax.ts' && ts.isAwaitExpression(expression)) {
+        const call = expression.expression;
+        const name = 'resolveShippingTaxResourceScope';
+        const declared = sourceFile.statements.some(node => ts.isFunctionDeclaration(node) && node.name?.text === name);
+        let shadowed = false;
+        function inspectShadow(node) {
+          if ((ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isParameter(node)) &&
+              node.name && ts.isIdentifier(node.name) && node.name.text === name) shadowed = true;
+          ts.forEachChild(node, inspectShadow);
+        }
+        inspectShadow(handler);
+        if (declared && !shadowed && ts.isCallExpression(call) && ts.isIdentifier(call.expression) && call.expression.text === name &&
+            call.arguments.length === 3 && ts.isIdentifier(call.arguments[0]) && call.arguments[0].text === contextName &&
+            ['shipping_zones', 'shipping_rates', 'tax_rates'].includes(stringLiteralText(call.arguments[1]))) return true;
+      }
       if (ts.isAwaitExpression(expression) && canonicalCall(expression.expression, sourceFile, filePath,
           'requireConsolePermission', 'identity-foundation/console-approval-repository', contextName, handler) &&
           expression.expression.arguments[1] && ts.isStringLiteral(expression.expression.arguments[1]) &&

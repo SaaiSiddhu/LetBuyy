@@ -11,7 +11,9 @@
     "packages/checkout-core related contracts when necessary",
     "owned regression/browser fixtures and explicit suite inventory",
     "phase evidence and ledgers",
-    "services/api-gateway/src/middleware/idempotency.ts: shipping-tax live-owner check before receipt replay, justified by owned replay-before failure"
+    "services/api-gateway/src/middleware/idempotency.ts: shipping-tax live-owner check before receipt replay, justified by owned replay-before failure",
+    "scripts/validators/route-ownership-validator.mjs: direct awaited reviewed helper recognition limited to shipping-tax.ts",
+    "tests/governance/governance-source-traversal.test.mjs: real-source negative mutation controls for this recognition"
   ],
   "acceptance": [
     "Reproduce current shipping list failure on owned PostgreSQL before repair",
