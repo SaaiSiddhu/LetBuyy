@@ -1,6 +1,6 @@
 {
   "phase": "WEB-LAUNCH-W2-SHIPPING-TAX",
-  "status": "FUNCTIONAL_DB_VERIFIED_BROWSER_AND_GATE_PENDING",
+  "status": "LOCAL_VERIFIED_COMPOSED_GATE_PASSED",
   "branch": "letbuyy/week2-shipping-tax",
   "base": "508ee2aa",
   "date": "2026-10-21",
@@ -23,8 +23,6 @@
   },
   "source": "No unguarded client exemption or migration; verified store propagated by web proxies; scoped CRUD and pre-replay live owner verification",
   "remaining": [
-    "Production-built browser repeat after a disabled selector in the first fixture run",
-    "Exact-source security/governance gate",
     "Billing activation, public signup and cross-domain identity, inventory/discount/refund/customer reconciliation remain Week2 work",
     "Razorpay account login deferred by owner; no real provider acceptance",
     "Hosted domain/TLS/load/recovery/release acceptance remains Weeks3\u20134"
@@ -33,5 +31,26 @@
     "No primary checkout edits",
     "No shared/restored DB writes",
     "No push/merge/deploy or real provider payment/message"
-  ]
+  ],
+  "sourceCommit": "72e352e50aafd4e332a9c1ce124df03ff455c036",
+  "runtimeEvidenceCommit": "551f4b4f",
+  "browser": {
+    "pass": 1,
+    "fail": 0,
+    "settingsRequests": 23,
+    "failedSettingsRequests": 0,
+    "normalPasswordLogin": true,
+    "productionBuild": true,
+    "cleanupVerified": true
+  },
+  "canonicalValidators": {
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1
+  },
+  "composedGate": true,
+  "runtimeInputsUnchanged": true,
+  "verificationQualification": "Full security battery551f4b4f raw exit2 is retained for route-helper recognition and individual stale-artifact sweep; runtime bytes unchanged. Checker-only72e352e5 passes37 source tests and final canonical114/114. No false raw-exit0 claim."
 }

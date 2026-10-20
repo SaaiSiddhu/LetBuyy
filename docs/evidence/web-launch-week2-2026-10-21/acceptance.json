@@ -1,0 +1,245 @@
+{
+  "date": "2026-10-21",
+  "phase": "WEB-LAUNCH-W2-SHIPPING-TAX",
+  "status": "LOCAL_VERIFIED_COMPOSED_GATE_PASSED",
+  "branch": "letbuyy/week2-shipping-tax",
+  "runtimeEvidenceCommit": "551f4b4f",
+  "codeCommit": "72e352e50aafd4e332a9c1ce124df03ff455c036",
+  "base": "508ee2aa",
+  "currentHead": "72e352e50aafd4e332a9c1ce124df03ff455c036",
+  "composedAcceptance": true,
+  "provenance": "Two owned suite runs: six shipping/tax configuration cases plus nine authenticated checkout regressions, and one separate normal-login production-built browser workflow. Synthetic account, store and product seeds; no full public-signup or UI product-creation claim. Browser and HTTP checkout are separate suites, not one uninterrupted buyer browser journey.",
+  "suiteResults": [
+    {
+      "suite": "authenticated-checkout.postgres",
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "replay-after.json"
+    },
+    {
+      "suite": "shipping-tax-settings.postgres",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "replay-after.json"
+    },
+    {
+      "suite": "shipping-tax-settings-browser.postgres",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "browser-final.json"
+    }
+  ],
+  "pass": 16,
+  "fail": 0,
+  "cleanupVerified": true,
+  "browserObservedSettingsRequests": 23,
+  "browserFailedSettingsRequests": 0,
+  "gate": {
+    "source": {
+      "runId": "97357e43446e",
+      "scope": "Dedicated local PostgreSQL16 for full security gate; no shared/restored database",
+      "commit": "551f4b4f7146af4bda722c18ae2758b3dcf4884c",
+      "startedAt": "2026-10-20T22:00:57.380Z",
+      "gateExit": 2,
+      "cleanup": [
+        {
+          "kind": "container",
+          "name": "letbuyy-week2-security-55759-mvh89a1j-ac8f83",
+          "removed": true
+        },
+        {
+          "kind": "network",
+          "name": "letbuyy-week2-security-55759-mvh89a1j-ac8f83-net",
+          "removed": true
+        },
+        {
+          "kind": "volume",
+          "name": "letbuyy-week2-security-55759-mvh89a1j-ac8f83-data",
+          "removed": true
+        }
+      ],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "finishedAt": "2026-10-20T22:09:17.415Z"
+    },
+    "checks": [
+      {
+        "check": "typecheck",
+        "exit": 0,
+        "seconds": 26
+      },
+      {
+        "check": "lint",
+        "exit": 0,
+        "seconds": 13
+      },
+      {
+        "check": "governance:plan",
+        "exit": 0,
+        "seconds": 0
+      },
+      {
+        "check": "validators:sweep (112/114 pass)",
+        "exit": 2,
+        "seconds": 36
+      },
+      {
+        "check": "test:contracts",
+        "exit": 0,
+        "seconds": 6
+      },
+      {
+        "check": "test:unit:gateway",
+        "exit": 0,
+        "seconds": 19
+      },
+      {
+        "check": "tests:governance",
+        "exit": 0,
+        "seconds": 333
+      },
+      {
+        "check": "tests:ci",
+        "exit": 0,
+        "seconds": 1
+      },
+      {
+        "check": "tests:security+auth",
+        "exit": 0,
+        "seconds": 25
+      },
+      {
+        "check": "tests:wave4-session",
+        "exit": 0,
+        "seconds": 2
+      },
+      {
+        "check": "governance:REAL-LANE",
+        "exit": 1,
+        "seconds": 36
+      }
+    ],
+    "failedValidators": [
+      "route-ownership",
+      "stale-artifact"
+    ],
+    "individualSweepMethodOnly": false,
+    "canonicalBefore": {
+      "pass": 113,
+      "fail": 1,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "canonicalAfter": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "canonicalAfterReceipt": {
+      "commit": "72e352e50aafd4e332a9c1ce124df03ff455c036",
+      "startedAt": "2026-10-20T22:11:12.441749+00:00",
+      "scope": "Canonical source/governance lane after scoped checker recognition; application runtime bytes unchanged from551f4b4f full security gate and acceptance",
+      "exit": 0,
+      "finishedAt": "2026-10-20T22:11:47.835470+00:00"
+    },
+    "runtimeInputsUnchanged": true,
+    "composedGate": true
+  },
+  "regressions": [
+    {
+      "lane": "Checkout-core",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "checkout-core.log"
+    },
+    {
+      "lane": "Focused routes/idempotency",
+      "tests": 20,
+      "pass": 20,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "route-units.log"
+    },
+    {
+      "lane": "Contracts",
+      "tests": 338,
+      "pass": 338,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_contracts.log"
+    },
+    {
+      "lane": "Gateway unit",
+      "tests": 1606,
+      "pass": 1606,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_unit_gateway.log"
+    },
+    {
+      "lane": "Governance",
+      "tests": 787,
+      "pass": 787,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_governance.log"
+    },
+    {
+      "lane": "Security/auth",
+      "tests": 64,
+      "pass": 64,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_security+auth.log"
+    },
+    {
+      "lane": "Session security",
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_wave4-session.log"
+    },
+    {
+      "lane": "CI",
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_ci.log"
+    },
+    {
+      "lane": "Ownership source/mutation controls",
+      "tests": 37,
+      "pass": 37,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "ownership-controls-final.log"
+    }
+  ],
+  "providerPayment": "NOT_TESTED_OWNER_LOGIN_DEFERRED",
+  "carrierPurchase": "NOT_TESTED",
+  "hosted": "NOT_VERIFIED",
+  "deployment": "NOT_PERFORMED",
+  "next": "Billing activation and truthful plan/trial flow; remaining public signup, online sandbox and commerce lifecycle gates stay open"
+}
