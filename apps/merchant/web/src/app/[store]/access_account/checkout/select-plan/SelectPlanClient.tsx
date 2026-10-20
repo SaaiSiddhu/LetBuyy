@@ -59,10 +59,12 @@ export default function SelectPlanClient({
     const [renderTime] = useState(() => Date.now())
     const [renderDate] = useState(() => new Date())
 
-    const trialDaysLeft = trialEndsAt
-        ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - renderTime) / (1000 * 60 * 60 * 24)))
+    const trialEnd = trialEndsAt ? new Date(trialEndsAt) : null
+    const trialDateKnown = Boolean(trialEnd && Number.isFinite(trialEnd.getTime()))
+    const trialDaysLeft = !currentPlan && trialStatus === 'active' && trialDateKnown
+        ? Math.max(0, Math.ceil((trialEnd!.getTime() - renderTime) / (1000 * 60 * 60 * 24)))
         : 0
-    const isTrialExpired = trialStatus === 'expired' || (trialEndsAt && new Date(trialEndsAt) < renderDate)
+    const isTrialExpired = !currentPlan && (trialStatus === 'expired' || (trialStatus === 'active' && trialDateKnown && trialEnd! < renderDate))
 
     const handleSelectPlan = (planSlug: string) => {
         const plan = plans.find(p => p.slug === planSlug)
@@ -93,7 +95,9 @@ export default function SelectPlanClient({
                 </div>
 
                 <h1 className="select-plan-title">
-                    {isTrialExpired
+                    {currentPlan
+                        ? 'Manage your plan'
+                        : isTrialExpired
                         ? 'Your trial has ended - pick a plan to continue'
                         : trialDaysLeft > 0
                             ? `${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''} left in your trial - choose a plan`
@@ -214,7 +218,7 @@ export default function SelectPlanClient({
                                         (isCurrent || isComingSoon) && 'select-plan-cta--disabled',
                                     )}
                                 >
-                                    {isComingSoon ? 'Coming soon' : isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
+                                    {isComingSoon ? 'Coming soon' : isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Choose plan'}
                                 </Button>
 
                                 <div className="select-plan-feature-list">
@@ -414,7 +418,7 @@ export default function SelectPlanClient({
                         Contact our team
                     </a>
                 </p>
-                <p>All plans include a 7-day free trial. Cancel anytime.</p>
+                <p>Review the amount due at checkout before subscribing. Choosing a plan does not restart your saved trial dates.</p>
             </footer>
         </div>
     )

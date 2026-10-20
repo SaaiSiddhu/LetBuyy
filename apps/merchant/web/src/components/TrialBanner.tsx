@@ -4,16 +4,17 @@ import { useState } from 'react'
 import { Button, MaterialIcon } from '@letbuyy/ui'
 
 interface TrialBannerProps {
+    storeSlug: string
     trialEndsAt: string | null
     trialStatus: string | null
 }
 
-export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerProps) {
+export default function TrialBanner({ storeSlug, trialEndsAt, trialStatus }: TrialBannerProps) {
     const [collapsed, setCollapsed] = useState(false)
     const [dismissed, setDismissed] = useState(false)
 
     // Don't show if no trial or explicitly dismissed
-    if (!trialEndsAt || trialStatus === 'expired' || trialStatus === 'active_paid' || dismissed) {
+    if (!trialEndsAt || trialStatus !== 'active' || dismissed) {
         return null
     }
 
@@ -23,7 +24,7 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
     const diffMs = trialEnd.getTime() - now.getTime()
     const daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
 
-    if (daysLeft <= 0) return null
+    if (!Number.isFinite(daysLeft) || daysLeft <= 0) return null
 
     return (
         <div className="admin-trial-toast">
@@ -58,18 +59,11 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
             {!collapsed && (
                 <div className="admin-trial-toast-body" id="admin-trial-toast-body">
                     <p>
-                        Extend your trial or pick a plan to keep your store running.
-                        Your trial includes <strong>all features</strong>.
+                        Choose a plan before your current trial ends to keep your store running.
                     </p>
-                    <ul>
-                        <li>Unlimited products</li>
-                        <li>Custom domain</li>
-                        <li>Priority support</li>
-                    </ul>
                     <a
-                        href="#"
+                        href={`/${encodeURIComponent(storeSlug)}/access_account/checkout/select-plan`}
                         className="admin-trial-toast-btn"
-                        onClick={(e) => e.preventDefault()}
                     >
                         Select a plan
                     </a>

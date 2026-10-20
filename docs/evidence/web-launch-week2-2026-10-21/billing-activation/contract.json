@@ -1,0 +1,34 @@
+{
+  "phase": "WEB-LAUNCH-W2-BILLING-ACTIVATION",
+  "base": "18b8c504",
+  "claim": "4b0d8b30",
+  "mode": "SINGLE AGENT",
+  "outcome": "Normal merchant can complete saved billing details without a GSTIN, navigate from dashboard trial/activation actions to plans, and complete canonical subscription activation with truthful current-trial/charge copy. Real supplier/provider acceptance stays distinct.",
+  "mayWrite": [
+    "Merchant General/billing/plan/checkout/dashboard components and typed proxies",
+    "Existing canonical gateway subscription source and billing-core contracts only where necessary",
+    "Relevant owned integration/production-built browser tests and explicit inventories",
+    "Narrow fixture scan entries if exact new values require review",
+    "Phase evidence, programme and ledgers",
+    "apps/commerce/web/src/lib/store-service.ts: canonical existing meta_title/meta_description reader compatibility, required by real General-save SEO schema mismatch; no duplicate DB fields or migration",
+    "services/api-gateway/src/middleware/idempotency.ts: live owner check before subscription cancellation receipt replay, justified by cancel-replay-before 200-versus403 failure"
+  ],
+  "acceptance": [
+    "Reproduce saved-address state-code omission in real General form before source repair",
+    "Normal signed password session; General save/reload persists known Indian state code with no GSTIN",
+    "Normal trial/activation navigation, truthful plan selection copy, no invented new trial promise",
+    "Existing lost-create recovery, reload, dismiss, failed DB activation/retry and one immutable subscription/invoice/audit remain proven with explicitly synthetic provider",
+    "Missing/unapproved supplier profile and unsupported/mismatched recipient still fail before provider creation",
+    "Owned DB/runtime cleanup; current source checks; update original report with failures and proof",
+    "General blank fields save; SEO alias payload persists to existing meta columns and reloads; canonical storefront mapper reads same saved metadata",
+    "Subscription cancellation response reload retains canonical cancelled paid receipt rather than inventing free-trial state; same plan can be selected again",
+    "Revoked owner cannot replay a cancellation HTTP receipt; no invoice/activation duplication"
+  ],
+  "constraints": [
+    "No merge/push/deploy or shared/restored DB writes",
+    "No real external payment/message",
+    "No invented business approval, supplier registration or paid capture",
+    "Mobile UI excluded; preserve shared API",
+    "Razorpay account login explicitly deferred"
+  ]
+}

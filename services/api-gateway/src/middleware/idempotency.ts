@@ -231,10 +231,10 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         if (staffBlock) return staffBlock;
     }
 
-    // Settings receipts contain tenant configuration. Re-verify current owner
-    // authority before begin() can return an old response, including revocation
-    // and signed-store/selection mismatches. The route still scopes each row.
-    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/')) {
+    // Settings/cancellation receipts contain tenant configuration and billing
+    // state. Re-verify the live owner before begin() can return an old response,
+    // including revocation and signed-store/selection mismatches.
+    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
         const customUser = auth?.user ? await resolveCustomUser(db, auth.user) : null;

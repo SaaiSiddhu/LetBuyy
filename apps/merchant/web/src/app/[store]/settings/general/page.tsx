@@ -20,6 +20,7 @@ import {
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
+import { gstStateCodeFromName } from '@/lib/india/gst-states'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -231,8 +232,8 @@ export default function GeneralSettingsPage() {
                 locale: normalizeAdminLocale(rs(d, 'locale', DEFAULT_ADMIN_LOCALE)),
                 timezone: rs(d, 'timezone', 'Asia/Kolkata'),
                 invoice_prefix: rs(d, 'invoice_prefix', '#'),
-                seo_title: rs(d, 'seo_title'),
-                seo_description: rs(d, 'seo_description'),
+                seo_title: rs(d, 'meta_title', rs(d, 'seo_title')),
+                seo_description: rs(d, 'meta_description', rs(d, 'seo_description')),
                 contact_email: rs(bp, 'email'),
                 contact_phone: rs(bp, 'phone'),
                 contact_website: rs(bp, 'website'),
@@ -278,14 +279,14 @@ export default function GeneralSettingsPage() {
         try {
             const body = {
                 name: data.name,
-                tagline: data.tagline || null,
-                description: data.description || null,
+                tagline: data.tagline,
+                description: data.description,
                 currency: data.currency,
                 locale: data.locale,
                 timezone: data.timezone,
                 invoice_prefix: data.invoice_prefix || null,
-                seo_title: data.seo_title || null,
-                seo_description: data.seo_description || null,
+                seo_title: data.seo_title,
+                seo_description: data.seo_description,
                 business_profile: {
                     ...rawBP,
                     email: data.contact_email || undefined,
@@ -298,6 +299,7 @@ export default function GeneralSettingsPage() {
                     line2: data.address_line2 || undefined,
                     city: data.address_city || undefined,
                     state: data.address_state || undefined,
+                    state_code: data.address_country === 'IN' ? gstStateCodeFromName(data.address_state) || undefined : undefined,
                     zip: data.address_zip || undefined,
                     country: data.address_country || 'IN',
                 },

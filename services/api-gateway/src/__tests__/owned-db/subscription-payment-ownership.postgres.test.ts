@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {planSubscriptionTaxSnapshot} from '@letbuyy/billing-core';
 import test,{before,after} from 'node:test';
 import {readFileSync} from 'node:fs';
-import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest} from './gateway-harness';
+import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest,signedIdentityHeaders} from './gateway-harness';
 import {requireOwnedDatabase} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-only',profile_version:1,
@@ -136,4 +136,19 @@ test('new private transaction clean rollback/reapply is exact and retained captu
  assert.match(owned.psqlExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/327_atomic_subscription_payment_ownership.rollback.sql',import.meta.url),'utf8')),/360 refuses|refuses retained captured subscription payments/);
  assert.equal(owned.psql("SELECT pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::regprocedure);"),before);
  for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.activate_merchant_subscription_v1('{}'::jsonb);`),/permission denied for function/);
+});
+
+
+test('subscription cancellation receipt cannot replay after the current owner changes',async()=>{
+ const j=await fixture(),site=j.stores[0].siteId,payment='pay_syn_'+crypto.randomUUID();
+ try {
+  assert.equal((await j.activate(site,payment)).status,200);
+  const requestKey='cancel-owner:'+crypto.randomUUID(),email=`syn-sub-owner-${j.owner}@example.invalid`;
+  const cancel=async()=>j.gateway.request('/v1/payments/subscription/cancel',{method:'POST',headers:{...await signedIdentityHeaders(j.owner,email,site),'X-Idempotency-Key':requestKey},body:JSON.stringify({store_id:site,reason:'synthetic-current-owner-cancel'})});
+  const first=await cancel();assert.equal(first.status,200,first.text);
+  const successor=crypto.randomUUID();owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${successor}','syn-successor-${successor}@example.invalid',true);UPDATE sites SET custom_user_id='${successor}' WHERE id='${site}';`);
+  const replay=await cancel();assert.equal(replay.status,403,replay.text);
+  assert.equal(owned.psql(`SELECT count(*) FROM subscriptions WHERE store_id='${site}' AND razorpay_payment_id='${payment}' AND status='cancelled';`),'1');
+  assert.equal(owned.psql(`SELECT count(*) FROM billing_history WHERE site_id='${site}';`),'1');
+ } finally {await j.gateway.settle();}
 });

@@ -395,6 +395,7 @@ function ActivationCard({
                         </Button>
                     )}
                     <Button
+                        as="a"
                         variant={item.complete ? 'secondary' : 'primary'}
                         href={`/${store}/${item.actionLink}`}
                     >

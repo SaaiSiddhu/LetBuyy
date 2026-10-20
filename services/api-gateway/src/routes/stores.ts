@@ -943,8 +943,11 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
         'business_profile', 'invoice_address', 'invoice_footer', 'invoice_number_next',
         'cod_enabled', 'online_payment_enabled',
     ];
+    // The published API keeps its SEO field names; sites stores these facts in
+    // meta_title/meta_description. Do not create a second metadata authority.
+    const columnForField: Record<string, string> = { seo_title: 'meta_title', seo_description: 'meta_description' };
     for (const key of allowed) {
-        if (body[key] !== undefined) updates[key] = body[key];
+        if (body[key] !== undefined) updates[columnForField[key] || key] = body[key];
     }
 
     if (Object.keys(updates).length === 0) {

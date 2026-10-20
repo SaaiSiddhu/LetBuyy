@@ -187,11 +187,12 @@ export default function PlanSettingsPage() {
 
     const currentPrice = useMemo(() => {
         if (!subscription) return 'Free trial'
+        if (subscription.amount_paid > 0) return `${formatMoney(subscription.amount_paid)} paid`
         if (planInfo) {
             const price = subscription.billing_period === 'yearly' ? planInfo.price_yearly_inr : planInfo.price_monthly_inr
-            return `${formatMoney(price)} ${subscription.billing_period === 'yearly' ? 'annually' : 'monthly'}`
+            return `Catalog rate: ${formatMoney(price)} ${subscription.billing_period === 'yearly' ? 'annually' : 'monthly'}`
         }
-        return subscription.amount_paid > 0 ? `${formatMoney(subscription.amount_paid)} paid` : 'Configured plan'
+        return 'Configured plan'
     }, [planInfo, subscription])
 
     const handleCancelPlan = useCallback(async () => {
@@ -205,17 +206,16 @@ export default function PlanSettingsPage() {
             })
             const payload = (await response.json().catch(() => null)) as PlanPayload | null
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to cancel plan'))
-            setSubscription(null)
-            setPlanInfo(null)
             setCancelDialogOpen(false)
-            notify({ title: 'Plan cancelled', description: 'Your subscription remains available until the current billing period ends.', variant: 'success' })
+            await loadData()
+            notify({ title: 'Plan cancelled', description: 'Your subscription is marked as cancelled. Saved invoices remain available.', variant: 'success' })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to cancel plan'
             notify({ title: 'Could not cancel plan', description: message, variant: 'critical' })
         } finally {
             setCancelling(false)
         }
-    }, [cancelling, notify, store])
+    }, [cancelling, loadData, notify, store])
 
     const trialDesc = !isTrialExpired && trialEnds
         ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining in your trial`
@@ -271,7 +271,7 @@ export default function PlanSettingsPage() {
                             <span className="settings-plan-price">{planDesc}</span>
                         </div>
                         <div className="settings-plan-actions">
-                            {hasSubscription && (
+                            {hasSubscription && subscription?.status !== 'cancelled' && (
                                 <Button variant="ghost" loading={cancelling} onClick={() => setCancelDialogOpen(true)}>
                                     Cancel plan
                                 </Button>
@@ -313,7 +313,7 @@ export default function PlanSettingsPage() {
             <ConfirmDialog
                 open={cancelDialogOpen}
                 title="Cancel subscription?"
-                description="Your current plan features remain active until the end of the billing period, then the store will fall back to trial or inactive access."
+                description="Your subscription will be marked as cancelled. You can review its status and saved invoices after cancellation."
                 confirmLabel={cancelling ? 'Cancelling...' : 'Cancel plan'}
                 cancelLabel="Keep plan"
                 destructive
