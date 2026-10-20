@@ -14,7 +14,7 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createMerchantApiClient().shipping.zones.update(zoneId, body as UpdateShippingZoneInput)
+        const payload = await createMerchantApiClient(resolved.storeId).shipping.zones.update(zoneId, body as UpdateShippingZoneInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
@@ -32,7 +32,7 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createMerchantApiClient().shipping.zones.remove(zoneId)
+        const payload = await createMerchantApiClient(resolved.storeId).shipping.zones.remove(zoneId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {

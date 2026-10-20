@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Week1",
+  "currentFocus": "Week2 shipping/tax integration after local Week1 acceptance; hosted/provider gates remain open",
   "weeks": [
     {
       "week": 1,
@@ -65,5 +65,6 @@
     "Razorpay login deferred by owner",
     "Hosted account,binding,DNS and provider readiness"
   ],
-  "earlierPlan": "20October audit recommended17November conditional target; this execution programme is anchored to owner start request21October and targets18November conditionally."
+  "earlierPlan": "20October audit recommended17November conditional target; this execution programme is anchored to owner start request21October and targets18November conditionally.",
+  "week1LocalReceipt": "Week1 source gate f9a16538, docs-only receipt head508ee2aa; 114 canonical validators passed; raw individual sweep retains stale-artifact method red; no hosted release"
 }

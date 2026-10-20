@@ -119,6 +119,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "real-http-shadow-rehearsal.postgres.test.ts",
         "real-staff-product-journey.postgres.test.ts",
         "return-refund-authority.postgres.test.ts",
+        "shipping-tax-settings-browser.postgres.test.ts",
+        "shipping-tax-settings.postgres.test.ts",
         "smart-collection-preview.postgres.test.ts",
         "store-creation-idempotency.postgres.test.ts",
         "storefront-buyer-data.postgres.test.ts",
@@ -140,8 +142,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "theme-draft-browser.postgres.test.ts",
         "theme-draft-cas.postgres.test.ts",
         "theme-upload-ownership.postgres.test.ts",
-        "verification-token-redemption.postgres.test.ts"
-],
+        "verification-token-redemption.postgres.test.ts",
+    ],
         'a suite added to or removed from the lane is a decision: name it here',
     );
     assert.deepEqual(rootOwnedSuites(), [

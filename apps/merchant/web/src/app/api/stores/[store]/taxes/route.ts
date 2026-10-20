@@ -13,7 +13,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createMerchantApiClient()
+        const apiClient = createMerchantApiClient(resolved.storeId)
         const [storePayload, rates] = await Promise.all([
             apiClient.stores.get(resolved.storeId),
             apiClient.taxes.list({ store_id: resolved.storeId }),
@@ -42,7 +42,7 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createMerchantApiClient().stores.update(resolved.storeId, {
+        const payload = await createMerchantApiClient(resolved.storeId).stores.update(resolved.storeId, {
             tax_inclusive: Boolean(body.tax_inclusive),
         })
 
@@ -63,7 +63,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createMerchantApiClient().taxes.create({
+        const payload = await createMerchantApiClient(resolved.storeId).taxes.create({
             ...body,
             store_id: resolved.storeId,
         } as CreateTaxRateInput)

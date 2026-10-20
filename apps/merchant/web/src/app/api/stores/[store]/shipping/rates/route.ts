@@ -14,7 +14,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createMerchantApiClient().shipping.rates.create(
+        const payload = await createMerchantApiClient(resolved.storeId).shipping.rates.create(
             body as CreateShippingRateInput
         )
 

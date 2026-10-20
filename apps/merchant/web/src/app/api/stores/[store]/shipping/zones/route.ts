@@ -13,7 +13,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createMerchantApiClient()
+        const apiClient = createMerchantApiClient(resolved.storeId)
         const [zones, rates, carrier] = await Promise.all([
             apiClient.shipping.zones.list({ store_id: resolved.storeId }),
             apiClient.shipping.rates.list({ store_id: resolved.storeId }),
@@ -44,7 +44,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createMerchantApiClient().shipping.zones.create({
+        const payload = await createMerchantApiClient(resolved.storeId).shipping.zones.create({
             ...body,
             store_id: resolved.storeId,
         } as CreateShippingZoneInput)
