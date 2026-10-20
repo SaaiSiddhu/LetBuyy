@@ -84,7 +84,7 @@ test('Gateway SQL belongs to each native Worker invocation; exact predecessor re
   const encodedUpload=new Request('https://gateway.test/v1/upload',{method:'POST',headers:uploadHeaders,body:form});
   const uploaded=await g.request('/v1/upload',{method:'POST',headers:encodedUpload.headers,body:await encodedUpload.arrayBuffer()});assert.equal(uploaded.status,201,uploaded.text);
   assert.equal(new URL(uploaded.json!.data.url).origin,'https://gateway.test','uploaded URL must use the registered Worker, not the configured legacy CDN');
-  const serviceHeaders=new Headers(await signedIdentityHeaders(actors[0],`syn-native-${actors[0]}@example.invalid`,tenants[0].siteId));serviceHeaders.delete('Content-Type');
+  const serviceHeaders=new Headers(await signedIdentityHeaders(actors[0],`syn-native-${actors[0]}@example.invalid`,tenants[0].siteId));serviceHeaders.delete('Content-Type');serviceHeaders.set('Idempotency-Key',randomUUID());
   const serviceUpload=new Request('https://api-gateway.internal/v1/upload',{method:'POST',headers:serviceHeaders,body:form});
   const serviceReply=await g.request('/v1/upload',{method:'POST',headers:serviceUpload.headers,body:await serviceUpload.arrayBuffer()},'https://api-gateway.internal');
   assert.equal(serviceReply.status,201,serviceReply.text);
