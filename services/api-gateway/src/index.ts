@@ -239,6 +239,7 @@ export interface Env {
     PLATFORM_CONSOLE_API_TOKEN?: string;
     PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
+    UPLOAD_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;

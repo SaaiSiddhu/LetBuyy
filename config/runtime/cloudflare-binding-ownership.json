@@ -35,7 +35,8 @@
             "ANALYTICS_QUEUE_NAME",
             "SEARCH_QUEUE_NAME",
             "NOTIFICATION_QUEUE_NAME",
-            "RUNTIME_QUEUE_NAME"
+            "RUNTIME_QUEUE_NAME",
+            "UPLOAD_PUBLIC_BASE_URL"
           ],
           "queueProducers": [
             "EVENT_QUEUE",
@@ -83,7 +84,8 @@
             "ANALYTICS_QUEUE_NAME",
             "SEARCH_QUEUE_NAME",
             "NOTIFICATION_QUEUE_NAME",
-            "RUNTIME_QUEUE_NAME"
+            "RUNTIME_QUEUE_NAME",
+            "UPLOAD_PUBLIC_BASE_URL"
           ],
           "queueProducers": [
             "EVENT_QUEUE",

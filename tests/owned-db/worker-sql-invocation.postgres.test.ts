@@ -53,9 +53,9 @@ class NativeGateway {
    throw error;
   }
  }
- async request(path: string, init: RequestInit = {}): Promise<GatewayResponse> {
+ async request(path: string, init: RequestInit = {}, origin = 'https://gateway.test'): Promise<GatewayResponse> {
   const headers = new Headers(init.headers); if(!headers.has('CF-Connecting-IP'))headers.set('CF-Connecting-IP', nextClientAddress());
-  const response = await this.mf.dispatchFetch('https://gateway.test'+path, { ...init, headers } as never), text = await response.text();
+  const response = await this.mf.dispatchFetch(origin+path, { ...init, headers } as never), text = await response.text();
   let parsed: Record<string, any> | null = null; try { parsed = JSON.parse(text); } catch { /* negative response */ }
   return { status: response.status, text, json: parsed, headers: new Headers(response.headers) };
  }
@@ -66,7 +66,7 @@ test('Gateway SQL belongs to each native Worker invocation; exact predecessor re
  const actors=[randomUUID(),randomUUID()]; const products=[randomUUID(),randomUUID()];
  for(let i=0;i<2;i++) {const tenant=tenants[i];seedSyntheticTenant(owned.psql,tenant);owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actors[i]}','syn-native-${actors[i]}@example.invalid',true);UPDATE sites SET custom_user_id='${actors[i]}' WHERE id='${tenant.siteId}';INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES('${products[i]}','${tenant.siteId}','${tenant.siteId}','Native SQL original','native-${products[i]}',100,5,true,'active');`);}
  const proxy=await startOwnedPooledSqlProxy(owned);
- const base=gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),ASSET_PUBLIC_BASE_URL:'https://gateway.test/assets'});
+ const base=gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),ASSET_PUBLIC_BASE_URL:'https://cdn.letbuyy.com',UPLOAD_PUBLIC_BASE_URL:'https://gateway.test/assets'});
  const env={...base,DATABASE_URL:proxy.env().HYPERDRIVE.connectionString};delete (env as any).HYPERDRIVE;
  const mutate=async(g:NativeGateway,i:number,label:string,extra:Record<string,unknown>={})=>{
   const version=Number(owned.psql(`SELECT version FROM products WHERE id='${products[i]}';`));const key=randomUUID();
@@ -83,6 +83,12 @@ test('Gateway SQL belongs to each native Worker invocation; exact predecessor re
   const uploadHeaders=new Headers(await signedIdentityHeaders(actors[0],`syn-native-${actors[0]}@example.invalid`,tenants[0].siteId));uploadHeaders.delete('Content-Type');uploadHeaders.set('Idempotency-Key',randomUUID());
   const encodedUpload=new Request('https://gateway.test/v1/upload',{method:'POST',headers:uploadHeaders,body:form});
   const uploaded=await g.request('/v1/upload',{method:'POST',headers:encodedUpload.headers,body:await encodedUpload.arrayBuffer()});assert.equal(uploaded.status,201,uploaded.text);
+  assert.equal(new URL(uploaded.json!.data.url).origin,'https://gateway.test','uploaded URL must use the registered Worker, not the configured legacy CDN');
+  const serviceHeaders=new Headers(await signedIdentityHeaders(actors[0],`syn-native-${actors[0]}@example.invalid`,tenants[0].siteId));serviceHeaders.delete('Content-Type');
+  const serviceUpload=new Request('https://api-gateway.internal/v1/upload',{method:'POST',headers:serviceHeaders,body:form});
+  const serviceReply=await g.request('/v1/upload',{method:'POST',headers:serviceUpload.headers,body:await serviceUpload.arrayBuffer()},'https://api-gateway.internal');
+  assert.equal(serviceReply.status,201,serviceReply.text);
+  assert.equal(new URL(serviceReply.json!.data.url).origin,'https://gateway.test','service-bound upload never persists the internal gateway hostname');
   const path=new URL(uploaded.json!.data.url).pathname;
   const imageResponse=await g.mf.dispatchFetch('https://gateway.test'+path);assert.equal(imageResponse.status,200);assert.deepEqual(new Uint8Array(await imageResponse.arrayBuffer()),image);
   assert.equal(imageResponse.headers.get('Content-Type'),'image/png');assert.equal(imageResponse.headers.get('X-Content-Type-Options'),'nosniff');
@@ -93,7 +99,7 @@ test('Gateway SQL belongs to each native Worker invocation; exact predecessor re
   const attached=await mutate(g,0,'Product with served image',{images:[uploaded.json!.data.url]});assert.equal(attached.status,200,attached.text);
   const persisted=JSON.parse(owned.psql(`SELECT to_jsonb(images) FROM products WHERE id='${products[0]}';`));assert.deepEqual(persisted,[uploaded.json!.data.url]);
   const browser=await chromium.launch({headless:true});try{const page=await browser.newPage();const origin=(await g.mf.ready).origin;await page.goto(origin+path);await expect(page.locator('img')).toBeVisible();assert.ok(await page.locator('img').evaluate((el:any)=>el.naturalWidth>0),'the delivered PNG actually decodes in Chromium');}finally{await browser.close();}
-  console.log('WEEK1_NATIVE_MEDIA_PASS',JSON.stringify({uploadStatus:uploaded.status,deliveredExactBytes:image.length,head:true,conditional304:true,productAttachmentPersisted:true,browserImageDecoded:true,unmarkedDenied:true,privateNamespaceDenied:true,runtime:'native local R2/workerd',hostedCdn:false}));
+  console.log('WEEK1_NATIVE_MEDIA_PASS',JSON.stringify({uploadStatus:uploaded.status,configuredLegacyCdnBypassed:true,internalServiceUploadUsesPublicOrigin:true,deliveredExactBytes:image.length,head:true,conditional304:true,productAttachmentPersisted:true,browserImageDecoded:true,unmarkedDenied:true,privateNamespaceDenied:true,runtime:'native local R2/workerd',hostedCdn:false}));
   negative=await NativeGateway.create(env,true);
   const statuses=[];for(let k=0;k<4;k++)statuses.push((await mutate(negative,0,'Predecessor '+k)).status);
   assert.equal(statuses[0],200,'predecessor first request positive control');assert.ok(statuses.slice(1).some(x=>x>=500),'unscoped predecessor must reproduce warm Worker SQL failure');

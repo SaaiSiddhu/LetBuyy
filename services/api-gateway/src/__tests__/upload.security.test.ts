@@ -78,7 +78,7 @@ test('ordinary public product images still upload and retain their store and MIM
     const positive = await send('store-owner', 'image/png');
     assert.equal(positive.status, 201);
     const payload = await positive.json() as { data: { url: string; store_id: string } };
-    assert.match(payload.data.url, /^https:\/\/cdn\.test\/public-media\/products\/user-owner\//);
+    assert.match(payload.data.url, /^http:\/\/localhost\/assets\/public-media\/products\/user-owner\//);
     assert.equal(payload.data.store_id, 'store-owner');
     assert.equal((await send('rival-store', 'image/png')).status, 403);
     assert.equal((await send('store-owner', 'image/svg+xml')).status, 400);
@@ -114,7 +114,7 @@ test('upload accepts storefront video assets above the image limit and records v
     assert.equal(observedContentType, 'video/mp4');
     assert.equal(observedMediaType, 'video');
     assert.match(observedKey, /^public-media\/media\/user-owner\/.+\.mp4$/);
-    assert.match(payload.data?.url || '', /^https:\/\/cdn\.test\/public-media\/media\/user-owner\/.+\.mp4$/);
+    assert.match(payload.data?.url || '', /^http:\/\/localhost\/assets\/public-media\/media\/user-owner\/.+\.mp4$/);
 });
 
 test('upload delete derives the object key from the wildcard route parameter and verifies store ownership', async () => {
@@ -186,4 +186,17 @@ test('legacy upload delete requires an owned store query as well as owner metada
     const allowed = await app.request('/upload/media/user-owner/product.png?store_id=store-owner', { method: 'DELETE' }, env);
     assert.equal(allowed.status, 200);
     assert.equal(observedDeleteKey, 'media/user-owner/product.png');
+});
+
+test('production public delivery is explicit and survives an internal service host without selecting the legacy CDN', async () => {
+    let writes=0;
+    const {app,env}=createUploadApp('user-owner',{put:async()=>{writes++;return null as unknown as R2Object;}});
+    env.ENVIRONMENT='production';env.ASSET_PUBLIC_BASE_URL='https://cdn.test';
+    const send=()=>{const body=new FormData();body.set('store_id','store-owner');body.set('folder','products');body.set('file',new File(['synthetic-image'],'image.png',{type:'image/png'}));return app.request('https://api-gateway.internal/upload',{method:'POST',body},env);};
+    assert.equal((await send()).status,503);assert.equal(writes,0);
+    env.UPLOAD_PUBLIC_BASE_URL='https://api-public.invalid/assets';
+    const positive=await send();assert.equal(positive.status,201);
+    const payload=await positive.json() as {data:{url:string;cdn_configured:boolean}};
+    assert.match(payload.data.url,/^https:\/\/api-public\.invalid\/assets\/public-media\//);assert.equal(payload.data.cdn_configured,false);
+    env.UPLOAD_PUBLIC_BASE_URL='https://api-public.invalid/unregistered';assert.equal((await send()).status,503);assert.equal(writes,1);
 });

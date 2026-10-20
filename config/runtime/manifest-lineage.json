@@ -20,7 +20,7 @@
       "path": "config/runtime/cloudflare-binding-ownership.json",
       "owner": "cloudflare-runtime",
       "compatibility": "explicit-env-binding-compatible",
-      "checksum": "ee69a0af90e1513ac69f510de162f970f66066b2a35d8f1db753a6b67d7266aa"
+      "checksum": "dc244482fb72410764a678c01de4703bddbaf746bb6e0a7cebabbeb07fb11887"
     },
     {
       "path": "config/runtime/deployment-topology.json",
