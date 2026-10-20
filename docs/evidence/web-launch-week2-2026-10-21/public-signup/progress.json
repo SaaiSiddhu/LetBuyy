@@ -1,0 +1,18 @@
+{
+  "phase": "WEB-LAUNCH-W2-PUBLIC-SIGNUP",
+  "status": "LOCAL_SIGNUP_VERIFIED_PROVIDER_FIXTURE_ONLY",
+  "runtimeSource": "6fb6ef12",
+  "finalGateCandidate": "b619ad5f",
+  "ownedPass": 5,
+  "canonicalPass": 114,
+  "rawGateExit": 1,
+  "rawRed": "Only pre-cleanup individual stale-artifact sweep; governance attribution788 and real cleanup lane passed",
+  "ownedAndGateCleanup": "zero remaining containers/networks/volumes",
+  "report": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-public-signup/signup-repairs.html",
+  "notDeployed": true,
+  "next": "Fresh-store Core adoption and canonical .store links; normal product/image/variant/publish/customer journey",
+  "external": [
+    "Real mailbox delivery and hosted cookie/routing",
+    "Razorpay sandbox login deferred; actual supplier approval"
+  ]
+}

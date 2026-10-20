@@ -1,0 +1,53 @@
+[
+  {
+    "id": "SIGNUP-PRICE-CLAIM",
+    "status": "FIXED_LOCAL",
+    "before": "English, Hindi and Tamil signup promised 14 days then INR20/month; marketing pricing metadata promised seven days. Current new-store DB trial is14 days and catalog starts INR299.",
+    "change": "Neutral review-plans-before-paying copy in signup and pricing metadata; no saved trial duration or plan amount changed.",
+    "evidence": [
+      "baseline-browser.json",
+      "candidate-browser.json",
+      "browser-receipt.json"
+    ]
+  },
+  {
+    "id": "SIGNUP-NATIVE-JOURNEY",
+    "status": "LOCALLY_VERIFIED_PROVIDER_FIXTURE_ONLY",
+    "before": "Earlier onboarding evidence used seeded verified accounts/sessions; no proof of complete native public signup.",
+    "change": "Production-built Identity and Merchant against real Gateway and owned PG; no seeded user/session/store. Captured Resend HTTP only. Failure/retry, wrong/single-use OTP, intent-bound password, onboarding, one store and dashboard proved.",
+    "evidence": [
+      "candidate-browser.json",
+      "guards-final.json",
+      "new-merchant-dashboard.png"
+    ]
+  },
+  {
+    "id": "FRESH-STORE-CORE",
+    "status": "OPEN_NEXT_SLICE",
+    "observation": "Actual first-store DB theme is modern. Signup success does not establish native Core adoption/editor/publish/public render. Existing Week1 Core/preset evidence remains separate.",
+    "evidence": [
+      "browser-receipt.json"
+    ]
+  },
+  {
+    "id": "DASHBOARD-STOREFRONT-DOMAIN",
+    "status": "OPEN_NEXT_SLICE",
+    "observation": "New merchant dashboard shows tenant.letbuyy.com; dashboard-setup-status.ts line26 hardcodes this suffix. User launch target is tenant.letbuyy.store. Requires canonical domain configuration and real browser routing acceptance.",
+    "evidence": [
+      "new-merchant-dashboard.png"
+    ]
+  },
+  {
+    "id": "LIVE-EMAIL-AND-HOSTED-IDENTITY",
+    "status": "EXTERNAL_ACCEPTANCE_OPEN",
+    "observation": "Captured HTTP is not inbox delivery, real Turnstile anti-bot, or hosted .com/.store session/cookie acceptance. No provider or hosted deployment performed.",
+    "evidence": [
+      "contract.json"
+    ]
+  },
+  {
+    "id": "PAYMENT-ACTIVATION-COVERAGE",
+    "status": "LIMITATION",
+    "observation": "Dashboard payment completion accepts default COD. Green setup card in this screenshot is not proof of online payment/provider activation. Razorpay login remains explicitly deferred."
+  }
+]

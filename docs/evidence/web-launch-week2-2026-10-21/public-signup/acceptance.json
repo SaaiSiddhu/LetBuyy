@@ -1,0 +1,184 @@
+{
+  "phase": "WEB-LAUNCH-W2-PUBLIC-SIGNUP",
+  "status": "LOCAL_SIGNUP_VERIFIED_PROVIDER_FIXTURE_ONLY",
+  "candidate": "b619ad5f9facdf8aa45e6e4d858c280439ae1307",
+  "runtimeSource": "6fb6ef12",
+  "owned": [
+    {
+      "suite": "merchant-public-signup-browser.postgres",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "candidate-browser.json"
+    },
+    {
+      "suite": "store-creation-idempotency.postgres",
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "guards-final.json"
+    },
+    {
+      "suite": "verification-token-redemption.postgres",
+      "pass": 2,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "guards-final.json"
+    }
+  ],
+  "canonical": {
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1
+  },
+  "regressions": [
+    {
+      "lane": "Identity existing regression",
+      "group": 1,
+      "tests": 50,
+      "pass": 50,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "identity-tests.log"
+    },
+    {
+      "lane": "Identity existing regression",
+      "group": 2,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "identity-tests.log"
+    },
+    {
+      "lane": "Contracts",
+      "group": 1,
+      "tests": 338,
+      "pass": 338,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_contracts.log"
+    },
+    {
+      "lane": "Gateway units",
+      "group": 1,
+      "tests": 1606,
+      "pass": 1606,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_unit_gateway.log"
+    },
+    {
+      "lane": "Governance",
+      "group": 1,
+      "tests": 788,
+      "pass": 788,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_governance.log"
+    },
+    {
+      "lane": "CI",
+      "group": 1,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_ci.log"
+    },
+    {
+      "lane": "Security/auth",
+      "group": 1,
+      "tests": 64,
+      "pass": 64,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_security+auth.log"
+    },
+    {
+      "lane": "Sessions",
+      "group": 1,
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_wave4-session.log"
+    }
+  ],
+  "gate": [
+    {
+      "check": "typecheck",
+      "exit": 0,
+      "seconds": 9
+    },
+    {
+      "check": "lint",
+      "exit": 0,
+      "seconds": 7
+    },
+    {
+      "check": "governance:plan",
+      "exit": 0,
+      "seconds": 0
+    },
+    {
+      "check": "validators:sweep (113/114 pass)",
+      "exit": 1,
+      "seconds": 34
+    },
+    {
+      "check": "test:contracts",
+      "exit": 0,
+      "seconds": 6
+    },
+    {
+      "check": "test:unit:gateway",
+      "exit": 0,
+      "seconds": 19
+    },
+    {
+      "check": "tests:governance",
+      "exit": 0,
+      "seconds": 320
+    },
+    {
+      "check": "tests:ci",
+      "exit": 0,
+      "seconds": 0
+    },
+    {
+      "check": "tests:security+auth",
+      "exit": 0,
+      "seconds": 25
+    },
+    {
+      "check": "tests:wave4-session",
+      "exit": 0,
+      "seconds": 1
+    },
+    {
+      "check": "governance:REAL-LANE",
+      "exit": 0,
+      "seconds": 35
+    }
+  ],
+  "rawGateExit": 1,
+  "staleArtifactMethodOnly": true,
+  "ownedCleanup": true,
+  "gateCleanup": true,
+  "sourceUnchanged": true,
+  "trialPolicyChanged": false,
+  "providerSandboxVerified": false,
+  "hostedVerified": false,
+  "deployed": false
+}
