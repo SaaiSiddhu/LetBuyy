@@ -3,18 +3,18 @@
   "date": "2026-10-21",
   "branch": "letbuyy/week2-billing-activation",
   "base": "18b8c504",
-  "status": "PRIOR_FUNCTIONAL_RUNS_PASSED_FINAL_CANDIDATE_REPEAT_PENDING",
+  "status": "LOCAL_VERIFIED_PROVIDER_FIXTURE_ONLY_CANONICAL_GATE_PASSED_WITH_SWEEP_METHOD_RED",
   "ownedAcceptance": {
     "pass": 72,
     "fail": 0,
     "composition": "71 actual gateway/PostgreSQL billing tests and one normal-login three-production-app browser journey; provider HTTP and SDK are explicit fixtures",
     "billingGuards": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-billing-activation/billing-guards-final.json",
-    "browser": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-billing-activation/browser-journey-final.json",
+    "browser": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-billing-activation/candidate-browser.json",
     "cleanup": "No remaining owned containers, networks or volumes"
   },
   "webPackageTests": {
     "merchant": {
-      "pass": 918,
+      "pass": 919,
       "fail": 0
     },
     "commerce": {
@@ -28,14 +28,24 @@
     "Supplier approval remains required; no supplier facts were invented outside owned fixtures"
   ],
   "remaining": [
-    "Exact final compiled browser repeat after paid/trial headline and store-specific price wiring",
-    "Full exact-candidate source/security gate",
     "Real approved supplier profile and owner-deferred Razorpay sandbox acceptance",
     "Public signup and cross-domain identity; current sites14day/catalog7day trial alignment still needs review",
-    "Inventory/discount/refund/customer lifecycle and Weeks3\u20134 hosted/load/recovery/release gates"
+    "Inventory/discount/refund/customer lifecycle and Weeks3\u20134 hosted/load/recovery/release gates",
+    "Provider-side recurring cancellation and delivered email not certified by local fixtures"
   ],
   "focusedTrialEntryTests": {
     "pass": 4,
     "fail": 0
-  }
+  },
+  "sourceCommit": "84cbe1e9cdbf4cbd79cc8eac5aed9075e5515db1",
+  "canonicalValidators": {
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1
+  },
+  "gateCleanupVerified": true,
+  "sourceInputsUnchanged": true,
+  "gateQualification": "Full exact-candidate gate raw exit1 retained for individual pre-cleanup stale-artifact method only; governance attribution and real cleanup/canonical114 validators pass. No zero raw exit claim."
 }

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-21",
+  "next": "Public merchant signup / cross-domain identity / fresh-store readiness",
+  "verifiedSourceGap": "Existing storefront-web-onboarding-browser.postgres.test.ts inserts email_verified=true and directly issues/registers the session before onboarding; this is onboarding evidence, not full public signup.",
+  "sourcePaths": [
+    "apps/platform/identity/src/app/api/auth/signup/route.ts",
+    "apps/platform/identity/src/app/api/auth/verify-otp/route.ts",
+    "apps/platform/identity/src/app/api/auth/set-password/route.ts",
+    "apps/platform/identity/src/lib/auth/tokens.ts",
+    "apps/platform/identity/src/lib/email/resend.ts",
+    "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+    "services/api-gateway/src/routes/stores.ts"
+  ],
+  "neededAcceptance": [
+    "New email absent from owned DB; normal signup UI with production auth enabled and Turnstile public test challenge",
+    "Explicit owned Resend transport capture only; no OTP bypass or devOtp response in production build",
+    "OTP verification/password and normal session handoff to onboarding",
+    "Actual new store creation/reload and canonical Core initial state; owner/foreign/reply-loss controls",
+    "Independent fresh-store trial_started_at/trial_ends_at readback and alignment with public claims",
+    "Cross-site buyer/merchant realm boundaries remain distinct; actual hosted .com/.store still unverified"
+  ],
+  "standingDependencies": [
+    "Real approved supplier profile",
+    "Razorpay login explicitly deferred by owner",
+    "No merge/push/deploy or hosted cutover under current authorization",
+    "No real external message/payment"
+  ]
+}

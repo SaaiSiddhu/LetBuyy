@@ -1,0 +1,77 @@
+[
+  {
+    "id": "BILLING-GENERAL-NULL",
+    "observed": "Real General form returns400 for blank tagline/description/SEO serialized as null",
+    "before": "before-browser.json",
+    "repair": "Send valid empty text when the merchant clears a string; preserve nullable invoice prefix",
+    "verification": "candidate-browser.json"
+  },
+  {
+    "id": "BILLING-SEO-COLUMN",
+    "observed": "After null fix, General save returns500 for absent sites.seo_description",
+    "before": "before-state-code.json",
+    "repair": "Keep API seo_* inputs and translate to existing meta_* columns; General reload and Commerce mapping read canonical metadata",
+    "verification": "candidate-browser.json"
+  },
+  {
+    "id": "BILLING-STATE-CODE",
+    "observed": "After metadata repair General save returns200, but saved address lacks state_code29 for Karnataka",
+    "before": "before-state-code-canonical-seo.json",
+    "repair": "Resolve only known selected Indian state labels into invoice_address.state_code; no GSTIN or inferred jurisdiction fallback",
+    "verification": "candidate-browser.json"
+  },
+  {
+    "id": "BILLING-CANCEL-REPLAY",
+    "observed": "Revoked owner receives cached successful cancellation response200 after ownership transfer",
+    "before": "cancel-replay-before.json",
+    "repair": "Live owner check before idempotency receipt replay for subscription cancellation",
+    "verification": "cancel-replay-after.json"
+  },
+  {
+    "id": "BILLING-ENTRY",
+    "observed": "Trial CTA href# and dashboard Button href without anchor semantics; paid plan copy promises a new trial",
+    "evidenceType": "Source defects, then positive real-browser navigation after repair",
+    "repair": "Store-bound trial link, actual dashboard anchors and Choose plan wording with current trial facts",
+    "verification": "candidate-browser.json"
+  },
+  {
+    "id": "BILLING-CANCEL-READBACK",
+    "observed": "Plan UI discards the paid subscription locally after cancellation; server retains a cancelled paid receipt",
+    "evidenceType": "Source behavior and retained authoritative receipt, then real-browser after repair",
+    "repair": "Reload canonical plan state, retain paid invoice history, hide repeated cancel action and permit reselection of a cancelled plan",
+    "verification": "candidate-browser.json"
+  },
+  {
+    "id": "BILLING-TRIAL-DURATION",
+    "status": "OPEN_ALIGNMENT",
+    "observed": "Current sites default is14days while plan catalog and marketing advertise7; current merchant UI now displays actual saved trial dates without promising a reset",
+    "remaining": "Public-signup/marketing/terms alignment and owner business-policy review; no duration or existing trial data changed"
+  },
+  {
+    "id": "BILLING-REAL-PROVIDER",
+    "status": "NOT_VERIFIED",
+    "observed": "Owned tests use explicitly synthetic supplier/capture/SDK fixtures; no account-specific approved supplier profile or Razorpay sandbox acceptance established",
+    "remaining": "Owner-approved supplier facts and deferred Razorpay login, then actual sandbox verification"
+  },
+  {
+    "id": "BILLING-FIXTURE-DOMAIN",
+    "classification": "INVALID_OBSERVATION_EXCLUDED",
+    "observed": "New three-app fixture omitted Worker localhost storefront root; real store-access404 correctly denied it",
+    "receipt": "after-browser.json",
+    "correction": "Aligned the fixture domain, kept access rules unchanged. Initial readiness diagnosis was corrected; no runner was killed; clean repeat after-browser-local-domain.json passed"
+  },
+  {
+    "id": "BILLING-SCOPED-PRICING",
+    "observed": "Plan-selection server page read unscoped catalog while checkout uses the verified store-specific quote",
+    "evidenceType": "Source consumer trace against canonical scoped-price/ownership database tests",
+    "repair": "Pass verified store_id into canonical plan catalog; show retained paid amount as paid rather than catalog as captured amount",
+    "verification": "candidate-browser.json and billing-guards-final.json"
+  },
+  {
+    "id": "BILLING-PAID-TRIAL-HEADING",
+    "observed": "Plan picker counted future/expired trial dates independently of current paid/trial status",
+    "evidenceType": "Real component-state tests and source inspection",
+    "repair": "Use current subscription and explicit active/expired trial status; invalid/unknown dates do not fabricate a trial",
+    "verification": "billing-entry-units-final.log and candidate-browser.json"
+  }
+]
