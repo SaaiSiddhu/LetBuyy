@@ -36,16 +36,10 @@ test('public app-store discovery retries without missing migrated columns and re
     assert.match(appStoreSource, /appListFallbacks\.supportedSiteTypes = true/);
 });
 
-test('query-cost KV failures are short-circuited and throttled after quota exhaustion', () => {
-    assert.match(rateLimitSource, /let queryCostKvUnavailableUntil = 0/);
-    assert.match(rateLimitSource, /queryCostKvBackoffMs/);
-    assert.match(rateLimitSource, /message\.includes\('limit exceeded'\)/);
-    assert.match(rateLimitSource, /now < queryCostKvUnavailableUntil/);
-    assert.match(rateLimitSource, /lastQueryCostKvUnavailableLogAt/);
-    assert.match(rateLimitSource, /suppressed_until/);
-    assert.match(rateLimitSource, /const useKvFallback = Boolean\(env\.CACHE\) && \(isProduction \|\| kvRateLimitFallbackEnabled\(env\)\)/);
-    assert.match(rateLimitSource, /query-cost checks only use KV when explicitly enabled/);
-    assert.match(rateLimitSource, /query-cost checks write on every request/);
-    assert.match(rateLimitSource, /const useKvFallback = Boolean\(env\.CACHE\) && kvRateLimitFallbackEnabled\(env\)/);
+test('query-cost selection has no unsafe KV counter or global failure cooldown', () => {
+    // Structural guard only; owned native Worker tests prove atomic admission.
+    assert.doesNotMatch(rateLimitSource, /async function checkKvQueryCostLimit/);
+    assert.doesNotMatch(rateLimitSource, /queryCostKvUnavailableUntil/);
+    assert.match(rateLimitSource, /env.RUNTIME_COORDINATOR/);
     assert.doesNotMatch(rateLimitSource, /warnRateLimitFailOpen\('query_cost_no_backend'\)/);
 });

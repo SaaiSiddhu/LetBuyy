@@ -39,8 +39,6 @@ export interface QueryCostRateLimitResult extends RateLimitResult {
 const memoryStore = new Map<string, RateLimitEntry>();
 const queryCostMemoryStore = new Map<string, QueryCostLimitEntry>();
 let lastCleanupAt = 0;
-let queryCostKvUnavailableUntil = 0;
-let lastQueryCostKvUnavailableLogAt = 0;
 
 type RuntimeEnvironmentFlags = Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
 
@@ -67,9 +65,8 @@ function isProductionRuntime(env: RuntimeEnvironmentFlags): boolean {
 }
 
 // Beta/free-tier safety: Cloudflare KV has a daily write quota. It remains the
-// production fallback for low-volume fixed-window guards, but high-volume
-// query-cost checks only use KV when explicitly enabled.
-// Set RATE_LIMIT_KV_FALLBACK=on to enable KV for high-volume query-cost checks.
+// compatibility fallback for fixed-window guards. Query-cost admission never
+// uses a KV read-modify-write counter; it requires an atomic backend.
 function kvRateLimitFallbackEnabled(env: Pick<Env, 'RATE_LIMIT_KV_FALLBACK'>): boolean {
     return ['1', 'true', 'yes', 'on'].includes(
         String(env.RATE_LIMIT_KV_FALLBACK || '').trim().toLowerCase(),
@@ -541,7 +538,7 @@ export function calculateQueryCost(input: {
     return Math.max(1, Math.min(cost, 250));
 }
 
-function evaluateLeakyBucket(input: {
+export function evaluateLeakyBucket(input: {
     entry: QueryCostLimitEntry | null;
     now: number;
     cost: number;
@@ -591,73 +588,6 @@ function checkMemoryQueryCostLimit(
     });
     queryCostMemoryStore.set(key, result.entry);
     return result;
-}
-
-function queryCostKvBackoffMs(err: unknown): number {
-    const message = err instanceof Error ? err.message.toLowerCase() : String(err || '').toLowerCase();
-    if (message.includes('limit exceeded') || message.includes('quota')) {
-        return 10 * 60_000;
-    }
-    return 60_000;
-}
-
-function queryCostUnavailableResult(
-    now: number,
-    cost: number,
-    pointsPerSecond: number,
-    capacity: number,
-): QueryCostRateLimitResult {
-    return {
-        allowed: false,
-        remaining: 0,
-        resetAt: now + 1000,
-        unavailable: true,
-        cost,
-        limit: capacity,
-        policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
-        retryAfterMs: 1000,
-    };
-}
-
-async function checkKvQueryCostLimit(
-    cache: KVNamespace,
-    key: string,
-    cost: number,
-    pointsPerSecond: number,
-    capacity: number
-): Promise<QueryCostRateLimitResult> {
-    const now = Date.now();
-    const storageKey = compactStorageKey(key);
-
-    if (now < queryCostKvUnavailableUntil) {
-        return queryCostUnavailableResult(now, cost, pointsPerSecond, capacity);
-    }
-
-    try {
-        const rawEntry = await cache.get(storageKey);
-        const entry = rawEntry ? JSON.parse(rawEntry) as QueryCostLimitEntry : null;
-        const result = evaluateLeakyBucket({ entry, now, cost, pointsPerSecond, capacity });
-        const ttlSeconds = Math.max(60, Math.ceil((capacity / pointsPerSecond) * 2));
-
-        await cache.put(storageKey, JSON.stringify(result.entry), { expirationTtl: ttlSeconds });
-
-        return result;
-    } catch (err) {
-        queryCostKvUnavailableUntil = Math.max(queryCostKvUnavailableUntil, now + queryCostKvBackoffMs(err));
-        if (now - lastQueryCostKvUnavailableLogAt >= 60_000) {
-            lastQueryCostKvUnavailableLogAt = now;
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: 'middleware.query_cost_rate_limit',
-                status_code: 503,
-                reason: 'kv_unavailable',
-                suppressed_until: new Date(queryCostKvUnavailableUntil).toISOString(),
-                error: err instanceof Error ? err.message : 'KV query cost rate limit request failed',
-            }));
-        }
-        return queryCostUnavailableResult(now, cost, pointsPerSecond, capacity);
-    }
 }
 
 const QUERY_COST_RATE_LIMIT_SCRIPT = `
@@ -811,7 +741,7 @@ function warnRateLimitFailClosed(reason: string): void {
         service: 'letbuyy-api',
         route: 'middleware.rate_limit',
         reason,
-        message: 'Rate limit backends unavailable (Redis + KV); failing closed',
+        message: 'Atomic rate limit backends unavailable; failing closed',
     }));
 }
 
@@ -849,7 +779,7 @@ function unavailableQueryCostResult(
 }
 
 export async function checkRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK' | 'RUNTIME_COORDINATOR'>,
     options: DirectRateLimitOptions
 ): Promise<RateLimitResult> {
     const [result] = await checkRateLimitKeys(env, [options]);
@@ -857,7 +787,7 @@ export async function checkRateLimitKey(
 }
 
 async function checkRateLimitKeys(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK' | 'RUNTIME_COORDINATOR'>,
     checks: DirectRateLimitCheckOptions[],
 ): Promise<RateLimitBatchResult[]> {
     const {
@@ -873,10 +803,26 @@ async function checkRateLimitKeys(
         return checkRedisRateLimitBatch(redisUrl, redisToken, checks);
     }
 
-    // Upstash Redis is not provisioned. Degrade gracefully to the always-present
-    // CACHE KV namespace for fixed-window guards. These protect sensitive flows
-    // and remain fail-closed when the backend is unavailable.
-    const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env));
+    if (env.RUNTIME_COORDINATOR) {
+        return Promise.all(checks.map(async check => {
+            const duration=check.windowMs || windowMs, max=check.max || 60;
+            try {
+                const key=`${check.prefix || prefix}:${check.key}:${duration}:${max}`;
+                const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));
+                const name='fixed-window:'+Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+                const stub=env.RUNTIME_COORDINATOR!.get(env.RUNTIME_COORDINATOR!.idFromName(name));
+                const response=await stub.fetch('https://coordinator.internal/fixed-window',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({windowMs:duration,max}),signal:AbortSignal.timeout(2000)});
+                if(!response.ok)return unavailableRateLimitResult(check,duration);
+                const result=await response.json() as RateLimitResult;
+                if(typeof result.allowed!=='boolean' || !Number.isFinite(result.remaining) || !Number.isFinite(result.resetAt))return unavailableRateLimitResult(check,duration);
+                return {...result,key:check.key,max,scope:check.scope};
+            } catch { return unavailableRateLimitResult(check,duration); }
+        }));
+    }
+
+    // Approximate KV compatibility is restricted to explicitly opted-in dev/test.
+    // Production authentication/abuse guards require an atomic backend too.
+    const useKvFallback = Boolean(env.CACHE) && !isProduction && kvRateLimitFallbackEnabled(env);
 
     if (useKvFallback) {
         return Promise.all(checks.map(async (check) => {
@@ -915,7 +861,7 @@ async function checkRateLimitKeys(
 }
 
 export async function checkQueryCostRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV' | 'CACHE' | 'RATE_LIMIT_KV_FALLBACK' | 'RUNTIME_COORDINATOR'>,
     options: DirectQueryCostRateLimitOptions
 ): Promise<QueryCostRateLimitResult> {
     const {
@@ -941,18 +887,28 @@ export async function checkQueryCostRateLimitKey(
         return result;
     }
 
-    // Redis is not provisioned. KV is only used when explicitly enabled because
-    // query-cost checks write on every request and can exhaust Cloudflare KV's
-    // daily write quota.
-    const useKvFallback = Boolean(env.CACHE) && kvRateLimitFallbackEnabled(env);
-
-    if (useKvFallback) {
-        const result = await checkKvQueryCostLimit(env.CACHE as KVNamespace, fullKey, cost, pointsPerSecond, capacity);
-        if (result.unavailable && isProduction) {
-            warnRateLimitFailClosed('query_cost_kv_unavailable');
+    // KV read-modify-write cannot be a distributed admission counter. Use
+    // the existing runtime coordinator's atomic storage when Redis is absent.
+    if (env.RUNTIME_COORDINATOR) {
+        try {
+            const bytes = new TextEncoder().encode(fullKey);
+            const digest = await crypto.subtle.digest('SHA-256', bytes);
+            const name = 'query-cost:' + Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+            const stub = env.RUNTIME_COORDINATOR.get(env.RUNTIME_COORDINATOR.idFromName(name));
+            const response = await stub.fetch('https://coordinator.internal/query-cost', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cost, pointsPerSecond, capacity }),
+                signal: AbortSignal.timeout(2000),
+            });
+            if (!response.ok) return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
+            const result = await response.json() as QueryCostRateLimitResult;
+            if (typeof result.allowed !== 'boolean' || !Number.isFinite(result.remaining) || result.limit !== capacity) {
+                return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
+            }
             return result;
+        } catch {
+            return unavailableQueryCostResult(cost, pointsPerSecond, capacity);
         }
-        return result;
     }
 
     if (isProduction) {
@@ -1045,7 +1001,7 @@ function defaultQueryCostKey(c: Context<{ Bindings: Env }>): string {
         // Auth context is unavailable on public routes.
     }
 
-    return c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || 'anonymous';
+    return 'ip:' + (c.req.header('CF-Connecting-IP') || 'anonymous');
 }
 
 export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {

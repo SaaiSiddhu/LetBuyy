@@ -2,18 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { checkQueryCostRateLimitKey } from '../middleware/rateLimit';
 
-// Query-cost rate limiting backend selection.
-//
-// Regression cover for the 2026-08-01 production incident: every /v1 data route
-// returned 503 RATE_LIMIT_UNAVAILABLE. Unlike the fixed-window limiters — whose KV
-// fallback is `Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env))`
-// — the query-cost limiter has no `isProduction ||` clause, so with no Upstash Redis
-// and no explicit flag it correctly fails CLOSED in production.
-//
-// The production fix is configuration only (RATE_LIMIT_KV_FALLBACK="on" in
-// [env.production.vars]); the limiter itself is deliberately unchanged. These tests
-// pin both the fail-closed contract and the fact that enabling the KV backend selects
-// a backend WITHOUT weakening the limit.
+// KV is eventually consistent and cannot enforce atomic query-cost admission.
+// A missing configured atomic backend remains unavailable in production.
 
 interface StubKv {
     get(key: string): Promise<string | null>;
@@ -54,28 +44,25 @@ test('production with CACHE bound but the flag off still fails closed', async ()
     assert.equal(result.unavailable, true, 'KV must not be used for query-cost unless explicitly enabled');
 });
 
-test('production with CACHE + RATE_LIMIT_KV_FALLBACK=on serves the check (the fix)', async () => {
+test('legacy KV flag cannot activate a non-atomic production admission backend', async () => {
+    let writes=0;
     const result = await checkQueryCostRateLimitKey(
-        { ...PRODUCTION, CACHE: createStubKv(), RATE_LIMIT_KV_FALLBACK: 'on' } as never,
-        { key: 'kv-flag-on', cost: 1 },
+        { ...PRODUCTION, CACHE: { ...createStubKv(), put: async()=>{writes++;} }, RATE_LIMIT_KV_FALLBACK: 'on' } as never,
+        { key: 'kv-no-longer-authoritative', cost: 1 },
     );
-
-    assert.notEqual(result.unavailable, true, 'approved KV backend must service the check');
-    assert.equal(result.allowed, true, 'a single cheap request must be admitted');
+    assert.equal(result.unavailable, true);
+    assert.equal(result.allowed, false);
+    assert.equal(writes,0,'no hot-key counter writes');
 });
 
-test('enabling the KV backend selects a backend without weakening the limit', async () => {
-    const env = { ...PRODUCTION, CACHE: createStubKv(), RATE_LIMIT_KV_FALLBACK: 'on' } as never;
-    const options = { key: 'kv-enforced', cost: 1, pointsPerSecond: 1, capacity: 3 };
-
-    for (let i = 0; i < 3; i += 1) {
-        const allowed = await checkQueryCostRateLimitKey(env, options);
-        assert.equal(allowed.allowed, true, `request ${i + 1} should be within capacity`);
-    }
-
-    const exceeded = await checkQueryCostRateLimitKey(env, options);
-    assert.equal(exceeded.allowed, false, 'requests beyond capacity must still be rate limited');
-    assert.notEqual(exceeded.unavailable, true, 'a real limit decision is not a backend outage');
+test('a coordinator failure does not poison an unrelated subject', async () => {
+    let calls=0;
+    const env={...PRODUCTION,RUNTIME_COORDINATOR:{idFromName:(name:string)=>name,get:(name:string)=>({fetch:async()=>{
+        if(++calls===1)throw new Error('Synthetic subject-specific unavailable response');
+        return Response.json({allowed:true,remaining:199,resetAt:Date.now()+1000,cost:1,limit:200,policy:'synthetic',retryAfterMs:0});
+    }})}} as never;
+    const failed=await checkQueryCostRateLimitKey(env,{key:'failed-subject',cost:1});assert.equal(failed.unavailable,true);
+    const result=await checkQueryCostRateLimitKey(env,{key:'healthy',cost:1});assert.equal(result.allowed,true);
 });
 
 test('non-production without a backend degrades to in-memory rather than failing closed', async () => {

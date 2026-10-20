@@ -1,0 +1,35 @@
+{
+  "phase": "WEB-LAUNCH-W1",
+  "base": "610074d2bce4c14978637dffa861d85691c9bd1a",
+  "ownerAuthorization": "2026-10-21 chat: fix Week1 blockers and test every fix end to end; total four-week goal",
+  "mode": "single-agent implementation and local verification",
+  "order": [
+    "Theme ownership and reserved first-party slugs",
+    "Worker SQL invocation lifecycle",
+    "Request limits and isolation",
+    "Core Liquid theme/ten presets",
+    "Product/theme media delivery"
+  ],
+  "mayWrite": [
+    "gateway routes/execution/middleware and regression tests",
+    "infrastructure pooled SQL adapter",
+    "theme-engine bundle/compiler adapters",
+    "merchant and commerce affected consumers",
+    "paired migrations when required",
+    "evidence/phase ledger/report updates"
+  ],
+  "acceptance": [
+    "Original exploit denied with legitimate owner positive controls and concurrent collision proof",
+    "Actual workerd sequential/concurrent requests and rollback tenant isolation",
+    "Trusted caller rate identity,atomic counter,failure scoping and bounded recovery",
+    "Core install/edit/apply/reload/publish and buyer render for tenpresets",
+    "Authorized upload and actual delivered image bytes;private object denial"
+  ],
+  "constraints": [
+    "Preserve primary checkout and original audit evidence",
+    "No merge/push/deploy",
+    "No real payments/messages",
+    "Provider sandbox requires deferred login"
+  ],
+  "status": "ACTIVE"
+}

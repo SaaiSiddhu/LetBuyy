@@ -280,7 +280,7 @@
 .lb-category-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.10); }
 .lb-category-card strong { font-size: 1.05rem; font-weight: 700; color: var(--card-text, #111827); }
 .lb-category-card span { color: var(--card-text-muted, #6b7280); font-size: .9rem; }
-.lb-featured-products > a { display: inline-block; margin-top: 1.5rem; color: var(--primary); font-weight: 700; }
+.lb-featured-products > a { display: inline-block; margin-top: 1.5rem; color: var(--text-inverse); font-weight: 700; }
 
 /* ---- product card: image, badge, price, hover/focus. The image link is the whole-card click
    target; add-to-cart/wishlist are separate focusable controls OUTSIDE that anchor (never nested

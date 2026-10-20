@@ -1,6 +1,7 @@
+import { withPooledSqlScope } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { authMiddleware } from './middleware/auth';
+import { authMiddleware, optionalAuth } from './middleware/auth';
 import { appOAuthRateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
 import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
@@ -41,6 +42,7 @@ import twoFactorRouter from './routes/two-factor';
 import authRouter from './routes/auth';
 import paymentsRouter from './routes/payments';
 import uploadRouter from './routes/upload';
+import publicAssetsRouter from './routes/public-assets';
 import contactsRouter from './routes/contacts';
 import portfolioRouter from './routes/portfolio';
 import resumeRouter from './routes/resume';
@@ -709,6 +711,9 @@ app.get('/health', (c) => {
     return c.json(healthResponse(c.env.ENVIRONMENT));
 });
 
+// Public delivery is a separate allowlisted projection of explicitly public objects.
+app.route('/assets', publicAssetsRouter);
+
 // API version prefix
 const api = app.basePath('/v1');
 api.use('/*', apiVersioning);
@@ -719,6 +724,9 @@ api.get('/health/queues', (c) => {
     const body = queueHealthResponse(c.env);
     return c.json(body, body.status === 'healthy' ? 200 : 503);
 });
+// Resolve only verified internal identity before selecting the admission subject.
+// The route's ordinary authorization remains required; caller-supplied actor headers are not keys.
+api.use('/*', (c, next) => shouldSkipGatewayQueryCostLimit(c) ? next() : optionalAuth(c, next));
 api.use('/*', queryCostRateLimit({
     pointsPerSecond: 20,
     capacity: 200,
@@ -1098,8 +1106,14 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
 }
 
 export default {
-    fetch: app.fetch,
+    fetch(request: Request, env: Env, ctx: ExecutionContext) {
+        return withPooledSqlScope(async (track) => app.fetch(request, env, {
+            ...ctx,
+            waitUntil(work) { track(work); ctx.waitUntil(work); },
+            passThroughOnException() { ctx.passThroughOnException(); },
+        }), work => ctx.waitUntil(work));
+    },
     scheduled(controller, env, ctx) {
-        ctx.waitUntil(runScheduledDispatch(controller, env));
+        ctx.waitUntil(withPooledSqlScope(async () => runScheduledDispatch(controller, env)));
     },
 } satisfies ExportedHandler<Env>;

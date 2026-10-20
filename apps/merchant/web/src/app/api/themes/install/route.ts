@@ -22,10 +22,17 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        // A raw package is copied into this store's private namespace. Importing
+        // Core must never grant permission to replace the platform's Core row.
+        const packageRecord = bundle?.package
+        const scopedBundle = bundle && packageRecord && typeof packageRecord.slug === 'string'
+            ? { ...bundle, package: { ...packageRecord, slug: `private-${storeId}-${packageRecord.slug}` } }
+            : bundle
         const client = createMerchantApiClient()
         const upload = bundle
             ? await client.themes.uploadPackage({
-                bundle: bundle as Record<string, unknown>,
+                bundle: scopedBundle as Record<string, unknown>,
+                store_id: storeId,
                 submission_mode: 'private_install',
             })
             : null

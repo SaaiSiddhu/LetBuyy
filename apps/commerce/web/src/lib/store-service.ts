@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shared-types';
 import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema, compilePortableToLiquidBundle } from '@letbuyy/theme-engine';
@@ -444,20 +445,18 @@ function isThemeBundleSectionDefinitionMap(value: unknown): boolean {
     });
 }
 
-async function fetchWorkerStore(subdomain: string, anyStatus: boolean): Promise<WorkerStorePayload | null> {
-    const client = createStorefrontApiClient(
-        storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [
-            `storefront:${subdomain}`,
-            anyStatus ? `storefront:${subdomain}:status` : `storefront:${subdomain}:published`,
-        ]),
-    );
+// The Gateway owns public bootstrap freshness and publication invalidation.
+// A second Next data cache cannot observe that invalidation. Deduplicate only
+// inside this React request; never retain mutable status/releases across requests.
+const fetchWorkerStore = cache(async (subdomain: string, anyStatus: boolean): Promise<WorkerStorePayload | null> => {
+    const client = createStorefrontApiClient();
 
     const data = anyStatus
         ? await client.storefront.status(subdomain)
         : await client.storefront.getStore(subdomain);
 
     return (data as WorkerStorePayload | undefined) || null;
-}
+});
 
 async function fetchWorkerPreviewStore(subdomain: string, previewToken: string): Promise<WorkerStorePayload | null> {
     const data = await createStorefrontApiClient().storefront.themePreview(subdomain, previewToken);

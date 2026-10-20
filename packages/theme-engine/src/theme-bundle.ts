@@ -675,6 +675,7 @@ export const PortableThemePackageBundleSchema = z.union([
 ]);
 
 export const UploadThemePackageSchema = z.object({
+  store_id: z.string().uuid().optional(),
   bundle: PortableThemePackageBundleSchema,
   submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
 }).strict();
@@ -1748,7 +1749,7 @@ function liquidSettingsToFieldRecord(settings: LiquidSettingField[]): Record<str
 function liquidInlineBlockDefinitionToSchema(
   block: LiquidSectionBlockDefinition,
 ): { name: string; fields: Record<string, Record<string, unknown>> } {
-  if (!('settings' in block)) {
+  if (block.type === '@app' || !('settings' in block)) {
     return {
       name: block.name,
       fields: {
@@ -1793,7 +1794,11 @@ function buildLiquidRuntimeSectionSchemas(bundle: LiquidThemePackageBundle): Rec
   return Object.entries(bundle.sections).reduce<Record<string, Record<string, unknown>>>((schemas, [sectionType, sectionFile]) => {
     const inlineBlockSchemas = sectionFile.schema.blocks.reduce<Record<string, { name: string; fields: Record<string, Record<string, unknown>> }>>(
       (blocks, block) => {
-        blocks[block.type] = liquidInlineBlockDefinitionToSchema(block);
+        // Empty reference declarations inherit their reusable block schema.
+        // Zod defaults settings to [], so presence alone is not a definition.
+        blocks[block.type] = block.type !== '@app' && 'settings' in block && block.settings.length === 0 && reusableBlockSchemas[block.type]
+          ? reusableBlockSchemas[block.type]
+          : liquidInlineBlockDefinitionToSchema(block);
         return blocks;
       },
       {},

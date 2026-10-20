@@ -109,8 +109,7 @@ function isLegacyOwnerKey(key: string, ownerId: string): boolean {
 }
 
 async function verifyUploadStoreOwnership(c: UploadContext, storeId: string, authUser: WorkerAuthUser): Promise<boolean> {
-    if (authUser.storeId) return authUser.storeId === storeId;
-
+    if (authUser.storeId && authUser.storeId !== storeId) return false;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, authUser);
     if (!customUser) return false;
@@ -184,7 +183,7 @@ router.post('/', async (c) => {
         // Use the full UUID (122 bits) rather than an 8-char slice (~32 bits) to
         // eliminate any theoretical brute-force enumeration of CDN URLs within a
         // specific store + millisecond window.
-        const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
+        const key = `public-media/${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
 
         if (!c.env.R2_BUCKET) {
             if (isProductionEnv(c.env)) {
@@ -214,6 +213,8 @@ router.post('/', async (c) => {
         await c.env.R2_BUCKET.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
             customMetadata: {
+                visibility: 'public',
+                delivery: 'letbuyy-public-v1',
                 owner_id: auth.user.id,
                 ...(storeId ? { store_id: storeId } : {}),
                 folder,

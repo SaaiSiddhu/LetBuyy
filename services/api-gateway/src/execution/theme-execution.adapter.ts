@@ -778,6 +778,11 @@ export class ThemeExecutionAdapter {
     ) {
         const store = await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
+        if (theme.is_site_private && theme.owned_by_site_id !== store.id) throw new ForbiddenError('This theme belongs to another store.');
+        // Validate before changing the active installation or creating any rows.
+        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        const runtime = await this.validateTemplateConfig(templateConfig, theme);
+
 
         const pricingType = theme.letbuyy_pricing_type || (theme.is_premium ? 'paid' : 'free');
 
@@ -820,8 +825,6 @@ export class ThemeExecutionAdapter {
             throw new Error(`Theme installation failed: ${error?.message || 'Unknown error'}`);
         }
 
-        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
-        const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,
             theme,

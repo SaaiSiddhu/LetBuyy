@@ -3401,6 +3401,7 @@ export type ThemePurchaseVerifyResult = {
   provider_payment_id?: string | null;
 };
 export type ThemePackageUploadInput = {
+    store_id?: string;
   bundle: JsonRecord;
   submission_mode?: 'marketplace' | 'private_install';
 };

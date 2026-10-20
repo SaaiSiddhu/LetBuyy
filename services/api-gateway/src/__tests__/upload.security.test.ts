@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, {beforeEach,afterEach} from 'node:test';
+const originalFetch=globalThis.fetch;
+beforeEach(()=>{globalThis.fetch=(async(input:RequestInfo|URL)=>{const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);assert.equal(url.origin,'https://upload-unit.invalid');const table=url.pathname.split('/').pop();if(table==='users_custom')return Response.json([{id:'user-owner',email:'owner@example.invalid'}]);if(table==='sites')return Response.json([{id:'store-owner'}]);throw new Error('Unexpected upload unit dependency');}) as typeof fetch;});
+afterEach(()=>{globalThis.fetch=originalFetch;});
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import uploadRouter from '../routes/upload.ts';
@@ -15,6 +18,8 @@ function createUploadApp(userId: string, bucket: Partial<R2Bucket>, storeId = 's
         app,
         env: {
             ENVIRONMENT: 'test',
+            SUPABASE_URL: 'https://upload-unit.invalid',
+            SUPABASE_SERVICE_ROLE_KEY: 'synthetic-upload-unit-only',
             R2_BUCKET: bucket as R2Bucket,
         } as Env,
     };
@@ -73,7 +78,7 @@ test('ordinary public product images still upload and retain their store and MIM
     const positive = await send('store-owner', 'image/png');
     assert.equal(positive.status, 201);
     const payload = await positive.json() as { data: { url: string; store_id: string } };
-    assert.match(payload.data.url, /^https:\/\/cdn\.test\/products\/user-owner\//);
+    assert.match(payload.data.url, /^https:\/\/cdn\.test\/public-media\/products\/user-owner\//);
     assert.equal(payload.data.store_id, 'store-owner');
     assert.equal((await send('rival-store', 'image/png')).status, 403);
     assert.equal((await send('store-owner', 'image/svg+xml')).status, 400);
@@ -108,8 +113,8 @@ test('upload accepts storefront video assets above the image limit and records v
     assert.equal(payload.data?.media_type, 'video');
     assert.equal(observedContentType, 'video/mp4');
     assert.equal(observedMediaType, 'video');
-    assert.match(observedKey, /^media\/user-owner\/.+\.mp4$/);
-    assert.match(payload.data?.url || '', /^https:\/\/cdn\.test\/media\/user-owner\/.+\.mp4$/);
+    assert.match(observedKey, /^public-media\/media\/user-owner\/.+\.mp4$/);
+    assert.match(payload.data?.url || '', /^https:\/\/cdn\.test\/public-media\/media\/user-owner\/.+\.mp4$/);
 });
 
 test('upload delete derives the object key from the wildcard route parameter and verifies store ownership', async () => {

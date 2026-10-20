@@ -232,3 +232,8 @@ downstream of `customer_app`'s auth — cart, orders, wishlist, addresses, loyal
 - The canonical customer realm is minted **HS256** from `CUSTOMER_SESSION_SECRET`, so its verification
   key is its forgery key — a known `ART-05` deviation to be collapsed onto the sole issuer, never
   extended. Any resolution of CAP-FB-BUYER-IDENTITY should not replicate it.
+
+
+### Web launch Week 1 — 21 October 2026
+
+The owner authorized implementation in `letbuyy/week1-launch-blockers`, based on `610074d2`. Current implementation and bounded local acceptance are recorded in `docs/evidence/web-launch-week1-2026-10-21/progress.json`. This does not close the parent foundation phases or establish hosted acceptance. Remaining rollout work includes the production coordinator binding and secure asset route/CDN, deliberate treatment of historical unmarked media, final domains, real provider sandbox, representative performance and release/restore gates. Preserve all original audit failures as dated evidence; a repaired local candidate is separate from primary/deployed state.

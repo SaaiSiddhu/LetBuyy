@@ -52,6 +52,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "console-oncall-schedules.postgres.test.ts",
         "console-overview-read.postgres.test.ts",
         "console-runtime-command-history.postgres.test.ts",
+        "core-preset-save.postgres.test.ts",
         "current-entitlement-authority.postgres.test.ts",
         "customer-password-reset.postgres.test.ts",
         "final-definer-role-access.postgres.test.ts",
@@ -138,6 +139,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "subscription-single-activation.postgres.test.ts",
         "theme-draft-browser.postgres.test.ts",
         "theme-draft-cas.postgres.test.ts",
+        "theme-upload-ownership.postgres.test.ts",
         "verification-token-redemption.postgres.test.ts"
 ],
         'a suite added to or removed from the lane is a decision: name it here',
@@ -149,6 +151,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "console-mfa-reset.postgres.test.ts",
         "console-oncall-schedules-browser.postgres.test.ts",
         "console-runtime-command-history-browser.postgres.test.ts",
+        "core-presets-browser.postgres.test.ts",
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
@@ -172,7 +175,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "published-storefront-recovery-browser.postgres.test.ts",
         "reel-review-revisions.postgres.test.ts",
         "storefront-buyer-support-recovery-browser.postgres.test.ts",
-        "subscription-tax-gross-conservation.postgres.test.ts"
+        "subscription-tax-gross-conservation.postgres.test.ts",
+        "worker-sql-invocation.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());
