@@ -40,6 +40,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/console-mfa-reset.postgres.test.ts',
     'tests/owned-db/console-oncall-schedules-browser.postgres.test.ts',
     'tests/owned-db/console-runtime-command-history-browser.postgres.test.ts',
+    'tests/owned-db/core-presets-browser.postgres.test.ts',
     'tests/owned-db/loyalty-earn-worker.postgres.test.ts',
     'tests/owned-db/loyalty-refund-scheduler.postgres.test.ts',
     'tests/owned-db/loyalty-reversal-recovery.postgres.test.ts',
@@ -60,12 +61,11 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/platform-job-recovery-browser.postgres.test.ts',
     'tests/owned-db/platform-job-recovery.postgres.test.ts',
     'tests/owned-db/private-reel-intake.postgres.test.ts',
-    'tests/owned-db/worker-sql-invocation.postgres.test.ts',
-    'tests/owned-db/core-presets-browser.postgres.test.ts',
     'tests/owned-db/published-storefront-recovery-browser.postgres.test.ts',
     'tests/owned-db/reel-review-revisions.postgres.test.ts',
     'tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts',
     'tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts',
+    'tests/owned-db/worker-sql-invocation.postgres.test.ts',
 ];
 export const isGatewayDatabaseSuite = (suite) =>
     new RegExp(`^${GATEWAY_DB_SUITE_DIR}/[^/]+\\.test\\.ts$`).test(suite) || ROOT_GATEWAY_DB_SUITES.includes(suite);

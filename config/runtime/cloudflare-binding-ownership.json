@@ -100,7 +100,9 @@
             "R2_BUCKET"
           ],
           "d1Databases": [],
-          "durableObjects": [],
+          "durableObjects": [
+            "RUNTIME_COORDINATOR"
+          ],
           "serviceBindings": [
             "WEBHOOK_SERVICE"
           ],

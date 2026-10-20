@@ -44,7 +44,7 @@ function header(all: Rule[], pathname: string, key: string): string | undefined 
     return value;
 }
 
-const PAGE = 'public, max-age=300, stale-while-revalidate=3600';
+const PAGE = 'private, no-store';
 
 test('API answers carry no caching directive from the config, in either environment', async () => {
     for (const env of ['production', 'development'] as const) {
@@ -56,14 +56,18 @@ test('API answers carry no caching directive from the config, in either environm
     }
 });
 
-test('pages keep their short public cache', async () => {
-    const all = await rules('production');
-    for (const path of ['/', '/products/handloom-kurta', '/collections/summer', '/store/store-one']) {
-        assert.equal(header(all, path, 'Cache-Control'), PAGE, path);
+// Week 1 browser reproduction: the prior public HTML TTL retained the first
+// published preset after later releases. Customer/preview HTML shares this rule.
+test('mutable store, preview and customer HTML is private and never retained by browser/shared caches', async () => {
+    for (const env of ['production', 'development'] as const) {
+        const all = await rules(env);
+        for (const path of ['/', '/products/handloom-kurta', '/collections/summer', '/store/store-one', '/preview', '/customers/account', '/checkout']) {
+            assert.equal(header(all, path, 'Cache-Control'), PAGE, `${env} ${path}`);
+            assert.ok(header(all, path, 'X-Content-Type-Options'), 'security headers remain');
+        }
+        assert.equal(header(all, '/apiary-honey', 'Cache-Control'), PAGE);
+        assert.equal(header(all, '/_nextgen-shoes', 'Cache-Control'), PAGE);
     }
-    // Paths that merely START with the excluded words are ordinary pages.
-    assert.equal(header(all, '/apiary-honey', 'Cache-Control'), PAGE);
-    assert.equal(header(all, '/_nextgen-shoes', 'Cache-Control'), PAGE);
 });
 
 test("Next's assets: immutable for a year in production, nothing from the config in development", async () => {
