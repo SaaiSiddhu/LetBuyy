@@ -4,7 +4,8 @@ import {
   BusinessProfileSchema,
   GstinSchema,
   IndianStateCodeSchema,
-  resolvePlatformDomain,
+  DEFAULT_STOREFRONT_DOMAIN,
+  DEFAULT_PLATFORM_DOMAIN,
   SeoSchema,
   StoreAccessModeSchema,
   UuidSchema,
@@ -76,9 +77,8 @@ export type StorefrontHostResolution =
   | { kind: 'reserved' | 'root' | 'invalid'; host: string; rootDomain: string | null };
 
 export function normalizeStoreRootDomain(rootDomain: string | null | undefined): string {
-  // Falls back to the shared platform-domain config (env-overridable, defaulting
-  // to letbuyy.com) so a future apex cutover stays a single config change.
-  return (rootDomain || resolvePlatformDomain())
+  // Storefront hosts have their own root; account/admin/API hosts remain platform-owned.
+  return (rootDomain || DEFAULT_STOREFRONT_DOMAIN)
     .trim()
     .toLowerCase()
     .replace(/^https?:\/\//, '')
@@ -97,6 +97,49 @@ export function normalizeRequestHost(host: string | null | undefined): string | 
     : withoutPath.replace(/:\d+$/, '');
   const normalized = withoutPort.replace(/^\.+|\.+$/g, '');
   return normalized.length > 0 ? normalized : null;
+}
+
+/** Tenant links share one root/base contract across onboarding, Merchant and checkout. */
+export function buildTenantStorefrontUrl(subdomain: string, options: {
+  rootDomain?: string | null;
+  baseUrl?: string | null;
+} = {}): string {
+  const root = normalizeStoreRootDomain(options.rootDomain);
+  if (!validateSubdomainFormat(subdomain).valid) throw new Error('Invalid storefront subdomain');
+  if (options.baseUrl?.trim()) {
+    const base = new URL(options.baseUrl.trim());
+    if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password || base.search || base.hash) {
+      throw new Error('Invalid storefront base URL');
+    }
+    if (base.hostname === root && base.pathname === '/' && root !== 'localhost') {
+      base.hostname = `${subdomain}.${root}`;
+      return base.origin;
+    }
+    return `${base.href.replace(/\/+$/, '')}/store/${encodeURIComponent(subdomain)}`;
+  }
+  return `https://${subdomain}.${root}`;
+}
+
+/** Hosted checkout belongs to the platform origin, independently of the tenant root. */
+export function isHostedCheckoutHost(host: string | null | undefined, options: {
+  checkoutOrigin?: string | null;
+  storeRootDomain?: string | null;
+} = {}): boolean {
+  const normalized = normalizeRequestHost(host);
+  if (!normalized) return false;
+  if (options.checkoutOrigin?.trim()) {
+    try {
+      const origin = new URL(options.checkoutOrigin.trim());
+      const local = origin.hostname === 'localhost' || origin.hostname.endsWith('.localhost');
+      if (origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash
+          || (origin.protocol !== 'https:' && !(local && origin.protocol === 'http:'))) return false;
+      return normalized === origin.hostname;
+    } catch { return false; }
+  }
+  if (normalized === `checkout.${DEFAULT_PLATFORM_DOMAIN}`) return true;
+  // Existing explicit local roots remain usable without inventing a production checkout host.
+  return normalizeStoreRootDomain(options.storeRootDomain) === 'localhost'
+    && ['checkout.localhost', 'checkout-staging.localhost'].includes(normalized);
 }
 
 export function isReservedStorefrontLabel(label: string | null | undefined): boolean {

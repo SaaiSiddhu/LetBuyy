@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Client-process supervisor for the owned database lane. This is test infrastructure,
 // not an application/runtime authority. The existing fixture guard decides ownership.
+import { resolveOwnedStoreRoot } from './owned-client-host-policy.mjs';
+import { isOwnedClientServiceUrl } from './owned-client-url-policy.mjs';
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { lookup } from 'node:dns/promises';
 import { verifyOwnedFixture, OWNED_FIXTURE_ENV } from './owned-fixture-guard.mjs';
@@ -71,8 +73,7 @@ try {
     }
     for (const name of ['LETBUYY_API_URL','LETBUYY_API_BASE_URL','PLATFORM_CONSOLE_API_BASE_URL','NEXT_PUBLIC_API_URL','NEXT_PUBLIC_API_BASE_URL','NEXT_PUBLIC_ACCOUNTS_URL','NEXT_PUBLIC_ADMIN_URL','CHECKOUT_ORIGIN','LETBUYY_SESSION_RUNTIME_GATEWAY_URL','LETBUYY_MARKETPLACE_OWNED_GATEWAY_URL']) {
         if (!env[name]) continue;
-        const url = new URL(env[name]);
-        if (url.protocol !== 'http:' || !['127.0.0.1','localhost','[::1]'].includes(url.hostname) && !url.hostname.endsWith('.localhost') || url.username || url.password) throw new Error(`owned client runtime requires a loopback ${name}`);
+        if (!isOwnedClientServiceUrl(name, env[name])) throw new Error(`owned client runtime requires a loopback ${name}`);
     }
     // The database announcement is the fresh guard's result, never a caller override.
     env.SUPABASE_URL = fixture.restUrl;
@@ -88,7 +89,9 @@ try {
     delete env.DATABASE_URL;
     for (const key of Object.keys(env)) if (/^PG/.test(key)) delete env[key];
     env.LETBUYY_OWNED_CLIENT_RUNTIME = '1';
-    env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = 'localhost';
+    const canonicalRoot = readFileSync(join(root,'packages/shared-types/src/brand.ts'),'utf8').match(/export const DEFAULT_STOREFRONT_DOMAIN = '([a-z0-9.-]+)'/)?.[1];
+    env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = resolveOwnedStoreRoot({mode:env.LETBUYY_OWNED_CLIENT_HOST_MODE,requestedRoot:env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,storefrontUrl:env.NEXT_PUBLIC_STOREFRONT_URL,checkoutOrigin:env.CHECKOUT_ORIGIN,canonicalRoot});
+    delete env.LETBUYY_OWNED_CLIENT_HOST_MODE;
     env.NEXT_TELEMETRY_DISABLED = '1';
     env.CI = '1';
     // NextURL normalizes 127.0.0.1 to localhost. Bind that same host to avoid

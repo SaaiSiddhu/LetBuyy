@@ -243,7 +243,7 @@ async function finishClientDirectory(record:ClientRecord):Promise<void> {
 }
 
 /** Launch only a named test client after database ownership is proven; no raw command/cwd seam. */
-export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined> }):OwnedClientProcess {
+export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, options:{ port?:number; env:Record<string,string|undefined>; hostMode?:'canonical-storefront-loopback' }):OwnedClientProcess {
     if (!CLIENT_KINDS.has(kind)) throw new Error('unapproved owned client runtime kind');
     if (owned !== requireOwnedDatabase() || !clientFixtureEnv) throw new Error('owned client runtime requires the verified database handle');
     if ((kind.endsWith('-next') || kind.endsWith('-next-production')) && (!Number.isInteger(options.port) || options.port! < 1024 || options.port! > 65535)) throw new Error('invalid local Next port');
@@ -252,11 +252,13 @@ export function startOwnedClientRuntime(owned:OwnedDatabase, kind:ClientKind, op
     }
     // Only OS/tool paths cross implicitly. Provider/database credentials and
     // ambient app settings must not leak from the shell into a synthetic journey.
+    if (options.env.LETBUYY_OWNED_CLIENT_HOST_MODE !== undefined) throw new Error('owned host mode must use the verified helper option');
+    if (options.hostMode && (!kind.endsWith('-next-production') || options.hostMode !== 'canonical-storefront-loopback')) throw new Error('invalid owned host mode');
     const base:Record<string,string> = {};
     for (const name of ['PATH','HOME','TMPDIR','TMP','TEMP','LANG','LC_ALL','PNPM_HOME','FLUTTER_ROOT','PUB_CACHE','PLAYWRIGHT_BROWSERS_PATH']) {
         if (process.env[name]) base[name] = process.env[name]!;
     }
-    const env = { ...base, ...Object.fromEntries(Object.entries(options.env).filter((entry):entry is [string,string] => typeof entry[1] === 'string')) };
+    const env = { ...base, ...Object.fromEntries(Object.entries(options.env).filter((entry):entry is [string,string] => typeof entry[1] === 'string')), ...(options.hostMode ? { LETBUYY_OWNED_CLIENT_HOST_MODE: options.hostMode } : {}) };
     const child = spawn(process.execPath,[LAUNCHER,kind,String(process.pid),process.cwd(),String(options.port ?? 0)],{
         cwd:process.cwd(), env:{ ...base, ...clientFixtureEnv }, stdio:['pipe','pipe','pipe','ipc'], detached:true,
     }) as OwnedClientProcess; // All three pipes are fixed above; the fourth channel is private IPC.

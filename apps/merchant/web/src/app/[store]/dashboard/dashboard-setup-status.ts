@@ -1,3 +1,4 @@
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import type { StorePaymentConfig } from '@letbuyy/api-client'
 
 export interface SetupStatus {
@@ -23,7 +24,7 @@ export function resolveDashboardDomain({
 }): { domain: string | null; configured: boolean } {
     const activeCustomDomain = customDomainStatus === 'active' ? customDomain?.trim() : ''
     const normalizedSubdomain = subdomain?.trim()
-    const defaultDomain = normalizedSubdomain ? `${normalizedSubdomain}.letbuyy.com` : ''
+    const defaultDomain = normalizedSubdomain ? `${normalizedSubdomain}.${getStorefrontRootDomain()}` : ''
     const domain = activeCustomDomain || defaultDomain || null
 
     return { domain, configured: domain !== null }

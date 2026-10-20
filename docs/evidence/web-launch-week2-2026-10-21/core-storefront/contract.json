@@ -1,0 +1,31 @@
+{
+  "phase": "WEB-LAUNCH-W2-CORE-STOREFRONT",
+  "base": "994d8e28",
+  "claim": "a7184cfd",
+  "mode": "SINGLE AGENT",
+  "outcome": "New web-onboarded store starts with actual canonical first-party Core Liquid config; merchant storefront URLs/host defaults consistently use owner-directed storefront domain; real editor/publication and buyer rendering, followed by product/image/variant/COD journey as required.",
+  "ownerDirection": {
+    "platform": "letbuyy.com",
+    "storefront": "letbuyy.store",
+    "source": "Current chat owner instruction: platform apps on letbuyy.com; merchants creating storefronts through merchant control plane on letbuyy.store. Mobile UI excluded.",
+    "precedence": "Current direct owner instruction supersedes earlier blanket .store literal prohibition for tenant storefront configuration only. No ARB signature or deployment acceptance is asserted."
+  },
+  "contracts": [
+    "Use shared brand/tenant host contract, distinct platform/storefront domains; explicit configured local roots preserved",
+    "Do not change accounts/admin/API/hosted checkout platform origins or weaken CSRF/CORS/cookie scopes",
+    "Narrow legacy domain guard to exact canonical storefront declaration and approved storefront env keys; retain unsafe literal negative controls",
+    "Canonical Core catalog/template validation before new-web store insertion; retain old explicit theme inputs and request replay contracts, no mass migration",
+    "No alternate renderer or second install/publish authority",
+    "Owned DB failure/replay tests and normal production-built browser signup/store/theme/render evidence",
+    "Preserve existing shipping/tax/billing/media/security source or reverify affected inputs"
+  ],
+  "constraints": [
+    "No merge/push/deploy, shared DB writes, real payments/messages or backup deletion",
+    "No invented supplier or provider approval",
+    "Razorpay login explicitly deferred"
+  ],
+  "remainingProgramme": [
+    "Hosted domains/TLS/cookies, actual email deliverability and Razorpay sandbox acceptance remain separate",
+    "Product/variant/images and canonical customer COD order must be verified through actual UI before this full journey is marked complete"
+  ]
+}

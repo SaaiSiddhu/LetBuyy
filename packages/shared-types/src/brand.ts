@@ -26,6 +26,7 @@
  * configured platform origin from env when emitting public URLs.
  */
 export const DEFAULT_PLATFORM_DOMAIN = 'letbuyy.com';
+export const DEFAULT_STOREFRONT_DOMAIN = 'letbuyy.store';
 export const DEFAULT_PLATFORM_ORIGIN = `https://${DEFAULT_PLATFORM_DOMAIN}` as const;
 
 /**

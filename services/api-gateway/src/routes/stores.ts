@@ -4,7 +4,8 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
-import { resolveExperienceForIndustry, applyExperienceToTemplateConfig } from '@letbuyy/theme-engine';
+import { resolveExperienceForIndustry, applyExperienceToTemplateConfig, LETBUYY_CORE_THEME_SLUG } from '@letbuyy/theme-engine';
+import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { getRequestId } from '../lib/tenant-context';
@@ -855,6 +856,9 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
     // merchant can re-pick later in the editor's Experiences tab. Additive: no industry => unchanged
     // template_config (no behaviour change for other callers). Unknown industry => Summit fallback.
     let templateConfig = (body.template_config ?? {}) as Record<string, unknown>;
+    if (body.theme_id === LETBUYY_CORE_THEME_SLUG) {
+        templateConfig = await new ThemeExecutionAdapter(db).prepareCoreStoreTemplate(templateConfig);
+    }
     const surveyRecord = templateConfig.survey && typeof templateConfig.survey === 'object'
         ? (templateConfig.survey as Record<string, unknown>)
         : undefined;
