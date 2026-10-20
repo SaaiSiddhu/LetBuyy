@@ -53,6 +53,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/merchant-mobile-mfa-transport.postgres.test.ts',
     'tests/owned-db/merchant-product-edit-browser.postgres.test.ts',
     'tests/owned-db/merchant-product-status-browser.postgres.test.ts',
+    'tests/owned-db/merchant-public-signup-browser.postgres.test.ts',
     'tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts',
     'tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts',
     'tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts',

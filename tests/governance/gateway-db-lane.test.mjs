@@ -166,6 +166,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-mobile-mfa-transport.postgres.test.ts",
         "merchant-product-edit-browser.postgres.test.ts",
         "merchant-product-status-browser.postgres.test.ts",
+        "merchant-public-signup-browser.postgres.test.ts",
         "merchant-smart-collection-preview-browser.postgres.test.ts",
         "merchant-staff-invitation-delivery.postgres.test.ts",
         "money-ledger-reconciliation-traversal.postgres.test.ts",

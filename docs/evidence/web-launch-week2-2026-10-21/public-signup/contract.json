@@ -1,0 +1,25 @@
+{
+  "phase": "WEB-LAUNCH-W2-PUBLIC-SIGNUP",
+  "base": "f5f7fccb",
+  "claim": "032eba5e",
+  "mode": "SINGLE AGENT",
+  "outcome": "Fresh public merchant account through normal signup, captured provider email, OTP, password and onboarding into a single owned store using production-built apps and canonical Gateway/Postgres. Correct contradictory public promises without changing trial/price policy.",
+  "acceptance": [
+    "No seeded account, email verification, password or session",
+    "Development OTP bypass false; no OTP returned publicly",
+    "Explicit captured Resend transport; wrong OTP denied before correct OTP",
+    "Real password session, normal onboarding and unique store, readable merchant dashboard",
+    "Compare saved trial dates with public copy; preserve actual trial policy",
+    "Record exact candidate and cleanup plus scoped regressions"
+  ],
+  "constraints": [
+    "No merge/push/deploy or shared database writes",
+    "No external email delivery/payment",
+    "No invented trial duration or supplier/provider approval",
+    "Mobile UI excluded; shared auth contracts retained"
+  ],
+  "dependencies": [
+    "Real mailbox delivery and DNS acceptance remain unverified",
+    "Hosted cross-domain handoff remains a separate release gate"
+  ]
+}
