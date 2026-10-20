@@ -237,3 +237,5 @@ downstream of `customer_app`'s auth — cart, orders, wishlist, addresses, loyal
 ### Web launch Week 1 — 21 October 2026
 
 The owner authorized implementation in `letbuyy/week1-launch-blockers`, based on `610074d2`. Current implementation and bounded local acceptance are recorded in `docs/evidence/web-launch-week1-2026-10-21/progress.json`. This does not close the parent foundation phases or establish hosted acceptance. Remaining rollout work includes the production coordinator binding and secure asset route/CDN, deliberate treatment of historical unmarked media, final domains, real provider sandbox, representative performance and release/restore gates. Preserve all original audit failures as dated evidence; a repaired local candidate is separate from primary/deployed state.
+
+Week 1 local source acceptance: `docs/evidence/web-launch-week1-2026-10-21/acceptance.json` pins source `f9a16538`, four passing affected suites, canonical114/114 and the retained standalone artifact-method red. Hosted/provider acceptance and the original catalogue-wide findings remain open. No parent phase is promoted by these local results.

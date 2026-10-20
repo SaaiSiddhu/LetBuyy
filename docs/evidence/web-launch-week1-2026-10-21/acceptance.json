@@ -1,0 +1,522 @@
+{
+  "phase": "WEB-LAUNCH-W1",
+  "status": "LOCAL_SOURCE_VERIFIED_HOSTED_PENDING",
+  "sourceCommit": "f9a165385517a98d0a017b03d33e8263d1d66fb6",
+  "runtimeInputSnapshotCommit": "1a0c3cf98351673fa229ffb7733758ae8475d9ad",
+  "recordedAt": "2026-10-20T21:25:37.242489+00:00",
+  "acceptance": {
+    "updatedAt": "2026-10-20T21:25:37.242489+00:00",
+    "sourceBase": "610074d2bce4c14978637dffa861d85691c9bd1a",
+    "candidateBranch": "letbuyy/week1-launch-blockers",
+    "candidateHead": "f9a165385517a98d0a017b03d33e8263d1d66fb6",
+    "sourceDirty": false,
+    "status": "LOCAL_VERIFIED_CANONICAL_GATE_PASSED_WITH_SWEEP_METHOD_RED",
+    "providerSandbox": "NOT_VERIFIED_OWNER_DEFERRED_LOGIN",
+    "hostedAcceptance": "NOT_VERIFIED",
+    "deployment": "NOT_PERFORMED",
+    "suiteResults": [
+      {
+        "name": "core-preset-save.postgres",
+        "code": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "seconds": 3.6,
+        "receipt": "week1-wired-acceptance.json"
+      },
+      {
+        "name": "theme-upload-ownership.postgres",
+        "code": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "seconds": 28,
+        "receipt": "week1-wired-acceptance.json"
+      },
+      {
+        "name": "core-presets-browser.postgres",
+        "code": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "seconds": 142.1,
+        "receipt": "week1-wired-acceptance.json"
+      },
+      {
+        "name": "worker-sql-invocation.postgres",
+        "code": 0,
+        "pass": 1,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "seconds": 42.4,
+        "receipt": "week1-native-final.json"
+      }
+    ],
+    "assertionsPassed": 4,
+    "assertionsFailed": 0,
+    "productionInputsUnchanged": true,
+    "acceptanceProvenance": "Three passing suites from the final four-suite run plus the native Worker repeat. The native probe initially omitted its required mutation intent key; the corrected fixture repeats direct/service-bound media, SQL and admission checks. Runtime source is unchanged; original failures retained and inputs hash-checked.",
+    "cleanupVerified": true,
+    "proofs": {
+      "WEEK1_THEME_OWNERSHIP_PASS": {
+        "creator": true,
+        "foreignOverwriteDenied": true,
+        "privateOwnerBound": true,
+        "exactReplay": true,
+        "changedVersionDenied": true,
+        "reservedSlugDenied": true,
+        "staleSiteClaimDenied": true,
+        "concurrentCollisionSingleOwner": true,
+        "foreignEditorDenied": true,
+        "ownerEditor": true,
+        "unprivilegedRpcDenied": true,
+        "privateRegistryRlsDenied": true,
+        "predecessorRlsLeakReproducedAndRolledBack": true,
+        "publicCatalogRlsPositive": true,
+        "atomicFailureRecovery": true,
+        "unsafeRollbackDenied": true,
+        "privateImportInstalled": true
+      },
+      "WEEK1_CORE_DOCUMENT_CACHE": {
+        "preset": "Summit",
+        "width": 360,
+        "cacheControl": "private, no-store"
+      },
+      "WEEK1_CORE_CATALOG_DIAGNOSTIC": {
+        "path": "/store/syn-core-week1-0214923e/products",
+        "title": "Products | Synthetic core-week1",
+        "headings": [
+          "All Products",
+          "Products",
+          "Cart"
+        ],
+        "liquid": true,
+        "productText": true,
+        "anchorPaths": [
+          "/store/syn-core-week1-0214923e/products",
+          "/store/syn-core-week1-0214923e/customers/login",
+          "/store/syn-core-week1-0214923e",
+          "/store/syn-core-week1-0214923e/customers/login",
+          "/store/syn-core-week1-0214923e/cart",
+          "/product/6ad9c871-7928-430e-9823-a4d35905febf",
+          "/store/syn-core-week1-0214923e/contact",
+          "/",
+          "/store/syn-core-week1-0214923e/cart",
+          "/store/syn-core-week1-0214923e/checkout"
+        ]
+      },
+      "WEEK1_CORE_BUYER_HANDOFF_PASS": {
+        "catalog": true,
+        "product": true,
+        "normalBuyNow": true,
+        "canonicalCartCount": 1,
+        "localHostedCheckout200": true,
+        "ordersCreated": 0,
+        "providerPayment": false
+      },
+      "WEEK1_CORE_IMPORT_BROWSER_PASS": {
+        "normalFileInput": true,
+        "scopedPrivateCopy": true,
+        "installed": true,
+        "buyerRendered": true,
+        "firstPartyNotOverwritten": true
+      },
+      "WEEK1_CORE_PRESETS_PASS": [
+        {
+          "preset": "Forge",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Sense",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Aura",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Craft",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Refresh",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Ride",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Dawn",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Bloom",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Nova",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        },
+        {
+          "preset": "Summit",
+          "apply": true,
+          "reloaded": true,
+          "published": true,
+          "exactStoredValues": true,
+          "renderedPrimary": true,
+          "nonCachedHtml": true,
+          "labeledReadableCollectionLink": true,
+          "desktop": true,
+          "mobile": true
+        }
+      ],
+      "WEEK1_CORE_PRESET_API_PASS": {
+        "count": 10,
+        "realGateway": true,
+        "realOwnedDatabase": true
+      },
+      "WEEK1_NATIVE_MEDIA_PASS": {
+        "uploadStatus": 201,
+        "configuredLegacyCdnBypassed": true,
+        "internalServiceUploadUsesPublicOrigin": true,
+        "deliveredExactBytes": 2224,
+        "head": true,
+        "conditional304": true,
+        "productAttachmentPersisted": true,
+        "browserImageDecoded": true,
+        "unmarkedDenied": true,
+        "privateNamespaceDenied": true,
+        "runtime": "native local R2/workerd",
+        "hostedCdn": false
+      },
+      "WEEK1_NATIVE_ADMISSION_PASS": {
+        "sharedProxy": [
+          200,
+          200,
+          429,
+          200
+        ],
+        "parallelLastPermit": [
+          200,
+          429
+        ],
+        "spoofedIdentityStatus": 401,
+        "atomicAuthWindow": true,
+        "backend": "native SQLite Durable Object",
+        "budget": "synthetic2points at0.001points/second; production default unchanged",
+        "hosted": false
+      },
+      "WEEK1_NATIVE_SQL_PASS": {
+        "sequentialWrites": 6,
+        "concurrentIndependentTenants": 2,
+        "crossTenantDenied": true,
+        "predecessorStatuses": [
+          200,
+          500,
+          200,
+          500
+        ],
+        "runtime": "local workerd",
+        "database": "owned PostgreSQL16",
+        "hosted": false
+      }
+    },
+    "originalAudit": "Original198catalog1689pass3fail retained separately; targeted repair acceptance does not replace that aggregate.",
+    "gate": {
+      "codeCommit": "f9a165385517a98d0a017b03d33e8263d1d66fb6",
+      "cleanupVerified": true,
+      "ownedSecurityDatabaseReceipt": {
+        "runId": "f2386567ee18",
+        "scope": "Dedicated local PostgreSQL16 for full security gate; no shared/restored database",
+        "commit": "f9a165385517a98d0a017b03d33e8263d1d66fb6",
+        "startedAt": "2026-10-20T21:13:46.481Z",
+        "gateExit": 1,
+        "cleanup": [
+          {
+            "kind": "container",
+            "name": "letbuyy-week1-security-17480-mvh6klph-8716cc",
+            "removed": true
+          },
+          {
+            "kind": "network",
+            "name": "letbuyy-week1-security-17480-mvh6klph-8716cc-net",
+            "removed": true
+          },
+          {
+            "kind": "volume",
+            "name": "letbuyy-week1-security-17480-mvh6klph-8716cc-data",
+            "removed": true
+          }
+        ],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        },
+        "finishedAt": "2026-10-20T21:21:08.068Z"
+      },
+      "checks": [
+        {
+          "check": "typecheck",
+          "exit": 0,
+          "seconds": 3
+        },
+        {
+          "check": "lint",
+          "exit": 0,
+          "seconds": 2
+        },
+        {
+          "check": "governance:plan",
+          "exit": 0,
+          "seconds": 0
+        },
+        {
+          "check": "validators:sweep (113/114 pass)",
+          "exit": 1,
+          "seconds": 34
+        },
+        {
+          "check": "test:contracts",
+          "exit": 0,
+          "seconds": 6
+        },
+        {
+          "check": "test:unit:gateway",
+          "exit": 0,
+          "seconds": 16
+        },
+        {
+          "check": "tests:governance",
+          "exit": 0,
+          "seconds": 319
+        },
+        {
+          "check": "tests:ci",
+          "exit": 0,
+          "seconds": 0
+        },
+        {
+          "check": "tests:security+auth",
+          "exit": 0,
+          "seconds": 24
+        },
+        {
+          "check": "tests:wave4-session",
+          "exit": 0,
+          "seconds": 1
+        },
+        {
+          "check": "governance:REAL-LANE",
+          "exit": 0,
+          "seconds": 35
+        }
+      ],
+      "failedValidators": [
+        "stale-artifact"
+      ],
+      "individualSweepMethodOnly": true,
+      "rawFailedChecks": 1,
+      "canonicalValidators": {
+        "pass": 114,
+        "fail": 0,
+        "blocked": 0,
+        "skip": 0,
+        "notApplicable": 1
+      }
+    },
+    "runtimeInputSnapshotCommit": "1a0c3cf98351673fa229ffb7733758ae8475d9ad",
+    "workerArtifact": {
+      "recordedAt": "2026-10-20T21:15:23.037233+00:00",
+      "runtimeCodeCommit": "32581915",
+      "configuration": "production",
+      "dryRun": true,
+      "deployed": false,
+      "files": [
+        {
+          "file": "index.js",
+          "bytes": 7269044,
+          "sha256": "642e0b96ea74f82749b74d971b51163ae123aa8fa0f1323c308a5427e7420bca"
+        },
+        {
+          "file": "index.js.map",
+          "bytes": 13969672,
+          "sha256": "c32251a265c1982cf3d150822f8057a258171b0377d4c5b84c95633f8cb98e5c"
+        }
+      ],
+      "note": "Later commits affect only regression fixtures, environment validation and evidence; Worker runtime/configuration inputs remain unchanged."
+    },
+    "regressionLanes": [
+      {
+        "lane": "Contracts",
+        "tests": 338,
+        "pass": 338,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-verified-gate/test_contracts.log"
+      },
+      {
+        "lane": "Gateway unit",
+        "tests": 1606,
+        "pass": 1606,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-verified-gate/test_unit_gateway.log"
+      },
+      {
+        "lane": "Governance",
+        "tests": 787,
+        "pass": 787,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-verified-gate/tests_governance.log"
+      },
+      {
+        "lane": "Security/auth",
+        "tests": 64,
+        "pass": 64,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-verified-gate/tests_security+auth.log"
+      },
+      {
+        "lane": "Session security",
+        "tests": 4,
+        "pass": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-verified-gate/tests_wave4-session.log"
+      },
+      {
+        "lane": "Commerce web [1]",
+        "tests": 129,
+        "pass": 129,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-commerce-verified.log"
+      },
+      {
+        "lane": "Commerce web [2]",
+        "tests": 143,
+        "pass": 143,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-commerce-verified.log"
+      },
+      {
+        "lane": "Commerce web [3]",
+        "tests": 977,
+        "pass": 977,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-commerce-verified.log"
+      },
+      {
+        "lane": "Theme engine",
+        "tests": 1889,
+        "pass": 1889,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "receipt": "week1-theme-engine-repaired.log"
+      }
+    ]
+  },
+  "report": "Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-results/week1-repairs.html",
+  "constraints": [
+    "No merge/push/deploy",
+    "No shared/restored database migration",
+    "No provider capture/refund or real message",
+    "Parent phases and hosted release remain unaccepted"
+  ],
+  "operatingRequirements": [
+    "UPLOAD_PUBLIC_BASE_URL targets the existing API /assets route in production/staging and any internal service-bound environment",
+    "Only marked public-media objects are delivered; historical unmarked files require deliberate re-upload/classification",
+    "Retain the secure registry contract when backing out source; do not restore the global-upsert writer"
+  ]
+}
