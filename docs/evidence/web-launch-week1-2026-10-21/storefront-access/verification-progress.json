@@ -1,7 +1,7 @@
 {
   "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
-  "status": "STATIC_WORKER_PASSWORD_AND_CACHE_VERIFIED_FULL_BROWSER_RUNNING",
-  "sourceCheckpoint": "24eaecb0",
+  "status": "GOVERNANCE_AND_NATIVE_CRYPTO_CACHE_PASS_FULL_BROWSER_RUNNING",
+  "sourceCheckpoint": "b49e7b3a",
   "baseDevelop": "d6cd8f3748147c9ab4dd4d5e251888eb89c6ae15",
   "backend": {
     "sqlAndRestMigrationRun": {
@@ -24,6 +24,13 @@
       "pass": 20,
       "fail": 0,
       "scope": "Primary/secondary domain status/deletion/current ownership, foreign/malformed/expired credentials, alias/preview DB unavailable and recovery; SQL+REST"
+    },
+    "postStaticCompilerRegression": {
+      "run": "a9c9fb7aea09",
+      "pass": 54,
+      "fail": 0,
+      "suites": "Node/SQL access20, migration10 and other native private-media compiler24",
+      "cleanup": "empty"
     }
   },
   "regressions": {
@@ -50,6 +57,26 @@
     "inventory": {
       "pass": 14,
       "fail": 0
+    },
+    "packageImportControls": {
+      "pass": 9,
+      "fail": 0,
+      "scope": "Actual validator refuses unknown aliases, undeclared external dependency, absent local target, traversal, symlink escape, alias cycles including hidden conditional branches"
+    },
+    "canonicalGate": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1,
+      "advisories": 0,
+      "disposableClone": "/private/tmp/letbuyy-access-final-verification-20261021"
+    },
+    "gateFirst": {
+      "pass": 108,
+      "fail": 6,
+      "cause": "Unproven sites metadata scope; Node # import not recognized by two manifest lanes; hardcoded test domains/passwords; generator outside canonical scripts directory.",
+      "corrected": "Review single-row bootstrap by untrusted unique lookup key and current proof; guarded owned merchant issuer retained. Exact Node package-import mapping validation with negative tests. Canonical domain/runtime-generated fixture passwords; canonical generator directory. No blanket bypass or validator suppression."
     }
   },
   "beforeControls": {
@@ -89,9 +116,9 @@
     "repair": "Server page resolves rewritten searchParams and passes explicit props to client view; actual shopper gate has no demo switcher; canonical UI tokens and truthful invalid/throttled/unavailable feedback. Added actual verifier503/retry proof.",
     "currentRun": {
       "status": "RUNNING_NOT_ACCEPTED",
-      "session": 87464,
-      "source": "24eaecb0",
-      "directory": "native-access-static-final"
+      "session": 23819,
+      "source": "b49e7b3a",
+      "directory": "native-access-governed-final"
     },
     "references": [
       {
@@ -126,7 +153,14 @@
       "scope": "Three actual native password-create/legacy-verify/warm-cache cases plus both SQL/media/admission modes",
       "cleanup": "empty"
     },
-    "staticLoader": "Preserved pinned hash-wasm4.12.0 algorithm/options/PHC and original Node path; only Worker loader uses reproducible static compiled modules. No new dependency, algorithm weakening, global monkeypatch or identity issuer. Unexpected crypto failure now sanitized503."
+    "staticLoader": "Preserved pinned hash-wasm4.12.0 algorithm/options/PHC and original Node path; only Worker loader uses reproducible static compiled modules. No new dependency, algorithm weakening, global monkeypatch or identity issuer. Unexpected crypto failure now sanitized503.",
+    "thirdRun": {
+      "pass": 0,
+      "fail": 1,
+      "stage": "protected product after normal password unlock",
+      "observed": "The correct password now succeeds in the real shopper flow; protected product/reviews returned200. New fixture heading selector matched both product H1 and recommendation H3. Scoped the assertion to level1; no product runtime fix was needed.",
+      "cleanup": "empty"
+    }
   },
   "remaining": [
     "Complete normal production-browser unlock, first-link SSR forwarding, revocation/offline/public-cookie recovery on final serving code",
