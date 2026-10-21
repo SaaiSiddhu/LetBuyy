@@ -111,3 +111,15 @@ test('an unpublished Core catalog is available only through a valid store-bound,
  assert.equal(owned.psql(`SELECT published FROM sites WHERE id='${siteId}';`),'f','private preview must not open the public store');
  }finally{await f.gateway.settle();}
 });
+
+test('public catalog and canonical cart retain option names, variant identity and variant price', async()=>{
+ const f=await fixture();try{
+ const made=await f.create();assert.equal(made.response.status,201);const siteId=String(made.response.json?.data?.id);
+ const created=await f.gateway.request('/v1/products',{method:'POST',headers:{...await signedIdentityHeaders(f.id,f.email,siteId),'X-Store-ID':siteId,'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({store_id:siteId,name:'Synthetic public variant product',price:199,status:'active',is_active:true,product_options:[{name:'Size',position:0,values:['Small','Large']}],variants:[{title:'Small',price:199,stock:3,options:{Size:'Small'}},{title:'Large',price:249,stock:4,options:{Size:'Large'}}]})});assert.equal(created.status,201,created.text);const productId=created.json?.data?.id;
+ owned.psql(`SELECT release_id FROM public.publish_theme_release(p_store_id:='${siteId}'::uuid,p_theme_id:='letbuyy-core',p_release_config:=(SELECT template_config FROM sites WHERE id='${siteId}'),p_published_by:='${f.id}'::uuid,p_make_store_live:=true);`);
+ const catalog=await f.gateway.request(`/v1/storefront/${made.slug}/products`);assert.equal(catalog.status,200);const product=catalog.json?.data?.[0];assert.deepEqual(product.product_options,[{name:'Size',position:0,values:['Small','Large']}]);const large=product.variants.find((v:{title:string})=>v.title==='Large');assert.equal(large.price,249);
+ const cart=(variantId:string)=>f.gateway.request(`/v1/storefront/${made.slug}/cart`,{method:'POST',body:JSON.stringify({lines:[{product_id:productId,variant_id:variantId,quantity:1,properties:{Size:'Large'}}]})});
+ const accepted=await cart(large.id);assert.equal(accepted.status,201,accepted.text);assert.equal(accepted.json?.data?.lines[0].variant_id,large.id);assert.equal(accepted.json?.data?.lines[0].unit_price,249);assert.equal(accepted.json?.data?.subtotal,249);
+ const rejected=await cart(crypto.randomUUID());assert.equal(rejected.status,400);assert.equal(rejected.json?.error?.code,'VARIANT_NOT_FOUND');
+ }finally{await f.gateway.settle();}
+});

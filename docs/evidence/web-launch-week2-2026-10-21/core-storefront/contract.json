@@ -36,6 +36,7 @@
     "Configured hosted checkout origin was accepted by Commerce proxy but rejected by its handoff endpoint because tenant root drove the old allowlist. Exact configured origin/port is now checked consistently.",
     "Unpublished editor preview loaded a protected store but public-only products; both top-level and per-section product demand now share one capability-authorized bounded catalog, with no shared caching.",
     "Raw cart bearer token was observed in Gateway route telemetry; route-pattern logging now covers stdout, analytics, durable request logs and global errors. This is scoped telemetry remediation, not a whole-log privacy certification.",
-    "Historical344/354 retirement proofs explicitly retire366 first and restore366 for current business cases. No predecessor guard is weakened."
+    "Historical344/354 retirement proofs explicitly retire366 first and restore366 for current business cases. No predecessor guard is weakened.",
+    "Native COD confirmation persisted no variant ID: public option labels were absent, the Liquid cart serialized variant_id:null and product-only cart keys collapsed choices. Repair canonical option projection/quote validation and existing browser cart protocol; retain variant ID on server readback, require picker selection and distinguish each variant in cart controls. Verify a higher-priced variant through the actual customer order."
   ]
 }

@@ -529,6 +529,21 @@ async function hydratePublicProductVariants(c: AppContext, products: PublicProdu
         }
     }
 
+    // Only products with variants demand option labels. Bound each query to at
+    // most100 products /1000 option rows (the canonical write limit is10).
+    const variantProductIds = hydratedProducts.filter(product => Array.isArray(product.variants) && product.variants.length > 0).map(product => String(product.id));
+    const optionsByProduct = new Map<string, Record<string, unknown>[]>();
+    for (let offset = 0; offset < variantProductIds.length; offset += 100) {
+        const { data, error } = await db.from('product_options').select('product_id,name,position,values')
+            .in('product_id', variantProductIds.slice(offset, offset + 100)).order('position', { ascending: true }).limit(1000);
+        if (error && !isMissingTableError(error, 'product_options')) throw new Error('Storefront product option hydration failed');
+        for (const option of (data || []) as Array<Record<string, unknown>>) {
+            const id = String(option.product_id);
+            optionsByProduct.set(id, [...(optionsByProduct.get(id) || []), { name: option.name, position: option.position, values: option.values }]);
+        }
+    }
+    hydratedProducts = hydratedProducts.map(product => ({ ...product, product_options: optionsByProduct.get(String(product.id)) || [] }));
+
     const uniqueProductIds = Array.from(new Set(productIds));
     const { data: observations, error: observationError } = await db.rpc('product_price_reference_window', {
         p_product_ids: uniqueProductIds,

@@ -6,6 +6,7 @@ import {
     getUrbanKicksDemoProducts as getUrbanKicksDemoProductsFixture,
 } from './demo/urban-kicks-demo';
 import { mapPublicProductPriceHistory } from './product-price-history';
+import { mapPublicProductVariants } from './product-variants';
 
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
@@ -195,7 +196,7 @@ function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
         countryOfOrigin: data.country_of_origin as string | undefined,
         importerDetails: data.importer_details as string | undefined,
         tags: (data.tags as string[]) || [],
-        variants: priceHistory.variants as unknown as ProductModel['variants'],
+        ...mapPublicProductVariants(data, priceHistory.variants),
         stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,

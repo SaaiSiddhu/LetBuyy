@@ -77,3 +77,34 @@ test('Buy now preserves the explicit path-routed storefront base', async () => {
         assert.deepEqual(navigations, ['/store/demo/checkout']);
     } finally { globalThis.fetch = originalFetch; reset(); }
 });
+
+test('variant purchases require a choice and retain durable variant identity through cart receipts and controls', async () => {
+    await ready(); reset(); const originalFetch = globalThis.fetch;
+    Object.assign(globalThis, { CSS: { escape: (value: string) => value } });
+    const requests: Array<{ lines: Array<{ product_id: string; variant_id: string; quantity: number; properties: Record<string, string> }> }> = [];
+    const variants = [{ id: 'small', price: 199, stock: 3, options: { Size: 'Small' } }, { id: 'large', price: 249, stock: 4, options: { Size: 'Large' } }, { id: 'sold', price: 299, stock: 0, options: { Size: 'Sold' } }];
+    globalThis.fetch = (async (_input, init) => {
+        const body = JSON.parse(String(init?.body)); requests.push(body);
+        return new Response(JSON.stringify({ success: true, data: { ...serverCart, lines: body.lines.map((line: {variant_id: string; quantity: number}) => ({ ...serverCart.lines[0], ...line, unit_price: variants.find(variant => variant.id === line.variant_id)?.price })) } }), { status: 200 });
+    }) as typeof fetch;
+    try {
+        const section = document.createElement('section'); section.dataset.sectionId = 'pdp';
+        section.innerHTML = `<span class="lb-product-detail__price-current">₹199</span><lb-variant-picker data-variants='${JSON.stringify(variants)}'>${['Small','Large','Sold'].map(value => `<button data-lb-variant-option data-variant-name="Size" data-variant-value="${value}" aria-pressed="false">${value}</button>`).join('')}<span data-lb-variant-status></span></lb-variant-picker><lb-add-to-cart data-product-id="product-1" data-product-name="Synthetic product" data-product-price="199" data-product-currency="INR"><button data-lb-buy-now>Buy now</button><button data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status></span></lb-add-to-cart>`;
+        document.body.append(section);
+        const button = section.querySelector<HTMLButtonElement>('[data-lb-buy-now]')!;
+        assert.equal(button.disabled, true); button.click(); await tick(); assert.equal(requests.length, 0);
+        section.querySelector<HTMLButtonElement>('[data-variant-value="Sold"]')!.click(); assert.equal(button.disabled, true);
+        section.querySelector<HTMLButtonElement>('[data-variant-value="Large"]')!.click(); assert.equal(button.disabled, false);
+        assert.match(section.querySelector('.lb-product-detail__price-current')!.textContent!, /249/);
+        button.click(); await tick();
+        assert.equal(requests[0].lines[0].variant_id, 'large');
+        assert.equal(JSON.parse(dom.window.localStorage.getItem('lb_cart')!)[0].variantId, 'large');
+        section.querySelector<HTMLButtonElement>('[data-variant-value="Small"]')!.click(); section.querySelector<HTMLButtonElement>('[data-lb-add-to-cart]')!.click(); await tick();
+        assert.deepEqual(requests.at(-1)!.lines.map(line => [line.variant_id, line.quantity]), [['large',1],['small',1]], 'different sizes must not collapse into one product line');
+        const cart = document.createElement('lb-cart'); document.body.append(cart);
+        cart.querySelector<HTMLButtonElement>('[data-lb-cart-step="up"][data-variant-id="small"]')!.click(); await tick();
+        assert.deepEqual(requests.at(-1)!.lines.map(line => [line.variant_id, line.quantity]), [['large',1],['small',2]]);
+        cart.querySelector<HTMLButtonElement>('[data-lb-cart-remove][data-variant-id="large"]')!.click(); await tick();
+        assert.deepEqual(requests.at(-1)!.lines.map(line => [line.variant_id, line.quantity]), [['small',2]]);
+    } finally { globalThis.fetch = originalFetch; reset(); }
+});

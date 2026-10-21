@@ -79,3 +79,8 @@ test('variant price-history fields survive the recursive public projection', () 
     assert.equal(variant.prior_price_coverage_complete, true);
     assert.equal('sku' in variant, false);
 });
+
+test('public variant option labels expose only the option contract', () => {
+    const exposed = toPublicProduct({ id: 'p', product_options: [{ name: 'Size', position: 0, values: ['Small', { secret: 'hidden' }], product_id: 'private-owner', internal_note: 'hidden' }] });
+    assert.deepEqual(exposed.product_options, [{ name: 'Size', position: 0, values: ['Small'] }]);
+});

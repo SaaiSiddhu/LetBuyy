@@ -24,10 +24,12 @@ interface LiquidCartItem {
     currency: string;
     slug?: string;
     selectedVariant?: Record<string, string>;
+    variantId?: string | null;
 }
 
 type LiquidServerCartLine = {
     product_id: string;
+    variant_id?: string | null;
     title: string;
     image_url?: string | null;
     quantity: number;
@@ -86,7 +88,7 @@ function getLiquidStorefrontSubdomain(): string | null {
 function liquidCartLineInputFromItem(item: LiquidCartItem) {
     return {
         product_id: item.id,
-        variant_id: null,
+        variant_id: item.variantId ?? null,
         quantity: item.quantity,
         properties: item.selectedVariant || {},
     };
@@ -95,6 +97,7 @@ function liquidCartLineInputFromItem(item: LiquidCartItem) {
 function liquidCartItemsFromServer(cart: LiquidServerCart): LiquidCartItem[] {
     return cart.lines.map((line) => ({
         id: line.product_id,
+        variantId: line.variant_id ?? null,
         name: line.title,
         price: line.unit_price,
         quantity: line.quantity,
@@ -144,7 +147,7 @@ function writeCart(items: LiquidCartItem[], options: { sync?: boolean } = {}) {
 
 function addCartItem(item: LiquidCartItem, options: { sync?: boolean; openDrawer?: boolean } = {}): LiquidCartItem[] {
     const items = readCart();
-    const existingIndex = items.findIndex((candidate) => candidate.id === item.id);
+    const existingIndex = items.findIndex((candidate) => candidate.id === item.id && (candidate.variantId ?? null) === (item.variantId ?? null));
 
     if (existingIndex >= 0) {
         items[existingIndex] = {
@@ -208,11 +211,23 @@ function cartItemFromElement(element: HTMLElement): LiquidCartItem | null {
     const id = element.dataset.productId || element.querySelector<HTMLInputElement>('[name="product_id"],[name="id"]')?.value;
     if (!id) return null;
 
+    const picker = sectionRoot.querySelector<HTMLElement>('lb-variant-picker');
+    let variant: PickerVariant | undefined;
+    if (picker) {
+        let variants: PickerVariant[];
+        try { variants = JSON.parse(picker.dataset.variants || '[]'); } catch { return null; }
+        const groups = new Set(Array.from(picker.querySelectorAll<HTMLElement>('[data-lb-variant-option]')).map(option => option.dataset.variantName));
+        if (variants.length && (!groups.size || !Array.from(groups).every(name => name && selectedVariant[name]))) return null;
+        variant = variants.find(row => row.options && Object.entries(selectedVariant).every(([name, value]) => row.options![name] === value));
+        if (variants.length && (!variant?.id || (variant.stock ?? variant.stock_quantity ?? variant.inventory_qty ?? 0) <= 0)) return null;
+    }
+
     const image = element.dataset.productImage || '';
     return {
         id,
         name: element.dataset.productName || 'Product',
-        price: numericDatasetValue(element.dataset.productPrice, 0),
+        price: variant?.price ?? numericDatasetValue(element.dataset.productPrice, 0),
+        variantId: variant?.id ?? null,
         quantity: quantityFromElement(element),
         images: image ? [image] : [],
         currency: element.dataset.productCurrency || 'INR',
@@ -395,7 +410,7 @@ class LbCartDrawerElement extends LiquidIslandBase {
 
         const removeButton = target.closest<HTMLElement>('[data-lb-cart-remove]');
         if (removeButton?.dataset.productId) {
-            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId), { sync: true });
+            writeCart(readCart().filter((item) => !(item.id === removeButton.dataset.productId && (item.variantId ?? '') === (removeButton.dataset.variantId ?? ''))), { sync: true });
         }
     };
 
@@ -433,7 +448,7 @@ class LbCartDrawerElement extends LiquidIslandBase {
                 '<div class="lb-liquid-cart__item">',
                 `<span>${escapeHtml(item.name)}</span>`,
                 `<span>x${item.quantity}</span>`,
-                `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
+                `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
                 '</div>',
             ].join('')).join('');
 
@@ -656,6 +671,8 @@ class LbPredictiveSearchElement extends LiquidIslandBase {
 }
 
 type PickerVariant = {
+    id?: string;
+    price?: number;
     options?: Record<string, string>;
     stock?: number;
     stock_quantity?: number;
@@ -733,8 +750,8 @@ class LbVariantPickerElement extends LiquidIslandBase {
 
         const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
         if (!fullySelected) {
-            if (status) status.textContent = '';
-            this.dispatchAvailability(true);
+            if (status) status.textContent = 'Choose your options';
+            this.dispatchAvailability(false);
             return;
         }
 
@@ -743,9 +760,11 @@ class LbVariantPickerElement extends LiquidIslandBase {
             return Object.entries(selected).every(([name, value]) => options[name] === value);
         });
         const stock = match ? (match.stock ?? match.stock_quantity ?? match.inventory_qty ?? 0) : null;
-        const available = match ? stock !== null && stock > 0 : true; // no matching variant record → do not falsely block
+        const available = Boolean(match?.id) && stock !== null && stock > 0;
 
-        if (status) status.textContent = match && !available ? 'This combination is currently unavailable' : '';
+        if (status) status.textContent = !available ? 'This combination is currently unavailable' : '';
+        const price = this.closest('[data-section-id]')?.querySelector<HTMLElement>('.lb-product-detail__price-current');
+        if (price && match?.price != null) price.textContent = formatCartMoney(match.price, this.closest('[data-section-id]')?.querySelector<HTMLElement>('lb-add-to-cart')?.dataset.productCurrency || 'INR');
         this.dispatchAvailability(available);
     }
 
@@ -1421,20 +1440,20 @@ class LbCartElement extends LiquidIslandBase {
         const removeButton = target.closest<HTMLElement>('[data-lb-cart-remove]');
         if (removeButton?.dataset.productId) {
             event.preventDefault();
-            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId), { sync: true });
+            writeCart(readCart().filter((item) => !(item.id === removeButton.dataset.productId && (item.variantId ?? '') === (removeButton.dataset.variantId ?? ''))), { sync: true });
             return;
         }
 
         const stepButton = target.closest<HTMLElement>('[data-lb-cart-step]');
         if (stepButton?.dataset.productId) {
             event.preventDefault();
-            this.stepQuantity(stepButton.dataset.productId, stepButton.dataset.lbCartStep === 'down' ? -1 : 1);
+            this.stepQuantity(stepButton.dataset.productId, stepButton.dataset.lbCartStep === 'down' ? -1 : 1, stepButton.dataset.variantId || null);
         }
     };
 
-    private stepQuantity(productId: string, delta: number) {
+    private stepQuantity(productId: string, delta: number, variantId: string | null) {
         const next = readCart()
-            .map((item) => (item.id === productId ? { ...item, quantity: item.quantity + delta } : item))
+            .map((item) => ((item.id === productId && (item.variantId ?? null) === variantId) ? { ...item, quantity: item.quantity + delta } : item))
             .filter((item) => item.quantity > 0);
         writeCart(next, { sync: true });
     }
@@ -1450,11 +1469,11 @@ class LbCartElement extends LiquidIslandBase {
             '<li class="lb-cart__item">',
             `<span class="lb-cart__title">${escapeHtml(item.name)}</span>`,
             '<span class="lb-cart__qty">',
-            `<${liquidButtonTag} type="button" data-lb-cart-step="down" data-product-id="${escapeHtml(item.id)}" aria-label="Decrease quantity of ${escapeHtml(item.name)}">-</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-step="down" data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Decrease quantity of ${escapeHtml(item.name)}">-</${liquidButtonTag}>`,
             `<span aria-live="polite">${item.quantity}</span>`,
-            `<${liquidButtonTag} type="button" data-lb-cart-step="up" data-product-id="${escapeHtml(item.id)}" aria-label="Increase quantity of ${escapeHtml(item.name)}">+</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-step="up" data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Increase quantity of ${escapeHtml(item.name)}">+</${liquidButtonTag}>`,
             '</span>',
-            `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
             '</li>',
         ].join('')).join('');
 
