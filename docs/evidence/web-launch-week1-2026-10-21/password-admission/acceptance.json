@@ -41,5 +41,30 @@
     "Fresh cart/order eligibility and independent marketplace/buyer-history acceptance still open",
     "Week1 and four-week launch remain open"
   ],
-  "deployed": false
+  "deployed": false,
+  "finalFixtureCheckpoint": "a9dbf53b",
+  "affectedFixtureRerun": {
+    "run": "b4a40a3dc2d5",
+    "pass": 6,
+    "fail": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "canonicalGate": {
+    "source": "5bef1f7b",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "advisories": []
+  }
 }
