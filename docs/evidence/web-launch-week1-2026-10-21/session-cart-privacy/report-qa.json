@@ -1,0 +1,19 @@
+{
+  "method": "Offline HTMLParser local link/doctype/duplicate-ID checks; no visual screenshot inspection claimed",
+  "results": [
+    {
+      "file": "launch-audit.html",
+      "localReferences": 179,
+      "missing": [],
+      "duplicateIds": false,
+      "doctypeFirst": true
+    },
+    {
+      "file": "week1-session-cart-privacy/session-cart-privacy.html",
+      "localReferences": 10,
+      "missing": [],
+      "duplicateIds": false,
+      "doctypeFirst": true
+    }
+  ]
+}
