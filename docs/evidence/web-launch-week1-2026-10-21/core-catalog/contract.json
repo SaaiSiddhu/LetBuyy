@@ -16,5 +16,21 @@
     "No push/merge/deploy or shared database mutation",
     "No real provider transactions/messages",
     "Mobile app UI excluded; shared interfaces preserved"
-  ]
+  ],
+  "discoveredNecessaryRepair": {
+    "finding": "Actual native scheduled handler fails before dispatch because global outbox preflight is sent through the ordinary tenant query guard; no index is populated.",
+    "scope": [
+      "services/api-gateway/src/index.ts scheduled preflight",
+      "services/api-gateway/src/execution/queue-execution.adapter.ts claimed-site search source lookups",
+      "Bounded backend-only pending-work RPC, forward/rollback369 and role/tenant/native/idle proof"
+    ],
+    "invariants": [
+      "No general unguarded client or guard weakening",
+      "Global preflight returns existence booleans only, not tenant rows or exact counts",
+      "Ordinary roles denied; schema drift refuses; rollback is paired",
+      "Source product/order reads scope to the backend-claimed job site; wrong-site identifiers reveal no source data",
+      "Actual nonzero product outbox, queue and search document required before browser search passes",
+      "No new runtime, hosted scheduler change or real provider effect"
+    ]
+  }
 }
