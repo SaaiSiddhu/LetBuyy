@@ -17,8 +17,9 @@ import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custo
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
-import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
+import { dbErrorBody, getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { requireOwnedSite } from '../lib/tenant-context';
+import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
 import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
 import { detectDnsProvider } from '../lib/domain-provider';
@@ -635,6 +636,13 @@ storeAccessRouter.post('/preview-links', async (c) => {
     const jti = randomToken(16);
     const host = normalizeRequestHost(parsed.data.host) || parsed.data.host.toLowerCase();
     const scope = parsed.data.scope as StorefrontPreviewScope;
+    // Globally unique host bootstrap uses the canonical resolver, then binds
+    // it to the already verified owned site before issuing any capability.
+    const resolved = await resolveStorefrontSiteByHost(getSupabaseAdminUnguarded(c), host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+    if (!resolved || resolved.id !== parsed.data.site_id) {
+        return c.json({ error: { code: 'PREVIEW_HOST_MISMATCH', message: 'Preview host must belong to this store' } }, 400);
+    }
+    c.header('Cache-Control', 'no-store');
 
     const token = await createStorefrontPreviewToken({
         sid: parsed.data.site_id,

@@ -537,6 +537,12 @@ export async function proxy(req: NextRequest) {
     });
     response.headers.set('x-letbuyy-preview-checkout-mode', 'test');
     noIndex(response);
+  } else if (req.cookies.has(LETBUYY_STOREFRONT_PREVIEW_COOKIE)) {
+    // A retired share-link cookie must not strand a now-public shopper in the
+    // checkout BFF's deliberate preview refusal after normal browsing recovers.
+    response.cookies.set(LETBUYY_STOREFRONT_PREVIEW_COOKIE, '', {
+      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 0, path: '/',
+    });
   }
 
   return applyThemePreviewCookie(response, site.subdomain, themePreviewToken);

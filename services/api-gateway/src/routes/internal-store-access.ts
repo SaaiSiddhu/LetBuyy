@@ -14,6 +14,7 @@ import { checkRateLimitKey } from '../middleware/rateLimit';
 import { timingSafeEqualText,sha256Hex } from '../lib/crypto';
 
 const router = new Hono<{ Bindings: Env }>();
+router.use('*', async (c, next) => { c.header('Cache-Control', 'no-store'); await next(); });
 
 async function requireStorefrontInternal(c: Context<{ Bindings: Env }>) {
     const directSecret = c.req.header('X-Internal-API-Secret');
