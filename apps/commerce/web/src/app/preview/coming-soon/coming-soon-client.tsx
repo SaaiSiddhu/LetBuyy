@@ -93,4 +93,3 @@ export default function ComingSoonPreviewContent({ reason, message: gateMessage,
         </div>
     );
 }
-
