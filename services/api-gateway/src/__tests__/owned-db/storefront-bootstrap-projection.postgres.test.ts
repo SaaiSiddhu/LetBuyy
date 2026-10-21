@@ -125,7 +125,7 @@ test('only the actual backend transport can execute fixed public readers, and di
  const backendKey=owned.restEnv().SUPABASE_SERVICE_ROLE_KEY;
  const dataApi=await fetch(owned.restUrl+'/rest/v1/rpc/read_published_storefront_site_v1',{method:'POST',headers:{apikey:backendKey,Authorization:'Bearer '+backendKey,'Content-Type':'application/json'},body:JSON.stringify({p_handle:foreign.subdomain,p_id_only:false})});
  assert.ok([401,403,404].includes(dataApi.status),'Data API role switching must not inherit backend-login EXECUTE');
- assert.equal('data'in await dataApi.json(),false);
+ const denied:unknown=await dataApi.json();assert.ok(denied&&typeof denied==='object');assert.equal('data'in denied,false);
  for(const table of ['sites','theme_releases']){
   assert.equal(owned.psql(`SELECT has_table_privilege('authenticator','public.${table}','SELECT');`),'f');
   await assert.rejects(direct.unsafe(`SELECT id FROM public.${table} LIMIT 1`),(error:{code?:string})=>error.code==='42501');
