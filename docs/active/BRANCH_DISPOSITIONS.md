@@ -2,7 +2,9 @@
 
 Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` > root `AGENTS.md` > this ledger.
 Operating rules: `.claude/skills/letbuyy/references/merge.md` (rows, claims, worktree lifecycle) and
-`references/promote.md` (the `## Promotions` table). Enforced by
+`references/promote.md` (the `| `letbuyy/machine-consolidation-2026-10-21` | `9c4ae60548e1e9260aad0bd4011becbf4ebdca4b` | ACTIVE | 2026-10-21 | Owner explicitly requested consolidation, develop merge and GitHub push for another machine | Consolidate the committed storefront access/cart/checkout, merchant performance/export/import and completed ten-theme experience branches; preserve and verify paused source fixtures without modifying owner worktrees; resolve actual overlaps in merchant theme UI/CSS, API clients, gateway access and theme boundaries, test helpers and evidence; update the existing source handoff and execution ledgers. Collision inventory: all 30 existing worktrees and all branch tips inspected, four referenced chats read with pagination, current develop and GitHub both9c4ae605. Overlapping active phases are intentional inputs under this owner request; no main/staging promotion, hosted/restored migration or provider effect. | N/A |
+
+## Promotions` table). Enforced by
 `scripts/validators/branch-dispositions-validator.mjs` (gate lane).
 
 ## Claim protocol
