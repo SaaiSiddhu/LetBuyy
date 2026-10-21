@@ -172,3 +172,20 @@ test('delayed committed receipt cannot erase another tab cart or later draft and
   try{const first=reconcileStoredCart('shop'),second=reconcileStoredCart('shop');assert.ok(first);assert.equal(first,second);assert.equal(calls,1);window.localStorage.setItem(change==='token'?'lb_cart_token':'lb_cart',change==='token'?'ct_new_tab':'[{"id":"new-draft"}]');const snapshot=JSON.stringify({...window.localStorage});release(new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}})));assert.equal(await first,'unavailable');assert.equal(JSON.stringify({...window.localStorage}),snapshot);}finally{globalThis.fetch=originalFetch;reset();}
  }
 });
+
+for(const completed of [true,false])test('React cart bootstrap is read-only and '+(completed?'retires confirmed state before a fresh add':'preserves an unavailable checkout draft'),async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch;Object.assign(globalThis,{localStorage:window.localStorage,IS_REACT_ACT_ENVIRONMENT:true});
+ const{createRoot}=await import('react-dom/client'),{createElement,act}=await import('react'),{CartProvider,useCart}=await import('../../context/cart-context');
+ let view:ReturnType<typeof useCart>|undefined;function Probe(){view=useCart();return null;}
+ const oldItem={id:'old-product',name:'Old draft',price:99,quantity:1,currency:'INR',images:[]};window.localStorage.setItem('lb_cart_token','ct_react_previous');window.localStorage.setItem('lb_cart',JSON.stringify([oldItem]));window.localStorage.setItem('lb_cart_server','{}');let writes=0;
+ globalThis.fetch=(async(input)=>{
+  if(String(input).endsWith('/checkout-status'))return new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}}),{status:completed?200:503});
+  writes++;return new Response(JSON.stringify({success:true,data:{...serverCart,cart_token:'ct_react_next'}}));
+ })as typeof fetch;
+ const mount=document.createElement('div');document.body.append(mount);const root=createRoot(mount);
+ try{
+  await act(async()=>{root.render(createElement(CartProvider,null,createElement(Probe)));});await act(async()=>{await tick();});assert.ok(view);assert.equal(writes,0,'mounting a storefront must not replay cart commands');
+  if(completed){assert.deepEqual(view.items,[]);assert.equal(window.localStorage.getItem('lb_cart_token'),null);assert.equal(window.localStorage.getItem('lb_cart_server'),null);const product={id:'product-1',name:'Synthetic product',price:199,currency:'INR',images:[]}as Parameters<typeof view.addToCart>[0];await act(async()=>{await view!.addToCart(product);await tick();});await act(async()=>{await tick();});assert.equal(writes,1);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_react_next');}
+  else{assert.equal(view.items[0].id,oldItem.id);await act(async()=>{await view!.clearCart();await tick();});assert.equal(writes,0);assert.equal(view.items[0].id,oldItem.id);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_react_previous');assert.match(view.syncError||'',/could not check your previous checkout/i);}
+ }finally{await act(async()=>root.unmount());globalThis.fetch=originalFetch;reset();}
+});
