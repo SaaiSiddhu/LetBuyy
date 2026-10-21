@@ -1,0 +1,61 @@
+{
+  "applicationCheckpoint": "5e9c7aaa5b3520732c5a17cfcbc237a70cf04700",
+  "priorDevelop": "8f415c0f6244dbef4f8e284d9152e509f35b0a30",
+  "freshChecks": {
+    "gatewayUnit": {
+      "pass": 1613,
+      "fail": 0
+    },
+    "apiClientExactText": {
+      "pass": 3,
+      "fail": 0
+    },
+    "sourceContractsAndInventory": {
+      "pass": 18,
+      "fail": 0
+    }
+  },
+  "protocolManifestMatches": true,
+  "sourceOnly": true,
+  "deployed": false,
+  "week1Complete": false,
+  "unfinishedBranch": "letbuyy/week1-storefront-access",
+  "phaseTip": "d8707aaf11f86a2d65fd94c63718f85a942ddf98",
+  "merge": "7772414265b696c039b15b2d998afc02c9ea4161",
+  "mergedTreeEqualsPhaseTree": true,
+  "gateInitialCounts": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "gateInitialAdvisory": "single-branch clone lacked develop/staging/main refs; full chain validator passed after importing them",
+  "wipCheckpoint": "faadeb54478a0361b68adf55fa07c591fdb79efe",
+  "verifiedIntegrationCheckpoint": "f99f31d99467d4cfc3b925a8764d50bfa73d14af",
+  "cleanCloneInstall": "PASS locked online install; subsequent locked offline installs pass",
+  "finalGateCounts": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "finalGateAdvisories": [
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: ACTIVE row letbuyy/week1-storefront-access: branch not present locally (claimed in another clone?)"
+    }
+  ],
+  "finalGateOk": true,
+  "primaryBranchValidator": "PASS198 rows/full environment chain; all local branches accounted for",
+  "retainedHandoffFailure": {
+    "counts": {
+      "PASS": 113,
+      "FAIL": 1
+    },
+    "reason": "Single-branch clone could not resolve separately saved WIP tip in ledger. Corrected ledger to reachable claim base5e9c7aaa; separate branch tip remains recorded in handoff, source unmodified.",
+    "resolved": true
+  },
+  "remoteVerification": "Performed after final source-only bookkeeping commit; exact receipt kept in local audit and reported to owner."
+}

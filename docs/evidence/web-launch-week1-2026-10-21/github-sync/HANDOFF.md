@@ -1,5 +1,7 @@
 # LetBuyy source handoff — 21 October 2026
 
+**Latest sync:** read [SYNC_2026_10_21.md](SYNC_2026_10_21.md). Verified compact/SQL/protocol work is merged into develop; the later access-control branch is saved separately and remains unfinished. The earlier source-sync sections below are dated history.
+
 The owner explicitly requested committing the current launch work, merging it into develop and pushing GitHub so another machine can pull it. This supersedes the earlier no-merge/no-push boundary for this source sync only. No staging/main promotion, deployment, shared database migration, real payment or external message is authorized by this sync.
 
 ## Follow-up source sync — 21 October 2026
