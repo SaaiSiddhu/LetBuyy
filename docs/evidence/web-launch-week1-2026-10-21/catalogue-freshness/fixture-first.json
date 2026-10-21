@@ -1,0 +1,129 @@
+{
+  "runId": "14043025b79d",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-62012-mvi95x5o-e2bde4"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 2,
+  "tests": 55,
+  "assertionsPassed": 47,
+  "assertionsFailed": 8,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 93,
+  "suiteSeconds": 90.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-access-boundary.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-62012-mvi95x5o-e2bde4",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 44,
+      "pass": 37,
+      "fail": 7,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 68.9,
+      "firstFailure": "not ok 38 - held SQL public metadata and full bootstrap never authorize changed private/offline/",
+      "failures": [
+        "not ok 38 - held SQL public metadata and full bootstrap never authorize changed private/offline/unpublished catalogue",
+        "not ok 39 - held SQL password revision cannot admit an old gate or reject a current gate",
+        "not ok 40 - held SQL primary domain cannot retain a revoked host binding",
+        "not ok 41 - held SQL success never substitutes for an unavailable live authority lookup",
+        "not ok 42 - held SQL handle reassignment cannot return the former tenant bootstrap or products",
+        "not ok 43 - held SQL absence cannot hide a newly published real store",
+        "not ok 44 - current canonical Core publish pointer wins over held full-site SQL content"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_boundary_postgres",
+      "templateSeconds": 29.8,
+      "provisionSeconds": 1.8,
+      "rest": {
+        "container": "letbuyy-exec-14043025b79d-rest-1",
+        "upstreamPort": 63137,
+        "proxyPort": 63138
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1200,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    },
+    {
+      "name": "storefront-access-worker.postgres",
+      "path": "tests/owned-db/storefront-access-worker.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-62012-mvi95x5o-e2bde4",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 11,
+      "pass": 10,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 21.2,
+      "firstFailure": "not ok 11 - native warmed content cache stays behind current authority while actual SQL site res",
+      "failures": [
+        "not ok 11 - native warmed content cache stays behind current authority while actual SQL site results remain held"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_worker_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.5,
+      "rest": {
+        "container": "letbuyy-exec-14043025b79d-rest-2",
+        "upstreamPort": 63340,
+        "proxyPort": 63341
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 567,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

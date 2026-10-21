@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 import * as jsx from 'react/jsx-runtime';
 import { NextRequest } from 'next/server.js';
+import { ProductCsvImportSchema } from '@letbuyy/shared-types';
 
 // Execute the real server components/helpers with controlled dependency delays.
 // These prove request work and failure behavior, not production database latency.
@@ -30,6 +31,26 @@ class ApiError extends Error {
 }
 class MerchantError extends Error {}
 const store = { id: 'store-a', name: 'Store A', subdomain: 'alpha', site_type: 'store', theme_id: 'modern' };
+
+test('CSV import BFF refuses invalid or oversized envelopes before forwarding a command', async () => {
+    const forwarded = [], storeId = '11111111-1111-4111-8111-111111111111';
+    const { POST } = load('../src/app/api/stores/[store]/products/import/route.ts', {
+        'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
+        '@letbuyy/shared-types': { ProductCsvImportSchema },
+        '@/lib/stores/resolve-owned-store': { resolveOwnedStoreId: async () => ({ storeId }) },
+        '@/lib/api/client': {
+            createMerchantApiClient: () => ({ products: { importCsv: async (...args) => { forwarded.push(args); return { job: { id: 'job-a' } }; } } }),
+            merchantApiErrorResponse: () => Response.json({}, { status: 503 }),
+        },
+    });
+    const send = body => POST(new Request('http://merchant.test/api/stores/alpha/products/import', { method: 'POST', body, headers: { 'Content-Type': 'application/json' } }), { params: Promise.resolve({ store: 'alpha' }) });
+    for (const body of ['{', '{}', '{"csv":42}', '{"csv":" "}']) assert.equal((await send(body)).status, 400);
+    assert.equal((await send(JSON.stringify({ csv: '"'.repeat(530_000) }))).status, 413, 'escaped JSON size, not raw CSV size, governs the existing gateway envelope');
+    assert.equal(forwarded.length, 0);
+    const csv = 'name,description\r\n"東京","  First\r\nSecond  "\r\n';
+    assert.equal((await send(JSON.stringify({ csv }))).status, 202);
+    assert.deepEqual(forwarded, [[{ store_id: storeId, csv }]], 'preserve bytes and the existing command lifetime without retry/deadline arguments');
+});
 
 test('shell starts independent store and switcher reads together after session validation', async () => {
     const current = deferred(), switcher = deferred(), calls = [];

@@ -98,6 +98,12 @@ async function mount(kind: ContentPage | 'orders' | 'customers' | 'analytics' | 
             assert.ok(button, `Missing button ${label}: ${dom.window.document.body.textContent}`)
             await act(async () => button.click())
         },
+        async file(file: { name: string; size: number; text(): Promise<string> }) {
+            const input = dom.window.document.querySelector('input[type="file"]') as HTMLInputElement
+            assert.ok(input, 'real file input')
+            Object.defineProperty(input, 'files', { configurable: true, value: [file] })
+            await act(async () => input.dispatchEvent(new dom.window.Event('change', { bubbles: true })))
+        },
         async close() {
             await act(async () => root.unmount()); dom.window.close()
             for (const [name, descriptor] of Object.entries(previous)) {
@@ -480,5 +486,71 @@ test('export retires a captured account even when the store URL is unchanged', a
         await act(async () => old.resolve(json({ job: { id: 'old-actor-job', type: 'products', status: 'completed', row_count: 777777 } })))
         assert.doesNotMatch(h.text(), /Export ready|777,777/)
         assert.equal(document.querySelector('a[download]'), null)
+    } finally { await h.close() }
+})
+
+test('CSV import rejects an oversized file before reading it or sending a command', async () => {
+    let reads = 0, commands = 0
+    const h = await mount('exportPage', async () => { commands++; throw new Error('unexpected command') })
+    try {
+        await h.file({ name: 'large.csv', size: 3 * 1_048_576 + 1, text: async () => { reads++; return '' } })
+        await h.click('Import CSV')
+        assert.match(h.text(), /This CSV is too large/)
+        assert.equal(reads, 0)
+        assert.equal(commands, 0)
+    } finally { await h.close() }
+})
+
+test('CSV import checks the same job after a read failure and displays the committed row count', async () => {
+    const calls: { url: string; init?: RequestInit }[] = []
+    const h = await mount('exportPage', async (url, init) => {
+        calls.push({ url, init })
+        if (init?.method === 'POST') return json({ job: { id: 'import-a', type: 'product_import', status: 'queued', row_count: 0 } }, 202)
+        if (calls.length === 2) return new Response('', { status: 503 })
+        return json({ job: { id: 'import-a', type: 'product_import', status: 'completed', row_count: 2 } })
+    })
+    try {
+        const csv = 'name,description\r\n"東京","  First\r\nSecond  "\r\n'
+        await h.file({ name: 'quoted.csv', size: Buffer.byteLength(csv), text: async () => csv })
+        await h.click('Import CSV')
+        assert.match(h.text(), /Unable to check import/)
+        await h.click('Check import again')
+        assert.match(h.text(), /Import complete[\s\S]*2 products imported/)
+        assert.equal(calls.length, 3)
+        assert.deepEqual(calls.map(call => call.url), ['/api/stores/alpha/products/import', '/api/stores/alpha/exports/import-a', '/api/stores/alpha/exports/import-a'])
+        assert.equal(calls[0].init?.body, JSON.stringify({ csv }))
+        assert.equal(calls[0].init?.signal, undefined, 'progress read deadlines do not abort or replay the import command')
+        assert.equal(document.querySelector('a[download]'), null, 'imports never expose an export download action')
+    } finally { await h.close() }
+})
+
+test('CSV import retires late status and command acknowledgements when the captured account changes', async () => {
+    for (const stage of ['command', 'status'] as const) {
+        const late = deferred<Response>(), signals: AbortSignal[] = []
+        const h = await mount('exportPage', async (_url, init) => {
+            if (init?.method === 'POST') return stage === 'command' ? late.promise : json({ job: { id: 'old-import', type: 'product_import', status: 'queued', row_count: 0 } }, 202)
+            signals.push(init!.signal!); return late.promise
+        })
+        try {
+            await h.file({ name: 'old.csv', size: 11, text: async () => 'name\nItem\n' })
+            await h.click('Import CSV')
+            await h.render('alpha', 'actor-b')
+            if (stage === 'status') assert.ok(signals[0]?.aborted)
+            await act(async () => late.resolve(json({ job: { id: 'old-import', type: 'product_import', status: 'completed', row_count: 777777 } })))
+            assert.doesNotMatch(h.text(), /777,777|Import complete|import-a|old-import/)
+            if (stage === 'command') assert.doesNotMatch(h.text(), /Import queued/)
+        } finally { await h.close() }
+    }
+})
+
+test('CSV import lost acknowledgement reports uncertainty and never automatically replays the command', async () => {
+    let commands = 0
+    const h = await mount('exportPage', async () => { commands++; throw new TypeError('fetch failed') })
+    try {
+        await h.file({ name: 'import.csv', size: 10, text: async () => 'name\nItem\n' })
+        await h.click('Import CSV')
+        assert.match(h.text(), /could not be confirmed[\s\S]*Some products may already exist/)
+        assert.equal(commands, 1)
+        assert.doesNotMatch(h.text(), /Import complete|Import queued/)
     } finally { await h.close() }
 })

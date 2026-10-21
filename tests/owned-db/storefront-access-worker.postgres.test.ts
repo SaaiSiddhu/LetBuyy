@@ -5,8 +5,9 @@ import assert from 'node:assert/strict';
 import test,{before,after} from 'node:test';
 import {expect} from '@playwright/test';
 import {createStorefrontGateToken,createStorefrontPreviewToken} from '@letbuyy/auth-core';
+import {holdOwnedStorefrontSqlSnapshot} from '../helpers/owned-storefront-snapshot';
 import {NativeGateway} from '../helpers/native-owned-gateway';
-import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {requireOwnedDatabase,startOwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 import {hashStoreAccessPassword} from '../../services/api-gateway/src/lib/store-access-password';
@@ -128,4 +129,18 @@ test('native cart deletion denies private navigation and preserves a seeded term
  owned.psql(`UPDATE sites SET access_mode='public' WHERE id=${q(t.siteId)};UPDATE carts SET status='converted' WHERE id=${q(cart.id)};`);const before=owned.psql(`SELECT row_to_json(c)::text FROM carts c WHERE id=${q(cart.id)};`);const closed=await gateway.dispatch(path,{method:'DELETE'});assert.equal(closed.status,409);await closed.arrayBuffer();assert.equal(owned.psql(`SELECT row_to_json(c)::text FROM carts c WHERE id=${q(cart.id)};`),before);
  const patched=await gateway.dispatch(path,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[]})});assert.equal(patched.status,409);await patched.arrayBuffer();assert.equal(owned.psql(`SELECT row_to_json(c)::text FROM carts c WHERE id=${q(cart.id)};`),before);assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)} AND session_id=${q(cart.cart_token)};`),'1');
  const active=await create();const cleared=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart/'+active.cart_token,{method:'DELETE'});assert.equal(cleared.status,200);const payload=await cleared.json() as {data:{status:string;sales_origin:string;lines:unknown[]}};assert.equal(payload.data.status,'active');assert.equal(payload.data.sales_origin,'storefront');assert.deepEqual(payload.data.lines,[]);
+});
+
+
+test('native warmed content cache stays behind current authority while actual SQL site results remain held',async()=>{
+ const t=newSyntheticTenant('native-held-sql');seedSyntheticTenant(owned.psql,t);const product=crypto.randomUUID(),marker='Synthetic native held SQL private product';owned.psql(`INSERT INTO products(id,site_id,store_id,name,price,stock,is_active,status)VALUES(${q(product)},${q(t.siteId)},${q(t.siteId)},${q(marker)},100,5,true,'active');`);
+ const proxy=await startOwnedPooledSqlProxy(owned);let sqlGateway:NativeGateway|undefined,held:ReturnType<typeof holdOwnedStorefrontSqlSnapshot>|undefined;const results=[];
+ try{
+  sqlGateway=await NativeGateway.create(gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key}),async()=>{throw new Error('No provider call belongs to held SQL cache verification');});
+  const read=async()=>{const r=await sqlGateway!.dispatch('/v1/storefront/'+t.subdomain+'/products',{});return{status:r.status,cache:r.headers.get('x-storefront-cache'),body:await r.text()};};
+  await expect.poll(async()=>{const r=await read();assert.equal(r.status,200);return r.cache;},{timeout:10_000,intervals:[50,100,250]}).toBe('HIT');held=holdOwnedStorefrontSqlSnapshot(owned,t.siteId,t.subdomain);
+  for(const[mode,published,expected]of [['password',true,401],['preview_only',true,401],['offline',true,503],['public',false,404]]as const){owned.psql(`UPDATE sites SET access_mode=${q(mode)},published=${published} WHERE id=${q(t.siteId)};`);assert.deepEqual(held.read(),held.snapshot);const r=await read();results.push({mode,published,status:r.status,expected,cache:r.cache,markerReturned:r.body.includes(marker)});}
+  owned.psql(`UPDATE sites SET access_mode='public',published=true WHERE id=${q(t.siteId)};`);const recovered=await read();assert.equal(recovered.status,200);assert.equal(recovered.cache,'HIT');console.info('OWNED_NATIVE_STALE_SQL_CACHE '+JSON.stringify({actualNativeCacheHit:true,managedHyperdrive:false,publicRecovered:true,results}));
+ }finally{try{held?.restore();}finally{try{await sqlGateway?.settle();}finally{await proxy.stop();}}}
+ assert.deepEqual(results.filter(r=>r.status!==r.expected||r.markerReturned),[]);
 });

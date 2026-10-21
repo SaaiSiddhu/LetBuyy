@@ -1,0 +1,13 @@
+# Catalogue authority freshness — 21 October 2026
+
+Previous goal turn PROGRESS atb2d4b765: repeat shopping locally accepted. Current phase claimeddbd4d376; contract.json. Primary/GitHub9c4ae605 completed handoff remains unchanged; no new push/merge/deploy, shared/restored/hosted DB or provider effects. Single agent.
+
+Current source concerns: loadVisitorSite trusts a general pooled-SQL policy snapshot; bootstrap has a public fast path authorizing a full cached SQL row. Potential stale permission/revision/host, former-handle tenant identity, negative result and current published release pointer. Managed Hyperdrive configuration is not observed; prior read-only cloud probe needed authentication. Primary provider guidance in prior repeat-shopping/next-freshness-research.json. No hosted vulnerability claim.
+
+Named owned-only snapshot seam holds actual canonical SQL reader results for one exact handle/id selector, leaves REST policy and real PostgreSQL wire/native Cache API live, preserves original function OID/ACL, uses a private same-owner backup and restores exact original definition. This is not a Hyperdrive emulator or a production migration. Initial14043025b79d:47PASS8FAIL, all8 new probes failed at fixture SQL setup (pg_get_functiondef had no statement terminator before ALTER). Semicolons supplied in helper, application unchanged. Do not count those as observed product failures. Corrected before run is live/pending, source hashes retained.
+
+## Consolidation continuation — 21 October 2026
+
+The owner explicitly authorized consolidating all machine work, merging develop and pushing for transfer. Original paused worktrees remain unchanged. In the isolated consolidation candidate, the corrected original probes ran against the real Gateway/Worker, PostgreSQL wire, PostgREST and native Cache API: run082cd40bc604,55 tests,47PASS8FAIL, zero skips/cancels and zero owned cleanup residue. Unlike fixture-first.json, these eight are observed behavioral failures.
+
+Repair: current catalogue permission/revision/host metadata always uses the existing bounded REST authority. Bootstrap rows also carry tenant identity and current publication pointers and are read freshly; generic pooled SQL cache successes/absences never authorize them. Content Cache API lookup remains behind admission, and immutable pinned release SQL stays enabled. No migration or hosted cache configuration change is introduced. This deliberately supersedes earlier no-REST site-resolution performance claims. The SQL projection regression now requires one bounded exact-handle site-authority read while preserving zero REST release fallback and all transport ACL/rollback checks. Combined verification is pending in the consolidation handoff; no hosted Hyperdrive claim.

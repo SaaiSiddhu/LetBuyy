@@ -6,6 +6,8 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { timingSafeEqualText } from '../lib/crypto';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
+import { CreateProductSchema } from '@letbuyy/commerce-core';
+import { ProductCsvImportSchema } from '@letbuyy/shared-types';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -187,26 +189,89 @@ function toCsvRow(values: (string | number | boolean | null | undefined)[]): str
         .join(',');
 }
 
+class CsvInputError extends Error {
+    constructor(message: string, readonly code = 'INVALID_CSV', readonly status: 400 | 413 = 400) {
+        super(message);
+        this.name = 'CsvInputError';
+    }
+}
+
+/** One bounded pass: record separators inside quoted fields are data. */
 function parseCsv(text: string): string[][] {
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    return lines.map(line => {
-        const result: string[] = [];
-        let currentField = '';
-        let inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (inQuotes) {
-                if (ch === '"' && line[i + 1] === '"') { currentField += '"'; i++; }
-                else if (ch === '"') { inQuotes = false; }
-                else { currentField += ch; }
-            } else {
-                if (ch === '"') { inQuotes = true; }
-                else if (ch === ',') { result.push(currentField.trim()); currentField = ''; }
-                else { currentField += ch; }
-            }
+    const rows: string[][] = [];
+    let row: string[] = [], pieces: string[] = [];
+    let start = text.charCodeAt(0) === 0xfeff ? 1 : 0;
+    let quoted = false, closed = false, wasQuoted = false;
+    const field = (end: number) => {
+        pieces.push(text.slice(start, end));
+        const value = pieces.join('');
+        row.push(wasQuoted ? value : value.trim());
+        pieces = []; wasQuoted = false; closed = false;
+    };
+    const record = () => {
+        if (row.some(value => value.trim() !== '')) {
+            rows.push(row);
+            if (rows.length > PRODUCT_IMPORT_MAX_ROWS + 1) throw new CsvInputError(`Product CSV imports are capped at ${PRODUCT_IMPORT_MAX_ROWS} rows per job`, 'IMPORT_TOO_LARGE', 413);
         }
-        result.push(currentField.trim());
-        return result;
+        row = [];
+    };
+    for (let index = start; index < text.length; index++) {
+        const ch = text[index];
+        if (quoted) {
+            if (ch !== '"') continue;
+            pieces.push(text.slice(start, index));
+            if (text[index + 1] === '"') { pieces.push('"'); index++; start = index + 1; }
+            else { quoted = false; closed = true; start = index + 1; }
+            continue;
+        }
+        if (ch === ',' || ch === '\r' || ch === '\n') {
+            field(closed ? start : index);
+            if (ch !== ',') {
+                record();
+                if (ch === '\r' && text[index + 1] === '\n') index++;
+            }
+            start = index + 1;
+        } else if (ch === '"') {
+            if (closed || text.slice(start, index).trim() !== '') throw new CsvInputError('CSV contains an unexpected quote.');
+            quoted = true; wasQuoted = true; start = index + 1;
+        } else if (closed && ch !== ' ' && ch !== '\t') {
+            throw new CsvInputError('CSV contains text after a closing quote.');
+        }
+    }
+    if (quoted) throw new CsvInputError('CSV contains an unclosed quoted field.');
+    if (start < text.length || pieces.length || wasQuoted || row.length) {
+        field(closed ? start : text.length);
+        record();
+    }
+    return rows;
+}
+
+function productCsvInputs(csv: string, storeId: string) {
+    const rows = parseCsv(csv);
+    if (rows.length < 2) throw new CsvInputError('CSV must have headers and at least one product row.');
+    const headers = rows[0].map(value => value.trim().toLowerCase());
+    if (!headers.includes('name')) throw new CsvInputError('CSV must have a "name" column.');
+    if (new Set(headers).size !== headers.length) throw new CsvInputError('CSV column names must be unique.');
+    const index = (name: string) => headers.indexOf(name);
+    const name = index('name'), price = index('price'), description = index('description'), category = index('category');
+    const stock = index('stock'), tags = index('tags'), images = index('images');
+    return rows.slice(1).map((row, position) => {
+        if (row.length > headers.length) throw new CsvInputError(`CSV row ${position + 2} has more fields than the header.`);
+        const parsed = CreateProductSchema.safeParse({
+            store_id: storeId, name: row[name] || 'Unnamed Product',
+            description: description >= 0 ? row[description] || '' : '',
+            price: price >= 0 && row[price]?.trim() ? Number(row[price]) : 0,
+            category: category >= 0 ? row[category] || undefined : undefined,
+            stock: stock >= 0 && row[stock]?.trim() ? Number(row[stock]) : 0,
+            tags: tags >= 0 && row[tags] ? row[tags].split(';').map(value => value.trim()).filter(Boolean) : [],
+            images: images >= 0 && row[images] ? row[images].split(';').map(value => value.trim()).filter(Boolean) : [],
+            is_active: true,
+        });
+        if (!parsed.success) {
+            const key = parsed.error.issues[0]?.path.join('.') || 'fields';
+            throw new CsvInputError(`CSV row ${position + 2} has an invalid ${key}.`);
+        }
+        return parsed.data;
     });
 }
 
@@ -637,33 +702,11 @@ async function processProductImport(c: ExportContext, jobId: string): Promise<vo
         const source = await assertExportStorage(c).get(sourceKey);
         if (!source) throw new Error('Import source object not found');
 
-        const rows = parseCsv(await source.text());
-        const headers = rows[0]?.map(h => h.toLowerCase().trim()) || [];
-        const nameIdx = headers.indexOf('name');
-        const priceIdx = headers.indexOf('price');
-        const descIdx = headers.indexOf('description');
-        const categoryIdx = headers.indexOf('category');
-        const stockIdx = headers.indexOf('stock');
-        const tagsIdx = headers.indexOf('tags');
-        const imagesIdx = headers.indexOf('images');
-
-        if (nameIdx === -1) throw new Error('CSV must have a "name" column');
-
+        const inputs = productCsvInputs(await source.text(), job.storeIds[0]);
         const service = createProductExecutionAdapter(c);
         let imported = 0;
-
-        for (const row of rows.slice(1)) {
-            await service.createProduct({
-                store_id: job.storeIds[0],
-                name: row[nameIdx] || 'Unnamed Product',
-                description: descIdx >= 0 ? row[descIdx] || '' : '',
-                price: priceIdx >= 0 ? parseFloat(row[priceIdx]) || 0 : 0,
-                category: categoryIdx >= 0 ? row[categoryIdx] || undefined : undefined,
-                stock: stockIdx >= 0 ? parseInt(row[stockIdx]) || 0 : 0,
-                tags: tagsIdx >= 0 && row[tagsIdx] ? row[tagsIdx].split(';').map(t => t.trim()).filter(Boolean) : [],
-                images: imagesIdx >= 0 && row[imagesIdx] ? row[imagesIdx].split(';').map(u => u.trim()).filter(Boolean) : [],
-                is_active: true,
-            }, job.actorId, job.storeIds[0]);
+        for (const input of inputs) {
+            await service.createProduct(input, job.actorId, job.storeIds[0]);
             imported += 1;
         }
 
@@ -790,38 +833,18 @@ router.post('/import-products', async (c) => {
             return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
         }
 
-        const body = recordValue(await c.req.json());
-        const storeId = stringValue(body?.store_id);
-        const csv = stringValue(body?.csv);
-
-        if (!storeId || !csv) {
+        const parsed = ProductCsvImportSchema.safeParse(await c.req.json().catch(() => null));
+        if (!parsed.success) {
             return c.json({ error: { code: 'VALIDATION', message: 'store_id and csv string required' } }, 400);
         }
+        const { store_id: storeId, csv } = parsed.data;
 
         const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
         if (!ownsStore) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
         }
 
-        const rows = parseCsv(csv);
-        if (rows.length < 2) {
-            return c.json({ error: { code: 'VALIDATION', message: 'CSV must have headers + at least one row' } }, 400);
-        }
-
-        const importRows = rows.slice(1);
-        if (importRows.length > PRODUCT_IMPORT_MAX_ROWS) {
-            return c.json({
-                error: {
-                    code: 'IMPORT_TOO_LARGE',
-                    message: `Product CSV imports are capped at ${PRODUCT_IMPORT_MAX_ROWS} rows per job`,
-                },
-            }, 413);
-        }
-
-        const headers = rows[0].map(h => h.toLowerCase().trim());
-        if (!headers.includes('name')) {
-            return c.json({ error: { code: 'VALIDATION', message: 'CSV must have a "name" column' } }, 400);
-        }
+        const inputs = productCsvInputs(csv, storeId);
 
         const sourceJobId = crypto.randomUUID();
         const sourceKey = exportSourceKey(sourceJobId);
@@ -836,7 +859,7 @@ router.post('/import-products', async (c) => {
             filename: `product-import-${dateStamp()}.csv`,
             sourceKey,
             metadata: {
-                requestedRows: importRows.length,
+                requestedRows: inputs.length,
                 processor: 'api-gateway.waitUntil',
                 sourceStorage: 'Cloudflare R2',
             },
@@ -845,7 +868,8 @@ router.post('/import-products', async (c) => {
         c.executionCtx.waitUntil(processProductImport(c, job.id));
         return c.json(success({ job: await serializeJob(c, job) }), 202);
     } catch (error) {
-        return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: error instanceof Error ? error.message : 'Import unavailable' } }, 503);
+        if (error instanceof CsvInputError) return c.json({ error: { code: error.code, message: error.message } }, error.status);
+        return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: 'Import unavailable' } }, 503);
     }
 });
 

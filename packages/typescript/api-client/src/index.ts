@@ -3294,10 +3294,7 @@ export type InventoryAdjustInput = {
   reason: InventoryAdjustmentReason;
   notes?: string | null;
 };
-export type ProductImportInput = {
-  store_id: string;
-  csv: string;
-};
+export type ProductImportInput = import('@letbuyy/shared-types').ProductCsvImportInput;
 export interface ExportJobSummary extends JsonRecord {
   id: string;
   type: 'products' | 'orders' | 'customers' | 'product_import';

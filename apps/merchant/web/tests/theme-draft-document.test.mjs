@@ -32,9 +32,9 @@ for (const name of needed) {
 const javascript = ts.transpileModule([...needed].map(name => declarations.get(name)).join('\n'), {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
-export const helpers = new Function('getDefaultStorefrontThemeTemplate', 'hasRenderableThemeTemplate', 'letbuyyPrimitiveTokens', 'isUnchangedCoreDemoCategoryBlocks',
+export const helpers = new Function('getDefaultStorefrontThemeTemplate', 'hasRenderableThemeTemplate', 'letbuyyPrimitiveTokens', 'isUnchangedCoreDemoCategoryBlocks', 'isFirstPartyCoreBundleSlug',
     javascript + '\nreturn {normalizeSettingsSchema,normalizeEditorState,buildDraftConfig,normalizeTemplateOptions}')(
-    domain.getDefaultStorefrontThemeTemplate, domain.hasRenderableThemeTemplate, letbuyyPrimitiveTokens, domain.isUnchangedCoreDemoCategoryBlocks,
+    domain.getDefaultStorefrontThemeTemplate, domain.hasRenderableThemeTemplate, letbuyyPrimitiveTokens, domain.isUnchangedCoreDemoCategoryBlocks, domain.isFirstPartyCoreBundleSlug,
 );
 
 function document() {

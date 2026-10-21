@@ -178,6 +178,30 @@ test('production export UI prepares the complete file through the canonical job 
     }finally{await page.close();}
 });
 
+test('production import UI refuses invalid later rows, then tracks a quoted multiline import to completion',{timeout:150000},async()=>{
+    const page=await ownerA.newPage();
+    const count=()=>Number(owned.psql(`SELECT count(*) FROM products WHERE store_id='${site.siteId}'`));
+    const before=count();
+    try{
+        await page.goto(`${merchantOrigin}/${site.subdomain}/export`);
+        await page.locator('input[type="file"]').setInputFiles({name:'invalid.csv',mimeType:'text/csv',buffer:Buffer.from('name,price\nSynthetic valid,10\nSynthetic invalid,3oops')});
+        const [refused]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products/import')&&r.request().method()==='POST'),page.getByRole('button',{name:'Import CSV',exact:true}).click()]);
+        assert.equal(refused.status(),400,await refused.text());
+        await expect(page.getByText('CSV row 3 has an invalid price.',{exact:true}).first()).toBeVisible();
+        assert.equal(count(),before);
+        const csv='name,description,price,stock\r\n"Synthetic browser CSV 東京","  First\r\nSecond ""quoted""  ",12.34,3\r\n';
+        await page.locator('input[type="file"]').setInputFiles({name:'quoted.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
+        await page.getByRole('button',{name:'Import CSV',exact:true}).click();
+        await expect(page.getByText('Import complete',{exact:true})).toBeVisible({timeout:45000});
+        await expect(page.getByText('1 product imported.',{exact:true})).toBeVisible();
+        assert.equal(count(),before+1);
+        const persisted=JSON.parse(owned.psql(`SELECT json_build_object('description',description,'price',price,'stock',stock) FROM products WHERE store_id='${site.siteId}' AND name='Synthetic browser CSV 東京'`));
+        assert.deepEqual(persisted,{description:'  First\r\nSecond "quoted"  ',price:12.34,stock:3});
+        assert.equal(new URL(page.url()).pathname,`/${site.subdomain}/export`);
+        checkpoints.push('production_import_invalid_later_row_no_products_quoted_multiline_progress_complete');
+    }finally{await page.close();}
+});
+
 test('normal product read and edit use actual positive version, stable variant ID and canonical stock',{timeout:150000},async()=>{
     const {id,variantId}=product(),expected=version(id),level=owned.psql(`SELECT id FROM inventory_levels WHERE variant_id='${variantId}';`);
     const page=await editor(ownerA,id);

@@ -8,14 +8,16 @@ import { gatewayEnv, newIdentityKeys, nextClientAddress, signedIdentityHeaders }
 const owned = requireOwnedDatabase();
 const owner = crypto.randomUUID(), stranger = crypto.randomUUID(), store = crypto.randomUUID(), foreign = crypto.randomUUID();
 const email = `syn-export-${owner}@example.invalid`, strangerEmail = `syn-export-${stranger}@example.invalid`;
+const importer = crypto.randomUUID(), importStore = crypto.randomUUID(), importEmail = `syn-csv-${importer}@example.invalid`;
 let mf: Miniflare;
 interface StoredJob { id: string; status: 'queued' | 'running' | 'completed' | 'failed'; rowCount: number; expiresAt: string; [key: string]: unknown }
 
 before(async () => {
-    owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${owner}','${email}',true),('${stranger}','${strangerEmail}',true);
+    owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${owner}','${email}',true),('${stranger}','${strangerEmail}',true),('${importer}','${importEmail}',true);
       INSERT INTO sites(id,name,store_name,site_type,subdomain,custom_user_id) VALUES
       ('${store}','Synthetic export','Synthetic export','store','syn-export-${store.slice(0,8)}','${owner}'),
-      ('${foreign}','Synthetic foreign export','Synthetic foreign export','store','syn-export-${foreign.slice(0,8)}','${stranger}');
+      ('${foreign}','Synthetic foreign export','Synthetic foreign export','store','syn-export-${foreign.slice(0,8)}','${stranger}'),
+      ('${importStore}','Synthetic CSV import','Synthetic CSV import','store','syn-csv-${importStore.slice(0,8)}','${importer}');
       INSERT INTO products(store_id,name,description,price,stock,is_active,status,created_at,deleted_at)
       SELECT '${store}','Synthetic, "東京" '||n,repeat('Synthetic CSV content ',300)||E'\r\nend',100+n,1,true,'active','2026-10-01',CASE WHEN n=1104 THEN now() END
       FROM generate_series(1,1104) n;
@@ -45,8 +47,11 @@ before(async () => {
 });
 after(async () => { await mf?.dispose(); });
 
-async function request(path: string, actor = owner, actorEmail = email) {
-    return mf.dispatchFetch('https://gateway.test' + path, { headers: { ...await signedIdentityHeaders(actor, actorEmail), 'CF-Connecting-IP': nextClientAddress() } });
+async function request(path: string, actor = owner, actorEmail = email, init: RequestInit = {}) {
+    const headers = new Headers(init.headers);
+    for (const [key, value] of Object.entries(await signedIdentityHeaders(actor, actorEmail))) headers.set(key, value);
+    headers.set('CF-Connecting-IP', nextClientAddress());
+    return mf.dispatchFetch('https://gateway.test' + path, { ...init, headers });
 }
 
 // Independent RFC-style parser: quoted CR/LF and doubled quotes are real data.
@@ -144,4 +149,51 @@ test('order filters and saved-customer exports cross REST caps, exclude deleted 
         assert.equal((await request(`/v1/export/jobs/${id}?store_id=${foreign}`, stranger, strangerEmail)).status, 404);
         assert.equal((await request(url.pathname + url.search, stranger, strangerEmail)).status, 404);
     }
+});
+
+test('actual Worker refuses invalid CSV before storing a job or creating any products', { timeout: 120_000 }, async () => {
+    const bucket = await mf.getR2Bucket('R2_BUCKET');
+    const beforeObjects = (await bucket.list()).objects.map(object => object.key).sort();
+    const beforeRows = owned.psql(`SELECT count(*) FROM products WHERE store_id='${importStore}'`);
+    for (const [csv, status] of [
+        ['name,price\nValid first row,10\nInvalid later row,3oops', 400],
+        ['name,description\nValid first row,ok\nInvalid,"unclosed', 400],
+        ['name,price\n' + Array(501).fill('Synthetic,10').join('\n'), 413],
+    ] as const) {
+        const result = await request('/v1/export/import-products', importer, importEmail, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': 'syn-csv-' + crypto.randomUUID() }, body: JSON.stringify({ store_id: importStore, csv }),
+        });
+        assert.equal(result.status, status, await result.clone().text());
+        assert.deepEqual((await bucket.list()).objects.map(object => object.key).sort(), beforeObjects);
+        assert.equal(owned.psql(`SELECT count(*) FROM products WHERE store_id='${importStore}'`), beforeRows);
+    }
+});
+
+test('actual Worker imports exactly the quoted logical records through the canonical product writer', { timeout: 120_000 }, async () => {
+    // Persisted authority and a normal default inventory location, never a quota bypass.
+    owned.psql(`INSERT INTO inventory_locations(id,store_id,name,is_default,status) VALUES(gen_random_uuid(),'${importStore}','Synthetic CSV warehouse',true,'active');
+      INSERT INTO site_entitlement_overrides(site_id,limits,reason) VALUES('${importStore}','{"products":10}'::jsonb,'Synthetic CSV acceptance');`);
+    const csv = '\uFEFFname,description,price,stock\r\n"Synthetic 東京, shop","  First line\r\nSecond ""quoted"" line  ",12.34,3\r\n"Synthetic CSV second","Tail",0,0\r\n';
+    const command = { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': 'syn-csv-' + crypto.randomUUID() }, body: JSON.stringify({ store_id: importStore, csv }) };
+    const started = await request('/v1/export/import-products', importer, importEmail, command);
+    assert.equal(started.status, 202, await started.clone().text());
+    const id = (await started.json() as { data: { job: { id: string } } }).data.job.id;
+    const bucket = await mf.getR2Bucket('R2_BUCKET');
+    let job: StoredJob | null = null;
+    for (let i = 0; i < 300; i++) {
+        job = JSON.parse(await (await bucket.get(`exports/jobs/${id}.json`))!.text());
+        if (job?.status === 'completed' || job?.status === 'failed') break;
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert.equal(job?.status, 'completed', JSON.stringify(job));
+    assert.equal(job?.rowCount, 2);
+    const products = JSON.parse(owned.psql(`SELECT json_agg(json_build_object('name',name,'description',description,'price',price,'stock',stock) ORDER BY name) FROM products WHERE store_id='${importStore}'`));
+    assert.deepEqual(products, [
+        { name: 'Synthetic CSV second', description: 'Tail', price: 0, stock: 0 },
+        { name: 'Synthetic 東京, shop', description: '  First line\r\nSecond "quoted" line  ', price: 12.34, stock: 3 },
+    ]);
+    const replayed = await request('/v1/export/import-products', importer, importEmail, command);
+    assert.equal(replayed.status, 202, await replayed.clone().text());
+    assert.equal((await replayed.json() as { data: { job: { id: string } } }).data.job.id, id, 'the existing command key recovers the same acknowledged job');
+    assert.equal(owned.psql(`SELECT count(*) FROM products WHERE store_id='${importStore}'`), '2');
 });

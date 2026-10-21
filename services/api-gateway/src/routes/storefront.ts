@@ -733,14 +733,6 @@ async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): P
     return rows[0]?.payload || null;
 }
 
-async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null | undefined> {
-    const sql = getPooledSql(c.env);
-    if (!sql) return undefined;
-    const rows = await sql.unsafe<{ payload: StorefrontSiteRecord | null }[]>(
-        'select public.read_published_storefront_site_v1($1, false) as payload', [handle]);
-    return rows[0]?.payload || null;
-}
-
 async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions): Promise<StorefrontThemeReleaseRecord | null | undefined> {
     const sql = getPooledSql(c.env);
     if (!sql) return undefined;
@@ -870,12 +862,10 @@ async function loadSiteByHandle(
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
-    if (options.publishedOnly) {
-        try {
-            const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
-            if (pooledSite !== undefined) return pooledSite;
-        } catch { /* bounded independent REST fallback; never translate failure into absence */ }
-    }
+    // This row carries permission, tenant identity and the current publication
+    // pointer as well as content. General SQL query-cache results cannot be its
+    // authority. Keep this bounded handle read current; immutable release reads
+    // and the content Cache API remain available after admission.
 
     const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db

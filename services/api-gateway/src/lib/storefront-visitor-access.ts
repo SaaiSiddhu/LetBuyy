@@ -3,7 +3,6 @@
 import type {Context} from 'hono';
 import {verifyStorefrontGateToken,verifyStorefrontPreviewToken} from '@letbuyy/auth-core';
 import {normalizeStorefrontHandle,resolveStorefrontHost} from '@letbuyy/tenant-core';
-import {getPooledSql} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import type {Env} from '../index';
 import {getSupabaseAdmin,getSupabaseAdminUnguarded} from './supabase';
 import {AppError} from './errors';
@@ -34,19 +33,10 @@ async function restMetadata(c:C,selector:{id?:string;handle?:string},preview:boo
 export async function loadVisitorSite(c:C,selector:{id?:string;handle?:string}):Promise<VisitorSite|null>{
  if(selector.id&&!uuid.test(selector.id))throw new AppError('Invalid store id',400,'VALIDATION');
  if(selector.handle&&!normalizeStorefrontHandle(selector.handle))return null;
- const sql=getPooledSql(c.env);
- if(sql){
-  try{
-   const rows=await sql.unsafe<{payload:VisitorSite|null}[]>('select public.read_published_storefront_site_v1($1,true) as payload',[selector.id?'id:'+selector.id.toLowerCase():normalizeStorefrontHandle(selector.handle!)!]);
-   const row=rows[0]?.payload;
-   // The prior370 shape contained onlyid; its verified absence is still absent.
-   if(row&&typeof row.status==='string')return row;
-   if(row===null){
-    const preview=await verifyStorefrontPreviewToken(proof(c,'X-LetBuyy-Storefront-Preview','__Host-lb_preview'),c.env.PREVIEW_SIGNING_KEY);
-    if(!preview.valid)return null;
-   }
-  }catch{/* bounded independent REST compatibility path; never assume public */}
- }
+ // The general pooled SQL binding may cache successful AND absent results.
+ // Permission, password revision and host binding must come from the current
+ // bounded metadata read, before any content Cache API lookup. A stale SQL
+ // success is never an availability fallback for this authority.
  const preview=await verifyStorefrontPreviewToken(proof(c,'X-LetBuyy-Storefront-Preview','__Host-lb_preview'),c.env.PREVIEW_SIGNING_KEY);
  return restMetadata(c,selector,preview.valid);
 }
