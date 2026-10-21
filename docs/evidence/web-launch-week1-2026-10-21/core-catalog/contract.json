@@ -1,0 +1,20 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-CATALOG",
+  "base": "85588ec7acb9adee132cde4c859e43f8480e6694",
+  "finding": "Pre-existing catalog-seed/source section drift13; actual fully migrated catalog to be verified before disposition.",
+  "outcome": "New Core installations consume the current canonical buyer/account/search/catalog Liquid section files through the existing install/publish renderer.",
+  "contracts": [
+    "Prove baseline with the full faithful owned migration chain; do not infer hosted state.",
+    "Use canonical generator/section source; no second renderer or auth path.",
+    "Patch only known stale first-party unowned Core catalog sections; refuse unknown drift without partial mutation.",
+    "Existing merchant site/draft/release documents are unchanged; no forced upgrade of published stores.",
+    "Paired rollback and idempotency with exact unrelated catalog conservation.",
+    "Regeneration must not rewrite historical migration200; current artifact/catalog alignment tested.",
+    "Production-built browser buyer/account/search/collection/product acceptance plus existing Core preset/media/COD path as affected."
+  ],
+  "standingBoundaries": [
+    "No push/merge/deploy or shared database mutation",
+    "No real provider transactions/messages",
+    "Mobile app UI excluded; shared interfaces preserved"
+  ]
+}
