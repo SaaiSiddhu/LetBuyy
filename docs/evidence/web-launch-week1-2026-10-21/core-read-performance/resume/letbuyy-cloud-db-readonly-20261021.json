@@ -1,0 +1,116 @@
+{
+  "staging": {
+    "ref": "yhhhjeaprrpjglriazad",
+    "schema": [
+      {
+        "database": "postgres",
+        "postgres": "17.6",
+        "history": "supabase_migrations.schema_migrations",
+        "public_tables": 236,
+        "roles": [
+          {
+            "name": "service_role",
+            "bypassrls": true,
+            "superuser": false
+          },
+          {
+            "name": "authenticator",
+            "bypassrls": false,
+            "superuser": false
+          }
+        ],
+        "key_tables": [
+          {
+            "rls": true,
+            "name": "products",
+            "force": false
+          },
+          {
+            "rls": true,
+            "name": "sites",
+            "force": false
+          }
+        ]
+      }
+    ],
+    "migration_history": [
+      {
+        "version": "20260101000176",
+        "name": "v1_founding_program_schema"
+      },
+      {
+        "version": "20260101000177",
+        "name": "v1_founding_program_rpcs"
+      },
+      {
+        "version": "20260101000178",
+        "name": "v1_pricing_plans_seed"
+      },
+      {
+        "version": "20260101000183",
+        "name": "v1_pricing_recompete"
+      },
+      {
+        "version": "20260101000186",
+        "name": "v1_scale_commerce_os_coming_soon"
+      }
+    ]
+  },
+  "production": {
+    "ref": "qtrzgnnqnvboifoqntfi",
+    "schema": [
+      {
+        "database": "postgres",
+        "postgres": "17.6",
+        "history": "supabase_migrations.schema_migrations",
+        "public_tables": 236,
+        "roles": [
+          {
+            "name": "service_role",
+            "bypassrls": true,
+            "superuser": false
+          },
+          {
+            "name": "authenticator",
+            "bypassrls": false,
+            "superuser": false
+          }
+        ],
+        "key_tables": [
+          {
+            "rls": true,
+            "name": "products",
+            "force": false
+          },
+          {
+            "rls": true,
+            "name": "sites",
+            "force": false
+          }
+        ]
+      }
+    ],
+    "migration_history": [
+      {
+        "version": "20260101000176",
+        "name": "v1_founding_program_schema"
+      },
+      {
+        "version": "20260101000177",
+        "name": "v1_founding_program_rpcs"
+      },
+      {
+        "version": "20260101000178",
+        "name": "v1_pricing_plans_seed"
+      },
+      {
+        "version": "20260101000183",
+        "name": "v1_pricing_recompete"
+      },
+      {
+        "version": "20260101000186",
+        "name": "v1_scale_commerce_os_coming_soon"
+      }
+    ]
+  }
+}

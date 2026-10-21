@@ -1,0 +1,52 @@
+# Storefront continuation — 21–22 October 2026
+
+Execution evidence, subordinate to the repository authority chain. One agent; no delegation. Source implementation `ad5d0665`, deploy runtime correction `dcb5b728`; subsequent commits strengthen browser and lifecycle verification. Production is **not deployed**. The owner authorized deployment of current work, then confirmed GitHub Actions billing cannot be resolved yet. No CI, environment approval, branch-promotion or migration gate was bypassed.
+
+The measured bottlenecks were unnecessary fresh JSDOM windows in Liquid head extraction, and browser imports of the full server-capable theme-engine barrel to obtain a settings constant. The implementation reads DOMPurify's already sanitized head DOM, adds one browser-safe `theme-settings` public export with the identical canonical object, narrows seven client imports, and enables Next 16.1.6's tested UI package import optimization. Secondary display/mono fonts remain available but no longer preload on every page. Liquid remains canonical; no renderer cohort switch, persistent data cache, auth shortcut, new service or schema was introduced.
+
+A production typecheck also exposed unsupported extra properties on the Next preview page export. Its existing implementation now lives in `preview-content.tsx`, with a route-compatible page wrapper and the existing catalog route composing that content directly. Source-contract assertions were retained and retargeted to the moved implementation. Deploy workflows now use Node22, matching CI, the actual production-build verification and the governed provider validator's minimum.
+
+Matched production-build observations follow. Both runs used the same small real fixture: one product, two variants and 26 collections created through merchant UI, native workerd/R2, owned PostgreSQL16 and PostgREST16.2, and a real TLS tenant host routed to loopback. Server code was warm. “Cold” means the browser HTTP cache was explicitly cleared and disabled, with actual downloaded scripts verified through CDP. Mobile is a 390px viewport, 4x CPU slowdown, 80ms latency and 1.6Mbps down/750Kbps up. These are local lab observations, not managed Hyperdrive/CDN performance, a physical phone, field INP or production p75/p95.
+
+| Measurement | Before | After |
+| --- | ---: | ---: |
+| Decoded startup JavaScript, all three measured routes | 1,603,110 B | 1,193,281 B |
+| Cold mobile home useful content + registered shopping controls, median of 3 | 3,278.53 ms | 2,488.83 ms |
+| Cold mobile home LCP, median of 3 | 748 ms | 572 ms |
+| Cold mobile home measured encoded network bytes, median of 3 | 575,723 B | 427,875 B |
+| Cold desktop home useful readiness, median of 3 | 270.44 ms | 232.45 ms |
+| Warm desktop home, median of 5 | 172.13 ms | 155.12 ms |
+| Warm desktop product, median of 5 | 157.81 ms | 142.98 ms |
+| Warm desktop collection index, median of 5 | 141.31 ms | 145.42 ms |
+| Warm mobile home/product/collection index, medians of 5 each | 507.64 / 501.86 / 492.91 ms | 475.83 / 478.81 / 486.94 ms |
+
+A separate reproducible Node CPU probe isolates only the renderer file on the same Forge bundle and dependencies, with no catalog products: 25 steady observations after three retained warmups. Median head extraction fell from 7.324ms to 2.128ms; full render fell from 18.229ms to 12.353ms (32.2%). Every full HTML and CSS hash matched across all 56 observations. See [render-before.json](render-before.json), [render-after.json](render-after.json) and `packages/theme-engine/scripts/profile-liquid-head.ts`; this is not a cold-server or hosted claim.
+
+Startup JS decreased 25.6%; cold mobile useful readiness improved 24.1%. Warm desktop collection timing increased slightly, so this does not establish a speedup for every route. Raw samples, min/median/max, CLS, TTFB and asset identities are retained in [comparison.json](comparison.json), [before-browser-profile.json](before-browser-profile.json) and [after-browser-profile.json](after-browser-profile.json). Recorded CLS was zero in these small cohorts. Variant click feedback is retained separately; it is not field INP.
+
+The current request graph and freshness authority are preserved. Reported storefront HTTP counts remain 8 on home and 7 on product/collection index, with one current bootstrap, one read for each navigation location, and one shared SKU read where needed. Those counts cover the tenant storefront endpoint family; they exclude internal access resolution, media and other gateway routes and must not be called total gateway traffic or SQL statements. No reduction in SQL count or managed database latency is claimed. Current publication/access checks, capability validation, private no-store delivery, server prices/totals and canonical checkout remain authoritative.
+
+[after-owned-run.json](after-owned-run.json) proves the complete production-browser journey passed: normal signup/onboarding, product/variant/image upload, private editor preview, publication, ten Core preset changes with exact stored values, home/product/collection-index at desktop/mobile widths, mobile menu, search and collection pagination, real variant selection, native COD checkout, return shopping and another order, buyer account/address CRUD and cross-account write refusal, order privacy, password/unavailable/rotation/offline access, signed preview issue/revocation, and recovery. All ten distinct catalog identities and React preview quantity controls were also reached. Provider effects were fixture-only; no real payment or customer message was sent. The expanded distinct-catalog home/product/collection matrix also passed for all ten designs at 1280px and 390px, including hydrated quantity controls, mobile menus and overflow checks: [catalog-matrix.json](catalog-matrix.json), [catalog-matrix-owned-run.json](catalog-matrix-owned-run.json). All infrastructure owned by both accepted runs was removed, with zero remaining owned containers/networks/volumes.
+
+| Check | Verified result |
+| --- | --- |
+| Theme package, including head parity for all ten themes and hostile HTML cases | 1,916 pass, 0 fail/skip |
+| Customer web package (three invocations) | 157 + 144 + 1,007 pass, 0 fail/skip; overlapping suites are not advertised as a distinct global total |
+| Owned theme tenant isolation | 23 pass, 0 fail/skip; authenticator bootstrap corrected to match the canonical gateway fixture, no application RLS policy/grant weakened |
+| Repository typecheck and lint | exit0 |
+| Root contract tests | 340 pass, 0 fail/skip |
+| Gateway unit tests | 1,628 pass, 0 fail/skip |
+| CI source tests | 10 pass, 0 fail/skip |
+| Complete repository build | 81/81 tasks succeeded; 62 used valid local Turbo cache; owned native app builds above were fresh |
+| Full corrected governance test lane | 815 pass, 0 fail/skip/cancel |
+| Real governance gate | 114 PASS, 0 FAIL/BLOCKED/SKIP, 1 NOT_APPLICABLE |
+
+The first broad core-gate invocation returned exit2: its pre-cleanup individual sweep reports stale generated artifacts by method, and one lifecycle test incorrectly compared the whole Docker machine before/after while a legitimate independent run completed. The real cleanup/governance lane passed. The lifecycle probe was repaired to hold and positively verify a real live neighboring database run, then let that neighbor stop normally before the repeat. Both tested concurrent runs and the repeat must still leave zero own resources. The focused corrected probe passed during independent native activity. The full corrected governance test lane then passed 815/815, zero fail/skip/cancel. No failed receipt is relabelled green.
+
+Earlier “cold” cohorts lacking `Network.enable` are excluded. The admitted before-performance run completed all measurements, then failed a newly added demo check waiting for `networkidle`; its receipt remains failed and is not full E2E acceptance. Subsequent readiness uses actual content and hydrated controls. An external network/Turnstile failure and two incorrect test locators are retained in [attempts.json](attempts.json). None was repaired by raising timeouts, disabling auth or removing shopping assertions.
+
+[release-preflight.json](release-preflight.json) is the current cloud release boundary. Read-only provider queries verified the exact Cloudflare account, both Supabase projects and four existing canonical Vercel targets. Hosted PostgreSQL17.6 is materially behind the candidate: the canonical tenant role and all three ledger tables are absent; sites/products lack FORCE RLS; history has only five timestamped entries. That history does not authorize replay or fabricated “applied” records. The backup API lists no backups and PITR disabled; the required encrypted logical baseline and restore rehearsal are not established. Vercel still has old source roots/Node24 and the storefront Git link targets repository1256426445, whereas this checkout targets1378386450. Staging/console targets and environment-specific release configuration still need provisioning/verification. Accessible GitHub repository and environment secret-name lists are empty. Existing connections and provider secrets were preserved; concurrent target-registry edits were not swept into our implementation commits.
+
+The required order remains: restore GitHub billing; establish recoverable database baseline and rehearse a data-preserving PostgreSQL17 upgrade with schema/roles/grants/RLS/lineage verified; repair exact existing Vercel mappings and provision only missing canonical targets; supply approved environment-specific runtime secrets; verify exact-candidate CI; merge to develop, fast-forward to staging, deploy and qualify the actual managed path; only then fast-forward the same candidate to main and dispatch the governed production release. Local implementation and a public health200 do not complete that release. Frozen/reserved apps stay outside the release.
+
+No migration was authored for this optimization. Existing compatible theme/read prerequisites 372–381 remain governed by their own schema/rollback contracts and the hosted reconciliation above. Code recovery is the reviewed revert of the scoped implementation commit, retaining the per-theme renderer switch and existing interfaces. Before any cloud promotion, retain the exact previous Worker/Vercel IDs and compatible database recovery described in the preflight; never automatically roll back durable orders or ledger entries. Parent foundation, full hosted/provider, field performance and production acceptance remain open.

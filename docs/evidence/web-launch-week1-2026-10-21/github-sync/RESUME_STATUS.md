@@ -54,11 +54,15 @@ by the accessible secret listing; that does not establish organization or
 environment secret availability. The accessible environments are `staging` and
 `production-migrations`.
 
-Committed Vercel project IDs and Supabase project references remain placeholders;
-the locally found runtime files identify local services, not an owned hosted
-target. The owner has said the hosted target/private configuration will follow.
-No hosted database was guessed or mutated. No promotion, deployment or hosted
-acceptance has occurred.
+At initial discovery the hosted references were placeholders. **22 October update:**
+the owner supplied the isolated LetBuyy CLI activation, and read-only provider
+queries verified the actual accounts/projects. Source target references were
+subsequently mapped in `e710c884`. [The current release preflight](../core-read-performance/resume/release-preflight.json)
+supersedes that initial unknown-target boundary: hosted schemas are materially
+behind the candidate, recovery and environment configuration are not qualified,
+and the owner says GitHub Actions billing cannot be resolved yet. Existing cloud
+versions were inspected; no candidate promotion, deployment or shared database
+mutation was performed by this work.
 
 ## Release preparation and executable next steps
 
@@ -76,10 +80,10 @@ scoped new reads also require migrations **379–381 before their matching
 application candidate**. Their rollback retires only the new RPCs after an
 application rollback, preserving usage, transfers and inventory.
 
-Next hosted step, once configuration arrives: verify actual account/project IDs,
-database history and complete function/role/schema prerequisites; establish the
-backup target; reconcile pending migrations and rehearse the exact chain on an
-owned copy. Resolve the GitHub billing gate, then use the verified governed
+Next hosted step: follow the current preflight’s verified target and compatibility
+findings; establish the encrypted recovery baseline; reconcile migration lineage
+and rehearse a data-preserving PostgreSQL17 upgrade on an owned copy. Resolve
+the GitHub billing gate, then use the verified governed
 develop → staging → main release sequence and designated test merchant. Existing
 authorization covers this scoped release; no repeated release permission is needed.
 
@@ -107,3 +111,24 @@ the existing normalization/search contract rather than silently substituting it.
 ## Production authorization and hosted rehearsal — 22 October 2026
 
 The owner supplied the isolated CLI activation and authorized all-current-work production release, explicitly deferring GitHub CI billing. Provider targets are verified and the encrypted production backup is restore-verified. The hosted-role rehearsal blocks on financial migrations 347/360, not on missing release approval. No hosted migration or deployment occurred. See [the concrete preflight and required architecture decision](PRODUCTION_PREFLIGHT_2026_10_22.md) and its JSON receipt; this supersedes the earlier waiting-for-credentials and CI-only boundary above.
+
+
+## Storefront verification — 22 October 2026
+
+[The measured storefront report](../core-read-performance/resume/README.md) owns
+the current before/after evidence and exact release boundary. Source commits
+`ad5d0665` and `dcb5b728` remove redundant head-DOM work, narrow browser theme/UI
+imports, defer secondary font preloads, correct preview route props and align
+deploy workflows with Node22. The later browser/lifecycle commits strengthen
+coverage without changing commerce or access authority. Startup JS is 25.6% smaller;
+cold-client mobile useful readiness improved 3.279s → 2.489s in the matched local
+production lab. These are not hosted, SQL-count, physical-device or field claims.
+
+The complete native journey and the separate expanded ten-design × three-route ×
+two-width catalog matrix both pass with zero skips and clean owned teardown.
+Theme 1,916, customer-web 157+144+1,007, root contracts 340, gateway unit 1,628, CI source 10,
+and the corrected full governance test lane 815 pass. Repository typecheck/lint,
+81-task build and real 114-validator governance pass. Original failing receipts,
+excluded cold-cache observations and the lifecycle ownership-probe correction
+are retained. Local acceptance does not certify the PostgreSQL17 hosted estate,
+complete the parent programme, or authorize bypassing CI/staging acceptance.
