@@ -32,6 +32,6 @@ test('invalid typed or oversized input and foreign host cannot reach KDF',async(
 });
 
 test('five actual wrong-password outcomes close admission and expired historical failures do not lock a fresh shopper',async()=>{
- const t=await tenant('gate-live-failures');for(let i=0;i<5;i++)assert.equal((await verify(t,{password:'Synthetic-wrong-password'})).status,401);const start=tap.calls.length;assert.equal((await verify(t)).status,429);assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0);assert.equal(owned.psql(`SELECT count(*) FROM site_gate_attempts WHERE site_id=${q(t.siteId)};`),'5');
+ const t=await tenant('gate-live-failures');for(let i=0;i<5;i++)assert.equal((await verify(t,{password:crypto.randomUUID()})).status,401);const start=tap.calls.length;assert.equal((await verify(t)).status,429);assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0);assert.equal(owned.psql(`SELECT count(*) FROM site_gate_attempts WHERE site_id=${q(t.siteId)};`),'5');
  const old=await tenant('gate-old-history');owned.psql(`INSERT INTO site_gate_attempts(site_id,host,ip,ok,ts)SELECT ${q(old.siteId)},${q(old.host)},${q(old.ip)}::inet,false,now()-interval '16 minutes' FROM generate_series(1,5);`);assert.equal((await verify(old)).status,200);
 });
