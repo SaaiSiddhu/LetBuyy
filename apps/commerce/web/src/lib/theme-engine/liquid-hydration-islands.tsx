@@ -2255,7 +2255,7 @@ export function bindVariantPurchaseControls(root: HTMLElement, productIds: strin
 export default function LiquidHydrationIslands({ basePath, storeId, variantProductIds = [] }: LiquidHydrationIslandsProps) {
     useEffect(() => {
         registerLiquidHydrationIslands();
-        const root = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"]');
+        const root = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"][data-editor-mode]');
         if (!root) return;
 
         root.dataset.storeId = storeId;

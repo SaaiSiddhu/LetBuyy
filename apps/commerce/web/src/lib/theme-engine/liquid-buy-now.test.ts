@@ -119,3 +119,16 @@ test('variant quick-add cards open the product picker without writing an unspeci
         assert.deepEqual(navigations, ['/product/product-1']); assert.equal(calls, 0); assert.equal(dom.window.localStorage.getItem('lb_cart'), null);
     } finally { globalThis.fetch = originalFetch; reset(); }
 });
+
+test('actual hydration mounts on rendered content when a hoisted Liquid stylesheet precedes it', async () => {
+    await ready(); reset();
+    const { createRoot } = await import('react-dom/client'); const { createElement, act } = await import('react');
+    const module = await import('./liquid-hydration-islands'); Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+    const style = document.createElement('style'); style.dataset.themeRenderer = 'liquid'; document.head.append(style);
+    const { island, button } = purchase(); const rendered = document.createElement('div'); rendered.dataset.themeRenderer = 'liquid'; rendered.dataset.editorMode = 'false'; rendered.append(island); document.body.append(rendered);
+    const mount = document.createElement('div'); document.body.append(mount); const root = createRoot(mount);
+    try {
+        await act(async () => { root.render(createElement(module.default, { basePath: '', storeId: 'store-1', variantProductIds: ['product-1'] })); });
+        assert.equal(button.textContent, 'Choose options'); assert.ok(rendered.querySelector('lb-cart-drawer')); assert.equal(style.childElementCount, 0);
+    } finally { await act(async () => root.unmount()); style.remove(); reset(); }
+});
