@@ -245,6 +245,15 @@ async function jsonBody<T>(response: Response): Promise<T> {
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
+test('an explicitly unpublished store cannot expose a product through the REST compatibility reader', async (t) => {
+    const postgrest = installFakePostgrest({ sites: [{ ...SITE_A, published: false }], products: [PRODUCT_A], product_variants: [] });
+    t.after(() => postgrest.restore());
+    const response = await storefrontApp().request(`/storefront/snaz/products/${PRODUCT_A.id}`, undefined, env());
+    assert.equal(response.status, 404);
+    assert.equal(postgrest.tableRequests('products').length, 0);
+    assert.equal(postgrest.tableRequests('sites')[0].params.get('published'), 'not.is.false');
+});
+
 test('product detail resolves a real product by id', async (t) => {
     const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_A], product_variants: [] });
     t.after(() => postgrest.restore());
