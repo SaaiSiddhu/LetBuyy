@@ -2,7 +2,7 @@
   "date": "2026-10-21",
   "phase": "WEB-LAUNCH-W1-COMPACT-BOOTSTRAP",
   "status": "IN_PROGRESS_SQL_AUTHORIZATION_DEFECT_REPRODUCED",
-  "testedSource": "b2f7a603",
+  "testedSource": "65f3657f backend;7923c73a native fixture",
   "gatewayUnit": {
     "pass": 1608,
     "fail": 0
@@ -14,12 +14,15 @@
   "gatewayTypes": "PASS",
   "ownedBackend": {
     "projection": {
-      "pass": 5,
-      "fail": 1
+      "pass": 6,
+      "fail": 1,
+      "tests": 7,
+      "run": "ba97ecff350b"
     },
     "collectionRegression": {
       "pass": 4,
-      "fail": 0
+      "fail": 0,
+      "run": "5cf8edd6b902"
     },
     "cleanup": "no remaining containers/networks/volumes"
   },
@@ -30,10 +33,35 @@
     "noRestFallbackAssertion": "FAIL \u2014 retained"
   },
   "correction": "16538f4a simplified SQL JSON literal syntax; it did not resolve the observed fallback. The observed root cause is transport authorization, not evidence of invalid JSON syntax.",
-  "native": "production-build/cache/browser run49638 is in progress; no result claimed",
+  "native": {
+    "run": "19542a07efc6",
+    "pass": 1,
+    "fail": 0,
+    "journey": "Normal signup/onboarding/product/exactR2image/two variants/26collections/private preview/ten preset publications/search/COD/buyer CRUD/stale-account/order privacy/merchant readback",
+    "cache": "Actual native Cache API HIT for default and compact shapes; correct release/config after each normal publication; warmed unpublished404; legacy response browser compatibility",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
   "sourceSyncedDevelop": "8f415c0f6244dbef4f8e284d9152e509f35b0a30",
   "laterLocalChangesPushed": false,
   "accepted": false,
   "week1Complete": false,
-  "fourWeekGoal": "ACTIVE"
+  "fourWeekGoal": "ACTIVE",
+  "commerceUnit": {
+    "pass": 1263,
+    "fail": 0,
+    "skip": 0
+  },
+  "retainedFailures": [
+    "First native run passed profiles then failed new test JSON decoding; corrected row_to_json and rerun whole journey passed.",
+    "Offline/incorrect-filter or pre-execution output-path errors are excluded from test acceptance.",
+    "Compact SQL no-fallback assertion remains red: actual restricted transport permission42501."
+  ],
+  "canonical": "Pending current candidate gate; do not reuse develop8f415c0f gate as candidate acceptance."
 }

@@ -1,0 +1,9 @@
+{
+  "packages/tenant-core/src/index.ts": "960bcfce0e0979ee1fbca1795fb0fc258f5e8270bebaba55ae28bbdead088212",
+  "packages/typescript/api-client/src/index.ts": "8b8503a7e877f9886969f14b0a25ff510bbb094626af353321ad2ae5ec0a2114",
+  "services/api-gateway/src/routes/storefront.ts": "847d1ac07eac7907ebcb089dedfc4a87ce76b4ade3ba0410ea8e5c8e2a5bc51d",
+  "services/api-gateway/src/routes/storefront/public-routes.ts": "71948a88d993a178626ced58654fbecde27fbd24369e95e73d83dfa6d8fa1a17",
+  "apps/commerce/web/src/lib/store-service.ts": "a4c5e3bd7fad15add827f9c6a0a448dfc76835d9e8b5087e319817a3bdcb4c1a",
+  "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts": "bbc027c9b0dbc110d611e9b0fa69bbc2a1cdfcae480d81942955a35d4d095e29",
+  "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "8d1487f94df4683ec4e1b23a0030f33a925a69ea9fef5a9049be4d4a13bbffef"
+}
