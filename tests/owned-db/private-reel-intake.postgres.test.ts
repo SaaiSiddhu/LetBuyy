@@ -1,3 +1,4 @@
+import {nativeGatewayWasmPlugin,nativeGatewayModules,NATIVE_GATEWAY_MODULE_ROOT} from '../helpers/native-gateway-wasm';
 // Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
 // and public challenge test fixtures. Never use these values for a real account or live provider.
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
@@ -45,14 +46,14 @@ class NativeGateway {
    banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
    // Match Wrangler's Node compatibility resolution while retaining native
    // implementations. No crypto, storage or route implementation is replaced.
-   plugins: [{ name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
+   plugins: [nativeGatewayWasmPlugin(),{ name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
     const native = new Set(builtinModules);
     build.onResolve({filter:/^[a-z][\w/]*$/}, args => native.has(args.path) ? {path:'node:'+args.path,external:true} : undefined);
    }}] });
   assert.equal(bundle.outputFiles?.length, 1);
   const origin = new URL(String(env.SUPABASE_URL)).origin;
   const tap: { beforeFinish?: () => Promise<void>; loseFinishReply?: boolean } = {};
-  const mf = new Miniflare({ modules: true, script: bundle.outputFiles![0].text, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
+  const mf = new Miniflare({ modules: nativeGatewayModules(bundle.outputFiles![0].text), modulesRoot:NATIVE_GATEWAY_MODULE_ROOT, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
    bindings: env as never, r2Buckets: ['REEL_ORIGINALS_BUCKET'], r2Persist: false,
    outboundService: async (request: Request) => {
     const url = new URL(request.url);

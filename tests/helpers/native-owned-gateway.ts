@@ -1,3 +1,4 @@
+import {nativeGatewayWasmPlugin,nativeGatewayModules,NATIVE_GATEWAY_MODULE_ROOT} from './native-gateway-wasm';
 // Actual bundled workerd Gateway for owned cross-runtime acceptance only.
 import assert from 'node:assert/strict';
 import {createRequire,builtinModules} from 'node:module';
@@ -13,9 +14,9 @@ export class NativeGateway {
   const result=await compiler.build({entryPoints:[new URL('../../services/api-gateway/src/index.ts',import.meta.url).pathname],absWorkingDir:new URL('../..',import.meta.url).pathname,
    bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',tsconfig:'services/api-gateway/tsconfig.json',external:['cloudflare:*','node:*'],conditions:['workerd','worker','browser'],logLevel:'silent',
    banner:{js:"import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"},
-   plugins:[{name:'native-node-builtins',setup(build:{onResolve(options:{filter:RegExp},handler:(args:{path:string})=>{path:string;external:true}|undefined):void}){const native=new Set(builtinModules);build.onResolve({filter:/^[a-z][\w/]*$/},args=>native.has(args.path)?{path:'node:'+args.path,external:true}:undefined);}}]});
+   plugins:[nativeGatewayWasmPlugin(),{name:'native-node-builtins',setup(build:{onResolve(options:{filter:RegExp},handler:(args:{path:string})=>{path:string;external:true}|undefined):void}){const native=new Set(builtinModules);build.onResolve({filter:/^[a-z][\w/]*$/},args=>native.has(args.path)?{path:'node:'+args.path,external:true}:undefined);}}]});
   assert.equal(result.outputFiles?.length,1);const restOrigin=new URL(String(env.SUPABASE_URL)).origin;
-  const mf=new Miniflare({modules:true,script:result.outputFiles![0].text,compatibilityDate:'2026-05-25',compatibilityFlags:['nodejs_compat'],cf:false,unsafeTriggerHandlers:true,
+  const mf=new Miniflare({modules:nativeGatewayModules(result.outputFiles![0].text),modulesRoot:NATIVE_GATEWAY_MODULE_ROOT,compatibilityDate:'2026-05-25',compatibilityFlags:['nodejs_compat'],cf:false,unsafeTriggerHandlers:true,
    durableObjects:{RUNTIME_COORDINATOR:{className:'LetbuyyRuntimeDurableObject',useSQLite:true}},durableObjectsPersist:false,r2Buckets:['REEL_ORIGINALS_BUCKET','R2_BUCKET'],r2Persist:false,bindings:env as never,
    outboundService:async(request:Request)=>{const url=new URL(request.url);if(url.origin==='https://api.resend.com')return await capture(request) as never;
     assert.equal(url.origin,restOrigin,'native Gateway may reach only its owned REST service or the explicit email fixture');

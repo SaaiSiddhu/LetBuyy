@@ -1,4 +1,5 @@
-import { argon2Verify, argon2id } from 'hash-wasm';
+import { argon2Verify, argon2id } from '#store-access-hashing';
+import { AppError } from './errors';
 
 const ARGON2_OPTIONS = {
     iterations: 3,
@@ -17,11 +18,11 @@ function randomSalt(byteCount = 16): Uint8Array {
 }
 
 export async function hashStoreAccessPassword(password: string): Promise<string> {
-    return argon2id({
-        ...ARGON2_OPTIONS,
-        password,
-        salt: randomSalt(),
-    });
+    try {
+        return await argon2id({ ...ARGON2_OPTIONS, password, salt: randomSalt() });
+    } catch {
+        throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
+    }
 }
 
 export async function verifyStoreAccessPassword(password: string, encodedHash: string | null | undefined): Promise<boolean> {
@@ -31,6 +32,7 @@ export async function verifyStoreAccessPassword(password: string, encodedHash: s
         return Boolean(encodedHash && valid);
     } catch {
         await argon2Verify({ password, hash: DUMMY_ARGON2ID_HASH }).catch(() => false);
-        return false;
+        // Corrupt state or a runtime failure is not a wrong shopper password.
+        throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
     }
 }

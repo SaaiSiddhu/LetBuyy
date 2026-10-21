@@ -336,3 +336,7 @@ mode = "smart"
 [[env.production.durable_objects.bindings]]
 name = "RUNTIME_COORDINATOR"
 class_name = "LetbuyyRuntimeDurableObject"
+
+# Static Argon2 loader is pinned to reviewed upstream bytes; fail on drift.
+[build]
+command = "node ../../scripts/build-store-access-wasm.mjs --check"

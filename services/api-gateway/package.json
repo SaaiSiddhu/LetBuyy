@@ -44,5 +44,11 @@
     "tsx": "4.20.6",
     "typescript": "^5.7.0",
     "wrangler": "^4.100.0"
+  },
+  "imports": {
+    "#store-access-hashing": {
+      "workerd": "./src/lib/store-access-wasm/runtime.mjs",
+      "default": "hash-wasm"
+    }
   }
 }

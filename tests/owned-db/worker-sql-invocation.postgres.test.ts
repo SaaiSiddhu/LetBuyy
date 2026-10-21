@@ -1,3 +1,4 @@
+import {nativeGatewayWasmPlugin,nativeGatewayModules,NATIVE_GATEWAY_MODULE_ROOT} from '../helpers/native-gateway-wasm';
 // Actual Gateway workerd + owned PostgreSQL wire transport. No production service.
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -22,7 +23,7 @@ class NativeGateway {
    banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
    // Match Wrangler's Node compatibility resolution while retaining native
    // implementations. No crypto, storage or route implementation is replaced.
-   plugins: [...((predecessor || smallBudget) ? [{name:'sql-predecessor-entry',setup(build: any){build.onLoad({filter:/api-gateway\/src\/index\.ts$/},()=>({contents:readFileSync(new URL('../../services/api-gateway/src/index.ts',import.meta.url),'utf8').replace(predecessor ? /    fetch\(request(?:: Request)?, env(?:: Env)?, ctx(?:: ExecutionContext)?\) \{[\s\S]*?    \},\n    scheduled/ : /NEVER_MATCH_SCOPE/, '    fetch: app.fetch,\n    scheduled').replace(smallBudget ? /pointsPerSecond: 20,\n    capacity: 200,/ : /NEVER_MATCH_BUDGET/, 'pointsPerSecond: 0.001,\n    capacity: 2,'),loader:'ts'}));}}] : []), { name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
+   plugins: [nativeGatewayWasmPlugin(),...((predecessor || smallBudget) ? [{name:'sql-predecessor-entry',setup(build: any){build.onLoad({filter:/api-gateway\/src\/index\.ts$/},()=>({contents:readFileSync(new URL('../../services/api-gateway/src/index.ts',import.meta.url),'utf8').replace(predecessor ? /    fetch\(request(?:: Request)?, env(?:: Env)?, ctx(?:: ExecutionContext)?\) \{[\s\S]*?    \},\n    scheduled/ : /NEVER_MATCH_SCOPE/, '    fetch: app.fetch,\n    scheduled').replace(smallBudget ? /pointsPerSecond: 20,\n    capacity: 200,/ : /NEVER_MATCH_BUDGET/, 'pointsPerSecond: 0.001,\n    capacity: 2,'),loader:'ts'}));}}] : []), { name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
     const native = new Set(builtinModules);
     build.onResolve({filter:/^[a-z][\w/]*$/}, args => native.has(args.path) ? {path:'node:'+args.path,external:true} : undefined);
    }}] });
@@ -30,7 +31,7 @@ class NativeGateway {
   if(predecessor)assert.ok(bundle.outputFiles![0].text.includes('fetch: app.fetch') || /fetch:\s*app\.fetch/.test(bundle.outputFiles![0].text),'negative compiled entry must actually omit the SQL invocation wrapper');
   const origin = new URL(String(env.SUPABASE_URL)).origin;
   const tap: { beforeFinish?: () => Promise<void>; loseFinishReply?: boolean } = {};
-  const mf = new Miniflare({ modules: true, script: bundle.outputFiles![0].text, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
+  const mf = new Miniflare({ modules: nativeGatewayModules(bundle.outputFiles![0].text), modulesRoot:NATIVE_GATEWAY_MODULE_ROOT, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
    durableObjects: {RUNTIME_COORDINATOR:{className:'LetbuyyRuntimeDurableObject',useSQLite:true}}, durableObjectsPersist:false,
    bindings: env as never, r2Buckets: ['REEL_ORIGINALS_BUCKET','R2_BUCKET'], r2Persist: false,
    outboundService: async (request: Request) => {
