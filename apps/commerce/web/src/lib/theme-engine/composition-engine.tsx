@@ -1,4 +1,6 @@
 import { headers } from 'next/headers';
+import type { StorefrontCollectionSummary } from '@letbuyy/api-client';
+import { loadCollectionDiscovery } from './collection-discovery';
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
@@ -453,6 +455,7 @@ async function buildLiquidCommerceContext({
     orderDetail,
     page,
     productBasePath,
+    discoveredCollections,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -464,6 +467,7 @@ async function buildLiquidCommerceContext({
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
     productBasePath?: string;
+    discoveredCollections: StorefrontCollectionSummary[];
 }): Promise<LiquidCommerceDrops> {
     const basePath = productBasePath ?? await resolveLiquidProductBasePath(plan.route.subdomain);
     const products = collectLiquidProducts(sectionData, basePath);
@@ -608,7 +612,9 @@ async function buildLiquidCommerceContext({
         },
         product,
         collection,
-        collections: collection ? [collection] : [],
+        collections: discoveredCollections.map(item => ({
+            id: item.id, handle: item.id, title: item.title, description: item.description, image: item.image_url,
+        })),
         cart: collectLiquidCart(sectionData, plan),
         customer,
         buyer,
@@ -635,12 +641,14 @@ async function renderLiquidPlan({
     sectionData,
     editorMode,
     liquidPage,
+    previewCollections,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
     liquidPage?: Record<string, unknown> | null;
+    previewCollections?: StorefrontCollectionSummary[];
 }): Promise<{ html: string; headStyleText: string } | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
     const productBasePath = await resolveLiquidProductBasePath(plan.route.subdomain);
@@ -684,6 +692,13 @@ async function renderLiquidPlan({
         };
     }
 
+    // Read failures are outside the renderer fallback: unavailable discovery must never
+    // become a false empty collection grid (or an unrelated legacy React page).
+    const needsCollectionDiscovery = plan.template.sections.some(section => section.type === 'category-grid' && section.isVisible !== false);
+    const discoveredCollections = needsCollectionDiscovery
+        ? previewCollections ?? await loadCollectionDiscovery(plan.route.subdomain)
+        : [];
+
     const renderer = createThemeRenderer('liquid');
     try {
         const result = await renderer.render({
@@ -709,7 +724,7 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath, discoveredCollections }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;
@@ -744,15 +759,17 @@ export default async function StorefrontCompositionEngine({
     sectionData,
     editorMode = false,
     liquidPage,
+    previewCollections,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
     liquidPage?: Record<string, unknown> | null;
+    previewCollections?: StorefrontCollectionSummary[];
 }) {
     const renderStart = Date.now();
-    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage });
+    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, previewCollections });
     const engine = liquidResult ? 'liquid' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({

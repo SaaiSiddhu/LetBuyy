@@ -247,8 +247,10 @@ test('D4 collection drop on collection route uses resolvedCollectionMeta before 
   assert.match(source, /async function fetchCollectionMeta/);
   // on collection routes with no SectionRenderData collection, attempt gateway fetch
   assert.match(source, /plan\.route\.type === 'collection' && !boundCollection/);
-  // Still emits collections: collection ? [collection] : [] — Shopify convention
-  assert.match(source, /collections: collection \? \[collection\] : \[\]/);
+  // Discovery is independent of the current collection/product slice.
+  assert.match(source, /collections: discoveredCollections\.map/);
+  assert.match(source, /handle: item\.id/);
+  assert.doesNotMatch(source, /collections: collection \? \[collection\] : \[\]/);
   // fetchCollectionMeta is wrapped in try/catch or .catch() fallback
   assert.match(source, /fetchCollectionMeta.*catch/s);
 });

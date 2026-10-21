@@ -1,3 +1,4 @@
+import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
@@ -419,6 +420,9 @@ export default async function PreviewPage({
     const previewCatalog = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
         ? await ProductService.getPreviewProducts(subdomain, previewToken)
         : undefined;
+    const previewCollections = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
+        ? await loadCollectionDiscovery(subdomain, previewToken)
+        : [];
     const products = previewCatalog
         ? previewStore.selectedProductIds.length
             ? previewStore.selectedProductIds.flatMap((id) => previewCatalog.filter((product) => product.id === id))
@@ -479,6 +483,7 @@ export default async function PreviewPage({
                     plan={renderPlan}
                     sectionData={sectionData}
                     editorMode
+                    previewCollections={previewCollections}
                 />
             </main>
             <StorefrontSectionGroupRenderer

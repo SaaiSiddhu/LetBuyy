@@ -60,6 +60,13 @@ const STOREFRONT_BEACON_EVENT_TYPES: Record<StorefrontAnalyticsBeaconEventType, 
     checkout_started: 'storefront.checkout_started',
 };
 
+function loadCollectionSummaries(c: AppContext, storeId: string) {
+    return getSupabaseAdmin(c).from('collections')
+        .select('id, title, description, image_url')
+        .eq('store_id', storeId).eq('is_active', true).is('deleted_at', null)
+        .order('title', { ascending: true }).order('id', { ascending: true }).limit(24);
+}
+
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
     return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
 }
@@ -606,8 +613,13 @@ export function registerStorefrontPublicRoutes(
         }
 
         const resource = c.req.query('resource');
-        if (resource && resource !== 'products') {
+        if (resource && resource !== 'products' && resource !== 'collections') {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unknown preview resource' } }, 400);
+        }
+        if (resource === 'collections') {
+            const { data, error } = await loadCollectionSummaries(c, store.id);
+            if (error) return c.json(dbFailureBody(), 500);
+            return c.json(success(data || []));
         }
         if (resource === 'products') {
             const rawIds = c.req.query('ids');
@@ -1056,6 +1068,17 @@ export function registerStorefrontPublicRoutes(
             },
         }));
     }
+
+    // Bounded discovery summaries only. Membership/products stay on the existing detail reader.
+    router.get('/:subdomain/collections', async (c) => {
+        c.header('Cache-Control', 'no-store');
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+        const { data, error } = await loadCollectionSummaries(c, store.id);
+        if (error) return c.json(dbFailureBody(), 500);
+        c.header('Cache-Control', 'no-store');
+        return c.json(success(data || []));
+    });
 
     // GET /storefront/:subdomain/collections/:slug — Public collection with assigned products.
     // The collections table uses id as the canonical URL segment (no slug column in baseline schema).

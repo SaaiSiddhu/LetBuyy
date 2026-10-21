@@ -1,6 +1,6 @@
+import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 // /store/[subdomain]/collections — All-collections index. Renders the Liquid `list-collections`
-// template (category-grid section, block-driven from the theme editor — no live "list all
-// collections" fetch is needed or exists). Distinct from collections/[slug], which is a single
+// template with bounded, current collection summaries. Distinct from collections/[slug], a single
 // collection's product listing.
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return buildStoreMetadata(store, {
         title: `Collections | ${store.name}`,
-        description: `Browse every collection at ${store.name}.`,
+        description: `Browse collections at ${store.name}.`,
         path: '/collections',
     });
 }
@@ -47,6 +47,6 @@ export default async function CollectionsIndexPage({ params, searchParams }: Pro
     if (plan.liquidTemplateMiss) return notFound();
 
     return (
-        <StorefrontCompositionEngine store={store} plan={plan} sectionData={new Map<string, SectionRenderData>()} />
+        <StorefrontCompositionEngine store={store} plan={plan} sectionData={new Map<string, SectionRenderData>()} previewCollections={previewStore ? await loadCollectionDiscovery(subdomain, previewToken) : undefined} />
     );
 }

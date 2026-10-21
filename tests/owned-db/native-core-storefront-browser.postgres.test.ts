@@ -40,12 +40,13 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
   return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});};
  let gateway:NativeGateway|undefined,tls:HttpsServer|undefined,commerce:OwnedClientProcess|undefined,stage='build';console.info('OWNED_NATIVE_STAGE build');
- let commerceOrigin='',checkoutOrigin='',tlsSpki='';
+ let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false;
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined,buyerDiagnostic:Page|undefined;
  const calls:{path:string;status:number;key?:string}[]=[],errors:string[]=[];
  try{
   bridge=createServer(async(req,res)=>{
+   if(collectionListUnavailable && req.url?.split('?')[0]===`/v1/storefront/${subdomain}/collections`){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_COLLECTION_OUTAGE',message:'Synthetic collection transport unavailable'}}));return;}
    const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks),headers=new Headers();
    for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
    try{const result=await gateway!.dispatch(req.url??'/',{method:req.method,headers,...(body.length?{body}:{})});
@@ -150,6 +151,13 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.getByRole('tree',{name:'Template sections',exact:true}).getByRole('treeitem').filter({hasText:/Hero/}).first().click();const marker='Synthetic Native Core Ready';
   const draftReply=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'&&Boolean(r.request().postData()?.includes(marker)));await page.getByLabel('Heading',{exact:true}).fill(marker);assert.equal((await draftReply).status(),200);
   await expect(page.frameLocator('iframe.te-preview-iframe').locator('[data-letbuyy-preview-route="true"]')).toBeVisible({timeout:90_000});
+  const previewSrc=await page.locator('iframe.te-preview-iframe').getAttribute('src');assert.ok(previewSrc);
+  const capability=new URL(previewSrc,merchantOrigin).searchParams.get('theme_preview_token');assert.ok(capability);
+  const previewCollectionsPath=`/v1/storefront/${subdomain}/theme-preview?resource=collections&token=`;
+  const privateCollections=await gateway.dispatch(previewCollectionsPath+encodeURIComponent(capability),{});assert.equal(privateCollections.status,200);assert.equal(privateCollections.headers.get('cache-control'),'private, no-store');
+  const privateBody=await privateCollections.json() as {data:{id:string}[]};assert.deepEqual(privateBody.data.map(c=>c.id),[collectionId]);
+  assert.equal((await gateway.dispatch(previewCollectionsPath+'synthetic-invalid-capability',{})).status,404);
+  assert.equal((await gateway.dispatch(`/v1/storefront/${subdomain}/collections`,{})).status,404,'draft collections are never public');
   assert.equal(owned.psql(`SELECT published FROM sites WHERE id='${siteId}';`),'f','the owner preview does not open the public store');
   const draftContext=await browser.newContext(),draftVisitor=await draftContext.newPage();const draftResponse=await draftVisitor.goto(`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`);assert.equal(draftResponse?.status(),401);await draftContext.close();
   await expect(page.frameLocator('iframe.te-preview-iframe').locator('[data-letbuyy-preview-route="true"]')).toContainText(marker,{timeout:30_000});await expect(page.frameLocator('iframe.te-preview-iframe').getByText('Discover our latest products.',{exact:true})).toBeVisible();await expect(page.frameLocator('iframe.te-preview-iframe').getByText('Free shipping on fresh drops this week.',{exact:true})).toHaveCount(0);await expect(page.locator('.te-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);
@@ -178,7 +186,18 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true});
   }
   await buyer.setViewportSize({width:1280,height:900});
-  stage='shopper-collection-search';console.info('OWNED_NATIVE_STAGE shopper-collection-search');await buyer.goto(`${tenantOrigin}/collections/${collectionId}`);await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();await expect(buyer.locator(`a[href="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();
+  stage='shopper-collection-search';console.info('OWNED_NATIVE_STAGE shopper-collection-search');
+  await buyer.goto(tenantOrigin);
+  const collectionCard=buyer.locator('.lb-category-grid').getByRole('link',{name:collectionTitle,exact:true});
+  await expect(collectionCard).toBeVisible();await expect(collectionCard).toHaveAttribute('href',`/store/${subdomain}/collections/${collectionId}`);
+  await expect(buyer.locator('.lb-category-grid').getByRole('link',{name:'All Products',exact:true})).toHaveCount(0);
+  await collectionCard.click();await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();await expect(buyer.locator(`a[href="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();
+  collectionListUnavailable=true;await buyer.goto(tenantOrigin);
+  await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
+  await expect(buyer.getByText('No collections yet',{exact:true})).toHaveCount(0);
+  collectionListUnavailable=false;await buyer.getByRole('button',{name:'Try again',exact:true}).click();
+  await expect(buyer.locator('.lb-category-grid').getByRole('link',{name:collectionTitle,exact:true})).toBeVisible();
+  console.info('OWNED_COLLECTION_DISCOVERY_RECOVERY '+JSON.stringify({actualHomepageCard:true,collectionDetailProducts:true,unavailableNotEmpty:true,normalRetryRestored:true}));
   let searchScreenshot='';
   for(const width of [1280,360]){await buyer.setViewportSize({width,height:900});await buyer.goto(`${tenantOrigin}/search`);await buyer.locator('.lb-search').getByRole('searchbox',{name:'Search products',exact:true}).fill('Synthetic Native Variant');
    const submit=buyer.locator('.lb-search').getByRole('button',{name:'Search',exact:true});await expect(submit).toBeVisible();const area=await submit.boundingBox();assert.ok(area&&area.width>=44&&area.height>=44,'search has an actual usable hit area');
