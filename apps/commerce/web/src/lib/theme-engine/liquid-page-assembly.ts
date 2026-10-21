@@ -10,8 +10,11 @@ import type { LiquidRenderedTheme } from '@letbuyy/theme-engine';
 // the theme's :root token block + base stylesheet (theme-renderer.ts always produced them
 // correctly — packages/theme-engine/test/liquid-l2-assets.test.ts proved that end for years; the
 // gap was entirely on this side). See composition-engine.test.ts for the regression guard.
+export type LiquidPlatformControls = { beforeContentHtml?: string; afterContentHtml?: string };
+
 export function assembleLiquidPageFromRenderResult(
     liquid: LiquidRenderedTheme,
+    controls: LiquidPlatformControls = {},
 ): { html: string; headStyleText: string } {
     // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is
     // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React.
@@ -26,5 +29,5 @@ export function assembleLiquidPageFromRenderResult(
     // element anywhere in the tree; Next.js/React hoist <style> elements into <head> regardless of
     // nesting depth, so this reaches the document head without emitting a nested document.
     const { header, contentForLayout, footer, headStyleText } = liquid;
-    return { html: `${header || ''}${contentForLayout}${footer || ''}`, headStyleText: headStyleText || '' };
+    return { html: `${header || ''}${controls.beforeContentHtml || ''}${contentForLayout}${controls.afterContentHtml || ''}${footer || ''}`, headStyleText: headStyleText || '' };
 }

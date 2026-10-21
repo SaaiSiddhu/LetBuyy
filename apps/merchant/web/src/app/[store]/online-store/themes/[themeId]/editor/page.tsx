@@ -1,5 +1,8 @@
 'use client'
 
+import { getStorefrontRootDomain } from '@/lib/public-urls'
+import { isUnchangedCoreDemoCategoryBlocks } from '@letbuyy/theme-engine'
+
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
@@ -42,6 +45,7 @@ import {
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
+import { PREVIEW_VIEWPORT_WIDTHS } from '@/components/theme-editor/preview-viewport'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import ExperiencePicker from '@/components/theme-editor/ExperiencePicker'
 import ConflictDialog from '@/components/theme-editor/ConflictDialog'
@@ -71,6 +75,7 @@ type SectionEntry = {
 }
 
 type EditorState = {
+    experienceId?: string
     themeSettings: JsonRecord
     sections: {
         header: SectionEntry | null
@@ -166,9 +171,9 @@ const EMPTY_STATE: EditorState = {
 }
 
 const PREVIEW_DEVICES: Array<{ value: PreviewDevice; label: string; icon: typeof Monitor; width: number }> = [
-    { value: 'desktop', label: 'Desktop', icon: Monitor, width: 1440 },
-    { value: 'tablet', label: 'Tablet', icon: Tablet, width: 820 },
-    { value: 'mobile', label: 'Mobile', icon: Smartphone, width: 390 },
+    { value: 'desktop', label: 'Desktop', icon: Monitor, width: PREVIEW_VIEWPORT_WIDTHS.desktop },
+    { value: 'tablet', label: 'Tablet', icon: Tablet, width: PREVIEW_VIEWPORT_WIDTHS.tablet },
+    { value: 'mobile', label: 'Mobile', icon: Smartphone, width: PREVIEW_VIEWPORT_WIDTHS.mobile },
 ]
 
 const FIELD_TYPES = new Set([
@@ -545,13 +550,19 @@ function normalizeEditorState(
     const footer = normalizeSection(root.footer || fallbackRoot.footer, 'footer', 'footer', 100, sectionSchemas)
     const template = templateEntries.flatMap((section, index) => {
         const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
+        if (normalized && asRecord(asRecord(candidate.liquidBundle).package).slug === 'letbuyy-core-liquid'
+            && ['categoryGrid', 'category-grid'].includes(normalized.type) && isUnchangedCoreDemoCategoryBlocks(normalized.blocks)) {
+            return [{ ...normalized, blocks: [] }]
+        }
         return normalized ? [normalized] : []
     })
 
     const configSettingsData = asRecord(asRecord(asRecord(candidate.config).settings_data).current)
     const rootSettingsData = asRecord(asRecord(candidate.settings_data).current)
 
+    const legacyExperienceId = asRecord(candidate.themeSettings).experienceId
     return {
+        experienceId: typeof candidate.experienceId === 'string' ? candidate.experienceId : typeof legacyExperienceId === 'string' ? legacyExperienceId : undefined,
         themeSettings: {
             ...defaultThemeSettings(settingsSchema),
             ...asRecord(fallback.themeSettings),
@@ -588,7 +599,6 @@ function sectionToPortableRecord(section: SectionEntry): JsonRecord {
 
 function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: EditorState, templateKey = 'index'): JsonRecord {
     const config = asRecord(baseConfig.config)
-    const configSettingsData = asRecord(config.settings_data)
     const rootSettingsData = asRecord(baseConfig.settings_data)
     const templates = asRecord(baseConfig.templates)
     const fallbackTemplate = asRecord(templates.index || templates.home || Object.values(templates)[0])
@@ -601,17 +611,15 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
     }
     const nextSettingsData = {
         ...rootSettingsData,
-        current: state.themeSettings,
-        presets: {
-            ...asRecord(configSettingsData.presets),
-            ...asRecord(rootSettingsData.presets),
-        },
+        current: Object.fromEntries(Object.entries(state.themeSettings).filter(([key]) => key !== 'experienceId')),
+        presets: presetsFromBaseConfig(baseConfig),
     }
 
     return {
         ...baseConfig,
         themeId: stringValue(baseConfig.themeId, themeId),
-        themeSettings: state.themeSettings,
+        experienceId: state.experienceId,
+        themeSettings: Object.fromEntries(Object.entries(state.themeSettings).filter(([key]) => key !== 'experienceId')),
         sections: state.sections,
         templates: {
             ...templates,
@@ -631,7 +639,9 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
 function presetsFromBaseConfig(baseConfig: JsonRecord): Record<string, unknown> {
     const configSettingsData = asRecord(asRecord(baseConfig.config).settings_data)
     const rootSettingsData = asRecord(baseConfig.settings_data)
+    const bundleSettingsData = asRecord(asRecord(asRecord(baseConfig.liquidBundle).config).settings_data)
     return {
+        ...asRecord(bundleSettingsData.presets),
         ...asRecord(configSettingsData.presets),
         ...asRecord(rootSettingsData.presets),
     }
@@ -832,7 +842,8 @@ function ThemeEditorInner() {
         if (!preset) return
         applyChange((current) => ({
             ...current,
-            themeSettings: { ...current.themeSettings, ...preset.values, experienceId: preset.id },
+            experienceId: preset.id,
+            themeSettings: { ...current.themeSettings, ...preset.values },
         }))
     }, [applyChange, presetItems])
 
@@ -1513,7 +1524,7 @@ function ThemeEditorInner() {
                     {panelMode === 'experiences' ? (
                         <ExperiencePicker
                             presets={presetItems}
-                            activeExperienceId={typeof editorState.themeSettings.experienceId === 'string' ? editorState.themeSettings.experienceId : undefined}
+                            activeExperienceId={editorState.experienceId}
                             onApply={applyExperience}
                         />
                     ) : null}
@@ -1532,7 +1543,7 @@ function ThemeEditorInner() {
                     <div className="theme-os-preview-panel__header">
                         <div>
                             <strong>Live preview</strong>
-                            <span>{store}.letbuyy.com - {activeDevice.width}px</span>
+                            <span>{store}.{getStorefrontRootDomain()} - {activeDevice.width}px</span>
                         </div>
                         <div className="theme-os-device-toggle" role="group" aria-label="Preview device">
                             {PREVIEW_DEVICES.map((device) => {

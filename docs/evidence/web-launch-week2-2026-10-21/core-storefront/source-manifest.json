@@ -1,0 +1,298 @@
+{
+  "phase": "WEB-LAUNCH-W2-CORE-STOREFRONT",
+  "candidate": "ff6dcc78d0abbd656283fa284548dcd3120471ea",
+  "base": "994d8e28",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/app/api/checkout-handoff/route.test.ts",
+      "sha256": "2b3ac1c6349ee48616a39e9786e2d4cadf014c7849318749c0d142d87a70f098"
+    },
+    {
+      "path": "apps/commerce/web/src/app/api/checkout-handoff/route.ts",
+      "sha256": "e7bb0d555a6409ce430af2e77f9d1429f1c5c6775295c6a083989dd972de4149"
+    },
+    {
+      "path": "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx",
+      "sha256": "31d3e6f6f08f49a4d72749a4f463d6654f6270a306a047f7eafb7e244ab9cd31"
+    },
+    {
+      "path": "apps/commerce/web/src/app/preview/page.tsx",
+      "sha256": "7ce98996eb6e741c2cfcc4b42ecbc2cbdce7d29951a563f6b1114590e37394b2"
+    },
+    {
+      "path": "apps/commerce/web/src/components/cart/cart-drawer.tsx",
+      "sha256": "5504bb36f7d7f05424882ac8664beb8b4bb2c7777d1321a6462d36e535bcf167"
+    },
+    {
+      "path": "apps/commerce/web/src/context/cart-context.tsx",
+      "sha256": "c0c8f57ae9ddd5b53f7b487b3f7490f49ba62f9c905c100c4c5ef29de73ffda3"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-service.ts",
+      "sha256": "ea6856d6e2d2b7d1ef8b4f1246e32588ed54a238d28abc6da783e6a65962052e"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/product-variants.ts",
+      "sha256": "b18574acff1100c1200671e2653111fe6f8958b9a9cb4b5a50876a48f3516abb"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx",
+      "sha256": "7246c88ecadb8fa9c5651f06a516856cd7a725b774e0179763f5501e104d5bf9"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts",
+      "sha256": "105b41a7404f48fa560431595645a448066a854ad56e4ba651ff0a7b6e75c948"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-buy-now.test.ts",
+      "sha256": "67c933b3cc2312534634b9e7745e115ab978a83d5162f9fa88e6d4ad2cf83b84"
+    },
+    {
+      "path": "apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx",
+      "sha256": "5a93ecf6d27335e29275bbc869de57f1249e15dd4d8c5a31fcb127c34198ee60"
+    },
+    {
+      "path": "apps/commerce/web/src/proxy.ts",
+      "sha256": "0a24c14bc145a9fc9b69542ba8677203f0903568eddf253ae159ecb59608e55d"
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "1f22873c160c027b9595f2df99170c0384bcb209453f9f2030a45765193e9222"
+    },
+    {
+      "path": "apps/merchant/web/runtime.manifest.json",
+      "sha256": "5c08a78dece55df41d5f4ea7cffa42a1c8cb9cbd5d7293d4fa04737417790a08"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx",
+      "sha256": "5e796710e6dcb0c869dc67e69d77e9c5d3554fbad1da35f8389403b348c48c29"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/dashboard/dashboard-setup-status.ts",
+      "sha256": "0af30e3c4db5eedb82e23c56f80480f5538b443e0aca1f9e45b66ff258d24a25"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx",
+      "sha256": "f4ed99df97730e735aaadd7489e726318045f2f57cea06a941275eeb555e15bb"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx",
+      "sha256": "88a3fcb4fa2434202b07383fb6166102948fa496cc8aeb6a60ffb39c6d12006b"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/domains/page.tsx",
+      "sha256": "9d6e12a8b64296a1ab7cde4551e9f87623676bd5bbd58ca535f961e2d28a5717"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+      "sha256": "c59f17f071b3f5cfee10d1abaeaa0115713e2b23361941be0da73200e0b008a1"
+    },
+    {
+      "path": "apps/merchant/web/src/components/theme-editor/CenterPanel.tsx",
+      "sha256": "9e0a90cada68d13f3178180dfbc1725a2c2e4d844eb77a9b0c751e7e1df7b0ea"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/public-urls.ts",
+      "sha256": "ea6b983309e72b31199c96bd3697d8eeaeb0677d4052936fbe4c14ed83146dee"
+    },
+    {
+      "path": "apps/merchant/web/tests/dashboard-setup-status.test.mjs",
+      "sha256": "029a04b72da20dbd1e31c2dbfe1603061744ca4eee077cb3a337e6ce80593bce"
+    },
+    {
+      "path": "apps/platform/identity/src/app/api/auth/create-store/route.ts",
+      "sha256": "15a2129e5459587d71edda18eede2e50f512da1d4b94539bc21f1cc211ca8e2b"
+    },
+    {
+      "path": "apps/platform/identity/src/app/onboarding/page.tsx",
+      "sha256": "2ee17d76ce2c0bf0e1f507a1c813fb93c1545c5bc1465288cc1e6f4d40f0d9da"
+    },
+    {
+      "path": "apps/platform/identity/src/lib/config/urls.ts",
+      "sha256": "3fa9bdae9ca969fb940394460c7bb50b1dff7cb7b4b1eb67e63576de1209c348"
+    },
+    {
+      "path": "config/env/production.env.example",
+      "sha256": "dc56def2fbacd0a54e9842d8aa538d30f8177f1f9b5f2775020c7651f605f3df"
+    },
+    {
+      "path": "config/env/production.env.template",
+      "sha256": "1f8e5213d0da12b597875e249b1d53607d397b5b8068b65a553804eb5e495856"
+    },
+    {
+      "path": "config/env/staging.env.example",
+      "sha256": "2be08bdbffce331c28e8885bd759700394104b8ba118ca7f617ca2b52c9eeaa2"
+    },
+    {
+      "path": "config/env/staging.env.template",
+      "sha256": "776f5eb04c93c8ead31dc4438c4a3e5b724d8b21fca065314784e255d7e447a5"
+    },
+    {
+      "path": "config/env/templates/next-app.env.example",
+      "sha256": "c66709d58646953d5ae8c615072e1ef21b73716ab84dd98257c55a78642d19ab"
+    },
+    {
+      "path": "config/env/templates/worker.env.example",
+      "sha256": "5225d6fe14f0a0ff1137be9ab246cb445e6a13a80b1040d051ad48fe1c82ec6c"
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "8d9f6f9803a365659c1d21fdcc1acd05128c9e5a34e0604b2878b101fa94507a"
+    },
+    {
+      "path": "database/supabase/migrations/366_theme_publication_visibility.sql",
+      "sha256": "a6102cedb6b4a13f923091df2b074f6cc04c107293b9c0b29f303a2994e192a8"
+    },
+    {
+      "path": "database/supabase/rollback/366_theme_publication_visibility.rollback.sql",
+      "sha256": "f759d9b6a2c12266271faaae1b738ad9c017f200bf45f20295e31071d6abe424"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "sha256": "eb51112ae60aa883eed6d9c40f647ca13f032c9fdd4a32a0d52ae4e17489bf15"
+    },
+    {
+      "path": "packages/shared-types/src/brand.ts",
+      "sha256": "690f5c841fea49f10e058c2d650e339beff58b05d2f2be7185668c1b0ebcdde9"
+    },
+    {
+      "path": "packages/tenant-core/src/index.ts",
+      "sha256": "1d25cdb6e2cdb0750db07647f7ecaa4a26cc4ff1bcc81c2d3a475ecd8d14560d"
+    },
+    {
+      "path": "packages/tenant-core/test/index.test.ts",
+      "sha256": "5f53ec6295d1a8de211a1e551f176c3ddef21cc7a5737af059369d2363aea1b6"
+    },
+    {
+      "path": "packages/typescript/api-client/src/index.ts",
+      "sha256": "3aa9a11f9b1c88e684711636f41fef3b0d550f09fa9a7da783921286e1506c1e"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "8dc9ca4b82eb9a9ab0d509edcae9770ee3cc692ecafd84a20bd95858c1a841d8"
+    },
+    {
+      "path": "scripts/governance/owned-client-host-policy.mjs",
+      "sha256": "84859974f97664e41dac86b9e32106d2fd39151e36cb4728937b2311a2ff63e3"
+    },
+    {
+      "path": "scripts/governance/owned-client-launcher.mjs",
+      "sha256": "2360564b5509bad66157dd4aa29a12c13bdb684bb0bf3b531a0f7251fa34f55f"
+    },
+    {
+      "path": "scripts/governance/owned-client-url-policy.mjs",
+      "sha256": "cf3d6fa3bc83216b1a4f979b2cd13b6f8184f80da2b204b7467f176868d837d0"
+    },
+    {
+      "path": "scripts/governance/rollback-signature-guards.mjs",
+      "sha256": "5e8642d6b600be419d078c6212abf3f78f6bd4f099d1988a4605cc126e557439"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "404659d73f0aed3c7f18e47a803076b8c9240f6d388e9798e3c783e8567da070"
+    },
+    {
+      "path": "scripts/validate-governance.mjs",
+      "sha256": "db7cfdce1022968ddb802edb9c476a3ded20161cb9036f7651e25b386f25689c"
+    },
+    {
+      "path": "scripts/validators/platform-domain-literal-validator.mjs",
+      "sha256": "8ab389ed626efedb1e41743986d6e74637bc3e02e30810a560576c5d3a4942d6"
+    },
+    {
+      "path": "scripts/validators/storefront-domain-policy.mjs",
+      "sha256": "c6ca6ebe474b05bc85f7ee69efecdba9a826cabc72f2d22d6e8ec728123771c8"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/observability.test.ts",
+      "sha256": "42d1d61af4c5e801c371bbd482f14129b811982c8128f0cc3c4c02de1fad32aa"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/owned-db-support.ts",
+      "sha256": "be151056189087adf0a9093245867ba4dc51ad1acf24fcd57c9908877cc436c4"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-draft-cas.postgres.test.ts",
+      "sha256": "5863f2330a271570e18a5c7674a7330ced2792e90e00f2c5716869c511f43bbb"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/public-product-price-history.test.ts",
+      "sha256": "9345d16e2f50e953e5bbb05791a6891f1940b313180eaf8b5a2eeb029271d5df"
+    },
+    {
+      "path": "services/api-gateway/src/execution/theme-execution.adapter.ts",
+      "sha256": "9bdfc6fd8601c600cf1f73dbe5b43c1fff95e909731678ea91702170ee595208"
+    },
+    {
+      "path": "services/api-gateway/src/index.ts",
+      "sha256": "1fd16f0c435df17a5138bf6bd89b81df46451c7b70dd4f74678a4ed413631219"
+    },
+    {
+      "path": "services/api-gateway/src/lib/public-product-view.ts",
+      "sha256": "ded11554859ee41ded0a3624b9e7db76a04b709d4b97af2f32b23d4f15588891"
+    },
+    {
+      "path": "services/api-gateway/src/middleware/observability.ts",
+      "sha256": "0b285d6e145eb2c02e5bfde8e569a57f9268d8c43a0779415c534c3cb1941da2"
+    },
+    {
+      "path": "services/api-gateway/src/routes/onboarding.ts",
+      "sha256": "d924088e0c91a3df0c3eea8e5276de91464a4c1d133e4baac6e9b6618135dede"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront.ts",
+      "sha256": "761ca99175e193e24b38d767aeacf836afd8dc67c071dbcbc6421459873ebc8d"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/cart-routes.ts",
+      "sha256": "101cbefdde6822772a7877492303fcd2a0059c9b5a7759a42c88828dcd2b1391"
+    },
+    {
+      "path": "services/api-gateway/src/routes/storefront/public-routes.ts",
+      "sha256": "495a016e2a0b464a1a1362eba62e8ab1e56cdc95e65927958c3ed428445327fd"
+    },
+    {
+      "path": "services/api-gateway/src/routes/stores.ts",
+      "sha256": "f4726f2427477b8433c6ab883913f379056f7cd7e2f045e81fe528fd75a545d8"
+    },
+    {
+      "path": "tests/contracts/env-domain-contract.test.ts",
+      "sha256": "d4b3d17cbf0b5ddc1f96b65d5739324fce61c91ef4f67c3c6e2996e22bab1863"
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "955b8c628544b0b52d3900a7d03b1101fd6092d6f6c7a7999f4724d031e97cf4"
+    },
+    {
+      "path": "tests/governance/owned-client-host-policy.test.mjs",
+      "sha256": "e0aa8d1ec52a5714e6ef316a33eff143a6b2ced15b24502f9400bdfe07bba0fd"
+    },
+    {
+      "path": "tests/governance/owned-client-url-policy.test.mjs",
+      "sha256": "d5cf84881b2caa8ff02985742f1a89a77c460ea824ce7e94bed04f98bc7f98be"
+    },
+    {
+      "path": "tests/governance/rollback-signature-precondition.test.mjs",
+      "sha256": "6a76327c089725298b447e39d60285e3d6b06c89f66e9da2afd07c098cec39e8"
+    },
+    {
+      "path": "tests/governance/storefront-domain-direction.test.mjs",
+      "sha256": "c0fb6eb81197b51223772d1915d99ab3f8909f02e1738fe575e4cf7a5b3db005"
+    },
+    {
+      "path": "tests/owned-db/core-store-bootstrap.postgres.test.ts",
+      "sha256": "55fcd6bc1e5d9c4cf067c10bd35917ff81dbb45b2183392762178d00e82722db"
+    },
+    {
+      "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+      "sha256": "71fb2e7cf1feecc972c07c5663f34bf4f03cb84f7689e16f39ac01783a0063c5"
+    },
+    {
+      "path": "tests/theme-engine/liquid-hydration-islands.test.mjs",
+      "sha256": "a24f4e2d65b67baed83861c71f360db88c46ce84a2789af984654d4954b602c6"
+    }
+  ],
+  "browserRuntimeSource": "c4c121dab9d80b57c1ab715a788cffaf0fa60909",
+  "ownedDatabaseSource": "ff6dcc78d0abbd656283fa284548dcd3120471ea",
+  "reuseLimits": "Expanded Native browser is pinned at c4c121da. All runtime/config/lock inputs and the canonical publisher body are unchanged afterward (runtime-equivalence.json). Strict DDL profiles/overloads and the static verifier are rechecked in fresh Core6/CAS35 and the final gate on this candidate. No failed old full run is relabeled green."
+}

@@ -24,10 +24,12 @@ interface LiquidCartItem {
     currency: string;
     slug?: string;
     selectedVariant?: Record<string, string>;
+    variantId?: string | null;
 }
 
 type LiquidServerCartLine = {
     product_id: string;
+    variant_id?: string | null;
     title: string;
     image_url?: string | null;
     quantity: number;
@@ -51,6 +53,7 @@ type LiquidServerCart = {
 interface LiquidHydrationIslandsProps {
     basePath: string;
     storeId: string;
+    variantProductIds?: string[];
 }
 
 function escapeHtml(value: unknown): string {
@@ -86,7 +89,7 @@ function getLiquidStorefrontSubdomain(): string | null {
 function liquidCartLineInputFromItem(item: LiquidCartItem) {
     return {
         product_id: item.id,
-        variant_id: null,
+        variant_id: item.variantId ?? null,
         quantity: item.quantity,
         properties: item.selectedVariant || {},
     };
@@ -95,6 +98,7 @@ function liquidCartLineInputFromItem(item: LiquidCartItem) {
 function liquidCartItemsFromServer(cart: LiquidServerCart): LiquidCartItem[] {
     return cart.lines.map((line) => ({
         id: line.product_id,
+        variantId: line.variant_id ?? null,
         name: line.title,
         price: line.unit_price,
         quantity: line.quantity,
@@ -144,7 +148,7 @@ function writeCart(items: LiquidCartItem[], options: { sync?: boolean } = {}) {
 
 function addCartItem(item: LiquidCartItem, options: { sync?: boolean; openDrawer?: boolean } = {}): LiquidCartItem[] {
     const items = readCart();
-    const existingIndex = items.findIndex((candidate) => candidate.id === item.id);
+    const existingIndex = items.findIndex((candidate) => candidate.id === item.id && (candidate.variantId ?? null) === (item.variantId ?? null));
 
     if (existingIndex >= 0) {
         items[existingIndex] = {
@@ -208,11 +212,23 @@ function cartItemFromElement(element: HTMLElement): LiquidCartItem | null {
     const id = element.dataset.productId || element.querySelector<HTMLInputElement>('[name="product_id"],[name="id"]')?.value;
     if (!id) return null;
 
+    const picker = sectionRoot.querySelector<HTMLElement>('lb-variant-picker');
+    let variant: PickerVariant | undefined;
+    if (picker) {
+        let variants: PickerVariant[];
+        try { variants = JSON.parse(picker.dataset.variants || '[]'); } catch { return null; }
+        const groups = new Set(Array.from(picker.querySelectorAll<HTMLElement>('[data-lb-variant-option]')).map(option => option.dataset.variantName));
+        if (variants.length && (!groups.size || !Array.from(groups).every(name => name && selectedVariant[name]))) return null;
+        variant = variants.find(row => row.options && Object.entries(selectedVariant).every(([name, value]) => row.options![name] === value));
+        if (variants.length && (!variant?.id || (variant.stock ?? variant.stock_quantity ?? variant.inventory_qty ?? 0) <= 0)) return null;
+    }
+
     const image = element.dataset.productImage || '';
     return {
         id,
         name: element.dataset.productName || 'Product',
-        price: numericDatasetValue(element.dataset.productPrice, 0),
+        price: variant?.price ?? numericDatasetValue(element.dataset.productPrice, 0),
+        variantId: variant?.id ?? null,
         quantity: quantityFromElement(element),
         images: image ? [image] : [],
         currency: element.dataset.productCurrency || 'INR',
@@ -274,6 +290,10 @@ class LbAddToCartElement extends LiquidIslandBase {
 
     private async addCurrentProduct(options: { redirectToCheckout?: boolean } = {}) {
         if (this.checkoutPending) return;
+        if (this.dataset.productRequiresOptions === 'true') {
+            if (this.dataset.productUrl) window.location.assign(this.dataset.productUrl);
+            return;
+        }
         const item = cartItemFromElement(this);
         const status = this.querySelector<HTMLElement>('[data-lb-add-to-cart-status]');
         if (!item) {
@@ -395,7 +415,7 @@ class LbCartDrawerElement extends LiquidIslandBase {
 
         const removeButton = target.closest<HTMLElement>('[data-lb-cart-remove]');
         if (removeButton?.dataset.productId) {
-            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId), { sync: true });
+            writeCart(readCart().filter((item) => !(item.id === removeButton.dataset.productId && (item.variantId ?? '') === (removeButton.dataset.variantId ?? ''))), { sync: true });
         }
     };
 
@@ -433,7 +453,7 @@ class LbCartDrawerElement extends LiquidIslandBase {
                 '<div class="lb-liquid-cart__item">',
                 `<span>${escapeHtml(item.name)}</span>`,
                 `<span>x${item.quantity}</span>`,
-                `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
+                `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
                 '</div>',
             ].join('')).join('');
 
@@ -656,6 +676,8 @@ class LbPredictiveSearchElement extends LiquidIslandBase {
 }
 
 type PickerVariant = {
+    id?: string;
+    price?: number;
     options?: Record<string, string>;
     stock?: number;
     stock_quantity?: number;
@@ -733,8 +755,8 @@ class LbVariantPickerElement extends LiquidIslandBase {
 
         const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
         if (!fullySelected) {
-            if (status) status.textContent = '';
-            this.dispatchAvailability(true);
+            if (status) status.textContent = 'Choose your options';
+            this.dispatchAvailability(false);
             return;
         }
 
@@ -743,9 +765,11 @@ class LbVariantPickerElement extends LiquidIslandBase {
             return Object.entries(selected).every(([name, value]) => options[name] === value);
         });
         const stock = match ? (match.stock ?? match.stock_quantity ?? match.inventory_qty ?? 0) : null;
-        const available = match ? stock !== null && stock > 0 : true; // no matching variant record → do not falsely block
+        const available = Boolean(match?.id) && stock !== null && stock > 0;
 
-        if (status) status.textContent = match && !available ? 'This combination is currently unavailable' : '';
+        if (status) status.textContent = !available ? 'This combination is currently unavailable' : '';
+        const price = this.closest('[data-section-id]')?.querySelector<HTMLElement>('.lb-product-detail__price-current');
+        if (price && match?.price != null) price.textContent = formatCartMoney(match.price, this.closest('[data-section-id]')?.querySelector<HTMLElement>('lb-add-to-cart')?.dataset.productCurrency || 'INR');
         this.dispatchAvailability(available);
     }
 
@@ -1421,20 +1445,20 @@ class LbCartElement extends LiquidIslandBase {
         const removeButton = target.closest<HTMLElement>('[data-lb-cart-remove]');
         if (removeButton?.dataset.productId) {
             event.preventDefault();
-            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId), { sync: true });
+            writeCart(readCart().filter((item) => !(item.id === removeButton.dataset.productId && (item.variantId ?? '') === (removeButton.dataset.variantId ?? ''))), { sync: true });
             return;
         }
 
         const stepButton = target.closest<HTMLElement>('[data-lb-cart-step]');
         if (stepButton?.dataset.productId) {
             event.preventDefault();
-            this.stepQuantity(stepButton.dataset.productId, stepButton.dataset.lbCartStep === 'down' ? -1 : 1);
+            this.stepQuantity(stepButton.dataset.productId, stepButton.dataset.lbCartStep === 'down' ? -1 : 1, stepButton.dataset.variantId || null);
         }
     };
 
-    private stepQuantity(productId: string, delta: number) {
+    private stepQuantity(productId: string, delta: number, variantId: string | null) {
         const next = readCart()
-            .map((item) => (item.id === productId ? { ...item, quantity: item.quantity + delta } : item))
+            .map((item) => ((item.id === productId && (item.variantId ?? null) === variantId) ? { ...item, quantity: item.quantity + delta } : item))
             .filter((item) => item.quantity > 0);
         writeCart(next, { sync: true });
     }
@@ -1450,11 +1474,11 @@ class LbCartElement extends LiquidIslandBase {
             '<li class="lb-cart__item">',
             `<span class="lb-cart__title">${escapeHtml(item.name)}</span>`,
             '<span class="lb-cart__qty">',
-            `<${liquidButtonTag} type="button" data-lb-cart-step="down" data-product-id="${escapeHtml(item.id)}" aria-label="Decrease quantity of ${escapeHtml(item.name)}">-</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-step="down" data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Decrease quantity of ${escapeHtml(item.name)}">-</${liquidButtonTag}>`,
             `<span aria-live="polite">${item.quantity}</span>`,
-            `<${liquidButtonTag} type="button" data-lb-cart-step="up" data-product-id="${escapeHtml(item.id)}" aria-label="Increase quantity of ${escapeHtml(item.name)}">+</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-step="up" data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Increase quantity of ${escapeHtml(item.name)}">+</${liquidButtonTag}>`,
             '</span>',
-            `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-remove data-product-id="${escapeHtml(item.id)}" data-variant-id="${escapeHtml(item.variantId || '')}" aria-label="Remove ${escapeHtml(item.name)}">Remove</${liquidButtonTag}>`,
             '</li>',
         ].join('')).join('');
 
@@ -1650,6 +1674,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
     private buyerMode = false;
     private addresses: Array<Record<string, unknown>> = [];
     private editingId: string | null = null;
+    private buyerId: string | null = null;
+    private loadVersion = 0;
+    private loadController: AbortController | null = null;
 
     connectedCallback() {
         this.basePath = this.dataset.basePath || inferBasePath();
@@ -1658,18 +1685,52 @@ class LbAddressManagerElement extends LiquidIslandBase {
         void this.loadAddresses();
     }
 
+    disconnectedCallback() {
+        this.loadVersion++;
+        this.loadController?.abort();
+        this.buyerId = null;
+        this.addresses = [];
+        this.editingId = null;
+        this.removeEventListener('click', this.handleClick);
+    }
+
     private async loadAddresses() {
+        const version = ++this.loadVersion;
+        this.loadController?.abort();
+        const controller = this.loadController = new AbortController();
+        this.buyerId = null;
+        this.addresses = [];
+        this.editingId = null;
         this.innerHTML = '<p class="lb-addresses__loading">Loading addresses…</p>';
         try {
-            const res = await fetch(this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store' });
+            let buyerId: string | null = null;
+            if (this.buyerMode) {
+                const profile = await fetch('/api/buyer/profile', { cache: 'no-store', signal: controller.signal });
+                const data = await profile.json() as { buyer?: { id?: unknown } };
+                if (!profile.ok || typeof data.buyer?.id !== 'string' || !data.buyer.id.trim()) throw new Error('buyer_identity_unavailable');
+                buyerId = data.buyer.id;
+            }
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
+            const res = await fetch(this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store', signal: controller.signal });
             if (!res.ok) throw new Error('address_load_failed');
             const data = await res.json() as { addresses?: Array<Record<string, unknown>> };
-            this.addresses = Array.isArray(data.addresses) ? data.addresses : [];
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
+            if (!Array.isArray(data.addresses)) throw new Error('address_load_failed');
+            this.addresses = data.addresses;
+            this.buyerId = buyerId;
         } catch {
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not load your addresses. <button type="button" data-lb-addr-retry>Try again</button></p>';
             return;
         }
         this.renderList();
+    }
+
+    private writeHeaders(): Record<string, string> | null {
+        // Bind edits to the identity this view loaded. This is a stale-form
+        // comparison only; the server's signed session remains the authority.
+        if (this.buyerMode && !this.buyerId) return null;
+        return { 'Content-Type': 'application/json', ...(this.buyerMode ? { 'x-letbuyy-expected-buyer-id': this.buyerId! } : {}) };
     }
 
     private renderList() {
@@ -1758,6 +1819,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
 
     private async saveAddress(form: HTMLFormElement) {
         const msg = this.querySelector<HTMLElement>('.lb-address-form__msg');
+        const headers = this.writeHeaders();
+        if (!headers) { if (msg) msg.textContent = 'Reload your account before changing saved addresses.'; return; }
+        const version = this.loadVersion;
         if (msg) msg.textContent = 'Saving…';
         const fd = new FormData(form);
         const body: Record<string, unknown> = {
@@ -1779,39 +1843,51 @@ class LbAddressManagerElement extends LiquidIslandBase {
             const itemUrl = this.editingId && this.buyerMode ? `/api/buyer/addresses/${encodeURIComponent(this.editingId)}` : collectionUrl;
             const res = await fetch(this.buyerMode ? itemUrl : collectionUrl, {
                 method: this.buyerMode ? (this.editingId ? 'PATCH' : 'POST') : (this.editingId ? 'PUT' : 'POST'),
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify(body),
             });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (res.ok) {
                 await this.loadAddresses();
             } else {
-                if (msg) msg.textContent = 'Failed to save address.';
+                if (msg) msg.textContent = res.status === 409 ? 'Your account changed. Reload before saving.' : 'Failed to save address.';
             }
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (msg) msg.textContent = 'Network error. Try again.';
         }
     }
 
     private async setDefault(id: string) {
+        const headers = this.writeHeaders();
+        if (!headers) return;
+        const version = this.loadVersion;
         try {
             const res = this.buyerMode
-                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_default: true }) })
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'PATCH', headers, body: JSON.stringify({ is_default: true }) })
                 : await fetch('/api/customer/addresses', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, is_default: true }) });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (!res.ok) throw new Error('address_update_failed');
             await this.loadAddresses();
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not update the default address. <button type="button" data-lb-addr-retry>Reload</button></p>';
         }
     }
 
     private async deleteAddress(id: string) {
+        const headers = this.writeHeaders();
+        if (!headers) return;
+        const version = this.loadVersion;
         try {
             const res = this.buyerMode
-                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE', headers })
                 : await fetch('/api/customer/addresses', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (!res.ok) throw new Error('address_delete_failed');
             await this.loadAddresses();
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not delete this address. <button type="button" data-lb-addr-retry>Reload</button></p>';
         }
     }
@@ -2218,13 +2294,24 @@ function bindHeaderControls(root: HTMLElement): () => void {
     };
 }
 
-export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydrationIslandsProps) {
+export function bindVariantPurchaseControls(root: HTMLElement, productIds: string[]) {
+    const required = new Set(productIds);
+    root.querySelectorAll<HTMLElement>('lb-add-to-cart').forEach(element => {
+        const picker = element.closest('[data-section-id],section')?.querySelector<HTMLElement>('lb-variant-picker');
+        if (!required.has(element.dataset.productId || '') || picker?.dataset.productId === element.dataset.productId) return;
+        element.dataset.productRequiresOptions = 'true';
+        element.querySelectorAll<HTMLButtonElement>('[data-lb-add-to-cart],[data-lb-buy-now]').forEach(button => { button.textContent = 'Choose options'; });
+    });
+}
+
+export default function LiquidHydrationIslands({ basePath, storeId, variantProductIds = [] }: LiquidHydrationIslandsProps) {
     useEffect(() => {
         registerLiquidHydrationIslands();
-        const root = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"]');
+        const root = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"][data-editor-mode]');
         if (!root) return;
 
         root.dataset.storeId = storeId;
+        bindVariantPurchaseControls(root, variantProductIds);
         root.querySelectorAll<HTMLElement>('lb-cart-drawer').forEach((drawer) => {
             drawer.dataset.basePath = drawer.dataset.basePath || basePath;
         });
@@ -2239,7 +2326,7 @@ export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydr
             window.removeEventListener('storage', syncHeaderCartCount);
             unbindHeaderControls();
         };
-    }, [basePath, storeId]);
+    }, [basePath, storeId, variantProductIds]);
 
     return null;
 }

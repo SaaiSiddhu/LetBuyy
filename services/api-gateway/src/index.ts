@@ -1,13 +1,14 @@
+import { withPooledSqlScope } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { authMiddleware } from './middleware/auth';
+import { authMiddleware, optionalAuth } from './middleware/auth';
 import { appOAuthRateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
 import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { protectedMutationIdempotency } from './middleware/idempotency';
 import { featureGate } from './middleware/featureFlags';
 import { appPlatformKillSwitch } from './middleware/appPlatformKillSwitch';
-import { observability } from './middleware/observability';
+import { observability, getObservabilityRoute } from './middleware/observability';
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
@@ -41,6 +42,7 @@ import twoFactorRouter from './routes/two-factor';
 import authRouter from './routes/auth';
 import paymentsRouter from './routes/payments';
 import uploadRouter from './routes/upload';
+import publicAssetsRouter from './routes/public-assets';
 import contactsRouter from './routes/contacts';
 import portfolioRouter from './routes/portfolio';
 import resumeRouter from './routes/resume';
@@ -237,6 +239,7 @@ export interface Env {
     PLATFORM_CONSOLE_API_TOKEN?: string;
     PLATFORM_CONSOLE_SESSION_SECRET?: string;
     ASSET_PUBLIC_BASE_URL?: string;
+    UPLOAD_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
     /** Approved server-only private-original profile. No default account/binding activation. */
     REEL_CUSTODY_PROFILE?: string;
@@ -459,48 +462,27 @@ function secondsSince(value: string | null, nowMs: number): number {
     return Math.max(0, Math.floor((nowMs - timestamp) / 1000));
 }
 
-function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
-    if (result.error) throw new Error(`${label} pending work check failed: ${result.error.message}`);
-    return Number(result.count || 0) > 0;
-}
-
+// A scheduled invocation intentionally asks across tenants. Keep the ordinary
+// query guard enabled; only the backend-only RPC may inspect pending existence.
 async function hasPendingScheduledDispatchWork(
     db: ReturnType<typeof getSupabaseAdminFromEnv>,
     queueNames: ScheduledQueueName[],
     includeWebhookDeliveries: boolean,
 ): Promise<ScheduledDispatchPreflightResult> {
-    const now = new Date().toISOString();
-    const [outboxResult, queueResult, webhookResult] = await Promise.all([
-        db.from('outbox_events')
-            .select('id', { count: 'exact', head: true })
-            .in('status', ['queued', 'failed'])
-            .lte('available_at', now)
-            .lte('next_attempt_at', now),
-        db.from('platform_queue_jobs')
-            .select('id', { count: 'exact', head: true })
-            .in('queue_name', queueNames)
-            .in('status', ['queued', 'failed'])
-            .lte('available_at', now)
-            .is('deleted_at', null),
-        includeWebhookDeliveries
-            ? db.from('webhook_deliveries')
-                .select('id', { count: 'exact', head: true })
-                .in('status', ['pending', 'failed'])
-                .lte('next_attempt_at', now)
-                .is('deleted_at', null)
-            : Promise.resolve({ count: 0, error: null }),
-    ]);
-
-    const outbox = hasCount(outboxResult, 'Outbox');
-    const queues = hasCount(queueResult, 'Platform queue');
-    const webhookDeliveries = hasCount(webhookResult, 'Webhook delivery');
-
-    return {
-        hasWork: outbox || queues || webhookDeliveries,
-        outbox,
-        queues,
-        webhookDeliveries,
-    };
+    const { data, error } = await db.rpc('scheduled_dispatch_has_pending_work', {
+        p_queue_names: queueNames,
+        p_include_webhook_deliveries: includeWebhookDeliveries,
+    });
+    if (error || !data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('Scheduled pending-work preflight unavailable');
+    }
+    const value = data as Record<string, unknown>;
+    const keys = ['hasWork', 'outbox', 'queues', 'webhookDeliveries'] as const;
+    if (keys.some(key => typeof value[key] !== 'boolean')
+        || value.hasWork !== (value.outbox || value.queues || value.webhookDeliveries)) {
+        throw new Error('Scheduled pending-work preflight returned an invalid result');
+    }
+    return data as ScheduledDispatchPreflightResult;
 }
 
 function scheduledDispatchHadWork(
@@ -709,6 +691,9 @@ app.get('/health', (c) => {
     return c.json(healthResponse(c.env.ENVIRONMENT));
 });
 
+// Public delivery is a separate allowlisted projection of explicitly public objects.
+app.route('/assets', publicAssetsRouter);
+
 // API version prefix
 const api = app.basePath('/v1');
 api.use('/*', apiVersioning);
@@ -719,6 +704,9 @@ api.get('/health/queues', (c) => {
     const body = queueHealthResponse(c.env);
     return c.json(body, body.status === 'healthy' ? 200 : 503);
 });
+// Resolve only verified internal identity before selecting the admission subject.
+// The route's ordinary authorization remains required; caller-supplied actor headers are not keys.
+api.use('/*', (c, next) => shouldSkipGatewayQueryCostLimit(c) ? next() : optionalAuth(c, next));
 api.use('/*', queryCostRateLimit({
     pointsPerSecond: 20,
     capacity: 200,
@@ -936,7 +924,7 @@ app.onError((err, c) => {
         level: 'error',
         service: 'letbuyy-api',
         request_id: requestId,
-        route: c.req.path,
+        route: getObservabilityRoute(c),
         method: c.req.method,
         status_code: 500,
         error: err instanceof Error ? err.message : 'Unhandled error',
@@ -1098,8 +1086,14 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
 }
 
 export default {
-    fetch: app.fetch,
+    fetch(request: Request, env: Env, ctx: ExecutionContext) {
+        return withPooledSqlScope(async (track) => app.fetch(request, env, {
+            ...ctx,
+            waitUntil(work) { track(work); ctx.waitUntil(work); },
+            passThroughOnException() { ctx.passThroughOnException(); },
+        }), work => ctx.waitUntil(work));
+    },
     scheduled(controller, env, ctx) {
-        ctx.waitUntil(runScheduledDispatch(controller, env));
+        ctx.waitUntil(withPooledSqlScope(async () => runScheduledDispatch(controller, env)));
     },
 } satisfies ExportedHandler<Env>;

@@ -1,0 +1,47 @@
+{
+  "phase": "WEB-LAUNCH-W2-CORE-STOREFRONT",
+  "base": "994d8e28",
+  "claim": "a7184cfd",
+  "mode": "SINGLE AGENT",
+  "outcome": "New web-onboarded store starts with actual canonical first-party Core Liquid config; merchant storefront URLs/host defaults consistently use owner-directed storefront domain; real editor/publication and buyer rendering, followed by product/image/variant/COD journey as required.",
+  "ownerDirection": {
+    "platform": "letbuyy.com",
+    "storefront": "letbuyy.store",
+    "source": "Current chat owner instruction: platform apps on letbuyy.com; merchants creating storefronts through merchant control plane on letbuyy.store. Mobile UI excluded.",
+    "precedence": "Current direct owner instruction supersedes earlier blanket .store literal prohibition for tenant storefront configuration only. No ARB signature or deployment acceptance is asserted."
+  },
+  "contracts": [
+    "Use shared brand/tenant host contract, distinct platform/storefront domains; explicit configured local roots preserved",
+    "Do not change accounts/admin/API/hosted checkout platform origins or weaken CSRF/CORS/cookie scopes",
+    "Narrow legacy domain guard to exact canonical storefront declaration and approved storefront env keys; retain unsafe literal negative controls",
+    "Canonical Core catalog/template validation before new-web store insertion; retain old explicit theme inputs and request replay contracts, no mass migration",
+    "No alternate renderer or second install/publish authority",
+    "Owned DB failure/replay tests and normal production-built browser signup/store/theme/render evidence",
+    "Preserve existing shipping/tax/billing/media/security source or reverify affected inputs"
+  ],
+  "constraints": [
+    "No merge/push/deploy, shared DB writes, real payments/messages or backup deletion",
+    "No invented supplier or provider approval",
+    "Razorpay login explicitly deferred"
+  ],
+  "remainingProgramme": [
+    "Core starter-copy correction and full theme visual/section acceptance remain open.",
+    "Console/marketing storefront labels and measured navigation demand remain open.",
+    "Inventory, discounts, order/refund lifecycle and customer reconciliation continue in Week2.",
+    "Hosted domains/TLS/cookies, email deliverability and real Razorpay sandbox remain separate unverified acceptance."
+  ],
+  "observedExpansion": [
+    "Fresh real merchant publication returned200/status published, while public .store page401. Owned PG reproduced published|false|offline after successful live publication.",
+    "Migration366 repairs only the existing publisher body, retaining exact predecessor ABI/profile and ACLs; no backfill or shared/hosted DB application. Rollback restores known prior body and preserves committed owner publications.",
+    "Six dashboard illustration references were absent from public assets. Use shipped theme art or existing local icons; avoid empty wells and repeated failing image requests.",
+    "Owned fixture host mode explicitly allows canonical storefront loopback TLS, backend loopback checks retained, ports paired and negative controls proved.",
+    "Configured hosted checkout origin was accepted by Commerce proxy but rejected by its handoff endpoint because tenant root drove the old allowlist. Exact configured origin/port is now checked consistently.",
+    "Unpublished editor preview loaded a protected store but public-only products; both top-level and per-section product demand now share one capability-authorized bounded catalog, with no shared caching.",
+    "Raw cart bearer token was observed in Gateway route telemetry; route-pattern logging now covers stdout, analytics, durable request logs and global errors. This is scoped telemetry remediation, not a whole-log privacy certification.",
+    "Historical344/354 retirement proofs explicitly retire366 first and restore366 for current business cases. No predecessor guard is weakened.",
+    "Native COD confirmation persisted no variant ID: public option labels were absent, the Liquid cart serialized variant_id:null and product-only cart keys collapsed choices. Repair canonical option projection/quote validation and existing browser cart protocol; retain variant ID on server readback, require picker selection and distinguish each variant in cart controls. Verify a higher-priced variant through the actual customer order.",
+    "Final full gate at33e621eb preserved as raw failure evidence: missing merchant tenant-core dependency declaration, missing library classification, test-local module variable lint and named definer API-role closure. Repair declarations/lock and explicit closure; no public grant or rule weakening.",
+    "Visual review found five merchant preview/domain/SEO labels still hardcoding.com; reuse the existing configured storefront-root helper. A replacement editor capture must await the actual edited private iframe before publication, rather than capture its publish reload.",
+    "Extend normal browser proof to domain label, preferences SEO save and General SEO readback. Console and marketing label cleanup remains separately recorded."
+  ]
+}

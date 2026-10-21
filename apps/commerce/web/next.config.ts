@@ -146,11 +146,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // All pages — security headers + short cache. Not /api/* (above) and not /_next/* (Next's
-        // own assets, above): the last matching rule wins, and this one used to override both.
+        // Mutable store HTML and customer pages cannot share a generic browser/CDN TTL.
+        // The Gateway owns public data caching; hashed static assets keep their
+        // independent immutable policy above. Never retain preview/customer HTML.
         source: '/((?!api/|_next/).*)',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
+          { key: 'Cache-Control', value: 'private, no-store' },
           ...createSecurityHeaders({ frameAncestors }),
         ],
       },

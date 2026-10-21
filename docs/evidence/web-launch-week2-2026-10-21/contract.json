@@ -1,0 +1,35 @@
+{
+  "phase": "WEB-LAUNCH-W2-SHIPPING-TAX",
+  "base": "508ee2aa",
+  "dependency": "Verified unmerged Week1 candidate; no merge into develop",
+  "mode": "SINGLE AGENT",
+  "outcome": "Merchant zone/rate and country/state tax CRUD read back correctly through canonical scoped routes; buyer quotes and server checkout amounts consume the saved configuration",
+  "mayWrite": [
+    "services/api-gateway/src/routes/shipping-tax.ts",
+    "shipping/tax service execution/adapters when necessary",
+    "apps/merchant/web shipping/tax settings and API proxies",
+    "packages/checkout-core related contracts when necessary",
+    "owned regression/browser fixtures and explicit suite inventory",
+    "phase evidence and ledgers",
+    "services/api-gateway/src/middleware/idempotency.ts: shipping-tax live-owner check before receipt replay, justified by owned replay-before failure",
+    "scripts/validators/route-ownership-validator.mjs: direct awaited reviewed helper recognition limited to shipping-tax.ts",
+    "tests/governance/governance-source-traversal.test.mjs: real-source negative mutation controls for this recognition"
+  ],
+  "acceptance": [
+    "Reproduce current shipping list failure on owned PostgreSQL before repair",
+    "Owner positive CRUD/reload; foreign and stale authority denial; no cross-tenant shipping data",
+    "Blank optional tax state creates country-wide rate; state-specific rate and edit clearing semantics preserved",
+    "Buyer shipping quote uses merchant configuration; unavailable/out-of-zone and changed quote fail safely",
+    "Checkout total/shipping/tax readback agrees with authoritative database; no live provider transaction"
+  ],
+  "constraints": [
+    "No primary edits or shared/restored database writes",
+    "No push/merge/deploy",
+    "No real external payment/message",
+    "No mobile UI changes; preserve shared APIs",
+    "Razorpay login deferred; provider evidence remains independent"
+  ],
+  "contractCorrections": [
+    "Mutations already require a store context at gateway idempotency; preserve that contract. Pass verified store ID from web proxies; no unguarded resource bootstrap is needed or added."
+  ]
+}

@@ -3,7 +3,7 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
-import { resolveCustomUser } from '../lib/auth-user';
+import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from './staff-permission';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -229,6 +229,18 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
         }
         const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
         if (staffBlock) return staffBlock;
+    }
+
+    // Settings/cancellation receipts contain tenant configuration and billing
+    // state. Re-verify the live owner before begin() can return an old response,
+    // including revocation and signed-store/selection mismatches.
+    if (orderPath === '/shipping-tax' || orderPath.startsWith('/shipping-tax/') || orderPath === '/payments/subscription/cancel') {
+        const auth = c.get('auth');
+        const db = getSupabaseAdmin(c);
+        const customUser = auth?.user ? await resolveCustomUser(db, auth.user) : null;
+        if (!customUser || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+        }
     }
 
     const idempotency = new IdempotencyExecutionAdapter(getSupabaseAdmin(c));

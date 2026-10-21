@@ -2,7 +2,7 @@
 // The buyer bearer remains server-to-server; only the ordinary signed cart handoff leaves this host.
 import { NextRequest, NextResponse } from 'next/server';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
-import { DEFAULT_PLATFORM_DOMAIN } from '@letbuyy/shared-types';
+import { isHostedCheckoutHost } from '@letbuyy/tenant-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { isSameOriginRequest, STOREFRONT_BUYER_SESSION_COOKIE, decodeSession } from '@/lib/buyer-auth/flow';
 
@@ -10,17 +10,17 @@ const NO_STORE = { 'Cache-Control': 'no-store' };
 const SUBDOMAIN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const CART_TOKEN = /^ct_[A-Za-z0-9]{16,80}$/;
 
-function allowedCheckoutHost(hostname: string): boolean {
-    const configured = [
-        process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
-        ...(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES || '').split(','),
-        process.env.NEXT_PUBLIC_PLATFORM_DOMAIN,
-        DEFAULT_PLATFORM_DOMAIN,
-    ].filter((value): value is string => Boolean(value)).flatMap((value) => value.split(','))
-        .map((value) => value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, ''))
-        .filter(Boolean);
-    if (process.env.NODE_ENV !== 'production' && (hostname === 'localhost' || hostname.endsWith('.localhost'))) return true;
-    return configured.some((domain) => hostname === `checkout.${domain}` || hostname === `checkout-staging.${domain}`);
+function allowedCheckoutUrl(url: URL): boolean {
+    const hostname = url.hostname;
+    if (process.env.CHECKOUT_ORIGIN?.trim()) {
+        try { if (url.origin !== new URL(process.env.CHECKOUT_ORIGIN.trim()).origin) return false; }
+        catch { return false; }
+    }
+    if (isHostedCheckoutHost(hostname, {
+        checkoutOrigin: process.env.CHECKOUT_ORIGIN,
+        storeRootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+    })) return true;
+    return process.env.NODE_ENV !== 'production' && (hostname === 'localhost' || hostname.endsWith('.localhost'));
 }
 
 export async function POST(request: NextRequest) {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     let checkoutUrl: URL;
     try { checkoutUrl = new URL(payload.data.checkout_url); } catch { return NextResponse.json({ error: 'Secure checkout is temporarily unavailable.' }, { status: 503, headers: NO_STORE }); }
     if (!['https:', ...(process.env.NODE_ENV === 'production' ? [] : ['http:'])].includes(checkoutUrl.protocol)
-        || checkoutUrl.username || checkoutUrl.password || checkoutUrl.hash || !allowedCheckoutHost(checkoutUrl.hostname)
+        || checkoutUrl.username || checkoutUrl.password || checkoutUrl.hash || !allowedCheckoutUrl(checkoutUrl)
         || checkoutUrl.pathname !== '/checkout') {
         return NextResponse.json({ error: 'Secure checkout is temporarily unavailable.' }, { status: 503, headers: NO_STORE });
     }

@@ -1,0 +1,67 @@
+import assert from 'node:assert/strict';
+import test,{after} from 'node:test';
+import {readFileSync} from 'node:fs';
+import {randomUUID} from 'node:crypto';
+import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,tapRest} from './gateway-harness.ts';
+import {requireOwnedDatabase} from './owned-db-support.ts';
+import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant.ts';
+
+const owned=requireOwnedDatabase();
+let gateway:Gateway|undefined; let observer:ReturnType<typeof tapRest>|undefined;
+after(async()=>{await gateway?.settle();observer?.restore();});
+test('an unrelated merchant cannot overwrite another merchant theme through a private-install upload',async()=>{
+ const a=newSyntheticTenant('theme-owner-a'),b=newSyntheticTenant('theme-owner-b');
+ seedSyntheticTenant(owned.psql,a);seedSyntheticTenant(owned.psql,b);
+ const actorA=randomUUID(),actorB=randomUUID();
+ const emailA=`audit-theme-a-${actorA}@example.invalid`,emailB=`audit-theme-b-${actorB}@example.invalid`;
+ owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name) VALUES('${actorA}','${emailA}',true,'Synthetic theme owner A'),('${actorB}','${emailB}',true,'Synthetic theme owner B'); UPDATE sites SET custom_user_id='${actorA}' WHERE id='${a.siteId}'; UPDATE sites SET custom_user_id='${actorB}' WHERE id='${b.siteId}';`);
+ gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
+ observer=tapRest(owned.restUrl,async(call,forward)=>{const reply=await forward();if(call.resource==='rpc/upload_owned_theme_package_v1'&&reply.status>=400){const detail=await reply.clone().json() as {code?:string;message?:string};console.log('THEME_UPLOAD_DB_REFUSAL',JSON.stringify({code:detail.code,message:detail.message}));}return reply;});
+ const bundle=JSON.parse(readFileSync(new URL('../../../../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json',import.meta.url),'utf8'));
+ const slug=`audit-owned-theme-${randomUUID()}`;bundle.package.slug=slug;bundle.package.name='Synthetic owned theme A';
+ const first=await gateway.request('/v1/themes/packages/upload',{method:'POST',headers:await signedIdentityHeaders(actorA,emailA,a.siteId),body:JSON.stringify({bundle,submission_mode:'private_install'})});
+ assert.equal(first.status,201,'control merchant upload must succeed before ownership is evaluated');
+ const before=JSON.parse(owned.psql(`SELECT row_to_json(t) FROM(SELECT id,name,is_active,is_site_private,owned_by_site_id FROM themes WHERE slug='${slug}')t;`));
+ const changed=structuredClone(bundle);changed.package.name='Synthetic overwritten by unrelated merchant B';
+ const second=await gateway.request('/v1/themes/packages/upload',{method:'POST',headers:await signedIdentityHeaders(actorB,emailB,b.siteId),body:JSON.stringify({bundle:changed,submission_mode:'private_install'})});
+ const result=JSON.parse(owned.psql(`SELECT row_to_json(t) FROM(SELECT id,name,is_active,is_site_private,owned_by_site_id FROM themes WHERE slug='${slug}')t;`));
+ const receipt={scope:'Actual gateway handler/auth and real PostgREST/owned PostgreSQL. Two synthetic merchant-owned stores; no hosted service or shared dev catalog mutation. Handler runs in Node harness; no claim of hosted reachability.',creatorUploadStatus:first.status,unrelatedMerchantUploadStatus:second.status,sameCatalogThemeId:before.id===result.id,unrelatedMerchantChangedName:before.name!==result.name,catalogIsActive:result.is_active,isSitePrivate:result.is_site_private,privateOwnerBound:Boolean(result.owned_by_site_id),expected:'Reject unrelated author/slug collision before global persistence and preserve the first owner definition',actualSecondErrorCode:second.json?.error?.code??null};
+
+ console.log('AUDIT_THEME_UPLOAD_OWNERSHIP',JSON.stringify(receipt));
+ assert.ok([403,409].includes(second.status)&&result.name===before.name,'unrelated merchant overwrote a synthetic global theme definition through private-install upload');
+ assert.equal(result.is_site_private,true);assert.equal(result.owned_by_site_id,a.siteId);
+ const upload=async(actor:string,email:string,site:string,value:unknown,mode='private_install')=>gateway!.request('/v1/themes/packages/upload',{method:'POST',headers:await signedIdentityHeaders(actor,email,site),body:JSON.stringify({bundle:value,submission_mode:mode})});
+ const repeat=await upload(actorA,emailA,a.siteId,bundle);assert.equal(repeat.status,201,repeat.text);assert.equal(repeat.json!.data.version.id,first.json!.data.version.id,'same intent replays the exact version');
+ assert.equal(owned.psql(`SELECT count(*) FROM audit_activity_events WHERE resource_id='${first.json!.data.version.id}' AND action='theme.package.uploaded';`),'1','identical replay creates one upload audit');
+ const changedOwn=await upload(actorA,emailA,a.siteId,changed);assert.equal(changedOwn.status,409,'published version content is immutable');
+ const reserved=structuredClone(bundle);reserved.package.slug='letbuyy-core';assert.equal((await upload(actorA,emailA,a.siteId,reserved)).status,403,'first-party slug is never merchant-writable');
+ const swapped=structuredClone(bundle);swapped.package.slug='site-swap-'+randomUUID();assert.equal((await upload(actorA,emailA,b.siteId,swapped)).status,403,'signed claim without current ownership cannot upload');
+ const collision=structuredClone(bundle);collision.package.slug='race-'+randomUUID();
+ const raced=await Promise.all([upload(actorA,emailA,a.siteId,collision),upload(actorB,emailB,b.siteId,collision)]);assert.deepEqual(raced.map(x=>x.status).sort(),[201,403],'one owner wins concurrent global slug creation');
+ const counts=owned.psql(`SELECT count(*) FROM themes WHERE slug='${collision.package.slug}';`);assert.equal(counts,'1');
+ const foreignInstall=await gateway!.request(`/v1/themes/${slug}/install`,{method:'POST',headers:await signedIdentityHeaders(actorB,emailB,b.siteId),body:JSON.stringify({store_id:b.siteId,config_overrides:{}})});assert.equal(foreignInstall.status,403,'private theme cannot be installed into another store');
+ const failed=structuredClone(bundle);failed.package.slug='atomic-fault-'+randomUUID();
+ owned.script(`CREATE FUNCTION public.synthetic_theme_manifest_fault() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'SYNTHETIC_RENDERER_WRITE_FAILURE';END$$;CREATE TRIGGER synthetic_theme_manifest_fault BEFORE INSERT ON public.theme_renderer_manifests FOR EACH ROW EXECUTE FUNCTION public.synthetic_theme_manifest_fault();`);
+ try {assert.equal((await upload(actorA,emailA,a.siteId,failed)).status,503);assert.equal(owned.psql(`SELECT count(*) FROM themes WHERE slug='${failed.package.slug}';`),'0','final manifest failure rolls back catalog,package andversion');assert.equal(owned.psql(`SELECT count(*) FROM theme_packages WHERE slug='${failed.package.slug}';`),'0');}
+ finally {owned.script('DROP TRIGGER synthetic_theme_manifest_fault ON public.theme_renderer_manifests;DROP FUNCTION public.synthetic_theme_manifest_fault();');}
+ assert.equal((await upload(actorA,emailA,a.siteId,failed)).status,201,'exact intent recovers after a rolled-back upload fault');
+ const publicBootstrap=await gateway!.request(`/v1/themes/letbuyy-core/editor?store_id=${a.siteId}`,{headers:await signedIdentityHeaders(actorA,emailA,a.siteId)});assert.equal(publicBootstrap.status,200,publicBootstrap.text);
+ const packageId=first.json!.data.package.id;
+ const anonRead=(query:string)=>owned.psql('SET ROLE anon;'+query).trim().split('\n').at(-1)!;
+ owned.psql('GRANT SELECT ON public.themes,public.theme_packages,public.theme_package_versions,public.theme_schema_manifests,public.theme_renderer_manifests TO anon;');
+ assert.equal(anonRead(`SELECT count(*) FROM public.theme_packages WHERE id='${packageId}';`),'0','real anon role cannot read private package');
+ assert.equal(anonRead(`SELECT count(*) FROM public.theme_package_versions WHERE theme_package_id='${packageId}';`),'0','published private version does not leak through public RLS');
+ assert.equal(anonRead(`SELECT count(*) FROM public.theme_schema_manifests WHERE theme_package_version_id='${first.json!.data.version.id}';`),'0');
+ assert.equal(anonRead(`SELECT count(*) FROM public.theme_renderer_manifests WHERE theme_package_version_id='${first.json!.data.version.id}';`),'0');
+ const predecessorRead=owned.script(`BEGIN;ALTER POLICY theme_package_versions_public_read ON public.theme_package_versions USING(release_status='published' AND deleted_at IS NULL);SET LOCAL ROLE anon;SELECT count(*) FROM public.theme_package_versions WHERE id='${first.json!.data.version.id}';ROLLBACK;`);assert.deepEqual(predecessorRead.split('\n').filter(x=>/^\d+$/.test(x)),['1'],'exact predecessor policy leaks a published private version; this negative control rolls back');
+ assert.equal(anonRead(`SELECT count(*) FROM public.theme_package_versions WHERE id='${first.json!.data.version.id}';`),'0','secure policy restored after negative control');
+ assert.ok(Number(anonRead(`SELECT count(*) FROM public.theme_packages WHERE slug='letbuyy-core';`))>0,'public first-party package is a real-role positive control');
+ const reverse=readFileSync(new URL('../../../../../database/supabase/rollback/365_owned_theme_upload.rollback.sql',import.meta.url),'utf8');assert.match(owned.psqlScriptExpectError(reverse),/rollback365 refuses retained owned uploads/);
+ const privateRead=await gateway!.request(`/v1/themes/${slug}/editor?store_id=${b.siteId}`,{headers:await signedIdentityHeaders(actorB,emailB,b.siteId)});assert.ok([403,404].includes(privateRead.status),'unrelated owner cannot edit private upload');
+ const ownedRead=await gateway!.request(`/v1/themes/${slug}/editor?store_id=${a.siteId}`,{headers:await signedIdentityHeaders(actorA,emailA,a.siteId)});assert.equal(ownedRead.status,200,ownedRead.text);
+ const installed=await gateway!.request(`/v1/themes/${slug}/install`,{method:'POST',headers:await signedIdentityHeaders(actorA,emailA,a.siteId),body:JSON.stringify({store_id:a.siteId,config_overrides:{}})});assert.equal(installed.status,201,installed.text);
+ assert.equal(owned.psql(`SELECT theme_id FROM sites WHERE id='${a.siteId}';`),slug,'normal private bundle import installs after bounded validation');
+ const serializedLength=Number(owned.psql(`SELECT length(template_config::text) FROM sites WHERE id='${a.siteId}';`));assert.ok(serializedLength<256000,'Core import stays within the existing template bound');
+ for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role}; SELECT public.upload_owned_theme_package_v1(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`),/permission denied for function/);
+ console.log('WEEK1_THEME_OWNERSHIP_PASS',JSON.stringify({creator:true,foreignOverwriteDenied:true,privateOwnerBound:true,exactReplay:true,changedVersionDenied:true,reservedSlugDenied:true,staleSiteClaimDenied:true,concurrentCollisionSingleOwner:true,foreignEditorDenied:true,ownerEditor:true,unprivilegedRpcDenied:true,privateRegistryRlsDenied:true,predecessorRlsLeakReproducedAndRolledBack:true,publicCatalogRlsPositive:true,atomicFailureRecovery:true,unsafeRollbackDenied:true,privateImportInstalled:true}));
+});

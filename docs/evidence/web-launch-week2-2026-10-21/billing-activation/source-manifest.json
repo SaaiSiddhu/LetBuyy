@@ -1,0 +1,68 @@
+{
+  "commit": "84cbe1e9cdbf4cbd79cc8eac5aed9075e5515db1",
+  "base": "18b8c504",
+  "files": [
+    {
+      "path": "apps/commerce/web/src/lib/store-service.ts",
+      "sha256": "66f91ae178946e74e2174e369f94b3b6c0452d6e130630bb087e75a99814f575"
+    },
+    {
+      "path": "apps/merchant/web/package.json",
+      "sha256": "7dae26688efb10ff54dab98d2f197989fb49d8176a7837e1494997664160aa1f"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx",
+      "sha256": "bdc3193c6107503062e2de94fe4becb834af51f9eb40e416404dd074cfc3b455"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/page.tsx",
+      "sha256": "7815afc5ffecfc6b816efdb20c300b2249a4f4bf3de2954231df3e9354342058"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx",
+      "sha256": "5c4d362d88202250fbde816792ed94054f3173a647048a6ed30a2606b1559956"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/general/page.tsx",
+      "sha256": "23014936eb0a1cf4c3a756fc16f6bc2390ff47b877b868503d78d40ed413c6e2"
+    },
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/plan/page.tsx",
+      "sha256": "77a48351105bd77d0cb9653758b7d5887ff79aec308c9b9b2b43024af9dc6ac9"
+    },
+    {
+      "path": "apps/merchant/web/src/components/AdminShell.tsx",
+      "sha256": "75dd63b7ac5b2a4ab22688a537184df63fae0395a97d43d66faeb491d26fd4cb"
+    },
+    {
+      "path": "apps/merchant/web/src/components/TrialBanner.tsx",
+      "sha256": "d268c5d1fc0d11c0a03df783ef473ad27a8655f0d755ecfcd453b871a6c49e18"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/india/gst-states.ts",
+      "sha256": "cb5a079aaec7ae9a3aeeea6950f3ec24748f877312f573c1bf42e90c4bd46445"
+    },
+    {
+      "path": "apps/merchant/web/tests/billing-entry.test.tsx",
+      "sha256": "72adf82d1c7847bbd1238847d984727391db19ba7e61d2291c2db0592ea37a61"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-checkout-browser.postgres.test.ts",
+      "sha256": "18078d8014da0cbd41cae25cef06933f7aa95bee49c382853f76ca8f0d590b55"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/subscription-payment-ownership.postgres.test.ts",
+      "sha256": "e3dcfe8ef5837df86b1c8479f8ce473232d0364dffdbef3ae0ceb3c4c73fc44b"
+    },
+    {
+      "path": "services/api-gateway/src/middleware/idempotency.ts",
+      "sha256": "e045a14338129f625648d5b9a30e1b1bff90df167012f768756961378cd0778c"
+    },
+    {
+      "path": "services/api-gateway/src/routes/stores.ts",
+      "sha256": "8b55bf21b773567852950d6b5887681e57c5e78b094c3699ecf2decd85733a76"
+    }
+  ],
+  "functionalEvidence": "candidate-browser.json at frozen committed source;71 billing guards on unchanged gateway/core inputs before commit; final source/security gate on this exact commit",
+  "provider": "Explicit synthetic HTTP/captured-payment/SDK fixtures only"
+}

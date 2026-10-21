@@ -1,0 +1,39 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-CATALOG",
+  "base": "85588ec7acb9adee132cde4c859e43f8480e6694",
+  "finding": "Pre-existing catalog-seed/source section drift13; actual fully migrated catalog to be verified before disposition.",
+  "outcome": "New Core installations consume the current canonical buyer/account/search/catalog Liquid section files through the existing install/publish renderer.",
+  "contracts": [
+    "Prove baseline with the full faithful owned migration chain; do not infer hosted state.",
+    "Use canonical generator/section source; no second renderer or auth path.",
+    "Patch only known stale first-party unowned Core catalog sections; refuse unknown drift without partial mutation.",
+    "Existing merchant site/draft/release documents are unchanged; no forced upgrade of published stores.",
+    "Paired rollback and idempotency with exact unrelated catalog conservation.",
+    "Regeneration must not rewrite historical migration200; current artifact/catalog alignment tested.",
+    "Production-built browser buyer/account/search/collection/product acceptance plus existing Core preset/media/COD path as affected."
+  ],
+  "standingBoundaries": [
+    "No push/merge/deploy or shared database mutation",
+    "No real provider transactions/messages",
+    "Mobile app UI excluded; shared interfaces preserved"
+  ],
+  "discoveredNecessaryRepair": {
+    "finding": "Actual native scheduled handler fails before dispatch because global outbox preflight is sent through the ordinary tenant query guard; no index is populated.",
+    "scope": [
+      "services/api-gateway/src/index.ts scheduled preflight",
+      "services/api-gateway/src/execution/queue-execution.adapter.ts claimed-site search source lookups",
+      "Bounded backend-only pending-work RPC, forward/rollback369 and role/tenant/native/idle proof",
+      "services/queue-workers/src/platform-queue-consumer.ts existing matching product/order search consumer; same claimed-site scope and isolation controls",
+      "Commerce Liquid address manager: canonical loaded buyer identity in existing required stale-account headers for create/edit/default/delete, retired-load/disconnect protection, unit and native regression"
+    ],
+    "invariants": [
+      "No general unguarded client or guard weakening",
+      "Global preflight returns existence booleans only, not tenant rows or exact counts",
+      "Ordinary roles denied; schema drift refuses; rollback is paired",
+      "Source product/order reads scope to the backend-claimed job site; wrong-site identifiers reveal no source data",
+      "Actual nonzero product outbox, queue and search document required before browser search passes",
+      "No new runtime, hosted scheduler change or real provider effect",
+      "Never relax existing expected-buyer guard or derive buyer authority from DOM/headers; captured ID only protects stale forms, signed server session authorizes writes."
+    ]
+  }
+}

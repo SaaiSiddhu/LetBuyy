@@ -1,3 +1,4 @@
+import { normalizeStoreRootDomain } from '@letbuyy/tenant-core';
 // ============================================================
 // ONBOARDING — 6-step wizard (Doc 03 + Doc 09 § 4)
 // ============================================================
@@ -57,11 +58,7 @@ function adminUrl(env: Env, urlPath = ''): string {
 }
 
 function storefrontUrl(env: Env, subdomain: string): string {
-    const rootDomain = (env.NEXT_PUBLIC_STORE_ROOT_DOMAIN || env.STOREFRONT_ROOT_DOMAIN || platformDomain(env))
-        .trim()
-        .replace(/^https?:\/\//, '')
-        .replace(/\/.*$/, '')
-        .replace(/^\.+|\.+$/g, '') || 'letbuyy.com';
+    const rootDomain = normalizeStoreRootDomain(env.NEXT_PUBLIC_STORE_ROOT_DOMAIN || env.STOREFRONT_ROOT_DOMAIN);
     return `https://${subdomain}.${rootDomain}`;
 }
 

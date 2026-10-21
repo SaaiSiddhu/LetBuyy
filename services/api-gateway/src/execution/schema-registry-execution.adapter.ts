@@ -1,3 +1,4 @@
+import { AppError, ForbiddenError, ConflictError } from '../lib/errors';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/shared-types';
 import {
@@ -169,6 +170,21 @@ function buildBundleTemplateConfig(bundle: PortableThemePackageBundle): DbRecord
     const currentSettings = asRecord(settingsData.current);
     const liquid = isLiquidBundle(bundle);
 
+    // Liquid files live once in the immutable bundle. Duplicating section sources,
+    // templates and locales at the portable root exceeded the 256KB draft bound.
+    if (liquid) return {
+        themeId: bundle.package.slug,
+        schema_version: bundle.schema_version,
+        engineVersion: bundle.renderer.renderer_version,
+        rendererEngine: 'liquid',
+        liquidBundle: bundle,
+        // Keep instance maps (small), but never duplicate Liquid source files.
+        // Empty root slots also prevent another installed theme leaking old blocks.
+        sections: {},
+        templates: bundle.templates,
+        themeSettings: currentSettings,
+    };
+
     return {
         themeId: bundle.package.slug,
         schema_version: bundle.schema_version,
@@ -248,7 +264,7 @@ export class SchemaRegistryExecutionAdapter {
     async uploadThemePackageBundle(
         input: unknown,
         actorId: string,
-        options: { publicationMode?: 'marketplace' | 'private_install' } = {}
+        options: { publicationMode?: 'marketplace' | 'private_install'; siteId?: string } = {}
     ) {
         const bundle = parsePortableThemePackageBundle(input);
         const payload = buildPortableThemePackagePersistencePayload(bundle);
@@ -257,17 +273,13 @@ export class SchemaRegistryExecutionAdapter {
         const catalogConfig = buildBundleCatalogConfig(bundle);
         const firstSiteType = payload.themePackage.site_types[0] || 'store';
         const reviewRequired = options.publicationMode !== 'private_install';
-        const packageStatus = reviewRequired ? 'draft' : payload.themePackage.status;
+        const packageStatus = 'draft'; // Merchant uploads are never a public catalog approval.
         const versionStatus = reviewRequired ? 'draft' : payload.themePackageVersion.release_status;
-        const installable =
-            packageStatus === 'active' &&
-            versionStatus === 'published';
+        const installable = !reviewRequired && versionStatus === 'published';
         const pricingType = themePricingType(payload.themePackage.pricing_type);
 
-        const { data: legacyTheme, error: legacyThemeError } = await this.db
-            .from('themes')
-            .upsert(
-                {
+        if (!options.siteId) throw new ForbiddenError('Select an owned store before uploading a theme.');
+        const catalog = {
                     slug: payload.themePackage.slug,
                     name: payload.themePackage.name,
                     site_type: firstSiteType,
@@ -309,131 +321,21 @@ export class SchemaRegistryExecutionAdapter {
                             'Portable theme bundle',
                         ],
                     updated_at: now,
-                },
-                { onConflict: 'slug' }
-            )
-            .select('id, slug, name')
-            .single();
-
-        if (legacyThemeError || !legacyTheme) {
-            throw new Error(`Theme catalog upsert failed: ${legacyThemeError?.message || 'Unknown error'}`);
-        }
-
-        const legacyThemeRecord = legacyTheme as DbRecord;
-        const legacyThemeId = String(legacyThemeRecord.id);
-
-        const { data: themePackage, error: packageError } = await this.db
-            .from('theme_packages')
-            .upsert(
-                {
-                    ...payload.themePackage,
-                    status: packageStatus,
-                    marketplace_metadata: {
-                        ...payload.themePackage.marketplace_metadata,
-                        uploaded_by_custom_user_id: actorId,
-                        uploaded_at: now,
-                        review_required: reviewRequired,
-                    },
-                    legacy_theme_id: legacyThemeId,
-                    deleted_at: null,
-                    updated_at: now,
-                },
-                { onConflict: 'slug' }
-            )
-            .select('id, slug, name, status')
-            .single();
-
-        if (isMissingThemeEngineTable(packageError)) {
-            throw new Error('Theme package registry tables are unavailable');
-        }
-        if (packageError || !themePackage) {
-            throw new Error(`Theme package upload failed: ${packageError?.message || 'Unknown error'}`);
-        }
-
-        const themePackageRecord = themePackage as DbRecord;
-        const themePackageId = String(themePackageRecord.id);
-
-        const { data: version, error: versionError } = await this.db
-            .from('theme_package_versions')
-            .upsert(
-                {
-                    ...payload.themePackageVersion,
-                    theme_package_id: themePackageId,
-                    release_status: versionStatus,
-                    published_at: versionStatus === 'published' ? now : null,
-                    deleted_at: null,
-                    updated_at: now,
-                },
-                { onConflict: 'theme_package_id,version' }
-            )
-            .select('id, version, version_number, release_status')
-            .single();
-
-        if (isMissingThemeEngineTable(versionError)) {
-            throw new Error('Theme package version table is unavailable');
-        }
-        if (versionError || !version) {
-            throw new Error(`Theme package version upload failed: ${versionError?.message || 'Unknown error'}`);
-        }
-
-        const versionRecord = version as DbRecord;
-        const themePackageVersionId = String(versionRecord.id);
-
-        const [schemaUpsert, rendererUpsert] = await Promise.all([
-            this.db
-                .from('theme_schema_manifests')
-                .upsert(
-                    {
-                        ...payload.schemaManifest,
-                        theme_package_version_id: themePackageVersionId,
-                        updated_at: now,
-                    },
-                    { onConflict: 'theme_package_version_id' }
-                ),
-            this.db
-                .from('theme_renderer_manifests')
-                .upsert(
-                    {
-                        ...payload.rendererManifest,
-                        theme_package_version_id: themePackageVersionId,
-                        updated_at: now,
-                    },
-                    { onConflict: 'theme_package_version_id' }
-                ),
-        ]);
-
-        if (isMissingThemeEngineTable(schemaUpsert.error) || isMissingThemeEngineTable(rendererUpsert.error)) {
-            throw new Error('Theme schema or renderer manifest tables are unavailable');
-        }
-        if (schemaUpsert.error) {
-            throw new Error(`Theme schema manifest upload failed: ${schemaUpsert.error.message}`);
-        }
-        if (rendererUpsert.error) {
-            throw new Error(`Theme renderer manifest upload failed: ${rendererUpsert.error.message}`);
-        }
-
-        return {
-            theme: {
-                id: legacyThemeId,
-                slug: payload.themePackage.slug,
-                name: payload.themePackage.name,
-            },
-            package: {
-                id: themePackageId,
-                slug: payload.themePackage.slug,
-                name: payload.themePackage.name,
-                status: packageStatus,
-            },
-            version: {
-                id: themePackageVersionId,
-                version: payload.themePackageVersion.version,
-                version_number: payload.themePackageVersion.version_number,
-                release_status: versionStatus,
-            },
-            schema_manifest_version: payload.schemaManifest.manifest_version,
-            renderer_version: payload.themePackageVersion.renderer_version,
-            installable,
-        };
+                };
+        const { data, error } = await this.db.rpc('upload_owned_theme_package_v1', {
+            p_actor: actorId,
+            p_site: options.siteId,
+            p_mode: options.publicationMode || 'marketplace',
+            p_catalog: catalog,
+            p_package: { ...payload.themePackage, status: packageStatus },
+            p_version: { ...payload.themePackageVersion, release_status: versionStatus },
+            p_schema: payload.schemaManifest,
+            p_renderer: payload.rendererManifest,
+        });
+        if (error?.code === '42501') throw new ForbiddenError('This theme name or store is not available to your account.');
+        if (error?.code === '23505') throw new ConflictError('This theme version already exists with different content. Upload a new version.');
+        if (error) throw new AppError('Theme upload is temporarily unavailable. Retry the same upload.', 503, 'THEME_UPLOAD_UNAVAILABLE');
+        return data;
     }
 
     async resolveThemeRuntime(theme: ThemeRegistryThemeInput): Promise<ThemeRuntimeSchema> {

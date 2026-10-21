@@ -54,6 +54,15 @@ export function gstStateName(code?: string | null): string {
     return NAME_BY_CODE.get(code.trim()) || ''
 }
 
+/** Resolve only a known selected state, including the existing UI's "and"
+ * labels for territories. Unknown values never become a guessed jurisdiction. */
+export function gstStateCodeFromName(name?: string | null): string {
+    if (!name) return ''
+    const normalize = (value: string) => value.trim().toLowerCase().replace(/&/g, 'and').replace(/\s+/g, ' ')
+    const selected = normalize(name)
+    return GST_STATES.find(state => normalize(state.name) === selected)?.code || ''
+}
+
 /** Derive the GST state code from the first two digits of a GSTIN. */
 export function deriveGstStateCode(gstin?: string | null): string {
     if (!gstin) return ''

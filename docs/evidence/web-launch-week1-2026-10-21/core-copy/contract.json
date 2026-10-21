@@ -1,0 +1,24 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-COPY",
+  "base": "d9a987dc79bdac26a6c5ae95b9595c678c9215d5",
+  "finding": "CORE_COPY-01",
+  "observed": "Core announces free shipping while normal merchant configured shipping is charged at checkout.",
+  "outcome": "Neutral starter message for fresh canonical Core stores, editor schema defaults and generated distribution; no invented shipping offer.",
+  "contracts": [
+    "Use one existing Core generator and renderer; legacy Urban Kicks fixture unchanged.",
+    "Forward catalog patch only unowned canonical first-party Core row; no migration200 rewrite.",
+    "Existing store draft/release snapshots and owner-authored copy remain untouched.",
+    "Preserve all ten presets and verify actual Liquid output with charged shipping.",
+    "Paired rollback of the exact catalog copy change with no reset of unrelated state."
+  ],
+  "verification": [
+    "Targeted theme generator/render/manifest tests.",
+    "Owned PG catalog patch/rollback, noncanonical and merchant-owned exclusions, existing snapshot conservation, fresh bootstrap.",
+    "Production-built normal browser journey must render neutral starter message and retain charged shipping and correct order amount."
+  ],
+  "boundaries": [
+    "No deploy/shared DB/real external effects",
+    "Provider and hosted readiness separate",
+    "Source and evidence only; not formal whole-theme acceptance"
+  ]
+}

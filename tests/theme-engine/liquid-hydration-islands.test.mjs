@@ -26,7 +26,7 @@ test('Liquid fixture carries cart search and variant hydration islands', () => {
 
 test('storefront Liquid renderer mounts the hydration island runtime', () => {
   assert.match(COMPOSITION_SOURCE, /import LiquidHydrationIslands from '\.\/liquid-hydration-islands'/);
-  assert.match(COMPOSITION_SOURCE, /<LiquidHydrationIslands basePath=\{basePath\} storeId=\{storeId\} \/>/);
+  assert.match(COMPOSITION_SOURCE, /<LiquidHydrationIslands basePath=\{basePath\} storeId=\{storeId\} variantProductIds=\{variantProductIds\} \/>/);
   assert.match(COMPOSITION_SOURCE, /data-theme-renderer="liquid"/);
 });
 

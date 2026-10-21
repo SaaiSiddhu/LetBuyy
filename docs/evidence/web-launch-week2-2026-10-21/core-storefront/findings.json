@@ -1,0 +1,106 @@
+[
+  {
+    "id": "CORE-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "Fresh web stores used modern or incomplete Core config.",
+    "change": "Initialize from the actual active free first-party Core Liquid catalog before store insertion. Missing/malformed catalog returns503 without a store. Older explicit theme requests remain compatible.",
+    "beforeReceipt": "before-bootstrap.json",
+    "afterReceipt": "final-scope.json"
+  },
+  {
+    "id": "HOST-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "Tenant host defaults and dashboard links still used the platform .com domain.",
+    "change": "One shared .store storefront constant and host/URL helpers; accounts/admin/API/cookies remain .com. Explicit local roots and exact configured checkout origin/port are preserved. Narrow unsafe literal controls remain.",
+    "beforeReceipt": "native-browser.json",
+    "afterReceipt": "domain-policy-tests.log"
+  },
+  {
+    "id": "PUBLISH-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "A fresh successful live publication left published=false; anonymous storefront returned401.",
+    "change": "Migration366 repairs the existing atomic publisher, with rollback/profile/ABI/default/ACL refusal controls. Draft-only release and merchant privacy choices remain intact. No backfill or hosted/shared DB write.",
+    "beforeReceipt": "before-publication.json",
+    "afterReceipt": "final-scope.json"
+  },
+  {
+    "id": "PREVIEW-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "Authorized preview used published-only product reads at both page and section levels.",
+    "change": "The existing capability endpoint validates store/session/draft/expiry before a bounded catalog read. The page and sections share it; private,no-store. Public unpublished reads remain denied.",
+    "beforeReceipt": "before-preview-reader.json",
+    "afterReceipt": "native-bound-preview-browser.json"
+  },
+  {
+    "id": "HANDOFF-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "Proxy accepted configured checkout origin but handoff endpoint returned503.",
+    "change": "Validate exact configured checkout origin and port, independently from tenant root; reject tenant-host spoof and wrong port.",
+    "beforeReceipt": "native-publication-browser.json",
+    "afterReceipt": "handoff-tests.log"
+  },
+  {
+    "id": "VARIANT-01",
+    "status": "LOCAL_NATIVE_VERIFIED",
+    "before": "Confirmed customer COD order had no variant ID. Public option names were absent and Liquid cart always submitted null; product-only cart keys collapsed choices.",
+    "change": "Expose only safe canonical option labels; adapt positional fields to existing picker; require available selection; preserve variant ID in local/server cart readback and both cart control surfaces. Canonical cart validates selected variant membership and quotes variant price. Higher-price variant order verification is running. Variant product-card quick-add now opens Choose options without writing an unspecified line; the React and Liquid cart controls target one variant.",
+    "beforeReceipt": "native-bound-preview-browser.json",
+    "afterReceipt": "final-scope.json"
+  },
+  {
+    "id": "ART-01",
+    "status": "LOCAL_VERIFIED",
+    "before": "Six activation illustration paths did not exist and repeatedly failed.",
+    "change": "Use shipped artwork and existing icons with image-failure fallback. No fabricated images or external image dependency.",
+    "beforeReceipt": "native-product-browser.json",
+    "afterReceipt": "merchant-final-tests.log"
+  },
+  {
+    "id": "LOG-01",
+    "status": "LOCAL_VERIFIED_SCOPED",
+    "before": "Gateway request telemetry included raw bearer cart path tokens.",
+    "change": "Use matched route patterns for stdout, analytics, durable request path/route and global errors. Nine tests include late middleware/unmatched routes. Final expanded Native run contains zero raw32-hex cart bearer tokens in its captured output; this remains a scoped observation. Historical failed logs remain private evidence.",
+    "beforeReceipt": "native-checkout-browser.json",
+    "afterReceipt": "telemetry-proof.json"
+  },
+  {
+    "id": "HYDRATE-01",
+    "status": "LOCAL_NATIVE_VERIFIED",
+    "before": "A stylesheet sharing the Liquid renderer attribute could be selected as the hydration root instead of the actual storefront content.",
+    "change": "Select the content element by its renderer and editor-mode attributes. An actual React mount with a preceding stylesheet fails before and passes after; the storefront receives cart and variant controls.",
+    "beforeReceipt": "before-hydration-root-repro.log",
+    "afterReceipt": "after-hydration-root-tests.log"
+  },
+  {
+    "id": "MERCHANT_LABELS-01",
+    "status": "LOCAL_NATIVE_VERIFIED",
+    "before": "Five merchant preview/domain/SEO labels hardcoded the old platform suffix; the original editor capture also caught a publish reload rather than a settled preview.",
+    "change": "All five use the configured storefront-root helper. Native browser checks the edited iframe heading and host, Domains and preferences labels, then normal SEO save and General readback. The replacement capture waits for the actual private render.",
+    "beforeReceipt": "merchant-core-editor-before-labels.png",
+    "afterReceipt": "final-scope.json"
+  },
+  {
+    "id": "GATE_DECLARATIONS-01",
+    "status": "LOCAL_GATE_VERIFIED_WITH_METHOD_RED",
+    "before": "The first full gate exited5: new test variables named module failed Next lint, storefront policy helper was not classified as a library, merchant tenant-core import lacked package/runtime/lock declarations, and migration366 lacked a named API-role closure after replacement.",
+    "change": "Rename test variables, explicitly classify the helper library, declare the existing workspace dependency with a minimal lock update, and reassert named PUBLIC/anon/authenticated revocation without changing backend grants. Targeted lint/plan/dependency/tooling/definer checks and fresh Core profile-conservation cases pass; final full gate completed; see canonical counts and retained raw sweep result below.",
+    "beforeReceipt": "verified-gate-before-tooling-source.json",
+    "afterReceipt": "final-scope.json"
+  },
+  {
+    "id": "CORE_COPY-01",
+    "status": "OPEN_LAUNCH_COPY_REVIEW",
+    "before": "The starter theme announcement promises free shipping while the test merchant configured a \u20b920 delivery rate.",
+    "change": "Keep this as a separate before-launch Core/marketing default-copy review; the integration proof does not certify all commercial copy or every theme section.",
+    "beforeReceipt": "public-core-store.png",
+    "afterReceipt": "findings.json"
+  },
+  {
+    "id": "PERF-AMPLIFICATION-01",
+    "status": "OBSERVED_WORK_VOLUME_NEEDS_TASK_ATTRIBUTION",
+    "before": "The final deliberately repeated scenario emitted1401Gateway telemetry points across signup, merchant setup, ten preset cycles,20 public viewport renders, checkout and readbacks.",
+    "change": "This count is not a page-speed benchmark or a proof of excess by itself. Attribute work to each useful action and measure SQL/HTTP/render cost and tail latency in the performance phase; no new cache or service introduced here.",
+    "beforeReceipt": "telemetry-proof.json",
+    "afterReceipt": "telemetry-proof.json"
+  }
+]

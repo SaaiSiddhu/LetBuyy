@@ -195,6 +195,7 @@ const libraryModules = [
   "governance-common.mjs",
   "phase-b-common.mjs",
   "secret-scan-core.mjs",
+  "storefront-domain-policy.mjs",
 ];
 
 // Invoked by git hooks (scripts/git-hooks/*), not by a governance lane.

@@ -2897,6 +2897,20 @@ export type StorefrontContentPayload = JsonRecord & {
 
 export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
 
+export type StorefrontCollectionSummary = {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+};
+
+export type StorefrontCollectionCursorQuery = { after?: string; before?: string };
+export type StorefrontCollectionPage = {
+  items: StorefrontCollectionSummary[];
+  nextCursor: string | null;
+  previousCursor: string | null;
+};
+
 export type StorefrontCollectionPayload = {
   collection: {
     id: string;
@@ -3401,6 +3415,7 @@ export type ThemePurchaseVerifyResult = {
   provider_payment_id?: string | null;
 };
 export type ThemePackageUploadInput = {
+    store_id?: string;
   bundle: JsonRecord;
   submission_mode?: 'marketplace' | 'private_install';
 };
@@ -5514,6 +5529,14 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
+    themePreviewCollections: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections' } }),
+    browsePreviewCollections: (subdomain: string, token: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { after: cursor.after, before: cursor.before, token, resource: 'collections', browse: '1' } }),
+    themePreviewProducts: (subdomain: string, token: string, productIds?: string[], options?: LetbuyyRequestOptions) =>
+      this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, {
+        ...options, query: { token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
+      }),
     navigation: (subdomain: string, location: string, options?: LetbuyyRequestOptions) =>
       this.requestData<NavigationResponse>(`/storefront/${encodePathSegment(subdomain)}/navigation`, { ...options, query: { location } }),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
@@ -5591,6 +5614,10 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontProductReviewsResult>('/storefront/reviews', { ...options, query }),
     submitProductReview: (input: StorefrontProductReviewInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontProductReviewResult>('/storefront/reviews', { ...options, method: 'POST', body: input }),
+    listCollections: (subdomain: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/collections`, options),
+    browseCollections: (subdomain: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/collections`, { ...options, query: { after: cursor.after, before: cursor.before, browse: '1' } }),
     getCollectionWithProducts: (subdomain: string, collectionId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionPayload>(`/storefront/${encodePathSegment(subdomain)}/collections/${encodePathSegment(collectionId)}`, options),
   };

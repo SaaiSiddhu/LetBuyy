@@ -29,7 +29,7 @@ export default async function SelectPlanPage({ params }: PageProps) {
 
     const apiClient = createMerchantApiClient()
     const [plans, subscriptionPayload, foundingRemaining] = await Promise.all([
-        apiClient.payments.plans({ site_type: siteType }),
+        apiClient.payments.plans({ site_type: siteType, store_id: storeData.id }),
         apiClient.payments.subscription.get({ store_id: storeData.id }),
         apiClient.foundingProgram.remaining().catch(() => null),
     ])
@@ -41,7 +41,7 @@ export default async function SelectPlanPage({ params }: PageProps) {
     return (
         <SelectPlanClient
             plans={plans.map(toSubscriptionPlanView)}
-            currentPlan={currentSub?.plan || null}
+            currentPlan={currentSub && ['active', 'trialing'].includes(currentSub.status) ? currentSub.plan : null}
             storeName={storeData.name || storeData.store_name || store}
             storeSlug={store}
             storeId={storeData.id}

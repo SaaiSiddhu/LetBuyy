@@ -86,11 +86,12 @@ export async function merchantApiFetch(path: string, init: MerchantApiFetchInit 
     })
 }
 
-export function createMerchantApiClient(): LetbuyyApiClient {
+export function createMerchantApiClient(storeId?: string): LetbuyyApiClient {
     const baseUrl = merchantApiBaseUrl()
 
     return createLetbuyyApiClient({
         baseUrl,
+        storeId,
         fetch: async (input, init) => merchantApiFetch(apiClientInputToLetbuyyApiPath(input, baseUrl), {
             ...init,
             requireSession: true,

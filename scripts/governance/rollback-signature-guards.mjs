@@ -503,6 +503,44 @@ function profileRefusal(body,guards) {
     for(const row of rows)guards.find(g=>g.identity===functionIdentity(row.signature)).profile_fingerprint={default_count:row.default_count,default_source:row.default_source,body_md5s:[row.first_md5,row.second_md5]};
     return true;
 }
+// The visibility repair keeps a single typed legacy publisher. Recognize its
+// finite full-profile refusal, not its filename or DO-block label. Every term
+// and the literal target are bound; unknown predicates/callees earn no proof.
+function publicationVisibilityGuard(body, definitions) {
+    const {nodes,declarations}=new GuardParser(body).parse();
+    const signature='public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)';
+    const inputs=['p_store_id','p_theme_id','p_release_config','p_source_draft_id','p_source_draft_version','p_published_by','p_publish_message','p_make_store_live','p_request_id','p_rollback_of_release_id'];
+    const names=[...inputs,'release_id','release_version','published_at'];
+    const types=['uuid','text','jsonb','uuid','integer','uuid','text','boolean','text','uuid','uuid','integer','timestamptz'];
+    if(declarations.length!==1||!same(declarations[0],'p pg_catalog.pg_proc%ROWTYPE')||nodes.length!==2
+       ||nodes[0].op!=='select'||!same(nodes[0].tokens,`SELECT * INTO p FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure('${signature}')`)
+       ||!refuses(nodes[1])||nodes[1].branches.length!==1||nodes[1].branches[0].nodes[0].tokens.length!==3)return [];
+    const restored=definitions.filter(fn=>fn.identity===signature);
+    if(restored.length!==1||JSON.stringify(restored[0].inputNames)!==JSON.stringify(inputs))return [];
+    const array=values=>'ARRAY['+values.map(value=>`'${value}'`).join(',')+']';
+    const conditions=[
+        'p.oid IS NULL',"p.prokind<>'f'",'NOT p.prosecdef','p.pronargdefaults<>7','p.provariadic<>0',
+        "p.provolatile<>'v'",'p.proisstrict','p.proleakproof',"p.proparallel<>'u'",
+        'p.procost IS DISTINCT FROM 100::real','p.prorows IS DISTINCT FROM 1000::real',
+        'p.prosupport<>0','p.probin IS NOT NULL','p.prosqlbody IS NOT NULL','p.protrftypes IS NOT NULL',
+        '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
+        "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
+        "p.proowner IS DISTINCT FROM (SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.theme_instances'::regclass)",
+        `p.proargnames IS DISTINCT FROM ${array(names)}::text[]`,
+        "p.prorettype IS DISTINCT FROM 'record'::regtype",'NOT p.proretset',
+        `p.proallargtypes IS DISTINCT FROM ARRAY[${types.map(type=>`'${type}'::regtype::oid`).join(',')}]::oid[]`,
+        `p.proargmodes IS DISTINCT FROM ${array([...Array(10).fill('i'),...Array(3).fill('t')])}::"char"[]`,
+        "pg_catalog.pg_get_expr(p.proargdefaults,0) IS DISTINCT FROM 'NULL::uuid, NULL::integer, NULL::uuid, NULL::text, true, NULL::text, NULL::uuid'",
+        "p.prolang IS DISTINCT FROM (SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')",
+        "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')",
+        "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",
+        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')",
+        "pg_catalog.md5(p.prosrc)<>'8a1479af8ced3bbdb3cd6cc21d957f42'",
+    ];
+    if(!equalTerms(nodes[1].branches[0].condition,conditions))return [];
+    return [{name:'publish_theme_release',identity:signature,input_names:inputs,result_type:'record',returns_set:true,overloads:1,level:'typed-ABI',
+        output_abi:{names,types,modes:[...Array(10).fill('i'),...Array(3).fill('t')]},profile_fingerprint:{body_md5:'8a1479af8ced3bbdb3cd6cc21d957f42',defaults:7,api_roles_closed:true}}];
+}
 function baseRollbackSignatureGuards(sql) {
     try {
         const statements=sqlStatements(sql);
@@ -514,7 +552,8 @@ function baseRollbackSignatureGuards(sql) {
         for(const statement of statements.slice(1,firstMutation)) {
             if(word(statement[0],'do') && statement.length===3 && statement[1].kind==='body') {
                 if(profileRefusal(statement[1].value,guards)||fingerprintRefusal(statement[1].value,guards))continue;
-                const rows=analyzeBlock(statement[1].value, restoredDefinitions(sql));
+                const profile=publicationVisibilityGuard(statement[1].value,restoredDefinitions(sql));
+                const rows=profile.length?profile:analyzeBlock(statement[1].value, restoredDefinitions(sql));
                 if(!rows.length && !new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
                 guards.push(...rows.map(row=>({...row,guard_start:statement[0].start})));
             } else if(statement[0]?.value==='select' && !/^select pg_advisory_xact_lock \( hashtextextended \( '[^']+' , 0 \) \) ;$/.test(tokenText(statement)))return [];

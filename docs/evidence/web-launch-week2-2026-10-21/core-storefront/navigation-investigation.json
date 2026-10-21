@@ -1,0 +1,40 @@
+{
+  "source": "ff6dcc78d0abbd656283fa284548dcd3120471ea",
+  "status": "SOURCE_GRAPH_CONFIRMED_MEASUREMENT_PENDING",
+  "observedScenario": {
+    "capturedTelemetryPoints": 1401,
+    "navigationPoints": 585,
+    "scope": "Full synthetic browser journey, including preset iteration and editor activity; not a single page or concurrency benchmark"
+  },
+  "reader": {
+    "path": "apps/commerce/web/src/lib/store-service.ts",
+    "lines": [
+      78,
+      451,
+      482,
+      503
+    ],
+    "storeRead": "React request-scoped cache by subdomain and anyStatus",
+    "navigationRead": "Each bundle call starts main/footer/policies HTTP reads; no explicit React request-scoped cache on bundle",
+    "transportCaveat": "Actual Next fetch deduplication and storefrontReadInit policy must be measured before treating each call as unique database work"
+  },
+  "consumers": [
+    "store/[subdomain]/layout.tsx metadata and layout",
+    "store/[subdomain]/page.tsx metadata and page",
+    "product/[productId]/page.tsx metadata and page",
+    "collections/[slug]/page.tsx metadata and page"
+  ],
+  "nextAcceptance": [
+    "Inspect storefrontReadInit and API transport cache behavior on the production-built runtime.",
+    "Measure cold and repeat homepage/PDP useful content under the same owned fixture: navigation calls by location, store calls, timing and failures.",
+    "If duplicate navigation demand is observed within a React request, reuse only request-scoped public results, keyed by exact subdomain; do not add long-lived private or publication state caches.",
+    "Verify a second tenant cannot reuse the first tenant navigation and a subsequent request observes an edit under the established freshness contract.",
+    "Compare equivalent before/after runs; preserve raw counts and timings without claiming full platform capacity."
+  ],
+  "transportObservation": {
+    "path": "apps/commerce/web/src/lib/api/client.ts",
+    "line": 49,
+    "observed": "storefrontApiFetch generates a new X-Request-ID for every call, including public navigation reads using next.revalidate=60",
+    "inference": "Per-call random headers may prevent otherwise identical fetch memoization/data-cache reuse. Verify actual installed Next production behavior before changing trace propagation or making quantitative claims."
+  }
+}

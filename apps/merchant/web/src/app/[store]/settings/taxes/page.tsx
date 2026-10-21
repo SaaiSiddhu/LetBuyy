@@ -298,7 +298,7 @@ export default function TaxesSettingsPage() {
             name,
             rate: rateValue / 100,
             country: formCountry || 'IN',
-            state: formState || null,
+            ...(formState.trim() ? { state: formState.trim() } : formMode === 'edit' ? { state: null } : {}),
             is_compound: formCompound,
             is_shipping: formShipping,
             is_active: formActive,

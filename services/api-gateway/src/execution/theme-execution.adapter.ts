@@ -1,3 +1,4 @@
+import { resolveLiquidBundleArtifact } from '../lib/theme-release-bundle';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
 import {
@@ -5,6 +6,8 @@ import {
     collectThemeTemplateValidationIssues,
     hasRenderableThemeTemplate,
     LiquidThemePackageBundleSchema,
+    LETBUYY_CORE_THEME_SLUG,
+    LETBUYY_CORE_BUNDLE_SLUG,
     mergeThemeIdentity,
     migrateThemeTemplateSchemasWithRegistry,
     parseLiquidThemePackageBundle,
@@ -200,11 +203,6 @@ async function sha256Hex(input: string): Promise<string> {
         .join('');
 }
 
-function resolveLiquidBundleArtifact(releaseConfig: DbRecord): DbRecord | null {
-    const candidate = asRecord(releaseConfig).liquidBundle;
-    const result = LiquidThemePackageBundleSchema.safeParse(candidate);
-    return result.success ? result.data as unknown as DbRecord : null;
-}
 
 const DEFAULT_THEME_TEMPLATE_OPTIONS = [
     { key: 'index', label: 'Home page', type: 'home' },
@@ -327,6 +325,29 @@ export class ThemeExecutionAdapter {
         const store = asRecord(Array.isArray(data) ? data[0] : data);
         if (error || store.id !== storeId) throw new AppError('Theme access is temporarily unavailable.', 503, 'THEME_STATE_UNAVAILABLE');
         return store as StoreRecord;
+    }
+
+    /** Prepare the canonical first-party document before a new web store is inserted. */
+    async prepareCoreStoreTemplate(input: DbRecord): Promise<DbRecord> {
+        try {
+            const theme = await this.getTheme(LETBUYY_CORE_THEME_SLUG);
+            if (theme.is_site_private || theme.owned_by_site_id || theme.is_premium
+                || (theme.letbuyy_pricing_type && theme.letbuyy_pricing_type !== 'free')) {
+                throw new Error('Core catalog is not a public free theme');
+            }
+            // Creation uses the catalog document. Imported/custom files enter via the
+            // existing owner-scoped upload/editor paths, never an initial JSON override.
+            const canonical = resolveRenderableThemeTemplateConfig({}, theme);
+            const bundle = LiquidThemePackageBundleSchema.safeParse(canonical.liquidBundle);
+            if (!bundle.success || bundle.data.package.slug !== LETBUYY_CORE_BUNDLE_SLUG) {
+                throw new Error('Core Liquid package is unavailable');
+            }
+            const template = { ...input, ...canonical };
+            await this.validateTemplateConfig(template, theme);
+            return template;
+        } catch {
+            throw new AppError('The Core theme is temporarily unavailable. Please retry store creation.', 503, 'CORE_THEME_UNAVAILABLE');
+        }
     }
 
     async getTheme(slug: string): Promise<ThemeRecord> {
@@ -733,6 +754,7 @@ export class ThemeExecutionAdapter {
 
         if (input.makeStoreLive) {
             storeUpdates.status = 'published';
+            storeUpdates.published = true;
             storeUpdates.published_at = publishedAt;
         }
 
@@ -750,6 +772,7 @@ export class ThemeExecutionAdapter {
 
             if (input.makeStoreLive) {
                 minimalUpdates.status = 'published';
+                minimalUpdates.published = true;
                 minimalUpdates.published_at = publishedAt;
             }
 
@@ -778,6 +801,11 @@ export class ThemeExecutionAdapter {
     ) {
         const store = await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
+        if (theme.is_site_private && theme.owned_by_site_id !== store.id) throw new ForbiddenError('This theme belongs to another store.');
+        // Validate before changing the active installation or creating any rows.
+        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        const runtime = await this.validateTemplateConfig(templateConfig, theme);
+
 
         const pricingType = theme.letbuyy_pricing_type || (theme.is_premium ? 'paid' : 'free');
 
@@ -820,8 +848,6 @@ export class ThemeExecutionAdapter {
             throw new Error(`Theme installation failed: ${error?.message || 'Unknown error'}`);
         }
 
-        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
-        const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,
             theme,

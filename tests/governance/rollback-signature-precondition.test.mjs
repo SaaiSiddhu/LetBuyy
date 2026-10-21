@@ -786,3 +786,30 @@ test('historical full-definition guards require custody, every restored ABI, and
     assert.deepEqual(guardedRestorations(sql),[],'no forward binding source means no historical proof');
     assert.deepEqual(guardedRestorations(sql,{forwardSql:forwardSql.replace("'claim_merchant_subscription_checkout_v1','public.claim_merchant_subscription_checkout_v1", "'other_checkout','public.other_checkout")}),[]);
 });
+
+test('visibility rollback earns full typed profile proof; stripped and forged guards do not', () => {
+    const name='366_theme_publication_visibility.rollback.sql',sql=read(name);
+    const forwardSql=readFileSync(join(rollbackDir,'../migrations/366_theme_publication_visibility.sql'),'utf8');
+    assert.deepEqual(guardedRestorations(sql,{forwardSql}),['publish_theme_release']);
+    const terms=[
+        'p.oid IS NULL', "p.prokind<>'f'", 'NOT p.proretset', 'NOT p.prosecdef', 'p.pronargdefaults<>7', 'p.provariadic<>0',
+        "p.provolatile<>'v'", 'p.proisstrict', 'p.proleakproof', "p.proparallel<>'u'", 'p.procost IS DISTINCT FROM 100::real', 'p.prorows IS DISTINCT FROM 1000::real',
+        'p.prosupport<>0', 'p.probin IS NOT NULL', 'p.prosqlbody IS NOT NULL', 'p.protrftypes IS NOT NULL',
+        '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
+        "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
+        "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')", "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",
+        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')", "pg_catalog.md5(p.prosrc)<>'8a1479af8ced3bbdb3cd6cc21d957f42'",
+    ];
+    for(const term of terms){assert.ok(sql.includes(term),term);assert.deepEqual(guardedRestorations(sql.replace(term,'false'),{forwardSql}),[],term+' cannot be removed');}
+    for(const [before,after] of [
+        ['p.proargnames IS DISTINCT FROM','p.proargnames IS NOT DISTINCT FROM'],
+        ['p.proallargtypes IS DISTINCT FROM','p.proallargtypes IS NOT DISTINCT FROM'],
+        ['p.proargmodes IS DISTINCT FROM','p.proargmodes IS NOT DISTINCT FROM'],
+        ['pg_catalog.pg_get_expr(p.proargdefaults,0)','public.pg_get_expr(p.proargdefaults,0)'],
+        ["'public.theme_instances'::regclass","'public.sites'::regclass"],
+        ['pg_catalog.md5(p.prosrc)','public.md5(p.prosrc)'],
+        ['LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;',''],
+        ["RAISE EXCEPTION 'Theme publication", "RAISE WARNING 'Theme publication"],
+    ]){assert.ok(sql.includes(before),before);assert.deepEqual(guardedRestorations(sql.replace(before,after),{forwardSql}),[],before+' cannot be substituted');}
+    assert.deepEqual(guardedRestorations(sql.replace('DO $visibility_shape$', 'CREATE TABLE public.synthetic_before_guard(id integer);\nDO $visibility_shape$'),{forwardSql}),[]);
+});

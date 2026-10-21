@@ -64,7 +64,7 @@ test('Task 009 checkout-core exposes serviceability schema and planner', () => {
 
 test('checkout shipping rates are tenant-bound in the merchant write path', () => {
     assert.match(checkoutCoreSource, /zoneInsert:\s*\{\s*store_id: input\.store_id,\s*site_id: input\.store_id/);
-    assert.match(shippingTaxRouteSource, /insert\(\{ \.\.\.plan\.rateInsert, site_id: ownedZone\.store_id, cod_enabled: true \}\)/);
+    assert.match(shippingTaxRouteSource, /insert\(\{ \.\.\.plan\.rateInsert, site_id: storeId, cod_enabled: true \}\)/);
 });
 
 test('marketplace order RPC locks and checks the reviewed seller rate atomically', () => {

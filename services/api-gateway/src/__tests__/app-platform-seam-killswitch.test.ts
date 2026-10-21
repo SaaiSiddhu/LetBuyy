@@ -1,3 +1,4 @@
+import { createTestAdmissionCoordinator } from './helpers/admission-coordinator';
 /**
  * ART-22 / ART-16 / NEVER-R3 — app-platform kill switch, SEAM coverage.
  *
@@ -243,6 +244,7 @@ function buildEnv(vars: Record<string, string>): Record<string, unknown> {
         SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key-not-a-real-secret',
         SUPABASE_ANON_KEY: 'test-anon-key-not-a-real-secret',
         CACHE: makeMemoryKv(),
+        RUNTIME_COORDINATOR: createTestAdmissionCoordinator(),
     };
 }
 

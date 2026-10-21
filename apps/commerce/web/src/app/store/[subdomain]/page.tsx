@@ -1,3 +1,4 @@
+import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 import { StoreService } from '@/lib/store-service';
 import { notFound } from 'next/navigation';
 import { resolveStorefrontTemplate, resolveDevEngineOverride } from '@/lib/theme-engine/template-resolver';
@@ -59,6 +60,7 @@ export default async function StorePage({
             plan={renderPlan}
             sectionData={sectionData}
             editorMode={isEditorPreview}
+            collectionSummaries={previewStore ? await loadCollectionDiscovery(subdomain, previewToken) : undefined}
         />
     );
 }

@@ -99,6 +99,7 @@ function stringRecord(value: unknown): Record<string, string> | undefined {
 function serverCartToItems(serverCart: ServerCart): CartItem[] {
     return serverCart.lines.map((line) => ({
         id: line.product_id,
+        variantId: line.variant_id ?? null,
         name: line.title,
         description: '',
         price: line.unit_price,

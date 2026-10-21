@@ -13,7 +13,7 @@ import {
   type LiquidThemePackageBundle,
   type ThemeBundleJson,
 } from './theme-bundle';
-import { createLetbuyyCoreLiquidThemeBundleFixture } from './theme-bundle-core';
+import { createLetbuyyCoreLiquidThemeBundleFixture, LETBUYY_CORE_STARTER_ANNOUNCEMENT } from './theme-bundle-core';
 import { BLOCKED_DROP_KEYS } from './theme-renderer';
 
 export interface PortableSectionInstance {
@@ -230,6 +230,28 @@ export function compilePortableConfigForPublish(
 }
 
 
+/** Recognize only the obsolete first-party demo cards in both portable shapes. */
+export function isUnchangedCoreDemoCategoryBlocks(value: unknown, order?: unknown): boolean {
+  const object=(v:unknown):Record<string,unknown>=>v && typeof v==='object' && !Array.isArray(v)?v as Record<string,unknown>:{};
+  const seeds=[['category-sneakers','Sneakers','sneakers','Fresh pairs'],['category-apparel','Apparel','apparel','Daily fits'],['category-accessories','Accessories','accessories','Finish the look']];
+  // jsonb objects have no semantic key order. Match known instance IDs, while
+  // retaining strict explicit block_order and array ordering checks below.
+  const entries=object(value);
+  if(!Array.isArray(value) && Object.keys(entries).length!==seeds.length)return false;
+  const rows=Array.isArray(value)?value.map(v=>{const b=object(v);return [b.id,b] as const;}):seeds.map(seed=>[seed[0],entries[seed[0]]] as const);
+  if (order!==undefined && JSON.stringify(order)!==JSON.stringify(seeds.map(seed=>seed[0]))) return false;
+  return rows.length===3 && rows.every(([key,value],i)=>{
+    const b=object(value),settings=object(b.settings),seed=seeds[i];
+    return key===seed[0] && (b.id===undefined || b.id===seed[0]) && b.type==='category'
+      && (b.order===undefined || b.order===i) && b.visible!==false && b.disabled!==true
+      && (b.visible===undefined || b.visible===true) && (b.disabled===undefined || b.disabled===false)
+      && Object.keys(b).every(k=>['id','type','order','visible','disabled','settings'].includes(k))
+      && settings.name===seed[1] && settings.slug===seed[2] && settings.tagline===seed[3]
+      && (settings.image===undefined || settings.image==='')
+      && Object.keys(settings).every(k=>['name','slug','tagline','image'].includes(k));
+  });
+}
+
 // Project a saved portable document onto its own immutable Liquid code bundle.
 // Existing files and untouched templates remain byte-for-byte; no stock fixture
 // or new rendering authority is introduced on this branch.
@@ -238,6 +260,7 @@ function projectExistingLiquidBundle(
   source: LiquidThemePackageBundle,
 ): CompilePortableToLiquidResult {
   const base = parseLiquidThemePackageBundle(source);
+  const warnings: string[] = [];
   const object = (value: unknown): Record<string, unknown> =>
     value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
   const own = (value: object, key: string) => Object.prototype.hasOwnProperty.call(value, key);
@@ -294,10 +317,17 @@ function projectExistingLiquidBundle(
     return { blocks: next, block_order: ordered(order, next) };
   };
   const section = (value: unknown, previous?: Section): Section => {
-    const row = object(value), rawType = typeof row.type === 'string' ? row.type : previous?.type;
+    const row = { ...object(value) }, rawType = typeof row.type === 'string' ? row.type : previous?.type;
     if (!rawType) throw new Error('Portable Liquid section type is missing');
     const type = resolveLiquidSectionType(rawType, new Set(Object.keys(base.sections)));
     if (!type) throw new Error('Portable section has no section file in the captured Liquid bundle: ' + rawType);
+    // Older first-party Core defaults retained three fabricated category cards
+    // after the Liquid section switched to real collections. Only those exact
+    // untouched defaults are retired; arbitrary merchant blocks still fail validation.
+    if (base.package.slug === 'letbuyy-core-liquid' && type === 'category-grid' && isUnchangedCoreDemoCategoryBlocks(row.blocks, row.block_order)) {
+      row.blocks={}; row.block_order=[];
+      warnings.push('Retired unchanged legacy Core demo-category defaults; this section renders actual collections.');
+    }
     const inlineTypes = new Set(base.sections[type].schema.blocks.map(block => block.type));
     const allowed = new Set([...Object.keys(base.blocks), ...inlineTypes]);
     // Canonical portable navigation names share label/href with these first-party inline links.
@@ -307,12 +337,28 @@ function projectExistingLiquidBundle(
         ? { footerLink: 'link', 'footer-link': 'link' } : {};
     const nested = own(row, 'blocks') ? blocks(row.blocks, row.block_order, previous?.blocks || {}, allowed, 0, aliases) :
       { blocks: previous?.blocks || {}, block_order: row.block_order === undefined ? previous?.block_order || [] : ordered(row.block_order, previous?.blocks || {}) };
-    return { type, settings: own(row, 'settings') ? plainSettings(row.settings) : previous?.settings || {},
+    const settings = own(row, 'settings') ? { ...(base.package.slug === 'letbuyy-core-liquid' ? previous?.settings : {}), ...plainSettings(row.settings) } : previous?.settings || {};
+    if (base.package.slug === 'letbuyy-core-liquid' && type === 'featured-products') {
+      // Persisted Core packages can predate the captured instance defaults. Use
+      // their declared schema defaults only for omitted fields, preserving edits.
+      for (const key of ['viewAllLabel', 'viewAllHref']) {
+        if (!own(settings, key)) {
+          const fallback = base.sections[type].schema.settings.find(field => field.id === key)?.default;
+          if (fallback !== undefined) settings[key] = fallback;
+        }
+      }
+      if (!own(object(row.settings), 'viewAllHref') && settings.viewAllHref === '/collections/new-arrivals') {
+        settings.viewAllHref = '/products'; // Legacy defaults must not require an invented collection.
+      }
+    }
+    return { type, settings,
       disabled: disabled(row, previous?.disabled), ...nested };
   };
   const templates = { ...base.templates };
   const projectTemplate = (key: string, value: unknown) => {
-    id(key);
+    // `password` is a canonical template, not a credential field. Keep the
+    // sensitive-drop denylist for settings and section/block instance ids.
+    if (key !== 'password') id(key);
     const row = object(value), previous = templates[key];
     if (!own(row, 'sections')) return;
     const rows = collection(row.sections);
@@ -349,11 +395,34 @@ function projectExistingLiquidBundle(
     templates[key] = { ...current, sections: { ...current.sections,
       [target]: value === null ? { ...current.sections[target], disabled: true } : section(row, current.sections[target]) } };
   }
+  // Old Core portable slots placed the same announcement into index as well
+  // as the captured header group. Retire only the exact duplicate default.
+  if (base.package.slug === 'letbuyy-core-liquid') {
+    const global = templates.header?.sections['announcement-default'];
+    const index = templates.index, duplicate = index?.sections['announcement-default'];
+    // The frozen portable registry still emits the former Core default. Retire
+    // only that complete unchanged instance when the new header owns the message;
+    // a merchant-edited text/link/style must remain visible and editable.
+    const oldDefault: Record<string, unknown> = {
+      text: 'Free shipping on fresh drops this week.', linkLabel: 'Shop now', linkHref: '/products',
+      alignment: 'center', backgroundColor: '#0F172A', textColor: '#FFFFFF', visibleOnMobile: true,
+    };
+    const unchangedOldDefault = duplicate && global?.settings.text === LETBUYY_CORE_STARTER_ANNOUNCEMENT
+      && Object.keys(duplicate.settings).length === Object.keys(oldDefault).length
+      && Object.entries(oldDefault).every(([key, value]) => duplicate.settings[key] === value)
+      && !duplicate.disabled && Object.keys(duplicate.blocks || {}).length === 0;
+    if (global?.type === 'announcement-bar' && duplicate?.type === 'announcement-bar'
+        && ((global.settings.text === duplicate.settings.text && global.settings.linkHref === duplicate.settings.linkHref)
+          || unchangedOldDefault)) {
+      const sections = { ...index.sections }; delete sections['announcement-default'];
+      templates.index = { ...index, sections, order: index.order.filter(id => id !== 'announcement-default') };
+    }
+  }
   const settings = object(input.settings_data), config = object(input.config), nestedSettings = object(config.settings_data);
   const current = { ...base.config.settings_data?.current,
     ...plainSettings(nestedSettings.current), ...plainSettings(settings.current), ...plainSettings(input.themeSettings) };
   const bundle = parseLiquidThemePackageBundle({ ...base, templates,
     config: { ...base.config, settings_data: { ...base.config.settings_data, current,
       presets: { ...base.config.settings_data?.presets, ...object(nestedSettings.presets), ...object(settings.presets) } } } });
-  return { bundle, warnings: [] };
+  return { bundle, warnings };
 }

@@ -122,7 +122,7 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
 
                                             return (
                                                 <div
-                                                    key={item.id}
+                                                    key={`${item.id}:${item.variantId || ''}`}
                                                     className="flex gap-3 rounded-lg border border-card p-3"
                                                 >
                                                     <Link
@@ -156,7 +156,7 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                             <Button unstyled
                                                                 type="button"
                                                                 aria-label={`Remove ${item.name}`}
-                                                                onClick={() => removeFromCart(item.id)}
+                                                                onClick={() => removeFromCart(item.id, item.variantId ?? null)}
                                                                 className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-card-muted transition-colors hover:bg-surface-hover hover:text-red-500"
                                                             >
                                                                 <X size={16} />
@@ -181,7 +181,7 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                                 <Button unstyled
                                                                     type="button"
                                                                     aria-label={`Decrease quantity for ${item.name}`}
-                                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                                    onClick={() => updateQuantity(item.id, item.quantity - 1, item.variantId ?? null)}
                                                                     className="flex h-11 w-11 items-center justify-center text-card transition-colors hover:bg-surface-hover"
                                                                 >
                                                                     <Minus size={14} />
@@ -192,7 +192,7 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                                 <Button unstyled
                                                                     type="button"
                                                                     aria-label={`Increase quantity for ${item.name}`}
-                                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                                    onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId ?? null)}
                                                                     className="flex h-11 w-11 items-center justify-center text-card transition-colors hover:bg-surface-hover"
                                                                 >
                                                                     <Plus size={14} />

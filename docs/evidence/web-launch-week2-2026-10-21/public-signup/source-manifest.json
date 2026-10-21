@@ -1,0 +1,31 @@
+{
+  "candidate": "b619ad5f9facdf8aa45e6e4d858c280439ae1307",
+  "browserRuntimeSource": "6fb6ef12",
+  "browserSourceReuse": "b619ad5f changes only exact synthetic-value scanner exceptions; application/test inputs unchanged from passing runtime build. Full gate runs final candidate.",
+  "files": [
+    {
+      "path": "apps/platform/identity/src/app/signup/page.tsx",
+      "sha256": "10920b0d0b14420fcf44a66738732b9869e8b680449468a944fdac9e4c24c20e"
+    },
+    {
+      "path": "apps/marketing/web/src/app/[locale]/pricing/page.tsx",
+      "sha256": "ebdf3a4ec0e7eccd6f3cf062dc7c3f419553813d124e75a5137e5ca5e714f325"
+    },
+    {
+      "path": "tests/owned-db/merchant-public-signup-browser.postgres.test.ts",
+      "sha256": "8d68772170e1c989329653e14006f1c8923c130406fe65b11d1dc1f90d8611bb"
+    },
+    {
+      "path": "scripts/governance/test-suite-catalog.mjs",
+      "sha256": "2f303aa4f165972fff7ed11945db0a5522cbc77df7de037161513abddc46b7b5"
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "7f1d0b999dcd916771952e43b1929b9a31445eb208b39fac530767defa90b211"
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "a2c0aaac6684a607b596800dfa9438eb9bd291a5b492a4abd27840ddc833e713"
+    }
+  ]
+}

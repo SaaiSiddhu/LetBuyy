@@ -1,5 +1,6 @@
 'use client'
 
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -96,7 +97,7 @@ export default function DomainCenterPage() {
 
     const primaryDomain = useMemo(() => domains.find((d) => d.role === 'primary' && d.status === 'active') || domains.find((d) => d.role === 'primary') || null, [domains])
     const otherDomains = useMemo(() => domains.filter((d) => d !== primaryDomain), [domains, primaryDomain])
-    const letbuyyHost = storeInfo ? `${storeInfo.subdomain}.letbuyy.com` : ''
+    const letbuyyHost = storeInfo ? `${storeInfo.subdomain}.${getStorefrontRootDomain()}` : ''
 
     const doSearch = useCallback(async () => {
         const query = search.trim()

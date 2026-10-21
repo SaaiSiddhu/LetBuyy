@@ -1,3 +1,5 @@
+// @ts-expect-error -- pure governance policy module has no TS declarations
+import { isApprovedStorefrontDomainLiteral } from '../../scripts/validators/storefront-domain-policy.mjs';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
@@ -42,7 +44,7 @@ test('Next app env contract declares storefront root and cutover-only platform .
   }
 
   for (const envFile of [productionTemplate, productionExample, stagingTemplate, stagingExample]) {
-    assert.match(envFile, /^NEXT_PUBLIC_STORE_ROOT_DOMAIN=letbuyy\.com$/m);
+    assert.match(envFile, /^NEXT_PUBLIC_STORE_ROOT_DOMAIN=letbuyy\.store$/m);
     assert.match(envFile, /^COOKIE_DOMAIN=\.(?:staging\.)?letbuyy\.com$/m);
     assert.match(envFile, /CUTOVER \(with DNS\/Vercel move\): COOKIE_DOMAIN=\.(?:staging\.)?letbuyy\.com/);
     assert.match(envFile, /CUTOVER: NEXT_PUBLIC_ACCOUNTS_URL=https:\/\/accounts(?:[-.]staging)?\.letbuyy\.com/);
@@ -53,7 +55,7 @@ test('Next app env contract declares storefront root and cutover-only platform .
   assert.match(nextTemplate, /Storefront runtime must leave COOKIE_DOMAIN unset/);
 });
 
-test('legacy platform .store target does not appear in active functional source', () => {
+test('storefront domain literals are limited to canonical declaration and env keys', () => {
   const blocked = [
     /https?:\/\/[a-z0-9.-]*letbuyy\.store/i,
     /[A-Z0-9._%+-]+@letbuyy\.store/i,
@@ -76,7 +78,7 @@ test('legacy platform .store target does not appear in active functional source'
       continue;
     }
     const source = read(relativePath);
-    if (blocked.some((pattern) => pattern.test(source))) {
+    if (blocked.some((pattern) => [...source.matchAll(new RegExp(pattern.source, pattern.flags + 'g'))].some(match => !isApprovedStorefrontDomainLiteral(relativePath, source, match.index || 0)))) {
       offenders.push(relativePath);
     }
   }

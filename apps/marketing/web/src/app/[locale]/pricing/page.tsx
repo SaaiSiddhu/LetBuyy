@@ -8,7 +8,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
     title: 'Pricing',
     description:
-        'LetBuyy Launch plan starts at ₹299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Start with a 7-day free trial.',
+        'LetBuyy Launch plan starts at ₹299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Review plans before paying.',
     alternates: {
         canonical: '/pricing',
     },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'LetBuyy pricing — Launch from ₹299/month',
         description:
-            'Launch and Growth plans live now. 0% commission. UPI, COD, GST-ready. 7-day free trial.',
+            'Launch and Growth plans live now. 0% commission. UPI, COD, GST-ready. Review plans before paying.',
         images: ['/icons/letbuyy-logo-light.svg'],
     },
 }

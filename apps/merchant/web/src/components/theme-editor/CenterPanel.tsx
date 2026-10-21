@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MaterialIcon } from '@letbuyy/ui'
-import { getStorefrontBaseUrl } from '@/lib/public-urls'
+import { getStorefrontBaseUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 import {
     EDITOR_LEGACY_SELECTION_MESSAGE,
     EDITOR_SELECTION_MESSAGE,
@@ -13,6 +13,7 @@ import {
     INSPECTOR_ADD_SECTION_INTENT,
 } from '@letbuyy/theme-engine/editor-bridge-protocol'
 import PreviewInspectorOverlay from './PreviewInspectorOverlay'
+import { fitPreviewViewport } from './preview-viewport'
 
 interface CenterPanelProps {
     storeName: string
@@ -45,6 +46,35 @@ export default function CenterPanel({
     onAddSectionIntent,
 }: CenterPanelProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
+    const previewBodyRef = useRef<HTMLDivElement>(null)
+    const [availableSize, setAvailableSize] = useState({ width: 0, height: 900 })
+    const viewportFit = fitPreviewViewport(viewport, availableSize.width, availableSize.height)
+
+    useEffect(() => {
+        const body = previewBodyRef.current
+        if (!body) return
+        let active = true
+        const update = () => {
+            if (!active) return
+            const width = body.clientWidth, height = body.clientHeight
+            setAvailableSize(previous => previous.width === width && previous.height === height ? previous : { width, height })
+        }
+        const observer = new ResizeObserver(update)
+        observer.observe(body)
+        update()
+        return () => { active = false; observer.disconnect() }
+    }, [])
+
+    // Viewport measurements are runtime geometry, carried through scoped CSS variables.
+    useEffect(() => {
+        const body = previewBodyRef.current
+        if (!body) return
+        body.style.setProperty('--lb-preview-viewport-width', `${viewportFit.width}px`)
+        body.style.setProperty('--lb-preview-viewport-height', `${viewportFit.height}px`)
+        body.style.setProperty('--lb-preview-viewport-scale', String(viewportFit.scale))
+        body.style.setProperty('--lb-preview-viewport-visibility', availableSize.width > 0 ? 'visible' : 'hidden')
+    }, [viewportFit.width, viewportFit.height, viewportFit.scale, availableSize.width])
+
     const iframeLoadedRef = useRef(false)
     const storefrontBaseUrl = getStorefrontBaseUrl()
 
@@ -185,11 +215,11 @@ export default function CenterPanel({
                     </div>
                     <div className="te-preview-url-bar">
                         <MaterialIcon name="lock" size={14} />
-                        <span className="te-preview-url">{storeName}.letbuyy.com</span>
+                        <span className="te-preview-url">{storeName}.{getStorefrontRootDomain()}</span>
                     </div>
                 </div>
 
-                <div className="te-preview-body te-preview-body--iframe">
+                <div ref={previewBodyRef} className="te-preview-body te-preview-body--iframe">
                     {previewUrl ? (
                         <iframe
                             ref={iframeRef}

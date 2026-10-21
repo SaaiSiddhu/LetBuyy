@@ -8,7 +8,7 @@ import {
   type SectionSchema,
   type ThemeSettingsSchema,
 } from './theme-registry';
-import type { LiquidThemePackageBundle } from './theme-bundle';
+import { LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
 
 export * from './theme-registry';
 export * from './built-in-section-schemas';
@@ -778,6 +778,12 @@ export function resolveRenderableThemeTemplateConfig(
   }
 
   const fallback = getThemeDefaultTemplate(theme);
+  if (existingThemeId && existingThemeId !== theme.slug && LiquidThemePackageBundleSchema.safeParse(fallback.liquidBundle).success) {
+    // Installing a different Liquid package uses that package's settings and
+    // instance maps. Outgoing React-only keys/blocks are not import overrides;
+    // its existing draft/release remains owned by the outgoing theme instance.
+    return mergeThemeIdentity({ ...fallback }, theme);
+  }
   return {
     ...existing,
     ...fallback,

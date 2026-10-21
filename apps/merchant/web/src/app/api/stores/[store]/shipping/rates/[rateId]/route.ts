@@ -16,7 +16,7 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const rate = await createMerchantApiClient().shipping.rates.update(rateId, body)
+        const rate = await createMerchantApiClient(resolved.storeId).shipping.rates.update(rateId, body)
 
         return NextResponse.json({ success: true, data: rate })
     } catch (err) {
@@ -34,7 +34,7 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createMerchantApiClient().shipping.rates.remove(rateId)
+        const payload = await createMerchantApiClient(resolved.storeId).shipping.rates.remove(rateId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {

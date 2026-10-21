@@ -1,0 +1,20 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-COPY",
+  "status": "LOCAL_COPY_VERIFIED_EDITOR_AND_PUBLIC",
+  "candidate": "20b10affde63866b2b62202ee7fac492d220a53c",
+  "ownedPass": 8,
+  "ownedFail": 0,
+  "themePass": 1890,
+  "canonicalPass": 114,
+  "cleanupVerified": true,
+  "providerSandboxVerified": false,
+  "hostedVerified": false,
+  "deployed": false,
+  "fullThemeAcceptance": false,
+  "remaining": [
+    "Reconcile thirteen pre-existing catalog-seed/current-source section differences and verify those buyer journeys.",
+    "Broader theme visual/section acceptance and navigation/performance measurements.",
+    "Actual online payments, hosted domains/TLS/identity and later launch gates."
+  ],
+  "scope": "Fresh Core stores and catalog defaults only. Existing merchant drafts and immutable publications remain untouched. Counts overlap previous receipts and are not added to original dated audit totals."
+}

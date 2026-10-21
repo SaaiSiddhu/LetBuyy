@@ -726,8 +726,12 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
 
     const registry = new SchemaRegistryExecutionAdapter(db);
     const submissionMode = body.submission_mode || 'marketplace';
+    if (body.store_id && auth.user.storeId && body.store_id !== auth.user.storeId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Store context does not match this upload.' } }, 403);
+    }
     const upload = await registry.uploadThemePackageBundle(body.bundle, customUser.id, {
         publicationMode: submissionMode,
+        siteId: body.store_id || auth.user.storeId,
     });
     const uploadRecord = recordValue(upload);
     const theme = recordValue(uploadRecord.theme);

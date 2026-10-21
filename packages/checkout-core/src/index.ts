@@ -1048,6 +1048,38 @@ export const CreateTaxRateSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
+// PATCH contracts deliberately carry no create defaults: an omitted field must
+// preserve the saved value. Nullable bounds/state let merchants clear settings.
+export const UpdateShippingZoneSchema = CreateShippingZoneSchema.omit({ store_id: true })
+  .partial().refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+
+export const UpdateShippingRateSchema = z.object({
+  name: CreateShippingRateSchema.shape.name.optional(),
+  description: z.string().max(1000).nullable().optional(),
+  type: CreateShippingRateSchema.shape.type.optional(),
+  price: MoneySchema.optional(),
+  min_weight_grams: z.number().int().min(0).nullable().optional(),
+  max_weight_grams: z.number().int().min(0).nullable().optional(),
+  min_order_amount: MoneySchema.nullable().optional(),
+  max_order_amount: MoneySchema.nullable().optional(),
+  estimated_days_min: z.number().int().min(0).nullable().optional(),
+  estimated_days_max: z.number().int().min(0).nullable().optional(),
+  is_active: z.boolean().optional(),
+}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+
+export const UpdateTaxRateSchema = z.object({
+  name: CreateTaxRateSchema.shape.name.optional(),
+  rate: CreateTaxRateSchema.shape.rate.optional(),
+  country: z.string().length(2).toUpperCase().optional(),
+  state: z.string().max(100).nullable().optional(),
+  hsn_code: z.string().max(20).nullable().optional(),
+  applies_to: z.enum(['all', 'shipping', 'products']).optional(),
+  is_compound: z.boolean().optional(),
+  is_shipping: z.boolean().optional(),
+  priority: z.number().int().min(0).optional(),
+  is_active: z.boolean().optional(),
+}).refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
+
 export const CreateCouponSchema = z.object({
   store_id: UuidSchema,
   code: z.string().min(3).max(50).toUpperCase().regex(/^[A-Z0-9_-]+$/, 'Code must be alphanumeric'),
@@ -1750,6 +1782,7 @@ export interface OrderItem {
 
 export interface CartItem extends ProductModel {
   quantity: number;
+  variantId?: string | null;
   selectedVariant?: Record<string, string>;
 }
 
@@ -1889,7 +1922,7 @@ export interface TaxRateUpdatePlan {
   updates: Record<string, unknown>;
 }
 
-const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states'] as const;
+const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states', 'zip_codes'] as const;
 const SHIPPING_RATE_UPDATE_FIELDS = [
   'name',
   'description',
@@ -1913,6 +1946,7 @@ export function planShippingZoneCreate(input: CreateShippingZoneInput): Shipping
       name: input.name,
       countries: input.countries,
       states: input.states || [],
+      zip_codes: input.zip_codes || [],
     },
   };
 }
@@ -1930,11 +1964,13 @@ export function planShippingRateCreate(input: CreateShippingRateInput): Shipping
     rateInsert: {
       zone_id: input.zone_id,
       name: input.name,
-      price: input.price || 0,
-      min_order_amount: input.min_order_amount || null,
-      max_order_amount: input.max_order_amount || null,
-      estimated_days_min: input.estimated_days_min || null,
-      estimated_days_max: input.estimated_days_max || null,
+      price: input.price ?? 0,
+      min_weight_grams: input.min_weight_grams ?? null,
+      max_weight_grams: input.max_weight_grams ?? null,
+      min_order_amount: input.min_order_amount ?? null,
+      max_order_amount: input.max_order_amount ?? null,
+      estimated_days_min: input.estimated_days_min ?? null,
+      estimated_days_max: input.estimated_days_max ?? null,
       type: input.type,
       is_active: input.is_active ?? true,
     },

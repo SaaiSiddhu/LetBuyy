@@ -1,3 +1,4 @@
+import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
 import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
@@ -40,11 +41,9 @@ interface VerifiedHandoffLine {
 // environment already uses. This resolver never chooses a tenant — the subdomain it receives
 // already came from a store row looked up by the handoff's own verified site_id.
 function resolveStorefrontOriginUrl(subdomain: string): string {
-    const rootDomain = (process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN || '').trim().toLowerCase();
-    if (!rootDomain || rootDomain === 'localhost') {
-        return `/store/${subdomain}`;
-    }
-    return `https://${subdomain}.${rootDomain}`;
+    const rootDomain = normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+    if (rootDomain === 'localhost' && !process.env.NEXT_PUBLIC_STOREFRONT_URL) return `/store/${subdomain}`;
+    return buildTenantStorefrontUrl(subdomain, { rootDomain, baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL });
 }
 
 // T8/W1 — this page renders BEFORE a store or its branding is ever resolved (an invalid/expired

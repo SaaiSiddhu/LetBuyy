@@ -1,9 +1,9 @@
+import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core'
+
 const PRODUCTION_ADMIN_URL = 'https://admin.letbuyy.com'
 const PRODUCTION_ACCOUNTS_URL = 'https://accounts.letbuyy.com'
 
-// DEPLOY-R3: `letbuyy.com` is the one canonical platform domain. Storefront hosts are
-// derived here so no surface hardcodes a root domain — the five banned legacy-TLD
-// literals this replaces shipped a dead store URL to every newly onboarded merchant.
+// Platform account/admin origins stay distinct from the configured tenant storefront root.
 const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'
 
 function trimTrailingSlash(value: string): string {
@@ -47,12 +47,16 @@ export function getPlatformRootDomain(): string {
     )
 }
 
-/** The public storefront host for a store subdomain, e.g. `acme.letbuyy.com`. */
+export function getStorefrontRootDomain(): string {
+    return normalizeStoreRootDomain(process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN || process.env.STOREFRONT_ROOT_DOMAIN)
+}
+
+/** The public storefront host, distinct from the platform account/admin root. */
 export function getStorefrontHost(subdomain: string): string {
-    return `${subdomain}.${getPlatformRootDomain()}`
+    return `${subdomain}.${getStorefrontRootDomain()}`
 }
 
 /** The public storefront URL for a store subdomain. */
 export function getStorefrontUrl(subdomain: string, path = ''): string {
-    return appendPath(`https://${getStorefrontHost(subdomain)}`, path)
+    return appendPath(buildTenantStorefrontUrl(subdomain, {rootDomain: getStorefrontRootDomain(), baseUrl: process.env.NEXT_PUBLIC_STOREFRONT_URL}), path)
 }

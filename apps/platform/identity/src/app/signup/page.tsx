@@ -16,7 +16,7 @@ type Step = 'email' | 'otp' | 'password'
 const translations: Record<Lang, Record<string, string>> = {
     en: {
         title: 'Start your free trial',
-        subtitle: '14 days free, then ₹20/month',
+        subtitle: 'Create your store, then review plans before paying.',
         email: 'Email',
         emailPlaceholder: 'you@example.com',
         continue: 'Continue',
@@ -64,7 +64,7 @@ const translations: Record<Lang, Record<string, string>> = {
     },
     hi: {
         title: 'अपना मुफ़्त ट्रायल शुरू करें',
-        subtitle: '14 दिन मुफ़्त, फिर ₹20/माह',
+        subtitle: 'अपना स्टोर बनाएं, फिर भुगतान से पहले प्लान देखें।',
         email: 'ईमेल',
         emailPlaceholder: 'you@example.com',
         continue: 'जारी रखें',
@@ -110,7 +110,7 @@ const translations: Record<Lang, Record<string, string>> = {
     },
     ta: {
         title: 'உங்கள் இலவச சோதனையைத் தொடங்குங்கள்',
-        subtitle: '14 நாட்கள் இலவசம், பின்னர் ₹20/மாதம்',
+        subtitle: 'உங்கள் கடையை உருவாக்கி, கட்டணம் செலுத்தும் முன் திட்டங்களைப் பாருங்கள்.',
         email: 'மின்னஞ்சல்',
         emailPlaceholder: 'you@example.com',
         continue: 'தொடரவும்',

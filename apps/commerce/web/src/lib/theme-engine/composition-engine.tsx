@@ -1,4 +1,6 @@
 import { headers } from 'next/headers';
+import type { StorefrontCollectionSummary } from '@letbuyy/api-client';
+import { loadCollectionDiscovery } from './collection-discovery';
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
@@ -12,6 +14,7 @@ import {
     type LiquidCommerceDrops,
 } from '@letbuyy/theme-engine';
 import { assembleLiquidPageFromRenderResult } from './liquid-page-assembly';
+import { productOriginFilterMarkup } from './platform-control-markup';
 import type { ProductReviewItem, SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import LiquidHydrationIslands from './liquid-hydration-islands';
@@ -84,12 +87,14 @@ function LiquidRenderedHtml({
     editorMode,
     basePath,
     storeId,
+    variantProductIds,
 }: {
     html: string;
     headStyleText?: string;
     editorMode: boolean;
     basePath: string;
     storeId: string;
+    variantProductIds: string[];
 }) {
     return (
         <>
@@ -114,7 +119,7 @@ function LiquidRenderedHtml({
                 data-editor-mode={editorMode ? 'true' : 'false'}
                 dangerouslySetInnerHTML={{ __html: html }}
             />
-            <LiquidHydrationIslands basePath={basePath} storeId={storeId} />
+            <LiquidHydrationIslands basePath={basePath} storeId={storeId} variantProductIds={variantProductIds} />
         </>
     );
 }
@@ -451,6 +456,7 @@ async function buildLiquidCommerceContext({
     orderDetail,
     page,
     productBasePath,
+    discoveredCollections,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -462,6 +468,7 @@ async function buildLiquidCommerceContext({
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
     productBasePath?: string;
+    discoveredCollections: StorefrontCollectionSummary[];
 }): Promise<LiquidCommerceDrops> {
     const basePath = productBasePath ?? await resolveLiquidProductBasePath(plan.route.subdomain);
     const products = collectLiquidProducts(sectionData, basePath);
@@ -606,7 +613,9 @@ async function buildLiquidCommerceContext({
         },
         product,
         collection,
-        collections: collection ? [collection] : [],
+        collections: discoveredCollections.map(item => ({
+            id: item.id, handle: item.id, title: item.title, description: item.description, image: item.image_url,
+        })),
         cart: collectLiquidCart(sectionData, plan),
         customer,
         buyer,
@@ -633,13 +642,17 @@ async function renderLiquidPlan({
     sectionData,
     editorMode,
     liquidPage,
+    collectionSummaries,
+    afterContentHtml,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
     liquidPage?: Record<string, unknown> | null;
-}): Promise<{ html: string; headStyleText: string } | null> {
+    collectionSummaries?: StorefrontCollectionSummary[];
+    afterContentHtml?: string;
+}): Promise<ReturnType<typeof assembleLiquidPageFromRenderResult> | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
     const productBasePath = await resolveLiquidProductBasePath(plan.route.subdomain);
 
@@ -682,6 +695,13 @@ async function renderLiquidPlan({
         };
     }
 
+    // Read failures are outside the renderer fallback: unavailable discovery must never
+    // become a false empty collection grid (or an unrelated legacy React page).
+    const needsCollectionDiscovery = plan.template.sections.some(section => section.type === 'category-grid' && section.isVisible !== false);
+    const discoveredCollections = needsCollectionDiscovery
+        ? collectionSummaries ?? await loadCollectionDiscovery(plan.route.subdomain)
+        : [];
+
     const renderer = createThemeRenderer('liquid');
     try {
         const result = await renderer.render({
@@ -707,12 +727,12 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath, discoveredCollections }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;
 
-        return assembleLiquidPageFromRenderResult(result.liquid);
+        return assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
     } catch (err: unknown) {
         // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
         // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render
@@ -742,15 +762,19 @@ export default async function StorefrontCompositionEngine({
     sectionData,
     editorMode = false,
     liquidPage,
+    collectionSummaries,
+    afterContentHtml,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
     liquidPage?: Record<string, unknown> | null;
+    collectionSummaries?: StorefrontCollectionSummary[];
+    afterContentHtml?: string;
 }) {
     const renderStart = Date.now();
-    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage });
+    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, collectionSummaries, afterContentHtml });
     const engine = liquidResult ? 'liquid' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({
@@ -772,13 +796,13 @@ export default async function StorefrontCompositionEngine({
     if (liquidResult) {
         return (
             <>
-                <StorefrontProductOriginFilter route={plan.route} editorMode={editorMode} />
                 <LiquidRenderedHtml
                     html={liquidResult.html}
                     headStyleText={liquidResult.headStyleText}
                     editorMode={editorMode}
                     basePath={`/store/${plan.route.subdomain}`}
                     storeId={store.id}
+                    variantProductIds={Array.from(new Set(Array.from(sectionData.values()).flatMap(data => [...(data.products || []), ...(data.product ? [data.product] : [])]).filter(product => Boolean(product.variants?.length)).map(product => product.id)))}
                 />
             </>
         );

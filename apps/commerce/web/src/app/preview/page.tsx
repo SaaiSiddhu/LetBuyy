@@ -1,3 +1,5 @@
+import '../store/[subdomain]/liquid-theme.css';
+import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
@@ -416,7 +418,17 @@ export default async function PreviewPage({
                 subdomain: subdomain || '',
             };
     const renderPlan = resolveStorefrontTemplate(previewStore, routeContext);
-    const products = await loadProductsForStore(previewStore, subdomain, isDemoPreview);
+    const previewCatalog = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
+        ? await ProductService.getPreviewProducts(subdomain, previewToken)
+        : undefined;
+    const previewCollections = !isDemoPreview && subdomain && previewToken && previewStore.siteType === 'store'
+        ? await loadCollectionDiscovery(subdomain, previewToken)
+        : [];
+    const products = previewCatalog
+        ? previewStore.selectedProductIds.length
+            ? previewStore.selectedProductIds.flatMap((id) => previewCatalog.filter((product) => product.id === id))
+            : previewCatalog
+        : await loadProductsForStore(previewStore, subdomain, isDemoPreview);
     let sectionData: Map<string, SectionRenderData>;
     if (routeType === 'product' && demoProduct) {
         const demoReviewData = getUrbanKicksDemoReviews(demoProduct.id);
@@ -444,6 +456,7 @@ export default async function PreviewPage({
             store: previewStore,
             sections: renderPlan.template.sections,
             route: renderPlan.route,
+            preloadedProducts: previewCatalog,
         });
     }
     const headerSections = renderPlan.sectionGroups.header;
@@ -458,28 +471,29 @@ export default async function PreviewPage({
 
     const content = (
         <div className={`storefront-preview-route__canvas min-h-screen flex flex-col ${isDark ? 'dark' : ''}`}>
-            <StorefrontSectionGroupRenderer
+            {renderPlan.rendererEngine !== 'liquid' && <StorefrontSectionGroupRenderer
                 store={previewStore}
                 plan={renderPlan}
                 groupKey="header"
                 sectionData={sectionGroupData}
                 editorMode
-            />
+            />}
             <main className="flex-grow">
                 <StorefrontCompositionEngine
                     store={previewStore}
                     plan={renderPlan}
                     sectionData={sectionData}
                     editorMode
+                    collectionSummaries={previewCollections}
                 />
             </main>
-            <StorefrontSectionGroupRenderer
+            {renderPlan.rendererEngine !== 'liquid' && <StorefrontSectionGroupRenderer
                 store={previewStore}
                 plan={renderPlan}
                 groupKey="footer"
                 sectionData={sectionGroupData}
                 editorMode
-            />
+            />}
         </div>
     );
 

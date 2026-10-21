@@ -1,0 +1,29 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-CATALOG",
+  "source": "336d508e9857033437ad606dcd91771aaee4027c",
+  "environment": "Owned local verification only; no production rollout authorized or performed.",
+  "compatibility": [
+    "Candidate scheduler requires migration369 and visible PostgREST RPC metadata; unavailability stops dispatch without claiming events.",
+    "Migration368 updates the unowned canonical Core catalog for new installations. Existing sites, drafts and immutable releases are not backfilled.",
+    "Existing Core package version metadata is not a claim that previously published files were upgraded; rendering proof is for captured configuration and source/content bytes.",
+    "Both existing consumers must retain claimed-job store predicates; ordinary query guard stays enabled."
+  ],
+  "promotionRequirements": [
+    "Verify the target account/schema, backup/recovery and exact migration ownership/privileges in staging.",
+    "Apply forward368/369 before candidate use; verify current catalog and backend-only RPC metadata under real deployment roles.",
+    "Deploy only after separate owner authorization; verify real scheduler bindings, nonzero queue work and observed product-search freshness.",
+    "Exercise actual .com/.store DNS/TLS/identity/email/provider paths; local port mapping is not hosted acceptance."
+  ],
+  "recoveryLimits": [
+    "Paired migration rollback and unknown-drift refusal were exercised only in owned PostgreSQL.",
+    "Coordinate application/schema backout: dropping369 while candidate scheduler serves makes dispatch unavailable by design.",
+    "Rollback changes no merchant documents or retained event/job rows; no row deletion is an accepted recovery shortcut.",
+    "Prior source has the reproduced preflight defect; restoring its exact schema is not proof of acceptable business availability."
+  ],
+  "openOperatingFindings": [
+    "Production search depends on15-minute scheduled indexing; launch freshness budget remains unaccepted.",
+    "Optional frozen replay-lag telemetry still hits the ordinary guard and logs an error; requires a separately scoped retirement/observability fix.",
+    "Useful-page speed and repeated navigation/search demand need comparable measurement."
+  ],
+  "preflightFunctionBodySha256": "825c3b12e1784e5d50a815ed77a99ca0f2d7a942a7b7c928ed76452bd8a86a84"
+}

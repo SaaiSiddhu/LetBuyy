@@ -1,0 +1,24 @@
+{
+  "report": "core-repairs.html",
+  "localReferences": 41,
+  "missingReferences": [],
+  "images": [
+    {
+      "path": "public-core-store.png",
+      "bytes": 399658,
+      "sha256": "9f91f464149d6d43bb9304402fcd3ec1e617335744ec968913826b0b7738fee7"
+    },
+    {
+      "path": "merchant-core-editor.png",
+      "bytes": 286745,
+      "sha256": "04eab0608a70cbc77a86b789be770ea91ef6fa4653013eb19e8621e5aceab06e"
+    },
+    {
+      "path": "customer-cod-order.png",
+      "bytes": 40548,
+      "sha256": "22850b2f7be809bd318e080aab2665fc3a10ef93375b44bc9334a547cecb2d62"
+    }
+  ],
+  "visualReview": "Three captures were inspected in the preceding implementation session; no report file-access restriction bypass used. Offline HTML/link/source checks here.",
+  "acceptanceScope": "Native UI assertions and representative captures; not every section at every width."
+}

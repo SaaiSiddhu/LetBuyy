@@ -6,6 +6,7 @@ import {
     getUrbanKicksDemoProducts as getUrbanKicksDemoProductsFixture,
 } from './demo/urban-kicks-demo';
 import { mapPublicProductPriceHistory } from './product-price-history';
+import { mapPublicProductVariants } from './product-variants';
 
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
@@ -77,6 +78,22 @@ export const ProductService = {
         } catch (error) {
             console.error('[ProductService] Worker store fetch failed:', error);
             throw new StorefrontCatalogueError('getProductsByStoreSubdomain', error);
+        }
+    },
+
+    // A preview capability may render active products before the store is public.
+    // The existing theme-preview endpoint validates its store/draft/expiry first.
+    async getPreviewProducts(subdomain: string, token: string, selectedIds: string[] = []): Promise<ProductModel[]> {
+        try {
+            const products = await createStorefrontApiClient({ cache: 'no-store' }).storefront.themePreviewProducts(
+                subdomain, token, selectedIds.length ? selectedIds.slice(0, 100) : undefined,
+            );
+            if (!Array.isArray(products)) throw new Error('Invalid preview catalog response');
+            return products.map(mapWorkerProduct);
+        } catch {
+            // A failed fetch can contain the capability URL; never emit that object.
+            console.error('[ProductService] Preview catalog is unavailable');
+            throw new StorefrontCatalogueError('getPreviewProducts', new Error('Preview catalog unavailable'));
         }
     },
 
@@ -179,7 +196,7 @@ function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
         countryOfOrigin: data.country_of_origin as string | undefined,
         importerDetails: data.importer_details as string | undefined,
         tags: (data.tags as string[]) || [],
-        variants: priceHistory.variants as unknown as ProductModel['variants'],
+        ...mapPublicProductVariants(data, priceHistory.variants),
         stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,

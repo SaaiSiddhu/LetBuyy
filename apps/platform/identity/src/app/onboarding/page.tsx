@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
-import { getAdminSelectPlanUrl, getPlatformRootDomain, getStorefrontHost } from '@/lib/config/urls'
+import { getAdminSelectPlanUrl, getStorefrontRootDomain, getStorefrontHost } from '@/lib/config/urls'
 import { Button, Checkbox, Input, Select } from '@letbuyy/ui'
 
 interface SessionUser {
@@ -493,7 +493,7 @@ export default function OnboardingPage() {
                     siteType,
                     storeName: name,
                     subdomain,
-                    templateId: 'modern',
+                    templateId: 'letbuyy-core',
                     survey: { industry },
                     attemptId: savedAttemptId || draftAttemptId,
                 }),
@@ -685,7 +685,7 @@ export default function OnboardingPage() {
                                     aria-invalid={validation && !validation.valid ? true : undefined}
                                     autoFocus
                                 />
-                                <span id="subdomain-host-suffix" className="onboard-subdomain-suffix">.{getPlatformRootDomain()}</span>
+                                <span id="subdomain-host-suffix" className="onboard-subdomain-suffix">.{getStorefrontRootDomain()}</span>
                             </div>
                             <div
                                 id="subdomain-validation"

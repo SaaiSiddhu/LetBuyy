@@ -78,10 +78,13 @@ export async function buildSectionDataPlan({
     store,
     sections,
     route,
+    preloadedProducts,
 }: {
     store: StoreModel;
     sections: SectionModel[];
     route: StorefrontRouteContext;
+    // Caller-authorized, bounded catalog (for private editor previews).
+    preloadedProducts?: ProductModel[];
 }): Promise<Map<string, SectionRenderData>> {
     const dataBySectionId = new Map<string, SectionRenderData>();
 
@@ -114,14 +117,14 @@ export async function buildSectionDataPlan({
         ...(route.searchParams?.country_of_origin ? { country_of_origin: route.searchParams.country_of_origin } : {}),
         ...(route.searchParams?.page ? { page: Number(route.searchParams.page) || 1 } : {}),
     };
-    const products = isUrbanKicksDemo
+    const products = preloadedProducts ?? (isUrbanKicksDemo
         ? await ProductService.getUrbanKicksDemoProducts(allProductIds.size > 0 ? Array.from(allProductIds) : undefined)
         : allProductIds.size > 0
             ? await ProductService.getProductsByIds(Array.from(allProductIds), route.subdomain, productFilters)
             : await ProductService.getProductsByStoreSubdomain(route.subdomain, {
                 ...productFilters,
                 ...(route.searchParams?.page ? { page: Number(route.searchParams.page) || 1 } : {}),
-            });
+            }));
 
     const productsById = new Map(products.map((product) => [product.id, product]));
     for (const section of productSections) {

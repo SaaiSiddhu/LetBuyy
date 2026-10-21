@@ -11,6 +11,7 @@ import {
 } from '@letbuyy/auth-core';
 import {
   normalizeRequestHost,
+  isHostedCheckoutHost,
   resolveStorefrontHost,
 } from '@letbuyy/tenant-core';
 import { getThemePreviewCookieName, normalizeThemePreviewToken } from './lib/theme-preview-cookie';
@@ -203,11 +204,10 @@ function isInternalCheckoutOriginPath(pathname: string): boolean {
 // label resolveStorefrontHost already extracted rather than re-deriving it, so this can never
 // disagree with the reserved-label check immediately below.
 function isCheckoutOriginHost(resolution: { kind: string; host: string; rootDomain: string | null }): boolean {
-  if (resolution.kind !== 'reserved' || !resolution.rootDomain) return false;
-  const suffix = `.${resolution.rootDomain}`;
-  if (!resolution.host.endsWith(suffix)) return false;
-  const label = resolution.host.slice(0, -suffix.length);
-  return label === 'checkout' || label === 'checkout-staging';
+  return isHostedCheckoutHost(resolution.host, {
+    checkoutOrigin: process.env.CHECKOUT_ORIGIN,
+    storeRootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+  });
 }
 
 // checkout.<root> never rewrites into /store/<subdomain> — the checkout tree resolves its

@@ -27,7 +27,8 @@ test('tax rate routes verify store ownership before every mutation', () => {
     assert.match(routeSource, /router\.delete\('\/taxes\/:id'/);
     assert.match(routeSource, /verifySiteOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /verifySiteOwnership\(db,\s*body\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
-    assert.match(routeSource, /verifySiteOwnership\(db,\s*ownedTaxRate\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /resolveShippingTaxResourceScope\(c, 'tax_rates', id\)/);
+    assert.match(routeSource, /\.eq\('id', id\)\.eq\(scopeColumn, storeId\)/);
     assert.match(routeSource, /\.from\('tax_rates'\)[\s\S]*\.insert\(plan\.taxRateInsert\)/);
     assert.match(routeSource, /\.from\('tax_rates'\)[\s\S]*\.update\(plan\.updates\)/);
     assert.match(routeSource, /\.from\('tax_rates'\)\.delete\(\)\.eq\('id', id\)/);

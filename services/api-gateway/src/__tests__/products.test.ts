@@ -136,7 +136,7 @@ test('uploads fail closed in production and use an inline local fallback without
 
     assert.match(routeSource, /if \(!c\.env\.R2_BUCKET\)/);
     assert.match(routeSource, /isProductionEnv\(c\.env\)/);
-    assert.match(routeSource, /ASSET_PUBLIC_BASE_URL/);
+    assert.match(routeSource, /new URL\(c\.req\.url\)\.origin/);
     assert.match(routeSource, /code:\s*'STORAGE_UNAVAILABLE'/);
     assert.match(routeSource, /data:\$\{file\.type \|\| 'application\/octet-stream'\};base64,\$\{base64\}/);
     assert.match(routeSource, /storage:\s*'local-dev-inline'/);

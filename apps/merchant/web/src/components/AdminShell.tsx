@@ -296,6 +296,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
                                 {pathname?.endsWith('/dashboard') && (
                                     <TrialBanner
+                                        storeSlug={store}
                                         trialEndsAt={storeData.trial_ends_at}
                                         trialStatus={storeData.trial_status}
                                     />

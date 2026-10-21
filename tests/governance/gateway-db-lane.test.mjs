@@ -52,6 +52,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "console-oncall-schedules.postgres.test.ts",
         "console-overview-read.postgres.test.ts",
         "console-runtime-command-history.postgres.test.ts",
+        "core-preset-save.postgres.test.ts",
         "current-entitlement-authority.postgres.test.ts",
         "customer-password-reset.postgres.test.ts",
         "final-definer-role-access.postgres.test.ts",
@@ -118,6 +119,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "real-http-shadow-rehearsal.postgres.test.ts",
         "real-staff-product-journey.postgres.test.ts",
         "return-refund-authority.postgres.test.ts",
+        "shipping-tax-settings-browser.postgres.test.ts",
+        "shipping-tax-settings.postgres.test.ts",
         "smart-collection-preview.postgres.test.ts",
         "store-creation-idempotency.postgres.test.ts",
         "storefront-buyer-data.postgres.test.ts",
@@ -126,6 +129,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "storefront-buyer-orders.postgres.test.ts",
         "storefront-buyer-reviews.postgres.test.ts",
         "storefront-buyer-wishlist.postgres.test.ts",
+        "storefront-collection-discovery.postgres.test.ts",
         "storefront-customer-address-atomicity.postgres.test.ts",
         "storefront-customer-profile.postgres.test.ts",
         "storefront-web-onboarding-browser.postgres.test.ts",
@@ -138,8 +142,9 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "subscription-single-activation.postgres.test.ts",
         "theme-draft-browser.postgres.test.ts",
         "theme-draft-cas.postgres.test.ts",
-        "verification-token-redemption.postgres.test.ts"
-],
+        "theme-upload-ownership.postgres.test.ts",
+        "verification-token-redemption.postgres.test.ts",
+    ],
         'a suite added to or removed from the lane is a decision: name it here',
     );
     assert.deepEqual(rootOwnedSuites(), [
@@ -149,6 +154,10 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "console-mfa-reset.postgres.test.ts",
         "console-oncall-schedules-browser.postgres.test.ts",
         "console-runtime-command-history-browser.postgres.test.ts",
+        "core-catalog-refresh.postgres.test.ts",
+        "core-presets-browser.postgres.test.ts",
+        "core-scheduled-search.postgres.test.ts",
+        "core-store-bootstrap.postgres.test.ts",
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
@@ -161,9 +170,11 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-mobile-mfa-transport.postgres.test.ts",
         "merchant-product-edit-browser.postgres.test.ts",
         "merchant-product-status-browser.postgres.test.ts",
+        "merchant-public-signup-browser.postgres.test.ts",
         "merchant-smart-collection-preview-browser.postgres.test.ts",
         "merchant-staff-invitation-delivery.postgres.test.ts",
         "money-ledger-reconciliation-traversal.postgres.test.ts",
+        "native-core-storefront-browser.postgres.test.ts",
         "payment-refund-reconciliation.postgres.test.ts",
         "payout-statement-replay.postgres.test.ts",
         "platform-job-recovery-browser.postgres.test.ts",
@@ -172,7 +183,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "published-storefront-recovery-browser.postgres.test.ts",
         "reel-review-revisions.postgres.test.ts",
         "storefront-buyer-support-recovery-browser.postgres.test.ts",
-        "subscription-tax-gross-conservation.postgres.test.ts"
+        "subscription-tax-gross-conservation.postgres.test.ts",
+        "worker-sql-invocation.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());

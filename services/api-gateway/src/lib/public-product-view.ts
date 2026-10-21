@@ -29,6 +29,7 @@ export const PUBLIC_PRODUCT_SELECT_RELATIONAL: string = PUBLIC_PRODUCT_SELECT.re
 export const PUBLIC_PRODUCT_FIELDS: ReadonlySet<string> = new Set([
     ...PUBLIC_PRODUCT_SELECT.split(','),
     'product_variants',
+    'product_options',
     'prior_lowest_price_30d',
     'prior_price_coverage_complete',
     'price_observed_at',
@@ -125,6 +126,13 @@ export function toPublicProduct<T extends Record<string, unknown>>(product: T): 
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(product)) {
         if (!PUBLIC_PRODUCT_FIELDS.has(key)) continue;
+        if (key === 'product_options') {
+            result[key] = Array.isArray(value) ? value.filter(option => option && typeof option === 'object' && typeof (option as Record<string, unknown>).name === 'string').map(option => {
+                const row = option as Record<string, unknown>;
+                return { name: row.name, position: typeof row.position === 'number' && Number.isFinite(row.position) ? row.position : 0, values: Array.isArray(row.values) ? row.values.filter(entry => typeof entry === 'string') : [] };
+            }) : [];
+            continue;
+        }
         if ((VARIANT_KEYS as readonly string[]).includes(key) && Array.isArray(value)) {
             result[key] = value.map((variant) => (
                 variant && typeof variant === 'object' ? toPublicVariant(variant as Record<string, unknown>) : variant

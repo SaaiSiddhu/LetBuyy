@@ -1,0 +1,53 @@
+{
+  "developBefore": "610074d2bce4c14978637dffa861d85691c9bd1a",
+  "candidateSource": "676d432b",
+  "stack": [
+    {
+      "branch": "letbuyy/week1-launch-blockers",
+      "head": "508ee2aa68012f7bb9eafd7fcd63a86b746121b0",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week2-shipping-tax",
+      "head": "18b8c504228699dcadfb9fe22aae04c5c83b2a17",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week2-billing-activation",
+      "head": "f5f7fccb8d2b154516953da1fd079dabe493f32f",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week2-public-signup",
+      "head": "994d8e28a93249811e909a34af15334fae155d4f",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week2-core-storefront",
+      "head": "d9a987dc79bdac26a6c5ae95b9595c678c9215d5",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week1-core-copy",
+      "head": "85588ec7acb9adee132cde4c859e43f8480e6694",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week1-core-catalog",
+      "head": "2753c63a365272d366aac40164507cf12a438a48",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week1-core-discovery",
+      "head": "27abd93744f49787045609c37f94b114c29f75ff",
+      "includedInCandidate": true
+    },
+    {
+      "branch": "letbuyy/week1-core-usability",
+      "head": "676d432b2d68a0c0543bc01bfb5f07a3365c2e02",
+      "includedInCandidate": true
+    }
+  ],
+  "allRegisteredWorktreeHeadsIncluded": true,
+  "historicalDirtyCandidates": "Preserved in original worktrees and existing 2026-10-18 recovery branch; not overlaid on evolved source."
+}

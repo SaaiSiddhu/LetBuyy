@@ -28,10 +28,24 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(binary);
 }
 
-function publicAssetBaseUrl(env: Env): string {
-    const configuredBaseUrl = env.ASSET_PUBLIC_BASE_URL?.trim();
-    if (configuredBaseUrl) return configuredBaseUrl.replace(/\/+$/, '');
-    return '';
+function publicAssetBaseUrl(c: UploadContext): string | null {
+    // Service-bound calls use an internal request host. The scoped public base
+    // must name this Worker's registered /assets route, not the separate legacy
+    // ASSET_PUBLIC_BASE_URL used by other media flows.
+    const configured = c.env.UPLOAD_PUBLIC_BASE_URL?.trim();
+    if (configured) {
+        try {
+            const url = new URL(configured);
+            if ((url.protocol !== 'https:' && (isProductionEnv(c.env) || url.protocol !== 'http:'))
+                || url.pathname.replace(/\/+$/, '') !== '/assets'
+                || url.username || url.password || url.search || url.hash) return null;
+            return `${url.origin}/assets`;
+        } catch { return null; }
+    }
+    const requestUrl = new URL(c.req.url);
+    if (isProductionEnv(c.env) || requestUrl.hostname.endsWith('.internal')) return null;
+    // Local test/development Workers can serve their own allocated origin.
+    return `${new URL(c.req.url).origin}/assets`;
 }
 
 function safeUploadFolder(value: string): string {
@@ -109,8 +123,7 @@ function isLegacyOwnerKey(key: string, ownerId: string): boolean {
 }
 
 async function verifyUploadStoreOwnership(c: UploadContext, storeId: string, authUser: WorkerAuthUser): Promise<boolean> {
-    if (authUser.storeId) return authUser.storeId === storeId;
-
+    if (authUser.storeId && authUser.storeId !== storeId) return false;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, authUser);
     if (!customUser) return false;
@@ -184,7 +197,7 @@ router.post('/', async (c) => {
         // Use the full UUID (122 bits) rather than an 8-char slice (~32 bits) to
         // eliminate any theoretical brute-force enumeration of CDN URLs within a
         // specific store + millisecond window.
-        const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
+        const key = `public-media/${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
 
         if (!c.env.R2_BUCKET) {
             if (isProductionEnv(c.env)) {
@@ -206,14 +219,14 @@ router.post('/', async (c) => {
             }, 201);
         }
 
-        const assetBaseUrl = publicAssetBaseUrl(c.env);
-        if (!assetBaseUrl) {
-            return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Public asset base URL is not configured' } }, 503);
-        }
+        const assetBaseUrl = publicAssetBaseUrl(c);
+        if (!assetBaseUrl) return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Public upload delivery URL is not configured' } }, 503);
 
         await c.env.R2_BUCKET.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
             customMetadata: {
+                visibility: 'public',
+                delivery: 'letbuyy-public-v1',
                 owner_id: auth.user.id,
                 ...(storeId ? { store_id: storeId } : {}),
                 folder,
@@ -222,7 +235,7 @@ router.post('/', async (c) => {
             },
         });
 
-        // Return public URL for the environment-specific CDN in front of R2.
+        // Return the registered public-media delivery URL on this Worker.
         const publicUrl = `${assetBaseUrl}/${key}`;
 
         return c.json({
@@ -233,7 +246,7 @@ router.post('/', async (c) => {
                 content_type: file.type,
                 media_type: mediaType,
                 storage: 'r2',
-                cdn_configured: true,
+                cdn_configured: false,
                 store_id: storeId || null,
             },
         }, 201);

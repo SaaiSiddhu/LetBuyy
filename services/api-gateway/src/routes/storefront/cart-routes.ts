@@ -306,10 +306,16 @@ async function hydrateCartLines(
         };
     }
 
+    const variantsFor = (product: DbRecord) => Array.isArray(product.variants) ? product.variants as DbRecord[] : [];
+    if (mergedLines.some(line => line.variant_id && !variantsFor(productsById.get(line.product_id) || {}).some(variant => variant.id === line.variant_id))) {
+        return { lines: [], error: c.json({ success: false, error: { code: 'VARIANT_NOT_FOUND', message: 'A selected variant is unavailable for this product.' } }, 400) };
+    }
+
     return {
         lines: mergedLines.map((line) => {
             const product = productsById.get(line.product_id) || {};
-            const unitPrice = numberValue(product.price);
+            const variant = line.variant_id ? variantsFor(product).find(row => row.id === line.variant_id) : undefined;
+            const unitPrice = variant && variant.price != null ? numberValue(variant.price) : numberValue(product.price);
             const title = stringValue(product.name) || 'Product';
 
             return {

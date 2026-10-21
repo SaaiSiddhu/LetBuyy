@@ -1,0 +1,164 @@
+{
+  "commit": "551f4b4f",
+  "base": "508ee2aa",
+  "files": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/taxes/page.tsx",
+      "sha256": "ce8f4029e1eb6bc68b93a743bb51736b6ca94158d8b083a29b7b3b9dc802e553"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts",
+      "sha256": "cb6231e556f3ef945dd631a75b10ee7d8e15bab12cb610e8f33935fc32565678"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/rates/route.ts",
+      "sha256": "8d9bd62d1cca13e3bf06ec2a3798027a5715342e756cd459c638c2fad0b0e694"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/zones/[zoneId]/route.ts",
+      "sha256": "55a1da799451ae5993a7672b849d96f9764ebf95ccb7c2e22357457be0f69267"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/zones/route.ts",
+      "sha256": "91fcc15cbdf3ebebd036887b21921c7e5f26ec395d76275e2a786c8b80fac0f5"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/taxes/[taxId]/route.ts",
+      "sha256": "b50b833fe97788f98cceaeadadeeb20819818291fa06e15a81859f5a3914f810"
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/taxes/route.ts",
+      "sha256": "df670ff6f0b92d976b4964df21af635fcb3f85850fb21add8c464417b59484a4"
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/client.ts",
+      "sha256": "2bd3bc2e24223aaaf4f65402e05f11af108d1166cfad584d06786724c0292f11"
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "sha256": "c468ce2284beeb08b38775c7aa42c1b2fabf529ae7689cb42c5751e2722ce523"
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "sha256": "ee581e00d7d66150dd11b92699d69c9370682d85e9300b9ba468e37662f478dd"
+    },
+    {
+      "path": "packages/checkout-core/test/shipping-tax-settings.test.ts",
+      "sha256": "5e8bb95372d0d75b5d6186cf43e10532f33ae06860262ca8be74820924b13f9b"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings-browser.postgres.test.ts",
+      "sha256": "ed91ae34be2edd8beba3eb17fa78395b5c9660f71035b3a1cc5739e1a6a74a9d"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+      "sha256": "b0421835ef9f8f4c358200730ed5129b4d9c7fbc2515de4923be49b15f3ba289"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/shipping-tax.test.ts",
+      "sha256": "35dfb78e2cfdb9fd28b181124c79f2c9d4b5ae5fe13a491eccb27aa908ad0336"
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/shipping.test.ts",
+      "sha256": "a841c7fe1f5167e3e9b66cd138347fc389fdf16430d708345d42ac5045332a2e"
+    },
+    {
+      "path": "services/api-gateway/src/middleware/idempotency.ts",
+      "sha256": "5bd34a5decade3c3a5bd7067a5761752a478caaaddc29cfacab23e37cfcf9536"
+    },
+    {
+      "path": "services/api-gateway/src/routes/shipping-tax.ts",
+      "sha256": "8044e68b135f402683524f2dc1df7a6026f0d49285d18700910405bfc9082d09"
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "sha256": "c9c36a6945b208accef1c67b92f5efc77ff4c46bc83aa496c22ca0ac838a53ff"
+    }
+  ],
+  "runtimeEvidenceCommit": "551f4b4f",
+  "runtimeInputsUnchanged": [
+    {
+      "path": "apps/merchant/web/src/app/[store]/settings/taxes/page.tsx",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/rates/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/zones/[zoneId]/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/shipping/zones/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/taxes/[taxId]/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/app/api/stores/[store]/taxes/route.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/merchant/web/src/lib/api/client.ts",
+      "unchanged": true
+    },
+    {
+      "path": "config/governance/secret-scan-exceptions.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/checkout-core/src/index.ts",
+      "unchanged": true
+    },
+    {
+      "path": "packages/checkout-core/test/shipping-tax-settings.test.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings-browser.postgres.test.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/owned-db/shipping-tax-settings.postgres.test.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/shipping-tax.test.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/__tests__/shipping.test.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/middleware/idempotency.ts",
+      "unchanged": true
+    },
+    {
+      "path": "services/api-gateway/src/routes/shipping-tax.ts",
+      "unchanged": true
+    },
+    {
+      "path": "tests/governance/gateway-db-lane.test.mjs",
+      "unchanged": true
+    }
+  ],
+  "finalSourceCommit": "72e352e50aafd4e332a9c1ce124df03ff455c036",
+  "governanceInputs": [
+    {
+      "path": "scripts/validators/route-ownership-validator.mjs",
+      "sha256": "dddb71ec485c7040c6019404f4baad003972df0da131c118442f25f4810f10fc"
+    },
+    {
+      "path": "tests/governance/governance-source-traversal.test.mjs",
+      "sha256": "286b43bb8d09ebf94ed1b22ada46ed8ac13d0a92a3d2451a7e6d0d99dd517dd7"
+    }
+  ]
+}

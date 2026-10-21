@@ -1,0 +1,28 @@
+{
+  "nextPhase": "Fresh merchant Core storefront and canonical .store routing",
+  "baseCandidate": "b619ad5f",
+  "ownerAuthorization": "Existing four-week web launch; single agent; preserve all completed local slices.",
+  "observations": [
+    "Real public signup creates sites.theme_id=modern; actual Core default/editor adoption still separate",
+    "Dashboard resolves default store domain with literal letbuyy.com even though owner target is letbuyy.store",
+    "Default COD makes payment checklist green; this is not online-provider acceptance"
+  ],
+  "nextAcceptance": [
+    "Claim next isolated worktree on the verified signup candidate; preserve primary and completed slices",
+    "Map canonical first-party Core install/default template and existing preset/release ownership; no mass migration of existing stores",
+    "Use canonical storefront URL config for dashboard and normal storefront actions, retain intentional local roots and hosted-domain limitations",
+    "Fresh native signup -> choose or initialize Core -> product/image/variant -> publish -> actual buyer storefront and COD order, recording exact durable state and failures",
+    "Keep existing private theme ownership, SQL lifetime, limiter, media, shipping/tax and billing contracts unchanged or reverify affected inputs"
+  ],
+  "externalDependencies": [
+    "Real inbox delivery and sender DNS",
+    "Hosted .com/.store cookies/routing/TLS and release authorization",
+    "Actual Razorpay sandbox login explicitly deferred; do not invent keys or supplier approval"
+  ],
+  "notClaimed": [
+    "Core-default readiness",
+    "Online provider payments",
+    "Hosted release",
+    "Whole programme complete"
+  ]
+}

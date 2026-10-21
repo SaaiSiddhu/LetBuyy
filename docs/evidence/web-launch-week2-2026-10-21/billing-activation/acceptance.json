@@ -1,0 +1,309 @@
+{
+  "phase": "WEB-LAUNCH-W2-BILLING-ACTIVATION",
+  "date": "2026-10-21",
+  "status": "LOCAL_VERIFIED_PROVIDER_FIXTURE_ONLY_CANONICAL_GATE_PASSED_WITH_SWEEP_METHOD_RED",
+  "branch": "letbuyy/week2-billing-activation",
+  "base": "18b8c504",
+  "sourceCommit": "84cbe1e9cdbf4cbd79cc8eac5aed9075e5515db1",
+  "currentHead": "84cbe1e9cdbf4cbd79cc8eac5aed9075e5515db1",
+  "suiteResults": [
+    {
+      "suite": "subscription-payment-ownership.postgres",
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "billing-guards-final.json"
+    },
+    {
+      "suite": "subscription-single-activation.postgres",
+      "pass": 46,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "billing-guards-final.json"
+    },
+    {
+      "suite": "subscription-tax-gross-conservation.postgres",
+      "pass": 15,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "billing-guards-final.json"
+    },
+    {
+      "suite": "subscription-checkout-browser.postgres",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "candidate-browser.json"
+    }
+  ],
+  "ownedPass": 72,
+  "ownedFail": 0,
+  "ownedCleanupVerified": true,
+  "sourceInputsUnchanged": true,
+  "browser": {
+    "providerFixtureOnly": true,
+    "unregisteredProfileFromRealForm": true,
+    "businessIdentityFromRealForm": true,
+    "seededLegalName": false,
+    "normalTrialPlanNavigation": true,
+    "actualPlanCardChosen": true,
+    "canonicalSeoFreshRender": true,
+    "cancelReadbackRetainsReceipt": true,
+    "profileScreenshot": "screenshots/billing-profile.png",
+    "seoScreenshot": "screenshots/fresh-storefront-seo.png",
+    "providerCreates": 1,
+    "normalCreateStatuses": [
+      503,
+      200,
+      200,
+      200
+    ],
+    "normalVerifyStatuses": [
+      503,
+      201
+    ],
+    "paidSubscriptions": 1,
+    "paidInvoices": 1,
+    "cancelledPlanScreenshot": "screenshots/cancelled-plan-readback.png"
+  },
+  "regressions": [
+    {
+      "lane": "Merchant web",
+      "group": 1,
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "merchant-candidate-tests.log"
+    },
+    {
+      "lane": "Merchant web",
+      "group": 2,
+      "tests": 806,
+      "pass": 806,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "merchant-candidate-tests.log"
+    },
+    {
+      "lane": "Commerce web",
+      "group": 1,
+      "tests": 129,
+      "pass": 129,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "commerce-tests.log"
+    },
+    {
+      "lane": "Commerce web",
+      "group": 2,
+      "tests": 143,
+      "pass": 143,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "commerce-tests.log"
+    },
+    {
+      "lane": "Commerce web",
+      "group": 3,
+      "tests": 977,
+      "pass": 977,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "commerce-tests.log"
+    },
+    {
+      "lane": "Billing entry/state controls",
+      "group": 1,
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "billing-entry-units-final.log"
+    },
+    {
+      "lane": "Contracts",
+      "group": 1,
+      "tests": 338,
+      "pass": 338,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_contracts.log"
+    },
+    {
+      "lane": "Gateway unit",
+      "group": 1,
+      "tests": 1606,
+      "pass": 1606,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/test_unit_gateway.log"
+    },
+    {
+      "lane": "Governance",
+      "group": 1,
+      "tests": 788,
+      "pass": 788,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_governance.log"
+    },
+    {
+      "lane": "CI",
+      "group": 1,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_ci.log"
+    },
+    {
+      "lane": "Security/auth",
+      "group": 1,
+      "tests": 64,
+      "pass": 64,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_security+auth.log"
+    },
+    {
+      "lane": "Session security",
+      "group": 1,
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skip": 0,
+      "receipt": "verified-gate/tests_wave4-session.log"
+    }
+  ],
+  "gate": {
+    "source": {
+      "runId": "d68f0157676b",
+      "scope": "Dedicated local PostgreSQL16 for full security gate; no shared/restored database",
+      "commit": "84cbe1e9cdbf4cbd79cc8eac5aed9075e5515db1",
+      "startedAt": "2026-10-20T22:48:39.651Z",
+      "gateExit": 1,
+      "cleanup": [
+        {
+          "kind": "container",
+          "name": "letbuyy-billing-security-81907-mvh9yml0-731b39",
+          "removed": true
+        },
+        {
+          "kind": "network",
+          "name": "letbuyy-billing-security-81907-mvh9yml0-731b39-net",
+          "removed": true
+        },
+        {
+          "kind": "volume",
+          "name": "letbuyy-billing-security-81907-mvh9yml0-731b39-data",
+          "removed": true
+        }
+      ],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      },
+      "finishedAt": "2026-10-20T22:56:59.520Z"
+    },
+    "checks": [
+      {
+        "check": "typecheck",
+        "exit": 0,
+        "seconds": 22
+      },
+      {
+        "check": "lint",
+        "exit": 0,
+        "seconds": 14
+      },
+      {
+        "check": "governance:plan",
+        "exit": 0,
+        "seconds": 0
+      },
+      {
+        "check": "validators:sweep (113/114 pass)",
+        "exit": 1,
+        "seconds": 36
+      },
+      {
+        "check": "test:contracts",
+        "exit": 0,
+        "seconds": 6
+      },
+      {
+        "check": "test:unit:gateway",
+        "exit": 0,
+        "seconds": 19
+      },
+      {
+        "check": "tests:governance",
+        "exit": 0,
+        "seconds": 337
+      },
+      {
+        "check": "tests:ci",
+        "exit": 0,
+        "seconds": 0
+      },
+      {
+        "check": "tests:security+auth",
+        "exit": 0,
+        "seconds": 26
+      },
+      {
+        "check": "tests:wave4-session",
+        "exit": 0,
+        "seconds": 1
+      },
+      {
+        "check": "governance:REAL-LANE",
+        "exit": 0,
+        "seconds": 36
+      }
+    ],
+    "canonical": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "failedValidators": [
+      "stale-artifact"
+    ],
+    "individualSweepMethodOnly": true,
+    "cleanupVerified": true
+  },
+  "provenance": "Exact-commit three-production-app browser test: seeded account/store, blank legal name and address, normal password login and actual Business/General forms, actual Growth card, saved invoice state29/GSTINnull, fresh storefront head metadata, synthetic provider reply loss/recovery/SDK dismissal, DB audit fault/rollback/retry, one paid source/invoice, local cancellation readback/reselection.71 gateway/database cases have unchanged relevant service/core inputs; provider HTTP/capture/SDK is always an explicit fixture. Not public-signup, real Razorpay or recurring cancellation acceptance.",
+  "amounts": {
+    "grossMinor": 69900,
+    "taxableMinor": 59237,
+    "taxMinor": 10663,
+    "recipientGstin": null,
+    "recipientState": "29",
+    "providerCreates": 1,
+    "paidSubscriptions": 1,
+    "paidInvoices": 1,
+    "finalSubscriptionStatus": "cancelled"
+  },
+  "providerSandbox": "NOT_VERIFIED_OWNER_LOGIN_DEFERRED",
+  "supplierProfile": "Only a synthetic approved profile inside owned tests; real platform facts not configured or approved here",
+  "hosted": "NOT_VERIFIED",
+  "deployment": "NOT_PERFORMED",
+  "next": "Public signup/cross-domain identity and fresh-store readiness; trial-duration alignment, real supplier/provider and broader launch gates remain open"
+}

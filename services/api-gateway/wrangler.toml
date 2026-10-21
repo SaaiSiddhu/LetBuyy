@@ -156,6 +156,7 @@ RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
 EDGE_SCOPE = "global-edge"
 ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.com"
+UPLOAD_PUBLIC_BASE_URL = "https://api-staging.letbuyy.com/assets"
 CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
 EVENT_QUEUE_NAME = "letbuyy-events-staging"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-staging"
@@ -249,16 +250,9 @@ FEATURE_GRAPHQL = "false"
 FEATURE_EXTENSIONS = "false"
 FEATURE_LIQUID = "false"
 FEATURE_AI_CREDIT_PURCHASE = "false"
-# TEMPORARY (founder-approved 2026-08-01) — query-cost rate-limit backend.
-# Upstash Redis is the intended production backend, but no UPSTASH_REDIS_REST_URL /
-# UPSTASH_REDIS_REST_TOKEN is provisioned. Without Redis the query-cost limiter's KV
-# fallback is NOT auto-enabled in production — unlike the fixed-window limiters it has
-# no `isProduction ||` clause — so it failed closed and every /v1 data route returned
-# 503 RATE_LIMIT_UNAVAILABLE. This flag routes those checks to the CACHE KV namespace.
-# Rate limiting stays ENFORCED: this selects a backend, it does not weaken any limit.
-# LIMITATION: Cloudflare KV has a daily write quota and each limited request costs one
-# KV write, so sustained high volume can exhaust it. REPLACE WITH UPSTASH before scale.
-RATE_LIMIT_KV_FALLBACK = "on"
+# Query-cost admission uses configured atomic Redis, or the existing coordinator.
+# KV remains a cache/fixed-window compatibility path; never a query-cost counter.
+RATE_LIMIT_KV_FALLBACK = "off"
 STOREFRONT_CACHE = "on"
 STOREFRONT_POOLED_SQL = "on"
 STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
@@ -286,6 +280,7 @@ RUNTIME_NAME = "LetBuyy API"
 PRIMARY_REGION = "ap-south-1"
 EDGE_SCOPE = "global-edge"
 ASSET_PUBLIC_BASE_URL = "https://cdn.letbuyy.com"
+UPLOAD_PUBLIC_BASE_URL = "https://api.letbuyy.com/assets"
 CHECKOUT_ORIGIN = "https://checkout.letbuyy.com"
 EVENT_QUEUE_NAME = "letbuyy-events-production"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-production"
@@ -336,3 +331,8 @@ dataset = "letbuyy-production-telemetry"
 
 [env.production.placement]
 mode = "smart"
+
+# Existing class/migration; bind production query-cost admission without a new runtime.
+[[env.production.durable_objects.bindings]]
+name = "RUNTIME_COORDINATOR"
+class_name = "LetbuyyRuntimeDurableObject"

@@ -1,0 +1,79 @@
+{
+  "programme": "LetBuyy web launch",
+  "startDate": "2026-10-21",
+  "fourWeekTarget": "2026-11-18",
+  "targetIsConditional": true,
+  "currentFocus": "Core collection pagination, flat Liquid filter/pagination placement, mobile address controls and actual Liquid preview viewports are locally verified. Owner requested develop merge/GitHub source sync for new machine. Continue Core full visual/section acceptance and measured useful-page performance, then remaining commerce/operator/provider/hosted gates.",
+  "weeks": [
+    {
+      "week": 1,
+      "dates": "21\u201327October2026",
+      "outcome": "Secure,reliable Core storefront foundation",
+      "work": [
+        "Theme ownership and atomic upload",
+        "Worker SQL invocation lifetime",
+        "Atomic request admission with trusted subjects",
+        "Core editor/presets/render/import",
+        "Public image delivery and private-object containment"
+      ],
+      "exit": "Negative controls and actual Worker/DB/browser receipts; ten preset apply/reload/publish/render; scoped build/type/governance checks"
+    },
+    {
+      "week": 2,
+      "dates": "28October\u20133November2026",
+      "outcome": "Complete merchant-to-buyer commerce",
+      "work": [
+        "Billing activation and honest plan/trial copy",
+        "Shipping,tax and checkout integration",
+        "Public signup and cross-domain identity",
+        "Online provider sandbox and COD order lifecycle",
+        "Inventory,discounts,refunds and customer reconciliation"
+      ],
+      "exit": "One durable order per intent;correct inventory/totals;provider failure/retry/capture/refund independently evidenced"
+    },
+    {
+      "week": 3,
+      "dates": "4\u201310November2026",
+      "outcome": "Operator workflows and representative staging acceptance",
+      "work": [
+        "Merchant/product/customer/order/billing console workbenches and required actions",
+        "Production host ownership and .com/.store routing/TLS",
+        "Transactional messaging and jobs",
+        "Representative load and useful-task timing"
+      ],
+      "exit": "Real staging domains and bindings;access-denial/MFA/revocation;bounded load and honest remaining dependencies"
+    },
+    {
+      "week": 4,
+      "dates": "11\u201317November2026",
+      "outcome": "Release acceptance and recovery",
+      "work": [
+        "Full exact-candidate regression",
+        "Backup/object restore and release rollback",
+        "Monitoring,alerts and operations runbooks",
+        "Public launch only after mandatory gates and owner release authorization"
+      ],
+      "exit": "Signed-off release checklist;no unresolved public-launch blockers;provider/hosted evidence"
+    }
+  ],
+  "standingBoundaries": [
+    "No push/merge/deploy or hosted cutover under current instruction",
+    "No real customer messages or transactions",
+    "Mobile app UI handled by friend;preserve shared contracts"
+  ],
+  "externalDependencies": [
+    "Razorpay account login deferred by owner; actual sandbox acceptance remains open",
+    "Hosted account,binding,DNS and provider readiness",
+    "Real approved platform supplier tax profile before paid provider activation"
+  ],
+  "earlierPlan": "20October audit recommended17November conditional target; this execution programme is anchored to owner start request21October and targets18November conditionally.",
+  "week1LocalReceipt": "Week1 source gate f9a16538, docs-only receipt head508ee2aa; 114 canonical validators passed; raw individual sweep retains stale-artifact method red; no hosted release",
+  "week2ShippingTaxReceipt": "72e352e5 source; runtime551f4b4f unchanged; 16 owned acceptance cases pass, 37 source controls pass, final canonical114/114. No hosted/provider release.",
+  "week2BillingReceipt": "84cbe1e9 source;72 owned acceptance cases pass;919 merchant and1249 commerce package tests pass; canonical114/114. Raw pre-cleanup sweep method red retained. Actual supplier profile, Razorpay sandbox and hosted launch are not verified.",
+  "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance.",
+  "week2CoreReceipt": "ff6dcc78 final source; browser c4c121da runtime inputs and publisher body unchanged. Core6 + CAS35 + full native browser1 =42 selected passing cases; canonical114/114, governance799/799. Raw gate1 solely pre-cleanup stale-artifact method red; attribution and owned cleanup pass. No provider or hosted release.",
+  "week1Closure": "Named foundation, Core catalog/search/account and bounded real collection discovery repairs locally verified. Full Week1 remains open for collection pagination, theme visual/action/filter/preview parity and measured useful-page performance. Hosted/provider acceptance is separate.",
+  "week1CoreCopyReceipt": "20b10aff source; owned8/8 including normal private/public browser and charged COD; theme1890/1890; canonical114/114; cleanup verified. Earlier editor mismatch and build-only dependency failure retained. Existing snapshots untouched; no deployment.",
+  "week1CoreCatalogReceipt": "336d508e9857033437ad606dcd91771aaee4027c source; selected owned14, theme1891, Gateway1608, queue75, Commerce1261, governance802 and canonical114 pass; cleanup verified. Scope and runtime-compatible receipts in core-catalog/acceptance.json. No provider/hosted release.",
+  "week1CoreDiscoveryReceipt": "dcd9b9f47325adaff75fe6208ede19f131956110; backend3 plus production-built native browser1 across compatible receipts, Commerce1261, reviewed inventory14, types and canonical114 pass. core-discovery/acceptance.json records bounded scope, retained failures, cleanup and limitations; no deployment."
+}
