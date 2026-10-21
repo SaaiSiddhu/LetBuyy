@@ -72,7 +72,7 @@ Three similarly named staging workflows have different scopes. `deploy-staging`
 is dispatch-only and governance-gated; `staging-deploy` includes migrations;
 `staging-runtime-deployment` concerns Cloudflare runtime/bootstrap. Production is
 dispatch-only. Do not dispatch one as if it covers all required targets. The
-scoped new reads also require migrations **379 and 380 before their matching
+scoped new reads also require migrations **379–381 before their matching
 application candidate**. Their rollback retires only the new RPCs after an
 application rollback, preserving usage, transfers and inventory.
 
@@ -88,7 +88,18 @@ authorization covers this scoped release; no repeated release permission is need
 See `docs/merchant-performance/2026-10-21-audit.md` and `coverage.json` for the
 current findings, source inventory and distinct verification levels. Baseline
 and corrected measurements are retained, including their failure receipts.
-Customers/segments/detail normalization and large-data parity, supplier/warehouse
-metrics, broader analytics, export interruption/snapshot semantics, legacy theme
-validation and settled page coverage remain explicit work; they are not closed
-by the two corrected aggregation paths.
+Candidate `c80dd194` passes ten production-browser journeys, all 81 workspace
+typecheck tasks and the real 114-validator gate in the disposable clone. The later
+operations batch has 13 passing owned read/authorization/failure/rollback cases
+and passing panel continuation tests; its exact-candidate production and final
+gate checks are next. It corrects supplier/warehouse aggregation and the empty,
+incorrectly paged receipt directory. Unowned concurrent theme/storefront changes
+are preserved and excluded from our implementation commits; the active checkout
+is no longer a clean isolated acceptance surface.
+
+Customers/segments/detail normalization and large-data parity, broader analytics,
+export interruption/snapshot semantics, legacy theme validation and settled page
+coverage remain explicit work. A read-only probe confirms plain PostgreSQL lower
+differs from JavaScript for dotted I and final sigma; ICU handles those cases,
+but its Unicode version differs from Node's. A customer optimization must prove
+the existing normalization/search contract rather than silently substituting it.

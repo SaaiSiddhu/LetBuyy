@@ -3,6 +3,8 @@
 // ============================================================
 
 import { Hono } from 'hono';
+import { z } from 'zod';
+import { PaginationQuery, UuidSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { executeInventoryAdjustment } from '../execution/inventory-adjustment.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -42,6 +44,8 @@ import {
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
+const ReceiptPageQuery=PaginationQuery.pick({page:true,limit:true}).extend({store_id:UuidSchema.optional(),po_id:UuidSchema.optional(),transfer_id:UuidSchema.optional()})
+    .refine(q=>!q.po_id || !q.transfer_id,{message:'Choose a purchase order or a transfer filter'});
 
 type ProductOwnerRow = {
     id: string;
@@ -1005,14 +1009,10 @@ router.get('/reservations', async (c) => {
 });
 
 // GET /inventory/receipts — List PO receipts and transfer receipts (read-only, ownership-checked)
-router.get('/receipts', async (c) => {
+router.get('/receipts', validate('query', ReceiptPageQuery), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const poIdFilter = c.req.query('po_id');
-    const transferIdFilter = c.req.query('transfer_id');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
-    const offset = (page - 1) * limit;
+    const q=c.get('validatedQuery') as z.infer<typeof ReceiptPageQuery>;
+    const {store_id:storeId,page,limit}=q;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -1032,76 +1032,11 @@ router.get('/receipts', async (c) => {
         return c.json(paginated([], 0, page, limit));
     }
 
-    // Fetch PO receipts (joined to purchase_orders for site_id ownership)
-    let poReceiptsData: unknown[] = [];
-    let poReceiptsCount = 0;
-
-    if (!transferIdFilter) {
-        let poQuery = db
-            .from('purchase_order_receipts')
-            .select(
-                'id, purchase_order_id, quantity_received, notes, received_at, created_at, purchase_orders!inner(id, site_id)',
-                { count: 'exact' }
-            )
-            .in('site_id', ownedStoreIds)
-            .in('purchase_orders.site_id', ownedStoreIds);
-
-        if (poIdFilter) poQuery = poQuery.eq('purchase_order_id', poIdFilter);
-
-        const { data: poData, error: poError, count: poCount } = await poQuery
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
-
-        if (poError && !isMissingTableError(poError, 'purchase_order_receipts')) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        poReceiptsData = (poData || []).map((r: Record<string, unknown>) => ({
-            ...(r as Record<string, unknown>),
-            receipt_type: 'purchase_order',
-        }));
-        poReceiptsCount = poCount || 0;
-    }
-
-    // Fetch transfer receipts (joined to inventory_transfers for site_id ownership)
-    let transferReceiptsData: unknown[] = [];
-    let transferReceiptsCount = 0;
-
-    if (!poIdFilter) {
-        let trQuery = db
-            .from('inventory_transfer_receipts')
-            .select(
-                'id, transfer_id, quantity_received, notes, received_at, created_at, inventory_transfers!inner(id, site_id)',
-                { count: 'exact' }
-            )
-            .in('site_id', ownedStoreIds)
-            .in('inventory_transfers.site_id', ownedStoreIds);
-
-        if (transferIdFilter) trQuery = trQuery.eq('transfer_id', transferIdFilter);
-
-        const { data: trData, error: trError, count: trCount } = await trQuery
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
-
-        if (trError && !isMissingTableError(trError, 'inventory_transfer_receipts')) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        transferReceiptsData = (trData || []).map((r: Record<string, unknown>) => ({
-            ...(r as Record<string, unknown>),
-            receipt_type: 'transfer',
-        }));
-        transferReceiptsCount = trCount || 0;
-    }
-
-    const combined = [...poReceiptsData, ...transferReceiptsData].sort((a, b) => {
-        const aDate = String((a as Record<string, unknown>).created_at ?? '');
-        const bDate = String((b as Record<string, unknown>).created_at ?? '');
-        return bDate.localeCompare(aDate);
+    const {data,error}=await db.rpc('read_merchant_inventory_receipts',{
+        p_site_ids:ownedStoreIds,p_page:page,p_limit:limit,p_po_id:q.po_id ?? null,p_transfer_id:q.transfer_id ?? null,
     });
-
-    const totalCount = poReceiptsCount + transferReceiptsCount;
-    return c.json(paginated(combined, totalCount, page, limit));
+    if(error || !data || !Array.isArray(data.rows) || !Number.isSafeInteger(data.total)) return c.json(dbFailureBody(),500);
+    return c.json(paginated(data.rows,data.total,page,limit));
 });
 
 // GET /inventory/analytics — Real aggregations over existing tables (no fabricated data)

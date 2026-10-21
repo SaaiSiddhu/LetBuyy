@@ -122,14 +122,14 @@
         "fetchCallSites": 1,
         "usesScopedReadHook": true
       },
-      "measuredRequestGraph": false,
-      "productionBrowserJourney": false,
-      "populatedDataVerified": false,
+      "measuredRequestGraph": true,
+      "productionBrowserJourney": true,
+      "populatedDataVerified": true,
       "emptyErrorDeniedStateVerified": false,
       "implementedRepair": [
         "Canonical AI credit balance/total, token fields, unknown dates and recent page label"
       ],
-      "retestedResult": "Component regression verified; owned backend verified; production browser pending",
+      "retestedResult": "Local Next production candidate c80dd194; actual owned Worker/PostgREST/PG. See production-browser-final. Latest operations batch remains separate.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {
@@ -465,11 +465,11 @@
         "usesScopedReadHook": true
       },
       "measuredRequestGraph": false,
-      "productionBrowserJourney": false,
-      "populatedDataVerified": false,
-      "emptyErrorDeniedStateVerified": false,
+      "productionBrowserJourney": true,
+      "populatedDataVerified": true,
+      "emptyErrorDeniedStateVerified": true,
       "implementedRepair": [],
-      "retestedResult": "Not freshly executed",
+      "retestedResult": "Local Next production candidate c80dd194; actual owned Worker/PostgREST/PG. See production-browser-final. Latest operations batch remains separate.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {
@@ -744,12 +744,12 @@
         "fetchCallSites": 5,
         "usesScopedReadHook": true
       },
-      "measuredRequestGraph": false,
-      "productionBrowserJourney": false,
+      "measuredRequestGraph": true,
+      "productionBrowserJourney": true,
       "populatedDataVerified": false,
-      "emptyErrorDeniedStateVerified": false,
+      "emptyErrorDeniedStateVerified": true,
       "implementedRepair": [],
-      "retestedResult": "Not freshly executed",
+      "retestedResult": "Local Next production candidate c80dd194; actual owned Worker/PostgREST/PG. See production-browser-final. Latest operations batch remains separate.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {
@@ -825,11 +825,11 @@
         "usesScopedReadHook": false
       },
       "measuredRequestGraph": false,
-      "productionBrowserJourney": false,
-      "populatedDataVerified": false,
-      "emptyErrorDeniedStateVerified": false,
+      "productionBrowserJourney": true,
+      "populatedDataVerified": true,
+      "emptyErrorDeniedStateVerified": true,
       "implementedRepair": [],
-      "retestedResult": "Not freshly executed",
+      "retestedResult": "Local Next production candidate c80dd194; actual owned Worker/PostgREST/PG. See production-browser-final. Latest operations batch remains separate.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {
@@ -955,7 +955,7 @@
     {
       "route": "/[store]/products/operations-dashboard",
       "file": "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx",
-      "sha256": "b9a28b9efc7546fd6dabd06bce484ae965b16c4c460049827ceaa48139b70f6a",
+      "sha256": "c2b99505da2297023fb0c48f57ea49060caab42c9a1102171a51eb9fe3fef1e2",
       "storeNavigationEntry": true,
       "requiresRecordId": false,
       "sourceInspected": true,
@@ -969,10 +969,16 @@
       "populatedDataVerified": false,
       "emptyErrorDeniedStateVerified": false,
       "implementedRepair": [
-        "Complete transfer metrics, canonical persisted status labels"
+        "Complete transfer metrics, canonical persisted status labels",
+        "Complete supplier and warehouse reads with independent bounded continuation",
+        "Actor/query lifetime for panel results"
       ],
-      "retestedResult": "Owned backend verified; production browser pending",
-      "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
+      "retestedResult": "Owned complete histories, role/fault/rollback and real component paging verified; next production candidate pending.",
+      "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution",
+      "priorVerification": {
+        "candidate": "c80dd194",
+        "scope": "Complete transfer and AI scalar integration; broader panel paging is new and pending production."
+      }
     },
     {
       "route": "/[store]/products",
@@ -986,12 +992,12 @@
         "fetchCallSites": 3,
         "usesScopedReadHook": false
       },
-      "measuredRequestGraph": false,
-      "productionBrowserJourney": false,
-      "populatedDataVerified": false,
+      "measuredRequestGraph": true,
+      "productionBrowserJourney": true,
+      "populatedDataVerified": true,
       "emptyErrorDeniedStateVerified": false,
       "implementedRepair": [],
-      "retestedResult": "Not freshly executed",
+      "retestedResult": "Local Next production candidate c80dd194; actual owned Worker/PostgREST/PG. See production-browser-final. Latest operations batch remains separate.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {
@@ -1020,7 +1026,7 @@
       "sha256": "e95b329112bba7d8a5c483a7815b21df3285160242f3aa709dc7179601417d6c",
       "storeNavigationEntry": true,
       "requiresRecordId": false,
-      "sourceInspected": false,
+      "sourceInspected": true,
       "staticInventory": {
         "lines": 381,
         "fetchCallSites": 1,
@@ -1030,8 +1036,10 @@
       "productionBrowserJourney": false,
       "populatedDataVerified": false,
       "emptyErrorDeniedStateVerified": false,
-      "implementedRepair": [],
-      "retestedResult": "Not freshly executed",
+      "implementedRepair": [
+        "Canonical recorded timestamps; complete count and one globally ordered union page"
+      ],
+      "retestedResult": "Owned real mixed1119-receipt traversal and failure/role/rollback verified; production pending.",
       "remainingIssue": "Fresh settled browser/data/query acceptance required; inventory alone is not inspection or execution"
     },
     {

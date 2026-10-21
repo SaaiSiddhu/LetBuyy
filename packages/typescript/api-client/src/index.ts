@@ -2535,6 +2535,7 @@ export interface SupplierMetricsRow extends JsonRecord {
 }
 
 export interface SupplierMetricsResult extends JsonRecord {
+  meta?: GatewayPaginationMeta;
   suppliers: SupplierMetricsRow[];
   schema_missing?: boolean;
 }
@@ -2548,6 +2549,7 @@ export interface WarehouseMetricsRow extends JsonRecord {
 }
 
 export interface WarehouseMetricsResult extends JsonRecord {
+  meta?: GatewayPaginationMeta;
   warehouses: WarehouseMetricsRow[];
   schema_missing?: boolean | string;
 }

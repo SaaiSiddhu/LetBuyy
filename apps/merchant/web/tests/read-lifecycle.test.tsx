@@ -28,6 +28,7 @@ const contentPages = {
 const readPages = {
     ...contentPages,
     aiStudio: () => import('../src/app/[store]/ai/page'),
+    operationsDashboard: () => import('../src/app/[store]/products/operations-dashboard/page'),
     exportPage: () => import('../src/app/[store]/export/page'),
     generalSettings: () => import('../src/app/[store]/settings/general/page'),
     checkoutSettings: () => import('../src/app/[store]/settings/checkout/page'),
@@ -58,6 +59,31 @@ test('AI Studio renders the authoritative balance, all credit sources and canoni
 test('AI Studio treats missing credit authority as unavailable instead of a zero-credit success', async () => {
     const h=await mount('aiStudio',async()=>json({usage:[]}));
     try {assert.match(h.text(),/AI credit information is unavailable/)} finally {await h.close()}
+});
+
+test('operations panels settle independently and page only the requested identity-bound collection', async () => {
+    const calls:string[]=[];
+    const pendingSupplier=deferred<Response>();
+    const h=await mount('operationsDashboard',async url=>{
+        calls.push(url);
+        if(url.includes('supplier-metrics')) return pendingSupplier.promise;
+        if(url.includes('warehouse-metrics')) return json({warehouses:[{location_id:'location-a',location_name:url.includes('page=2')?'Second location':'First location',is_default:false,sku_count:1100,total_units:9900}],meta:{page:url.includes('page=2')?2:1,per_page:20,total:21,total_pages:2,has_next:!url.includes('page=2'),has_prev:url.includes('page=2')}});
+        if(url.includes('transfer-metrics')) return json({by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
+        return json({order_count:3});
+    });
+    try {
+        assert.match(h.text(),/1103/);
+        assert.match(h.text(),/First location/);
+        const before=calls.length;
+        await h.click('Next locations');
+        assert.equal(calls.length,before+1);
+        assert.match(calls.at(-1)!,/warehouse-metrics\?page=2/);
+        assert.match(h.text(),/Second location/);
+        await h.render('beta');
+        assert.match(calls.filter(url=>url.includes('/beta/')&&url.includes('warehouse-metrics'))[0],/page=1/);
+        pendingSupplier.resolve(json({suppliers:[],meta:{page:1,per_page:20,total:0,total_pages:0,has_next:false,has_prev:false}}));
+        await h.pause(0);
+    } finally {await h.close()}
 });
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
