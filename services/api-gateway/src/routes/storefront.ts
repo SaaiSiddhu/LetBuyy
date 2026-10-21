@@ -724,51 +724,29 @@ async function querySearchDocumentProductIds(
 // either column can select two different tenants for one handle and return an arbitrary row —
 // a cross-tenant read. subdomain is NOT NULL and unique, so equality is single-valued; every
 // other outcome (no row, more than one row, query error) resolves to "store not found".
-async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
+async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null | undefined> {
     const sql = getPooledSql(c.env);
-    if (!sql) return null;
-    const rows = await sql.unsafe<PublishedStoreRecord[]>(
-        'select id from sites where subdomain = $1 and status = $2 and deleted_at is null limit 1',
-        [handle, 'published'],
-    ).catch(() => []);
-    return normalizeSqlRecords(rows)[0] || null;
+    if (!sql) return undefined;
+    const rows = await sql.unsafe<{ payload: PublishedStoreRecord | null }[]>(
+        'select public.read_published_storefront_site_v1($1, true) as payload', [handle]);
+    return rows[0]?.payload || null;
 }
 
 async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null | undefined> {
     const sql = getPooledSql(c.env);
     if (!sql) return undefined;
-    const rows = await sql.unsafe<StorefrontSiteRecord[]>(
-        `select ${STOREFRONT_SITE_RELEASE_SELECT}
-         from sites
-         where subdomain = $1
-           and status = $2
-           and deleted_at is null
-         limit 1`,
-        [handle, 'published'],
-    );
-    return normalizeSqlRecords(rows)[0] || null;
+    const rows = await sql.unsafe<{ payload: StorefrontSiteRecord | null }[]>(
+        'select public.read_published_storefront_site_v1($1, false) as payload', [handle]);
+    return rows[0]?.payload || null;
 }
 
 async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions): Promise<StorefrontThemeReleaseRecord | null | undefined> {
     const sql = getPooledSql(c.env);
     if (!sql) return undefined;
-    const fields = options.projection === 'render-v1'
-        ? `id, theme_id, theme_instance_id, theme_package_version_id, release_version, NULL::jsonb AS release_config, release_manifest,
-           CASE WHEN template_snapshot IS NULL OR template_snapshot IN ('null'::jsonb, 'false'::jsonb, '0'::jsonb, to_jsonb(''::text))
-                THEN release_config ELSE template_snapshot END AS template_snapshot,
-           schema_manifest_version, engine_version, published_at`
-        : `id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
-           template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
-           schema_manifest_version, engine_version, published_at`;
-    const fence = options.releaseId
-        ? 'and id = $3 and release_status in ($2, $4) and published_at is not null'
-        : 'and is_current = true and release_status = $2';
-    const values = options.releaseId ? [storeId, 'published', options.releaseId, 'superseded'] : [storeId, 'published'];
-    const rows = await sql.unsafe<StorefrontThemeReleaseRecord[]>(
-        `select ${fields} from theme_releases
-         where store_id = $1 and deleted_at is null ${fence}
-         order by release_version desc limit 1`, values);
-    return normalizeSqlRecords(rows)[0] || null;
+    const rows = await sql.unsafe<{ payload: StorefrontThemeReleaseRecord | null }[]>(
+        'select public.read_published_storefront_release_v1($1, $2, $3, $4) as payload',
+        [storeId, options.releaseId || null, options.releaseVersion ?? null, options.projection || 'legacy']);
+    return rows[0]?.payload || null;
 }
 
 async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult | null> {
@@ -833,15 +811,18 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
     const handle = normalizeStorefrontHandle(subdomain);
     if (!handle) return null;
 
-    const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
-    if (pooledStore) return pooledStore;
+    try {
+        const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
+        if (pooledStore !== undefined) return pooledStore;
+    } catch { /* bounded REST compatibility fallback; a verified absence stays absent */ }
 
     const selectStore = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('sites')
             .select('id')
             .eq('subdomain', handle)
-            .eq('status', 'published');
+            .eq('status', 'published')
+            .not('published', 'is', false);
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -849,9 +830,10 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
     let { data: store, error } = await selectStore(true).maybeSingle();
 
     if (isSchemaMismatchError(error)) {
-        ({ data: store } = await selectStore(false).maybeSingle());
+        ({ data: store, error } = await selectStore(false).maybeSingle());
     }
 
+    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return store as PublishedStoreRecord | null;
 }
 
@@ -862,7 +844,8 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
             .from('sites')
             .select('id')
             .eq('id', storeId)
-            .eq('status', 'published');
+            .eq('status', 'published')
+            .not('published', 'is', false);
 
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
@@ -870,9 +853,10 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
     let { data: store, error } = await selectStore(true).maybeSingle();
 
     if (isSchemaMismatchError(error)) {
-        ({ data: store } = await selectStore(false).maybeSingle());
+        ({ data: store, error } = await selectStore(false).maybeSingle());
     }
 
+    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return store as PublishedStoreRecord | null;
 }
 

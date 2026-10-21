@@ -3,6 +3,7 @@
 // acknowledgement exercise failure and publication races without replacing data.
 import assert from 'node:assert/strict';
 import test,{before,after,afterEach} from 'node:test';
+import {readFileSync} from 'node:fs';
 import {closePooledSqlClients,getPooledSql} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {Gateway,gatewayEnv,newIdentityKeys,tapRest,restJson,type RestTap} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
@@ -10,6 +11,8 @@ import {newSyntheticTenant,seedSyntheticTenant,type SyntheticTenant} from './syn
 const owned=requireOwnedDatabase();
 const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const j=(v:unknown)=>q(JSON.stringify(v))+'::jsonb';
+const migration=readFileSync('database/supabase/migrations/370_public_storefront_sql_readers.sql','utf8');
+const rollback=readFileSync('database/supabase/rollback/370_public_storefront_sql_readers.rollback.sql','utf8');
 let sql:Gateway,rest:Gateway,proxy:OwnedPooledSqlProxy,tap:RestTap;
 let fault='',advance:undefined|(()=>void);
 before(async()=>{
@@ -20,6 +23,7 @@ before(async()=>{
  const direct=getPooledSql(proxy.env())!;
  const principal=await direct.unsafe("SELECT current_user AS principal,has_table_privilege(current_user,'public.theme_releases','SELECT') AS release_select");
  let releaseReadCode='OK';try{await direct.unsafe('SELECT id FROM public.theme_releases LIMIT 1');}catch(error){releaseReadCode=String((error as {code?:string}).code??'UNKNOWN');}
+ assert.equal(principal[0].principal,'authenticator');assert.equal(principal[0].release_select,false);assert.equal(releaseReadCode,'42501','repair must never grant direct table reads to the transport');
  console.info('OWNED_BOOTSTRAP_SQL_PRINCIPAL',JSON.stringify({principal:principal[0].principal,releaseSelect:principal[0].release_select,releaseReadCode}));
  tap=tapRest(owned.restUrl,async(call,forward)=>{
   if(call.method==='GET'&&call.resource===fault)return restJson(503,{message:'Synthetic private dependency failure'});
@@ -45,7 +49,10 @@ for(const name of ['sql','rest'] as const)test(`compact/default ${name} represen
   assert.equal('release_config'in body.current_theme_release,false);assert.equal('template_snapshot'in body.current_theme_release,false);
   assert.equal(compact.headers.get('cache-control'),'no-store');assert.doesNotMatch(compact.text,/private-draft-marker/);
   const releaseCalls=tap.calls.slice(start).filter(c=>c.resource==='theme_releases');
-  if(name==='sql')assert.equal(releaseCalls.length,0,'pooled query must succeed rather than silently fall back to REST');
+  if(name==='sql'){
+   assert.equal(releaseCalls.length,0,'pooled query must succeed rather than silently fall back to REST');
+   assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0,'public site resolution also runs through the authorized SQL routine');
+  }
   else {assert.equal(releaseCalls.length,1);const call=releaseCalls[0];assert.equal(call.search.get('store_id'),'eq.'+t.siteId);assert.equal(call.search.get('id'),'eq.'+r.release_id);assert.equal(call.search.get('limit'),'1');assert.doesNotMatch(call.search.get('select')!,/release_config|settings_snapshot|asset_manifest/);}
   const legacy=await read(g,t,false);assert.equal(legacy.status,200,legacy.text);assert.equal(legacy.json!.data.projection,undefined);
   assert.deepEqual(legacy.json!.data.current_theme_release.release_config,published);assert.deepEqual(legacy.json!.data.current_theme_release.template_snapshot,published);
@@ -101,4 +108,36 @@ test('current visibility refuses unpublished/draft/suspended stores and malforme
   }
  }
  assert.equal((await rest.request('/v1/storefront/syn-missing-bootstrap?projection=render-v1')).status,404);
+});
+
+test('only the actual backend transport can execute fixed public readers, and direct tables and unpublished/foreign artifacts stay inaccessible',async()=>{
+ const t=tenant('sql-acl'),foreign=tenant('sql-acl-foreign'),release=publish(t,config('sql-public')),other=publish(foreign,config('foreign'));
+ const direct=getPooledSql(proxy.env())!;
+ const query="SELECT public.read_published_storefront_release_v1($1,$2,$3,$4) AS payload";
+ const actual=await direct.unsafe(query,[t.siteId,release.release_id,release.release_version,'render-v1']);assert.equal(actual[0].payload.template_snapshot.marker,'sql-public');
+ for(const values of [[t.siteId,other.release_id,other.release_version,'render-v1'],[t.siteId,release.release_id,999,'render-v1'],[t.siteId,release.release_id,release.release_version,'unknown']])assert.equal((await direct.unsafe(query,values))[0].payload,null);
+ owned.psql(`UPDATE sites SET published=false WHERE id=${q(t.siteId)};`);
+ assert.equal((await direct.unsafe(query,[t.siteId,release.release_id,release.release_version,'render-v1']))[0].payload,null);
+ assert.equal((await direct.unsafe('SELECT public.read_published_storefront_site_v1($1,false) AS payload',[t.subdomain]))[0].payload,null);
+ for(const role of ['anon','authenticated','app_tenant','service_role']){
+  for(const call of [`public.read_published_storefront_site_v1(${q(foreign.subdomain)},false)`,`public.read_published_storefront_release_v1(${q(foreign.siteId)},NULL,NULL,'legacy')`])assert.match(owned.psqlExpectError(`BEGIN;SET LOCAL ROLE ${role};SELECT ${call};ROLLBACK;`),/permission denied for function/);
+ }
+ for(const table of ['sites','theme_releases']){
+  assert.equal(owned.psql(`SELECT has_table_privilege('authenticator','public.${table}','SELECT');`),'f');
+  await assert.rejects(direct.unsafe(`SELECT id FROM public.${table} LIMIT 1`),(error:{code?:string})=>error.code==='42501');
+ }
+});
+
+test('reader replay and paired rollback preserve existing authority; altered body/owner/ACL refuse before retirement',async()=>{
+ const signature='public.read_published_storefront_site_v1(text,boolean)';
+ const authority=()=>owned.psql(`SELECT jsonb_build_object('tables',(SELECT jsonb_agg(jsonb_build_object('name',relname,'acl',relacl,'rls',relrowsecurity,'force',relforcerowsecurity) ORDER BY relname) FROM pg_class WHERE oid IN('public.sites'::regclass,'public.theme_releases'::regclass)), 'roles',(SELECT jsonb_agg(to_jsonb(r) ORDER BY rolname) FROM pg_roles r WHERE rolname IN('authenticator','app_tenant','anon','authenticated','service_role')), 'members',(SELECT jsonb_agg(to_jsonb(m) ORDER BY roleid,member) FROM pg_auth_members m));`);
+ const before=authority();owned.script(migration);assert.equal(authority(),before);
+ for(const alteration of [`GRANT EXECUTE ON FUNCTION ${signature} TO anon;`,`ALTER FUNCTION ${signature} OWNER TO service_role;`,`CREATE OR REPLACE FUNCTION public.read_published_storefront_site_v1(p_handle text,p_id_only boolean) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO pg_catalog,public AS $$SELECT '{}'::jsonb;$$;`]){
+  for(const operation of [migration,rollback])assert.match(owned.psqlExpectError('BEGIN;'+alteration+operation),/refuses changed public reader/);
+  assert.equal(authority(),before,'failed guard must leave all prior authority unchanged');
+ }
+ const t=tenant('reader-rollback');publish(t,config('rollback-real'));
+ owned.script(rollback);assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NULL;`),'t');assert.equal(authority(),before);
+ const start=tap.calls.length,fallback=await read(sql,t);assert.equal(fallback.status,200,fallback.text);assert.equal(fallback.json!.data.template_config.marker,'rollback-real');assert.ok(tap.calls.slice(start).some(c=>c.resource==='theme_releases'),'old schema uses bounded real REST compatibility');
+ owned.script(migration);assert.equal(authority(),before);const retried=tap.calls.length;assert.equal((await read(sql,t)).status,200);assert.equal(tap.calls.slice(retried).filter(c=>['sites','theme_releases'].includes(c.resource)).length,0,'recovered authorized SQL executes with no REST substitute');
 });
