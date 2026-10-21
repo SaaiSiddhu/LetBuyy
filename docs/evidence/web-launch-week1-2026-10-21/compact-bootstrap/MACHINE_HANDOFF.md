@@ -1,5 +1,7 @@
 # Compact bootstrap — source handoff and local continuation
 
+**21 October source-sync correction:** compact SQL authorization and prepared-protocol/unknown-response local acceptance are now complete at stacked checkpoint5e9c7aaa and integrated into develop. Read `../github-sync/SYNC_2026_10_21.md` and `../hyperdrive-protocol/CONTINUITY.md` for exact limits. The earlier unmerged/local-only warnings below describe previous checkpoints. Managed Hyperdrive freshness and the overall launch remain open.
+
 **Latest local correction:** migration370 repairs the restricted-role public site/release SQL reads. Combined owned SQL/security/native24 cases pass, direct table42501 remains intentional, and canonical114 passes. See sql-repair-progress.json and hyperdrive-follow-up.json. Hyperdrive protocol/freshness and dedicated unknown-response native proof remain open. Develop/GitHub8f415c0f has not advanced. Earlier snapshot descriptions below are dated history.
 
 Owner requested committing all current work and pushing GitHub for a new-machine handoff on 21 October 2026. This supersedes the earlier local-only boundary for source preservation. This branch is deliberately unmerged into develop.

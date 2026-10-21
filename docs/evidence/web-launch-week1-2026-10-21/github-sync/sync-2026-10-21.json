@@ -19,5 +19,17 @@
   "sourceOnly": true,
   "deployed": false,
   "week1Complete": false,
-  "unfinishedBranch": "letbuyy/week1-storefront-access"
+  "unfinishedBranch": "letbuyy/week1-storefront-access",
+  "phaseTip": "d8707aaf11f86a2d65fd94c63718f85a942ddf98",
+  "merge": "7772414265b696c039b15b2d998afc02c9ea4161",
+  "mergedTreeEqualsPhaseTree": true,
+  "gateInitialCounts": {
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "gateInitialAdvisory": "single-branch clone lacked develop/staging/main refs; full chain validator passed after importing them",
+  "wipCheckpoint": "faadeb54478a0361b68adf55fa07c591fdb79efe"
 }
