@@ -9,3 +9,7 @@ Observed checks before snapshot: tenant-core 12 passed; API client exact-text co
 Missing acceptance: real owned PostgreSQL SQL/REST release failure and publication-race controls; native Worker default/compact cache separation and warmed visibility checks; complete production-built browser journey and matching performance profile; final Gateway/package/regression and canonical gate on this implementation. No deployment, shared database write or provider operation occurred.
 
 Resume on this branch only after fetching develop and reconciling bookkeeping. Do not promote this snapshot or treat it as production-ready. Base is the locally verified performance candidate a92763b70f110db1c4d9ed5eb094e48ed40e568a. The four-week programme and Week 1 acceptance remain open.
+
+## Local verification after the saved GitHub snapshot
+
+The continued four-week goal resumed this branch locally. Read verification-progress.json, comparison.json and SQL_AUTHORIZATION_FINDING.md. The full native merchant/buyer/cache journey passes; REST representation and negative/race controls pass, but the actual restricted pooled-SQL no-fallback case remains red with42501. The final repository gate passes114; this does not override that failed integration requirement. New commits remain local; develop/GitHub8f415c0f is unchanged. Do not merge or deploy this candidate before its SQL/public-read authorization acceptance is resolved.
