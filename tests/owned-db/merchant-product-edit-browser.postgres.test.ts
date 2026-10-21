@@ -172,11 +172,11 @@ test('production AI and operations pages settle complete large-history values',{
                 await expect(page.getByText('824',{exact:true})).toBeVisible();
                 await expect(page.getByText('3,030 total credits',{exact:true})).toBeVisible();
                 await expect(page.getByText('Latest 20 AI usage events',{exact:true})).toBeVisible();
-                await expect(page.locator('main')).not.toContainText('NaN');
+                await expect(page.locator('#admin-page-scroll')).not.toContainText('NaN');
             } else {
-                await expect(page.getByText('1103',{exact:true})).toBeVisible();
-                await expect(page.getByText('1100',{exact:true})).toBeVisible();
-                await expect(page.getByText('In transit',{exact:true}).last()).toBeVisible();
+                await expect(page.getByText('Total transfers',{exact:true}).locator('..').getByText('1103',{exact:true})).toBeVisible();
+                await expect(page.getByText('In-transit transfers',{exact:true}).locator('..').getByText('1100',{exact:true})).toBeVisible();
+                await expect(page.getByRole('row').filter({hasText:'In transit'}).getByRole('cell').last()).toHaveText('1,100');
             }
             readProfiles.push({route,sample:1,usefulMilliseconds:Math.round((performance.now()-started)*10)/10,gatewayReads:reads.length,gatewayBytes:reads.reduce((total,read)=>total+read.bytes,0)});
             profileReads=null;
