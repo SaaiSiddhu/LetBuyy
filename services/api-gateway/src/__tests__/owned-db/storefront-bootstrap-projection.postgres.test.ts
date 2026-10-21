@@ -122,6 +122,10 @@ test('only the actual backend transport can execute fixed public readers, and di
  for(const role of ['anon','authenticated','app_tenant','service_role']){
   for(const call of [`public.read_published_storefront_site_v1(${q(foreign.subdomain)},false)`,`public.read_published_storefront_release_v1(${q(foreign.siteId)},NULL,NULL,'legacy')`])assert.match(owned.psqlExpectError(`BEGIN;SET LOCAL ROLE ${role};SELECT ${call};ROLLBACK;`),/permission denied for function/);
  }
+ const backendKey=owned.restEnv().SUPABASE_SERVICE_ROLE_KEY;
+ const dataApi=await fetch(owned.restUrl+'/rest/v1/rpc/read_published_storefront_site_v1',{method:'POST',headers:{apikey:backendKey,Authorization:'Bearer '+backendKey,'Content-Type':'application/json'},body:JSON.stringify({p_handle:foreign.subdomain,p_id_only:false})});
+ assert.ok([401,403,404].includes(dataApi.status),'Data API role switching must not inherit backend-login EXECUTE');
+ assert.equal('data'in await dataApi.json(),false);
  for(const table of ['sites','theme_releases']){
   assert.equal(owned.psql(`SELECT has_table_privilege('authenticator','public.${table}','SELECT');`),'f');
   await assert.rejects(direct.unsafe(`SELECT id FROM public.${table} LIMIT 1`),(error:{code?:string})=>error.code==='42501');
