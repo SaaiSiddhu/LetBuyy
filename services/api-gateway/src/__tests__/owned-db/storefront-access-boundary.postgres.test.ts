@@ -15,7 +15,7 @@ let faultResource='',faultCode='';
 before(async()=>{
  proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();const env={NEXT_PUBLIC_STORE_ROOT_DOMAIN:'letbuyy.store',FEATURE_GRAPHQL:'true',STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key};
  gateways={rest:new Gateway(gatewayEnv(owned,keys,env)),sql:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env()}))};
- tap=tapRest(owned.restUrl,(call,forward)=>call.method==='GET'&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
+ tap=tapRest(owned.restUrl,async(call,forward)=>call.method==='GET'&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
 });
 after(async()=>{await Promise.all(Object.values(gateways??{}).map(g=>g.settle()));tap?.restore();await closePooledSqlClients();await proxy?.stop();});
 for(const lane of ['sql','rest'] as const){

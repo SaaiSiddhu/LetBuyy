@@ -1,0 +1,17 @@
+{
+  "packages/auth-core/src/storefront-access.ts": "107eed5f7e04ac42ce59be235fc17ed93a6721de13a55d47def98ca8c053913f",
+  "services/api-gateway/src/lib/storefront-visitor-access.ts": "f78d7e2f9f19f70aa5524d01bf0d7cbabfe6cb6b893d86382034e42c9ec6c1e5",
+  "services/api-gateway/src/routes/storefront/public-routes.ts": "7c38f92dfb0164bc1227da6c810276c0ac400268d606cda75e2037499c9c82f1",
+  "services/api-gateway/src/routes/storefront.ts": "f85242a60877ec73af1a0ca50e0c33c8e246f5e2653791013de5f3b7dec928b2",
+  "services/api-gateway/src/middleware/store-context.ts": "2f1d7c92be84d5c6d1b336b83c1d24ba59c85ec6357ae19045b0be8bdee009e6",
+  "services/api-gateway/src/routes/internal-store-access.ts": "f60d2ec66becf9b8b88b608daa629c183bd47c177a7f1969572fd77c6a43394e",
+  "services/api-gateway/src/routes/custom-domains.ts": "6c04d07befdfdc25b4d8b79b1b2c450597d974d46b02b784fd809b52af8cdebd",
+  "services/api-gateway/src/graphql/storefront.ts": "5fc779c61c9008aae3c76160d0b18f41f693936a253e1ac6584bffdce49f10c8",
+  "apps/commerce/web/src/proxy.ts": "0ea9188fd8a6a679ffd245f6aae7b3c524bb051ff4f4ddc92a73aba5fa8dc41a",
+  "apps/commerce/web/src/lib/api/client.ts": "395d699cd37db78f1502cd2d3c61784849b46ddecf37e71e789abb7c2222c23b",
+  "database/supabase/migrations/371_storefront_access_metadata.sql": "707940f21d449509ffe2258a127ecabe1d090367f70e966bee0787569cd9e414",
+  "database/supabase/rollback/371_storefront_access_metadata.rollback.sql": "b89a92fbeae2467b63b7fd0234ab07b81c4642d5d94a8c534ea45ea3d86005dd",
+  "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "b3e5d285656cd9183ab98be33e7e2f8fcdcb13f8b98af263e75e5352310c0dcc",
+  "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts": "e24e037bde7dc0dee97303ab1d56c979e8967e97919816e8d0ab8c3b20af2f09",
+  "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "11b2b259ff86138930bdd950155c748a7a0357cce1c9d8d5e232d8eefca4a7d2"
+}

@@ -1,0 +1,90 @@
+{
+  "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
+  "status": "BACKEND_LOCALLY_VERIFIED_NATIVE_AND_FINAL_GATE_IN_PROGRESS",
+  "sourceCheckpoint": "c8555546b3b130273a18034a3931846a49d3acf8",
+  "baseDevelop": "d6cd8f3748147c9ab4dd4d5e251888eb89c6ae15",
+  "backend": {
+    "sqlAndRestMigrationRun": {
+      "run": "03ab0f9702d6",
+      "pass": 22,
+      "fail": 0
+    },
+    "hostFixAndMigrationRun": {
+      "run": "2543b7a60836",
+      "pass": 26,
+      "fail": 0
+    },
+    "guardedIssuerFinalRun": {
+      "run": "4b391338d6d9",
+      "pass": 16,
+      "fail": 0
+    },
+    "cleanup": "all three runs have empty failures/remaining containers/networks/volumes"
+  },
+  "regressions": {
+    "gatewayUnit": {
+      "pass": 1613,
+      "fail": 0
+    },
+    "authCore": {
+      "pass": 30,
+      "fail": 0
+    },
+    "commercePackage": {
+      "pass": 1263,
+      "fail": 0,
+      "segments": [
+        144,
+        142,
+        977
+      ]
+    },
+    "gatewayTypes": "PASS after adding async to the named fault seam callback",
+    "commerceTypes": "PASS"
+  },
+  "beforeControls": {
+    "typedPurpose": "one pass/three fail before purpose guard",
+    "directCatalogue": "four failing cases before policy guards",
+    "hostBaselineCorrected": {
+      "pass": 14,
+      "fail": 2,
+      "observed": [
+        "sites dependency503 was reported as store404",
+        "normal owner issuer minted foreign-store host link with200"
+      ]
+    },
+    "excludedFixtureMistake": "first issuer reproduction omitted mandatory idempotency key and stopped at400; corrected before behavioral reproduction"
+  },
+  "coverage": [
+    "12 actual catalogue HTTP shapes across public/password/preview_only/offline on both SQL and REST",
+    "Actual SQL uses no sites REST substitute in policy matrices",
+    "Normal Argon2id verify and revision rotation",
+    "Published and unpublished preview; DB expiry/revoke/delete/offline refusal",
+    "Both GraphQL aliases reject without proof, admit with proof, and recheck offline",
+    "371 bounded metadata, id selector collision, no raw password hash, full projection parity",
+    "371 replay/rollback/body-owner-ACL-searchpath-volatility refusal and unchanged authority",
+    "Historical370 exact replay/retirement guards preserved by supported371 rollback/reapply",
+    "Host dependency failure/unavailable/recovery and known optional legacy alias absence",
+    "Normal owner preview issue/revoke and foreign-host insertion refusal"
+  ],
+  "native": {
+    "status": "RUNNING_NOT_ACCEPTED",
+    "session": 59293,
+    "scope": "complete existing signup/Core/COD/account journey plus new unlock/rotation/preview/recovery steps",
+    "sourceCaveat": "First native bundle started before guarded-issuer narrowing c8555546; final candidate native acceptance must be established separately."
+  },
+  "remaining": [
+    "Complete normal production-browser unlock, first-link SSR forwarding, revocation/offline/public-cookie recovery on final serving code",
+    "Verify current custom-domain and redirect-alias behavior and domain revocation/failure recovery",
+    "Additional malformed/duplicate/forged/cross-site and dependency refusal/recovery coverage",
+    "Final native CacheAPI warm protected reads and before-cache revocation proof",
+    "Run final canonical gate in disposable clone after owned suites are terminal",
+    "Fresh cart/order and independent marketplace/buyer-history eligibility remains parent launch work",
+    "Core/editor/legacy media/performance and wider commerce/operator/provider/hosted gates remain open"
+  ],
+  "merged": false,
+  "pushedAfterHandoff": false,
+  "deployed": false,
+  "week1Complete": false,
+  "fourWeekGoal": "ACTIVE"
+}
