@@ -13,6 +13,8 @@ const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const j=(v:unknown)=>q(JSON.stringify(v))+'::jsonb';
 const migration=readFileSync('database/supabase/migrations/370_public_storefront_sql_readers.sql','utf8');
 const rollback=readFileSync('database/supabase/rollback/370_public_storefront_sql_readers.rollback.sql','utf8');
+const accessMigration=readFileSync('database/supabase/migrations/371_storefront_access_metadata.sql','utf8');
+const accessRollback=readFileSync('database/supabase/rollback/371_storefront_access_metadata.rollback.sql','utf8');
 let sql:Gateway,rest:Gateway,proxy:OwnedPooledSqlProxy,tap:RestTap;
 let fault='',advance:undefined|(()=>void);
 before(async()=>{
@@ -135,6 +137,13 @@ test('only the actual backend transport can execute fixed public readers, and di
 test('reader replay and paired rollback preserve existing authority; altered body/owner/ACL refuse before retirement',async()=>{
  const signature='public.read_published_storefront_site_v1(text,boolean)';
  const authority=()=>owned.psql(`SELECT jsonb_build_object('tables',(SELECT jsonb_agg(jsonb_build_object('name',relname,'acl',relacl,'rls',relrowsecurity,'force',relforcerowsecurity) ORDER BY relname) FROM pg_class WHERE oid IN('public.sites'::regclass,'public.theme_releases'::regclass)), 'roles',(SELECT jsonb_agg(to_jsonb(r) ORDER BY rolname) FROM pg_roles r WHERE rolname IN('authenticator','app_tenant','anon','authenticated','service_role')), 'members',(SELECT jsonb_agg(to_jsonb(m) ORDER BY roleid,member) FROM pg_auth_members m));`);
+ const currentAuthority=authority();
+ // Historical370 is deliberately fail-closed against its successor371. Prove
+ // that refusal before restoring370 through371's supported paired rollback.
+ for(const operation of [migration,rollback])assert.match(owned.psqlExpectError(operation),/refuses changed public reader/);
+ assert.equal(authority(),currentAuthority);
+ owned.script(accessRollback);
+ try {
  const before=authority();owned.script(migration);assert.equal(authority(),before);
  for(const alteration of [`GRANT EXECUTE ON FUNCTION ${signature} TO anon;`,`ALTER FUNCTION ${signature} OWNER TO service_role;`,`CREATE OR REPLACE FUNCTION public.read_published_storefront_site_v1(p_handle text,p_id_only boolean) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO pg_catalog,public AS $$SELECT '{}'::jsonb;$$;`]){
   for(const operation of [migration,rollback])assert.match(owned.psqlExpectError('BEGIN;'+alteration+operation),/refuses changed public reader/);
@@ -144,4 +153,39 @@ test('reader replay and paired rollback preserve existing authority; altered bod
  owned.script(rollback);assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NULL;`),'t');assert.equal(authority(),before);
  const start=tap.calls.length,fallback=await read(sql,t);assert.equal(fallback.status,200,fallback.text);assert.equal(fallback.json!.data.template_config.marker,'rollback-real');assert.ok(tap.calls.slice(start).some(c=>c.resource==='theme_releases'),'old schema uses bounded real REST compatibility');
  owned.script(migration);assert.equal(authority(),before);const retried=tap.calls.length;assert.equal((await read(sql,t)).status,200);assert.equal(tap.calls.slice(retried).filter(c=>['sites','theme_releases'].includes(c.resource)).length,0,'recovered authorized SQL executes with no REST substitute');
+ } finally {owned.script(accessMigration);}
+ assert.equal(authority(),currentAuthority);
+});
+
+
+test('371 metadata is bounded, revision-bound and selector-safe; replay/rollback guards preserve full projection and authority',async()=>{
+ const t=tenant('access-meta'),collision=tenant('access-collision');
+ const hash='synthetic-backend-only-password-hash';
+ owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)},template_config=${j(config('large-private-hash-absent'))} WHERE id=${q(t.siteId)};UPDATE sites SET subdomain=${q(t.siteId)} WHERE id=${q(collision.siteId)};`);
+ const direct=getPooledSql(proxy.env())!;
+ const call=async(selector:string,idOnly:boolean)=>(await direct.unsafe('SELECT public.read_published_storefront_site_v1($1,$2) AS payload',[selector,idOnly]))[0].payload;
+ const full=await call(t.subdomain,false);
+ const metadata=await call(t.subdomain,true);
+ assert.deepEqual(Object.keys(metadata).sort(),['id','subdomain','custom_domain','custom_domain_status','access_mode','published','status','access_revision'].sort());
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);
+ assert.equal(metadata.access_revision,revision);assert.equal(metadata.id,t.siteId);
+ assert.equal(JSON.stringify(metadata).includes(hash),false);assert.equal('template_config'in metadata,false);
+ assert.equal('access_password_hash'in full,false);assert.equal('access_revision'in full,false);
+ assert.deepEqual(await call('id:'+t.siteId,true),metadata);
+ assert.equal((await call(t.siteId,true)).id,collision.siteId,'UUID-shaped legitimate handle is distinct from id: selector');
+ for(const invalid of ['id:invalid','id:'+t.siteId+':tail','id:'+t.siteId.toUpperCase(),"id:' OR true --"]){assert.equal(await call(invalid,true),null);}
+ const signature='public.read_published_storefront_site_v1(text,boolean)';
+ const state=()=>owned.psql(`SELECT jsonb_build_object('tables',(SELECT jsonb_agg(jsonb_build_object('id',oid,'acl',relacl,'rls',relrowsecurity,'force',relforcerowsecurity) ORDER BY oid) FROM pg_class WHERE oid IN('public.sites'::regclass,'public.theme_releases'::regclass)),'roles',(SELECT jsonb_agg(to_jsonb(r) ORDER BY rolname) FROM pg_roles r WHERE rolname IN('authenticator','anon','authenticated','service_role','app_tenant')),'members',(SELECT jsonb_agg(to_jsonb(m) ORDER BY roleid,member) FROM pg_auth_members m),'function',(SELECT jsonb_build_object('owner',proowner,'acl',proacl,'config',proconfig,'args',proargnames,'return',prorettype) FROM pg_proc WHERE oid='${signature}'::regprocedure));`);
+ const before=state();owned.script(accessMigration);assert.equal(state(),before);assert.deepEqual(await call(t.subdomain,false),full);
+ for(const alteration of [`GRANT EXECUTE ON FUNCTION ${signature} TO anon;`,`ALTER FUNCTION ${signature} OWNER TO service_role;`,`ALTER FUNCTION ${signature} SET search_path TO public;`,`ALTER FUNCTION ${signature} IMMUTABLE;`,`CREATE OR REPLACE FUNCTION public.read_published_storefront_site_v1(p_handle text,p_id_only boolean) RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO pg_catalog,public AS $$SELECT '{}'::jsonb;$$;`]){
+  for(const operation of [accessMigration,accessRollback])assert.match(owned.psqlExpectError('BEGIN;'+alteration+operation),/refuses changed public reader/);
+  assert.equal(state(),before);
+ }
+ owned.script(accessRollback);assert.equal(state(),before);assert.deepEqual(await call(t.subdomain,true),{id:t.siteId});assert.deepEqual(await call(t.subdomain,false),full);assert.equal(await call('id:'+t.siteId,true),null);
+ owned.script(accessRollback);owned.script(accessMigration);assert.equal(state(),before);assert.deepEqual(await call(t.subdomain,true),metadata);assert.deepEqual(await call(t.subdomain,false),full);
+ owned.psql(`UPDATE sites SET access_password_hash='synthetic-new-password-hash' WHERE id=${q(t.siteId)};`);assert.notEqual((await call(t.subdomain,true)).access_revision,revision);
+ for(const alteration of ["published=false","status='draft'","deleted_at=now()"]){
+  owned.psql(`UPDATE sites SET published=true,status='published',deleted_at=NULL WHERE id=${q(t.siteId)};UPDATE sites SET ${alteration} WHERE id=${q(t.siteId)};`);
+  for(const selector of [t.subdomain,'id:'+t.siteId])assert.equal(await call(selector,true),null);
+ }
 });

@@ -22,6 +22,7 @@ import test from 'node:test';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import storefrontRouter from '../routes/storefront';
+import { AppError, formatAppError } from '../lib/errors';
 
 // ─── Fake PostgREST (single()-aware) ───────────────────────────────────────────
 
@@ -235,6 +236,12 @@ function env(): Env {
 
 function storefrontApp(): Hono<{ Bindings: Env }> {
     const app = new Hono<{ Bindings: Env }>();
+    // Match production's AppError transport classification for middleware refusals.
+    app.onError((error) => {
+        if (!(error instanceof AppError)) throw error;
+        const { body, status } = formatAppError(error);
+        return Response.json(body, { status });
+    });
     app.route('/storefront', storefrontRouter);
     return app;
 }

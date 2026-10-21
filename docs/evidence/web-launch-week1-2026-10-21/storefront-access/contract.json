@@ -8,7 +8,8 @@
     "Existing public catalogue by handle/ID/global reviews and GraphQL REST delegation; request-scoped access metadata reuse before cache",
     "Commerce Proxy and server API helper forward existing host-only gate/preview cookies; native password/unlock/preview/revocation journey",
     "Owned actual Gateway baseline and access/failure/cache/tenant isolation suite; reviewed inventory/source contracts",
-    "Optional guarded371 backend site metadata/revision projection and rollback; preserve370 historical lifecycle guards if body evolves"
+    "Optional guarded371 backend site metadata/revision projection and rollback; preserve370 historical lifecycle guards if body evolves",
+    "services/api-gateway/src/middleware/store-context.ts canonical host resolver: distinguish actual missing rows/optional missing legacy alias table from dependency failures; internal resolve and preview issue use this single resolver with owned fault/recovery proof"
   ],
   "requirements": {
     "anonymous": "Password and preview-only data refuse; offline refuses even with preview. Status/routing metadata remains a minimal independently allowlisted response. No header/Origin/internal-app identity alone supplies visitor authority.",
@@ -25,5 +26,6 @@
     "No real provider operation or new source push/deploy",
     "No mobile UI"
   ],
-  "worktree": "Managed tool returned Not a git repository; native managed-by-Git worktree fallback used."
+  "worktree": "Managed tool returned Not a git repository; native managed-by-Git worktree fallback used.",
+  "continuation": "Source-sync bookkeeping reconciled locally with develop d6cd8f37; source push permission applied only to the completed handoff. Remaining engineering stays local."
 }
