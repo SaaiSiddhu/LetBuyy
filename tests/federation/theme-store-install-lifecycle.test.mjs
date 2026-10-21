@@ -28,10 +28,11 @@ test('theme package uploads default to review-gated marketplace submissions', ()
   assert.match(bundle, /submission_mode: z\.enum\(\['marketplace', 'private_install'\]\)\.default\('marketplace'\)/);
   assert.match(registry, /publicationMode\?: 'marketplace' \| 'private_install'/);
   assert.match(registry, /const reviewRequired = options\.publicationMode !== 'private_install'/);
-  assert.match(registry, /const packageStatus = reviewRequired \? 'draft' : payload\.themePackage\.status/);
+  assert.match(registry, /const packageStatus = 'draft'/);
   assert.match(registry, /const versionStatus = reviewRequired \? 'draft' : payload\.themePackageVersion\.release_status/);
   assert.match(registry, /is_active: installable/);
-  assert.match(registry, /review_required: reviewRequired/);
+  assert.match(registry, /rpc\('upload_owned_theme_package_v1'/);
+  assert.match(registry, /p_mode: options\.publicationMode \|\| 'marketplace'/);
 
   assert.match(route, /const submissionMode = body\.submission_mode \|\| 'marketplace'/);
   assert.match(route, /publicationMode: submissionMode/);
@@ -153,9 +154,9 @@ test('installed themes render from the storefront release snapshot without store
   const storefrontStoreService = read(STOREFRONT_STORE_SERVICE);
 
   assert.match(themeExecution, /publishReleaseSnapshot/);
-  assert.match(themeExecution, /eventType: 'theme\.installed'/);
-  assert.match(themeExecution, /theme_package_id: runtime\.themePackageId/);
-  assert.match(themeExecution, /theme_version_id: runtime\.themePackageVersionId/);
+  assert.match(themeExecution, /rpc\('install_owned_theme_v1'/);
+  const installer = read('database/supabase/migrations/377_theme_install_event_contract.sql');
+  for (const field of ['site_id','theme_package_id','theme_version_id','installation_id']) assert.ok(installer.includes("'"+field+"'"),field);
   assert.match(storefrontStoreService, /current_theme_release/);
   assert.match(storefrontStoreService, /release\?\.template_snapshot \|\| release\?\.release_config/);
   assert.match(storefrontStoreService, /normalizeTemplates\(templateConfig\.templates/);

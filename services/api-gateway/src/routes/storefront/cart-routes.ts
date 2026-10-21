@@ -1,3 +1,4 @@
+import { authorizeFreshStorefrontPurchase, issueHostedStorefrontAdmission, resolveCheckoutRecoverySite } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
@@ -5,7 +6,7 @@ import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { hmacSha256Hex, sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
-import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
@@ -203,19 +204,20 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
     };
 }
 
-async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
+async function loadCartByToken(c: AppContext, storeId: string, cartToken: string, includeClosed = false): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
+    c.header('Cache-Control', 'no-store');
     const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('carts')
-        .select(CART_SELECT)
-        .eq('store_id', storeId)
-        .eq('session_id', cartToken)
-        .eq('status', 'active')
-        .is('deleted_at', null)
-        .maybeSingle();
+    let query = db.from('carts').select(CART_SELECT)
+        .eq('store_id', storeId).eq('session_id', cartToken).is('deleted_at', null);
+    if (!includeClosed) query = query.eq('status', 'active');
+    const { data, error } = await query.maybeSingle();
 
     if (error) return { cart: null, error };
-    return { cart: data ? cartFromRow(data as unknown as DbRecord) : null, error: null };
+    const cart = data ? cartFromRow(data as unknown as DbRecord) : null;
+    // The random token identifies a cart; it cannot retire current storefront
+    // policy. Marketplace origin comes from the stored row, never body.channel.
+    if (cart && cart.sales_origin === 'storefront') await authorizeFreshStorefrontPurchase(c, storeId);
+    return { cart, error: null };
 }
 
 async function hydrateCartLines(
@@ -437,11 +439,15 @@ async function createCheckoutHandoff(
         }
     }
 
+    const accessAdmission = cart.sales_origin === 'storefront'
+        ? await issueHostedStorefrontAdmission(c, store.id, signature, Math.floor(Date.parse(expiresAt) / 1000))
+        : null;
     const db = getSupabaseAdmin(c);
-    const { error } = await db
+    const { data: persistedHandoff, error } = await db
         .from('carts')
         .update({
             checkout_handoff: {
+                storefront_admission: accessAdmission,
                 checkout_url: checkoutUrl.toString(),
                 expires_at: expiresAt,
                 signed_at: new Date().toISOString(),
@@ -450,8 +456,10 @@ async function createCheckoutHandoff(
             },
         })
         .eq('store_id', store.id)
-        .eq('id', cart.id);
-    if (error) return c.json(dbFailureBody(), 500);
+        .eq('id', cart.id)
+        .select('id')
+        .maybeSingle();
+    if (error || !persistedHandoff) return c.json({ success: false, error: { code: 'CHECKOUT_UNAVAILABLE', message: 'Secure checkout is temporarily unavailable.' } }, 503);
 
     return c.json(success({
         checkout_url: checkoutUrl.toString(),
@@ -542,6 +550,7 @@ async function persistCart(
     salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<Response> {
+    if (salesOrigin === 'storefront') await authorizeFreshStorefrontPurchase(c, store.id);
     const hydrated = await hydrateCartLines(c, store, input.lines, salesOrigin, queryPublicProducts);
     if (hydrated.error) return hydrated.error;
 
@@ -554,12 +563,14 @@ async function persistCart(
         session_id: cartToken,
         items: hydrated.lines,
         coupon_code: input.coupon_codes[0] || null,
-        status: 'active',
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
-    const existing = await loadCartByToken(c, store.id, cartToken);
+    const existing = await loadCartByToken(c, store.id, cartToken, true);
     if (existing.error) return c.json(dbFailureBody(), 500);
+    if (existing.cart && existing.cart.status !== 'active') {
+        return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be changed. Start a new cart for another purchase.' } }, 409);
+    }
     if (existing.cart && existing.cart.sales_origin !== salesOrigin) {
         return c.json({ success: false, error: { code: 'SALES_ORIGIN_IMMUTABLE', message: 'A cart cannot change its sales origin.' } }, 409);
     }
@@ -572,15 +583,21 @@ async function persistCart(
             .update(payload)
             .eq('store_id', store.id)
             .eq('session_id', cartToken)
+            .eq('id', existing.cart.id)
+            .eq('status', 'active')
+            .is('deleted_at', null)
             .select(CART_SELECT)
-            .single()
+            .maybeSingle()
         : await db
             .from('carts')
-            .insert({ ...payload, session_id: cartToken })
+            .insert({ ...payload, status: 'active', session_id: cartToken })
             .select(CART_SELECT)
             .single();
 
-    if (result.error || !result.data) return c.json(dbFailureBody(), 500);
+    if (result.error) return c.json(dbFailureBody(), 500);
+    if (!result.data) return existing.cart
+        ? c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be updated.' } }, 409)
+        : c.json(dbFailureBody(), 500);
     const cart = cartFromRow(result.data as unknown as DbRecord);
     if (!existing.cart) {
         await emitCartEvent(c, cart, 'cart.created', `cart.created:${store.id}:${cart.id}`);
@@ -590,6 +607,71 @@ async function persistCart(
         await enqueueAbandonmentCheck(c, cart);
     }
     return c.json(success(cart), existing.cart ? 200 : 201);
+}
+
+/** Capability-bound receipt planner, separate from live storefront admission.
+ * A store lookup never authorizes a read: the exact site+cart token must select
+ * one cart first, then only that cart's session/order can contribute a receipt.
+ * No identity/contact/address/payment metadata is projected. */
+async function readCheckoutRecoveryReceipt(c:AppContext,subdomain:string,rawToken:string,normalizeToken:(value:string)=>string|null):Promise<Response>{
+        const handle = normalizeStorefrontHandle(subdomain);
+        if (!handle) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+        // Recovery returns only the already committed cart/order receipt below.
+        // Store publication/navigation mode cannot erase that independent capability.
+        const store = await resolveCheckoutRecoverySite(c, handle);
+        c.header('Cache-Control', 'no-store');
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        const cartToken = normalizeToken(rawToken);
+        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
+
+        const db = getSupabaseAdmin(c);
+        const { data: carts, error: cartError } = await db
+            .from('carts')
+            .select('id, store_id, session_id, status, deleted_at')
+            .eq('store_id', store.id)
+            .eq('session_id', cartToken)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(2);
+        if (cartError) return c.json(dbFailureBody(), 500);
+        if (!carts || carts.length === 0) {
+            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        }
+        if (carts.length > 1) {
+            return c.json({ success: false, error: { code: 'CART_REFERENCE_AMBIGUOUS', message: 'Checkout status needs support review.' } }, 409);
+        }
+
+        const cart = carts[0] as { id: string; status: string };
+        const { data: session, error: sessionError } = await db
+            .from('checkout_sessions')
+            .select('checkout_state, order_id')
+            .eq('site_id', store.id)
+            .eq('cart_id', cart.id)
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (sessionError) return c.json(dbFailureBody(), 500);
+
+        const state = (session as { checkout_state?: string; order_id?: string | null } | null)?.checkout_state || null;
+        const orderId = (session as { order_id?: string | null } | null)?.order_id || null;
+        let order: { id: string; order_number: string; total: number; currency: string; status: string } | null = null;
+        if (state === 'completed' && orderId) {
+            const { data, error } = await db
+                .from('orders')
+                .select('id, order_number, total, currency, status')
+                .eq('store_id', store.id)
+                .eq('id', orderId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (error) return c.json(dbFailureBody(), 500);
+            order = data as typeof order;
+        }
+
+        return c.json(success({
+            cart_status: cart.status,
+            checkout_state: state,
+            ...(order ? { order } : {}),
+        }));
 }
 
 export function registerStorefrontCartRoutes(
@@ -744,59 +826,7 @@ export function registerStorefrontCartRoutes(
     // The marketplace mobile app uses it after resume to distinguish an unsubmitted cart from an
     // order that committed just before the app was closed or lost its response.
     router.get('/:subdomain/cart/:cartToken/checkout-status', async (c) => {
-        const store = await loadPublishedStore(c, c.req.param('subdomain'));
-        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
-        const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
-        if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
-
-        const db = getSupabaseAdmin(c);
-        const { data: carts, error: cartError } = await db
-            .from('carts')
-            .select('id, store_id, session_id, status, deleted_at')
-            .eq('store_id', store.id)
-            .eq('session_id', cartToken)
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(2);
-        if (cartError) return c.json(dbFailureBody(), 500);
-        if (!carts || carts.length === 0) {
-            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
-        }
-        if (carts.length > 1) {
-            return c.json({ success: false, error: { code: 'CART_REFERENCE_AMBIGUOUS', message: 'Checkout status needs support review.' } }, 409);
-        }
-
-        const cart = carts[0] as { id: string; status: string };
-        const { data: session, error: sessionError } = await db
-            .from('checkout_sessions')
-            .select('checkout_state, order_id')
-            .eq('site_id', store.id)
-            .eq('cart_id', cart.id)
-            .is('deleted_at', null)
-            .maybeSingle();
-        if (sessionError) return c.json(dbFailureBody(), 500);
-
-        const state = (session as { checkout_state?: string; order_id?: string | null } | null)?.checkout_state || null;
-        const orderId = (session as { order_id?: string | null } | null)?.order_id || null;
-        let order: { id: string; order_number: string; total: number; currency: string; status: string } | null = null;
-        if (state === 'completed' && orderId) {
-            const { data, error } = await db
-                .from('orders')
-                .select('id, order_number, total, currency, status')
-                .eq('store_id', store.id)
-                .eq('id', orderId)
-                .is('deleted_at', null)
-                .maybeSingle();
-            if (error) return c.json(dbFailureBody(), 500);
-            order = data as typeof order;
-        }
-
-        return c.json(success({
-            cart_status: cart.status,
-            checkout_state: state,
-            ...(order ? { order } : {}),
-        }));
+        return readCheckoutRecoveryReceipt(c, c.req.param('subdomain'), c.req.param('cartToken'), normalizePublicRouteToken);
     });
 
     router.delete('/:subdomain/cart/:cartToken', async (c) => {
@@ -806,20 +836,19 @@ export function registerStorefrontCartRoutes(
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
-        const db = getSupabaseAdmin(c);
-        const { data, error } = await db
-            .from('carts')
-            .update({
-                items: [],
-                coupon_code: null,
-                status: 'active',
-            })
-            .eq('store_id', store.id)
-            .eq('session_id', cartToken)
-            .select(CART_SELECT)
-            .single();
-
-        if (error || !data) return c.json(dbFailureBody(), 500);
+        const existing = await loadCartByToken(c, store.id, cartToken, true);
+        if (existing.error) return c.json(dbFailureBody(), 503);
+        if (!existing.cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        if (existing.cart.status !== 'active') return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be cleared.' } }, 409);
+        // A conversion can commit after the read. Only an active matching row
+        // may be cleared; never write status=active or acknowledge a lost race.
+        const { data, error } = await getSupabaseAdmin(c).from('carts')
+            .update({ items: [], coupon_code: null })
+            .eq('store_id', store.id).eq('id', existing.cart.id)
+            .eq('session_id', cartToken).eq('status', 'active').is('deleted_at', null)
+            .select(CART_SELECT).maybeSingle();
+        if (error) return c.json(dbFailureBody(), 503);
+        if (!data) return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be cleared.' } }, 409);
         return c.json(success(cartFromRow(data as unknown as DbRecord)));
     });
 }

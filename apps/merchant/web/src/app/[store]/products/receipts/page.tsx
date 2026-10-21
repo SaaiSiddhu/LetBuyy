@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -81,8 +83,10 @@ export default function InventoryReceiptsPage() {
     const [transferFilter, setTransferFilter] = useState('')
     const [page, setPage] = useState(1)
 
+    const beginRead = useReadRequest(store)
     const fetchReceipts = useCallback(
         async (currentPage: number, currentPo: string, currentTransfer: string) => {
+            const request = beginRead()
             setLoading(true)
             setError(null)
             try {
@@ -95,7 +99,7 @@ export default function InventoryReceiptsPage() {
                 if (currentPo.trim()) url.searchParams.set('po_id', currentPo.trim())
                 if (currentTransfer.trim()) url.searchParams.set('transfer_id', currentTransfer.trim())
 
-                const res = await fetch(url.toString())
+                const res = await fetch(url.toString(), { cache: 'no-store', signal: request.signal })
                 const json = (await res.json()) as {
                     data?: unknown[]
                     meta?: PageMeta
@@ -103,6 +107,7 @@ export default function InventoryReceiptsPage() {
                     message?: string
                 }
 
+                if (!request.isCurrent()) return
                 if (!res.ok) {
                     const msg =
                         typeof json.error === 'string'
@@ -126,20 +131,21 @@ export default function InventoryReceiptsPage() {
                     }
                 )
             } catch (err) {
+                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
                 setError(msg)
                 notify({ title: 'Error', description: msg })
             } finally {
-                setLoading(false)
+                if (request.isCurrent()) setLoading(false)
             }
         },
-        [store, notify]
+        [store, notify, beginRead]
     )
 
     useEffect(() => {
-        void fetchReceipts(page, poFilter, transferFilter)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        setPage(1)
+        void fetchReceipts(1, '', '')
+    }, [fetchReceipts])
 
     function handleApply() {
         setPage(1)

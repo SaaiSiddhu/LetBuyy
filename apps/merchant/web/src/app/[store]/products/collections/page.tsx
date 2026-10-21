@@ -154,7 +154,7 @@ export default function CollectionsPage() {
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: AbortSignal.timeout(15_000),
             })
             const payload = await response.json().catch(() => null)
 
@@ -259,8 +259,8 @@ export default function CollectionsPage() {
             open: true, loading: true, pending, corruptRecovery, saveError: pending ? 'This save could not be confirmed. Retry the same save before changing this selection.' : null, assignedIds: new Set(pending?.command.product_ids || []) })
         try {
             const [productsRes, assignedRes] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=1`, { cache: 'no-store', headers: requestHeaders() }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store', headers: requestHeaders() }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=1&view=summary`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/collections/${encodeURIComponent(collection.id)}/products`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() }),
             ])
             const [productsPayload, assignedPayload] = await Promise.all([productsRes.json().catch(() => null), assignedRes.json().catch(() => null)])
             if (!productsRes.ok || !assignedRes.ok) throw new Error('Collection products are unavailable. Retry the read before changing this collection.')
@@ -288,7 +288,7 @@ export default function CollectionsPage() {
         const epoch = generation.current, captured = context, page = manage.page + 1
         setManage(prev => ({ ...prev, loadingMore: true }))
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=${page}`, { cache: 'no-store', headers: requestHeaders() })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100&page=${page}&view=summary`, { cache: 'no-store', signal: AbortSignal.timeout(15_000), headers: requestHeaders() })
             const payload = await response.json().catch(() => null)
             if (!response.ok) throw new Error('Unable to load more products. Retry this page.')
             const choices = CollectionMembershipProductSchema.array().max(100).parse(payload?.data), meta = payload?.meta

@@ -12,6 +12,7 @@ import type {
 } from './page'
 import { FoundingMerchantCard } from '@/components/founding/FoundingMerchantCard'
 import { resolveDashboardDomain } from './dashboard-setup-status'
+import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
 import { Button,
     Badge,
     Banner,
@@ -689,7 +690,7 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                 {activities.length > 0 ? (
                     <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
                         {activities.map((activity) => (
-                            <a
+                            <MerchantNavigationLink
                                 key={activity.id}
                                 href={`/${store}/${activity.href}`}
                                 className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)] no-underline transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] md:grid-cols-[auto_1fr_auto] md:items-center"
@@ -711,7 +712,7 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                                         {formatRelativeTime(activity.timestamp)}
                                     </span>
                                 </span>
-                            </a>
+                            </MerchantNavigationLink>
                         ))}
                     </div>
                 ) : (
@@ -720,8 +721,8 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                         icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[color:var(--lb-color-primary)]" />}
                         title="Recent activity will appear here"
                         body="Orders and product updates will show up as soon as this store has merchant or shopper activity."
-                        primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
-                        secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/orders` }}>View orders</Button>}
+                        primaryAction={<Button as="a" href={`/${store}/products/new`}>Add product</Button>}
+                        secondaryAction={<Button as="a" variant="secondary" href={`/${store}/orders`}>View orders</Button>}
                     />
                 )}
             </Section>

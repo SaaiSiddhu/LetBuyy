@@ -259,15 +259,15 @@ test('theme package upload emits registered theme.submitted events', () => {
   assert.match(source, /partner_id: input\.partnerId/);
 });
 
-test('theme install producer uses registered theme.installed payload fields', () => {
+test('theme install producer atomically uses registered theme.installed payload fields', () => {
   const source = read(THEME_EXECUTION_ADAPTER);
-
-  assert.match(source, /new EventExecutionAdapter\(this\.db\)/);
-  assert.match(source, /events\.emitDomainEvent/);
-  assert.match(source, /eventType: 'theme\.installed'/);
-  assert.match(source, /aggregateType: 'theme'/);
-  assert.match(source, /site_id: input\.store_id/);
-  assert.match(source, /theme_package_id: runtime\.themePackageId/);
-  assert.match(source, /theme_version_id: runtime\.themePackageVersionId/);
-  assert.match(source, /installation_id: installationId/);
+  const migration = read('database/supabase/migrations/377_theme_install_event_contract.sql');
+  assert.match(source, /rpc\('install_owned_theme_v1'/);
+  assert.match(migration, /INSERT INTO public\.outbox_events/);
+  assert.match(migration, /'theme\.installed'/);
+  assert.match(migration, /'site_id',p_site/);
+  assert.match(migration, /'theme_package_id',v_package/);
+  assert.match(migration, /'theme_version_id',i\.theme_package_version_id/);
+  assert.match(migration, /'installation_id',installation\.id/);
+  assert.match(migration, /id=v_version AND theme_package_id=v_package AND release_status='published'/);
 });

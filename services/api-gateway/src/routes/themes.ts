@@ -91,6 +91,7 @@ router.use('/:slug/unpublished', authMiddleware);
 
 router.use('/', optionalAuth);
 router.use('/packages/upload', authMiddleware);
+router.use('/:slug/schema', optionalAuth);
 router.use('/:slug/editor', authMiddleware);
 router.use('/:slug/editor/*', authMiddleware);
 router.use('/:slug/publish', authMiddleware);
@@ -378,8 +379,8 @@ router.get('/', async (c) => {
 
     let query = db
         .from('themes')
-        .select('*', { count: 'exact' })
-        .eq('is_active', true);
+        .select('id,slug,name,site_type,category,description,thumbnail_url,preview_url,is_premium,price,config,author,version,is_active,sort_order,install_count,letbuyy_pricing_type,letbuyy_price_usd,letbuyy_price_inr,features,tags,rating_avg,review_count', { count: 'exact' })
+        .eq('is_active', true).eq('catalog_visible', true).eq('is_site_private', false).is('owned_by_site_id', null);
 
     if (category) query = query.eq('category', category);
     if (siteType) query = query.contains('supported_site_types', [siteType]);
@@ -428,29 +429,6 @@ router.get('/', async (c) => {
     const { data, error, count } = await query;
 
     if (error) {
-        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
-            const devThemes = [
-                { id: 'modern', slug: 'modern', name: 'Minimal Modern', category: 'General', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-                { id: 'vibrant', slug: 'vibrant', name: 'Vibrant Bold', category: 'General', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-                { id: 'tech-elite', slug: 'tech-elite', name: 'Tech Elite', category: 'Tech', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-                { id: 'midnight', slug: 'midnight', name: 'Midnight Purple', category: 'Fashion', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-                { id: 'luxury', slug: 'luxury', name: 'Luxury Premium', category: 'Luxury', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-                { id: 'fresh-mint', slug: 'fresh-mint', name: 'Fresh Mint', category: 'Beauty', is_active: true, letbuyy_pricing_type: 'free', letbuyy_price_inr: 0 },
-            ];
-            if (storeId && auth) {
-                const enriched = devThemes.map((theme) => ({
-                    ...theme,
-                    installed: true,
-                    active: theme.slug === 'modern',
-                }));
-                return c.json({
-                    ...paginated(enriched, devThemes.length, page, limit),
-                    current_theme: 'modern',
-                    store_status: 'published',
-                });
-            }
-            return c.json(paginated(devThemes, devThemes.length, page, limit));
-        }
         return c.json(dbErrorBody(), 500);
     }
 
@@ -477,27 +455,19 @@ router.get('/', async (c) => {
     }
     const store = await service.verifyThemeEditorStore(queryResult.data.store_id, customUser.id);
 
-    const { data: installations } = await db
-        .from('store_themes')
-        .select('theme_id, is_active')
-        .eq('store_id', queryResult.data.store_id);
-
-    const installedThemeIds = new Set((installations || []).map((row) => row.theme_id as string));
-    const activeThemeIds = new Set(
-        (installations || [])
-            .filter((row) => row.is_active)
-            .map((row) => row.theme_id as string)
-    );
-
-    const enriched = (data || []).map((theme) => ({
-        ...theme,
-        installed: installedThemeIds.has(theme.id),
-        active: activeThemeIds.has(theme.id) || store.theme_id === theme.slug,
-    }));
+    const { data: instances, error: instancesError } = await db.from('theme_instances')
+        .select('theme_slug,instance_status').eq('store_id', queryResult.data.store_id).is('deleted_at', null);
+    if (instancesError) return c.json(dbErrorBody(), 503);
+    const installedSlugs = new Set((instances || []).filter(row => row.instance_status !== 'archived').map(row => row.theme_slug));
+    const enriched = (data || []).map(theme => ({ ...theme, installed: installedSlugs.has(theme.slug) || store.theme_id === theme.slug, active: store.theme_id === theme.slug }));
+    const { data: currentTheme } = store.theme_id ? await db.from('themes')
+        .select('id,slug,name,version,description,thumbnail_url,is_active')
+        .eq('slug', store.theme_id).or(`is_site_private.eq.false,owned_by_site_id.eq.${queryResult.data.store_id}`).maybeSingle() : { data: null };
 
     return c.json({
         ...paginated(enriched, count || 0, page, limit),
         current_theme: store.theme_id || null,
+        current_theme_record: currentTheme ? { ...currentTheme, installed: true, active: true } : null,
         store_status: store.status || null,
     });
 });
@@ -510,6 +480,7 @@ router.get('/categories', async (c) => {
         .from('themes')
         .select('category')
         .eq('is_active', true)
+        .eq('catalog_visible', true).eq('is_site_private', false).is('owned_by_site_id', null)
         .not('category', 'is', null);
 
     if (error) {
@@ -529,6 +500,7 @@ router.get('/industries', async (c) => {
         .from('themes')
         .select('industry')
         .eq('is_active', true)
+        .eq('catalog_visible', true).eq('is_site_private', false).is('owned_by_site_id', null)
         .not('industry', 'is', null);
 
     if (error) {
@@ -563,6 +535,13 @@ router.get('/:slug/schema', async (c) => {
     const slug = c.req.param('slug');
     const db = getSupabaseAdmin(c);
     const service = new ThemeExecutionAdapter(db);
+    const theme = await service.getTheme(slug);
+    if (theme.is_site_private) {
+        const auth = c.get('auth');
+        const actor = auth ? await resolveCustomUser(db, auth.user) : null;
+        if (!actor || typeof theme.owned_by_site_id !== 'string') return c.json({ error: { code: 'NOT_FOUND', message: 'Theme not found' } }, 404);
+        await new ThemeExecutionAdapter(db, auth.user.storeId).verifyThemeEditorStore(theme.owned_by_site_id, actor.id);
+    }
     return c.json(success(await service.getEditableSchema(slug)));
 });
 
@@ -1108,7 +1087,7 @@ router.get('/:slug', async (c) => {
         .from('themes')
         .select('*')
         .eq('slug', slug)
-        .eq('is_active', true)
+        .eq('is_active', true).eq('is_site_private', false).is('owned_by_site_id', null)
         .single();
 
     if (error || !data) {
@@ -1147,7 +1126,7 @@ router.post('/:slug/install', validate('json', InstallThemeSchema), async (c) =>
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     return c.json(success(await service.installTheme(slug, body, customUser.id, getRequestId(c))), 201);
 });
 

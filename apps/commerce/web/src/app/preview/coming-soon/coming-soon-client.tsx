@@ -4,6 +4,7 @@ import { Button, Input } from '@letbuyy/ui';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import ComingSoonRouter from '@/components/coming-soon';
+import StorefrontAccessGate from '@/components/StorefrontAccessGate';
 import type { SiteType } from '@/components/coming-soon';
 
 const SITE_TYPES: { type: SiteType; label: string }[] = [
@@ -41,23 +42,18 @@ export default function ComingSoonPreviewContent({ reason, message: gateMessage,
         }
     }
 
-    return (
-        <div className="relative h-dvh w-screen overflow-hidden">
-            {/* Page */}
-            <ComingSoonRouter
-                siteType={active}
-                storeName={reason ? storeName || 'This store' : 'LetBuyy Demo'}
-                tagline={gateMessage || (isPasswordGate ? 'Enter the store password to continue.' : reason ? 'This store is currently unavailable.' : 'Preview of the gated storefront pages — switch between site types below.')}
-            />
-
-            {isPasswordGate ? (
+    if (reason) return <StorefrontAccessGate storeName={storeName || 'This store'} message={gateMessage} passwordProtected={isPasswordGate}>
+            {isPasswordGate && (
                 <form
                     onSubmit={submitPassword}
-                    className="fixed bottom-20 left-1/2 z-50 grid w-[min(360px,calc(100vw-32px))] -translate-x-1/2 gap-2.5 rounded-xl border border-line bg-surface p-4 text-default shadow-xl"
+                    className="grid gap-3 text-left"
                 >
+                    <label htmlFor="store-visitor-password" className="text-sm font-medium">Store password</label>
                     <Input
                         unstyled
+                        id="store-visitor-password"
                         type="password"
+                        autoComplete="current-password"
                         value={password}
                         onChange={(event) => {
                             setPassword(event.target.value);
@@ -78,7 +74,12 @@ export default function ComingSoonPreviewContent({ reason, message: gateMessage,
                         </p>
                     ) : null}
                 </form>
-            ) : null}
+            )}
+        </StorefrontAccessGate>;
+
+    return (
+        <div className="relative h-dvh w-screen overflow-hidden">
+            <ComingSoonRouter siteType={active} storeName="LetBuyy Demo" tagline="Preview of the gated storefront pages — switch between site types below." />
 
             {/* Standalone design preview only; storefront shoppers see their gate. */}
             {!reason ? (<div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 gap-1 rounded-xl border border-line bg-surface p-1 text-default shadow-xl">

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -374,6 +376,9 @@ export default function AddProductPage() {
     const [tags, setTags] = useState(defaultProductSnapshot.tags)
     const [saving, setSaving] = useState(false)
     const scopeKey = `${actorId}:${store}:${productId ?? 'new'}`
+    const beginProductRead = useReadRequest(scopeKey)
+    const beginConflictRead = useReadRequest(scopeKey)
+    const beginMarketplaceRead = useReadRequest(scopeKey)
     const pendingStorageKey = `letbuyy.product-edit.v1:${scopeKey}`
     const activeScope = useRef(scopeKey)
     activeScope.current = scopeKey
@@ -532,6 +537,7 @@ export default function AddProductPage() {
 
     const loadProduct = useCallback(async () => {
         if (!isEditing || !productId) return
+        const request = beginProductRead()
         const requestScope = scopeKey
         const requestGeneration = requestLifecycle.current.generation
         setLoadingProduct(true)
@@ -545,9 +551,9 @@ export default function AddProductPage() {
         setError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId } })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', signal: request.signal, headers: { 'X-LetBuyy-Merchant-Context': actorId } })
             const payload = await response.json().catch(() => null)
-            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            if (!request.isCurrent() || !requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
 
             if (!response.ok || !payload?.data) {
                 throw new Error(getPayloadError(payload, 'Unable to load product'))
@@ -568,7 +574,7 @@ export default function AddProductPage() {
                 applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
             }
         } catch (err) {
-            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            if (!request.isCurrent() || !requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
             setEditBlocked(true)
             const message = err instanceof Error ? err.message : 'Unable to load product'
             setError(message)
@@ -578,9 +584,9 @@ export default function AddProductPage() {
                 variant: 'critical',
             })
         } finally {
-            if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setLoadingProduct(false)
+            if (request.isCurrent() && requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setLoadingProduct(false)
         }
-    }, [actorId, applySnapshot, isEditing, notify, pendingStorageKey, productId, store, scopeKey])
+    }, [beginProductRead, actorId, applySnapshot, isEditing, notify, pendingStorageKey, productId, store, scopeKey])
 
     useEffect(() => {
         void loadProduct()
@@ -588,18 +594,23 @@ export default function AddProductPage() {
 
     const loadMarketplaceListing = useCallback(async () => {
         if (!isEditing || !productId) return
+        const request = beginMarketplaceRead()
         setMarketplaceListingLoaded(false)
+        setMarketplaceListing(null)
+        setMarketplaceCorrectionError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/marketplace-listings/${encodeURIComponent(productId)}`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/marketplace-listings/${encodeURIComponent(productId)}`, { cache: 'no-store', signal: request.signal })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load marketplace review status'))
             setMarketplaceListing(payload?.data && typeof payload.data === 'object' ? payload.data as MarketplaceListingStatus : null)
         } catch (err) {
+            if (!request.isCurrent()) return
             setMarketplaceCorrectionError(err instanceof Error ? err.message : 'Unable to load marketplace review status')
         } finally {
-            setMarketplaceListingLoaded(true)
+            if (request.isCurrent()) setMarketplaceListingLoaded(true)
         }
-    }, [isEditing, productId, store])
+    }, [beginMarketplaceRead, isEditing, productId, store])
 
     useEffect(() => {
         void loadMarketplaceListing()
@@ -756,22 +767,23 @@ export default function AddProductPage() {
 
     const checkLatestProduct = useCallback(async () => {
         if (!productId) return
+        const request = beginConflictRead()
         const requestScope = scopeKey
         const requestGeneration = requestLifecycle.current.generation
         setProductConflict(null)
         setEditBlocked(true)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId } })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', signal: request.signal, headers: { 'X-LetBuyy-Merchant-Context': actorId } })
             const payload = await response.json().catch(() => null)
-            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            if (!request.isCurrent() || !requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
             if (!response.ok || !payload?.data || payload.data.id !== productId || !Number.isInteger(payload.data.version) || payload.data.version <= 0) {
                 throw new Error(getPayloadError(payload, 'The latest product could not be checked. Your draft is kept.'))
             }
             setProductConflict(payload.data)
         } catch (error) {
-            if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setError(error instanceof Error ? error.message : 'The latest product could not be checked. Your draft is kept.')
+            if (request.isCurrent() && requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setError(error instanceof Error ? error.message : 'The latest product could not be checked. Your draft is kept.')
         }
-    }, [actorId, productId, scopeKey, store])
+    }, [beginConflictRead, actorId, productId, scopeKey, store])
 
     const reloadLatestProduct = () => {
         if (!productConflict || !Number.isInteger(productConflict.version) || Number(productConflict.version) <= 0) return

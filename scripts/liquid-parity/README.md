@@ -78,3 +78,13 @@ Updates `LAUNCH_READINESS_2026_06_12/evidence/e-liquid-parity/PARITY_MATRIX.md` 
 
 All 200 cells (20 sections × 10 dimensions) must be ✅ PASS before advancing to canary C2.
 Evidence row is appended to `EXECUTION_LEDGER.md` by the human running Phase E.0.
+
+## First-party catalog distribution
+
+`build-first-party-catalog.mjs` generates migration 372 and its illustrative thumbnails from the existing preset registry. Check reproducibility with:
+
+```sh
+node --import tsx scripts/liquid-parity/build-first-party-catalog.mjs --check
+```
+
+The database catalog remains the runtime authority. Do not rewrite an applied migration when adding future catalog releases; introduce a new forward migration. The ten new identities explicitly choose the existing Liquid renderer; existing themes and the global default are preserved.

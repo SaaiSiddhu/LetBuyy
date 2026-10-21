@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { StoreData } from './AdminShell'
-import { Button, MaterialIcon } from '@letbuyy/ui'
+import { Banner, Button, MaterialIcon, Skeleton } from '@letbuyy/ui'
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { MerchantNavigationLink } from './MerchantNavigationLink'
 
 interface AISidebarProps {
     store: string
@@ -13,8 +15,18 @@ interface AISidebarProps {
 interface TodoItem {
     id: string
     text: string
-    done: boolean
+    done: boolean | null
     link?: string
+}
+
+interface SetupProgress {
+    productsCount: number | null
+    shippingZonesCount: number | null
+    pagesCount: number | null
+    paymentConfigured: boolean | null
+    themeCustomized: boolean | null
+    domainConfigured: boolean | null
+    published: boolean | null
 }
 
 /**
@@ -22,7 +34,7 @@ interface TodoItem {
  * Each todo checks a real condition from storeData or makes a
  * lightweight fetch to verify progress.
  */
-function buildDynamicTodos(storeData: StoreData, store: string, productCount: number, hasPayment: boolean): TodoItem[] {
+function buildDynamicTodos(storeData: StoreData, store: string, progress: SetupProgress): TodoItem[] {
     const siteType = storeData.site_type || 'store'
     const todos: TodoItem[] = []
 
@@ -30,21 +42,21 @@ function buildDynamicTodos(storeData: StoreData, store: string, productCount: nu
     todos.push({
         id: 'theme',
         text: 'Customize your site theme',
-        done: !!(storeData.theme_id && storeData.theme_settings),
+        done: progress.themeCustomized,
         link: `/${store}/appearance`,
     })
 
     todos.push({
         id: 'domain',
-        text: 'Set up a custom domain',
-        done: !!storeData.custom_domain,
+        text: 'Set up your storefront domain',
+        done: progress.domainConfigured,
         link: `/${store}/settings/domains`,
     })
 
     todos.push({
         id: 'publish',
         text: 'Publish your site',
-        done: storeData.status === 'published',
+        done: progress.published,
         link: `/${store}/settings/general`,
     })
 
@@ -53,52 +65,52 @@ function buildDynamicTodos(storeData: StoreData, store: string, productCount: nu
         todos.push({
             id: 'product',
             text: 'Add your first product',
-            done: productCount > 0,
+            done: progress.productsCount === null ? null : progress.productsCount > 0,
             link: `/${store}/products/new`,
         })
         todos.push({
             id: 'payment',
             text: 'Set up your payment provider',
-            done: hasPayment,
+            done: progress.paymentConfigured,
             link: `/${store}/settings/payments`,
         })
         todos.push({
             id: 'shipping',
             text: 'Configure shipping rates',
-            done: false, // Checked via API if needed
+            done: progress.shippingZonesCount === null ? null : progress.shippingZonesCount > 0,
             link: `/${store}/settings/shipping`,
         })
     } else if (siteType === 'portfolio') {
         todos.push({
             id: 'project',
             text: 'Add your first project',
-            done: false,
+            done: null,
             link: `/${store}/projects`,
         })
         todos.push({
             id: 'skills',
             text: 'Add your skills',
-            done: false,
+            done: null,
             link: `/${store}/skills`,
         })
     } else if (siteType === 'resume') {
         todos.push({
             id: 'experience',
             text: 'Add work experience',
-            done: false,
+            done: null,
             link: `/${store}/experience`,
         })
         todos.push({
             id: 'education',
             text: 'Add education history',
-            done: false,
+            done: null,
             link: `/${store}/education`,
         })
     } else if (siteType === 'blog') {
         todos.push({
             id: 'post',
             text: 'Write your first post',
-            done: false,
+            done: null,
             link: `/${store}/posts`,
         })
     }
@@ -109,45 +121,28 @@ function buildDynamicTodos(storeData: StoreData, store: string, productCount: nu
 export default function AISidebar({ store, storeData, onClose }: AISidebarProps) {
     const [todos, setTodos] = useState<TodoItem[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadedStore, setLoadedStore] = useState<string | null>(null)
+    const [error, setError] = useState(false)
+    const beginRead = useReadRequest(store)
 
     // Fetch setup progress on mount
-    useEffect(() => {
-        async function checkProgress() {
+    const checkProgress = useCallback(async () => {
+            const request = beginRead()
             setLoading(true)
-            let productCount = 0
-            let hasPayment = false
-
+            setError(false)
             try {
-                // Check products count
-                const prodRes = await fetch(`/api/store-data?store=${store}&type=product_count`)
-                if (prodRes.ok) {
-                    const data = await prodRes.json()
-                    productCount = data.count || 0
-                }
-            } catch { /* fallback = 0 */ }
-
-            try {
-                // Check payment setup
-                const payRes = await fetch(`/api/store-data?store=${store}&type=payment_check`)
-                if (payRes.ok) {
-                    const data = await payRes.json()
-                    hasPayment = data.configured || false
-                }
-            } catch { /* fallback = false */ }
-
-            const dynamicTodos = buildDynamicTodos(storeData, store, productCount, hasPayment)
-            setTodos(dynamicTodos)
-            setLoading(false)
-        }
-
-        checkProgress()
-    }, [store, storeData])
-
-    const toggleTodo = (id: string) => {
-        setTodos((prev) =>
-            prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-        )
-    }
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/dashboard/setup`, { cache: 'no-store', signal: request.signal })
+                const payload = await response.json()
+                if (!request.isCurrent()) return
+                if (!response.ok || !payload?.data) throw new Error('Setup progress unavailable')
+                setTodos(buildDynamicTodos(storeData, store, payload.data as SetupProgress))
+            } catch {
+                if (request.isCurrent()) { setTodos([]); setError(true) }
+            } finally {
+                if (request.isCurrent()) { setLoadedStore(store); setLoading(false) }
+            }
+    }, [store, storeData, beginRead])
+    useEffect(() => { void checkProgress() }, [checkProgress])
 
     const completedCount = todos.filter((t) => t.done).length
 
@@ -183,9 +178,11 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                         />
                     )}
 
-                    {loading ? (
+                    {error && <Banner variant="warning" title="Setup progress is unavailable" action={<Button variant="secondary" onClick={() => void checkProgress()}>Retry</Button>}>Try loading the setup checks again.</Banner>}
+
+                    {loading || loadedStore !== store ? (
                         <div className="admin-ai-loading">
-                            Loading setup progress...
+                            <Skeleton variant="text" lines={3} />
                         </div>
                     ) : (
                         todos.map((todo) => (
@@ -193,25 +190,23 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                 key={todo.id}
                                 className="admin-ai-todo-item"
                             >
-                                <Button unstyled
-                                    type="button"
+                                <div
                                     className="admin-ai-todo-check"
-                                    onClick={() => toggleTodo(todo.id)}
-                                    aria-pressed={todo.done}
                                 >
                                     <span className={`admin-ai-todo-checkbox ${todo.done ? 'checked' : ''}`} />
                                     <span className={`admin-ai-todo-text ${todo.done ? 'complete' : ''}`}>
                                         {todo.text}
+                                        {todo.done === null && <span> — Status unavailable</span>}
                                     </span>
-                                </Button>
+                                </div>
                                 {todo.link && !todo.done && (
-                                    <a
+                                    <MerchantNavigationLink
                                         href={todo.link}
                                         className="admin-ai-todo-link"
                                     >
                                         Go
                                         <MaterialIcon name="arrow_right" size={12} />
-                                    </a>
+                                    </MerchantNavigationLink>
                                 )}
                             </div>
                         ))

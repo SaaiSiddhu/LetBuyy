@@ -1,20 +1,20 @@
 'use client'
 
+import editorStyles from '@/components/theme-editor/editor-workspace.module.css'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
-import { isUnchangedCoreDemoCategoryBlocks } from '@letbuyy/theme-engine'
+import { isUnchangedCoreDemoCategoryBlocks, isFirstPartyCoreBundleSlug } from '@letbuyy/theme-engine'
+import { useReadRequest } from '@/lib/api/use-read-request'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
     ArrowLeft,
     Blocks,
     CheckCircle2,
     ChevronDown,
-    ChevronRight,
     Eye,
     FileJson,
-    GripVertical,
     Laptop,
     Layers3,
     Loader2,
@@ -218,9 +218,9 @@ function labelFromKey(key: string): string {
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-function normalizeTemplateKey(value: unknown): string {
+function normalizeTemplateKey(value: unknown, fallback = 'index'): string {
     const normalized = typeof value === 'string' ? value.trim() : ''
-    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index'
+    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : fallback
 }
 
 function templateLabel(key: string, template?: JsonRecord): string {
@@ -233,7 +233,7 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     const fromApi = Array.isArray(value)
         ? value.flatMap((entry) => {
             const record = asRecord(entry)
-            const key = normalizeTemplateKey(record.key)
+            const key = normalizeTemplateKey(record.key, '')
             return key ? [{
                 key,
                 label: stringValue(record.label, templateLabel(key, record)),
@@ -248,7 +248,8 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     }
 
     for (const [key, template] of Object.entries(asRecord(templateConfig.templates))) {
-        const normalizedKey = normalizeTemplateKey(key)
+        const normalizedKey = normalizeTemplateKey(key, '')
+        if (!normalizedKey) continue
         options.set(normalizedKey, {
             key: normalizedKey,
             label: templateLabel(normalizedKey, asRecord(template)),
@@ -542,15 +543,20 @@ function normalizeEditorState(
     const fallback = getDefaultStorefrontThemeTemplate(themeId)
     const fallbackConfig = fallback as unknown as JsonRecord
     const candidate = hasRenderableThemeTemplate(templateConfig) ? asRecord(templateConfig) : fallbackConfig
+    const isLiquid = candidate.rendererEngine === 'liquid' || asRecord(asRecord(candidate.liquidBundle).renderer).engine === 'liquid'
     const root = getSectionRoot(candidate, templateKey)
     const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
     const templateEntries = Array.isArray(root.template) ? root.template : []
-
-    const header = normalizeSection(root.header || fallbackRoot.header, 'header', 'header', 0, sectionSchemas)
-    const footer = normalizeSection(root.footer || fallbackRoot.footer, 'footer', 'footer', 100, sectionSchemas)
+    const templates = asRecord(candidate.templates)
+    // Portable themes own their header/footer and setting defaults. Importing
+    // another renderer's fallback fields makes the first draft fail validation.
+    const headerSource = root.header || (isLiquid ? portableTemplateSectionsToArray(asRecord(templates.header))?.[0] : fallbackRoot.header)
+    const footerSource = root.footer || (isLiquid ? portableTemplateSectionsToArray(asRecord(templates.footer))?.[0] : fallbackRoot.footer)
+    const header = headerSource ? normalizeSection(headerSource, 'header', 'header', 0, sectionSchemas) : null
+    const footer = footerSource ? normalizeSection(footerSource, 'footer', 'footer', 100, sectionSchemas) : null
     const template = templateEntries.flatMap((section, index) => {
         const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
-        if (normalized && asRecord(asRecord(candidate.liquidBundle).package).slug === 'letbuyy-core-liquid'
+        if (normalized && isFirstPartyCoreBundleSlug(asRecord(asRecord(candidate.liquidBundle).package).slug)
             && ['categoryGrid', 'category-grid'].includes(normalized.type) && isUnchangedCoreDemoCategoryBlocks(normalized.blocks)) {
             return [{ ...normalized, blocks: [] }]
         }
@@ -565,7 +571,7 @@ function normalizeEditorState(
         experienceId: typeof candidate.experienceId === 'string' ? candidate.experienceId : typeof legacyExperienceId === 'string' ? legacyExperienceId : undefined,
         themeSettings: {
             ...defaultThemeSettings(settingsSchema),
-            ...asRecord(fallback.themeSettings),
+            ...(isLiquid ? {} : asRecord(fallback.themeSettings)),
             ...configSettingsData,
             ...rootSettingsData,
             ...asRecord(candidate.themeSettings),
@@ -725,6 +731,7 @@ function ThemeEditorInner() {
     const themeId = params?.themeId as string
     const { actorId: editorActorId } = useMerchantSecurityContext(store)
     const { notify } = useToast()
+    const router = useRouter()
 
     const [settingsSchema, setSettingsSchema] = useState<ThemeSettingsSchema>(() => normalizeSettingsSchema(getThemeSettingsSchema(themeId || 'urban-kicks')))
     const [sectionSchemas, setSectionSchemas] = useState<Record<string, SectionSchema>>(() => getSectionSchemas(themeId || 'urban-kicks'))
@@ -738,6 +745,10 @@ function ThemeEditorInner() {
     const [selection, setSelection] = useState<EditorSelection>({ kind: 'section', sectionId: 'header' })
     const [panelMode, setPanelMode] = useState<PanelMode>('sections')
     const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop')
+    const [mobilePanel, setMobilePanel] = useState<'sections' | 'preview' | 'properties'>('preview')
+    const [navigationOpen, setNavigationOpen] = useState(true)
+    const [leaveRequested, setLeaveRequested] = useState(false)
+    const [isLiveTheme, setIsLiveTheme] = useState(false)
     const [addSectionType, setAddSectionType] = useState('')
     const [sectionPendingRemoval, setSectionPendingRemoval] = useState<SectionEntry | null>(null)
     const [blockPendingRemoval, setBlockPendingRemoval] = useState<{ sectionId: string; block: BlockEntry } | null>(null)
@@ -747,7 +758,6 @@ function ThemeEditorInner() {
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [themeName, setThemeName] = useState('LetBuyy Core')
-    const [schemaSource, setSchemaSource] = useState('registry')
     const [draftVersion, setDraftVersion] = useState<number | null>(null)
     const [savedAt, setSavedAt] = useState<string | null>(null)
     const [currentReleaseVersion, setCurrentReleaseVersion] = useState<number | null>(null)
@@ -852,7 +862,7 @@ function ThemeEditorInner() {
         const scope = draftClientScopeRef.current, generation = loadRequestCounter.current, request = ++releaseRequestCounter.current
 
         try {
-            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
+            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
             const payload = await res.json().catch(() => ({}))
             if (scope !== draftClientScopeRef.current || generation !== loadRequestCounter.current || request !== releaseRequestCounter.current) return
             if (!res.ok) { setReleases([]); setCurrentReleaseVersion(null); return }
@@ -873,23 +883,20 @@ function ThemeEditorInner() {
         }
     }, [store, themeId])
 
+    const beginEditorRead = useReadRequest(JSON.stringify([editorActorId, store, themeId, selectedTemplateKey]))
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
-
+        const read = beginEditorRead()
         const loadId = ++loadRequestCounter.current
         setIsLoading(true)
         setLoadError(null)
 
         try {
             const fallbackSectionSchemas = getSectionSchemas(themeId)
-            const [sectionsRes, editorRes] = await Promise.all([
-                fetch(`/api/themes/${themeId}/sections`, { cache: 'no-store' }).catch(() => null),
-                fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store' }),
-            ])
-
-            const sectionsPayload = sectionsRes ? await sectionsRes.json().catch(() => ({})) : {}
+            // The owned editor snapshot already includes the same runtime schemas.
+            const editorRes = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store', signal: read.signal })
             const editorPayload = await editorRes.json().catch(() => ({})) as ApiEditorResponse
-            if (loadRequestCounter.current !== loadId) return
+            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
 
             if (!editorRes.ok) {
                 const errorRecord = asRecord((editorPayload as { error?: unknown }).error)
@@ -898,7 +905,6 @@ function ThemeEditorInner() {
 
             const apiSectionSchemas = {
                 ...fallbackSectionSchemas,
-                ...asRecord(sectionsPayload.schemas),
                 ...asRecord(editorPayload.sectionSchemas),
             } as Record<string, SectionSchema>
             const nextSettingsSchema = normalizeSettingsSchema(editorPayload.themeSettingsSchema || getThemeSettingsSchema(themeId))
@@ -912,9 +918,9 @@ function ThemeEditorInner() {
                 apiSectionSchemas,
                 nextSettingsSchema,
             )
-            const sectionCatalog = Array.isArray(asRecord(sectionsPayload).sections)
-                ? (asRecord(sectionsPayload).sections as AvailableSection[])
-                : Object.entries(apiSectionSchemas).map(([type, schema]) => ({
+            const catalogSchemas = Object.keys(asRecord(editorPayload.sectionSchemas)).length > 0
+                ? editorPayload.sectionSchemas as Record<string, SectionSchema> : apiSectionSchemas
+            const sectionCatalog = Object.entries(catalogSchemas).map(([type, schema]) => ({
                     type,
                     name: schema.name,
                     description: schema.description,
@@ -970,13 +976,13 @@ function ThemeEditorInner() {
             setHistory({ past: [], future: [] })
             setIsDirty(false)
             setThemeName(stringValue(editorPayload.theme?.name, labelFromKey(themeId)))
-            setSchemaSource(stringValue(editorPayload.theme?.schema_source, 'registry'))
             setDraftVersion(typeof editorPayload.version === 'number' ? editorPayload.version : null)
             setSavedAt(editorPayload.draftSavedAt || null)
+            setIsLiveTheme(Boolean(editorPayload.release))
             setCurrentReleaseVersion(typeof editorPayload.release?.version === 'number' ? editorPayload.release.version : null)
             void loadReleases()
         } catch (err) {
-            if (loadRequestCounter.current !== loadId) return
+            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
             const message = err instanceof Error ? err.message : 'Failed to load theme editor'
             setLoadError(message)
             notify({
@@ -985,9 +991,9 @@ function ThemeEditorInner() {
                 variant: 'critical',
             })
         } finally {
-            if (loadRequestCounter.current === loadId) setIsLoading(false)
+            if (read.isCurrent() && loadRequestCounter.current === loadId) setIsLoading(false)
         }
-    }, [editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
+    }, [beginEditorRead, editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         void loadEditor()
@@ -1049,19 +1055,20 @@ function ThemeEditorInner() {
         })
     }, [editorState])
 
-    const saveDraft = useCallback(async (reviewedVersion?: number) => {
+    const saveDraft = useCallback(async (reviewedVersion?: number, ensurePreviewDraft = false) => {
         const client = draftClientRef.current
         if (!client || draftClientScopeRef.current !== `${client.actorId}:${client.storeId}:${themeId}:${selectedTemplateKey}:${store}`) throw new Error('Reload the current owned editor before saving.')
         const snapshot = editorState
         const draftConfig = buildDraftConfig(baseConfig, themeId, snapshot, selectedTemplateKey)
         try {
-            const ack = await client.save(draftConfig, reviewedVersion)
+            const ack = await client.save(draftConfig, reviewedVersion, ensurePreviewDraft)
             if (draftClientRef.current !== client) return ack
             setBaseConfig((current) => JSON.stringify(current) === JSON.stringify(draftConfig) ? current : draftConfig)
             setSavedState(snapshot)
             setDraftVersion(ack.version)
             if (ack.savedAt) setSavedAt(ack.savedAt)
-            if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
+            // Autosave confirms persistence; it must not erase the merchant's
+            // ability to undo and redo changes made in this editor session.
             setIsDirty(latestEditorState.current !== snapshot)
             return ack
         } catch (error) {
@@ -1082,7 +1089,10 @@ function ThemeEditorInner() {
         setIsPreviewRefreshing(true)
         setPreviewError(null)
         try {
-            await saveDraft()
+            // Publication consumes its draft. Request a canonical preview draft
+            // explicitly so even unchanged published settings remain inspectable
+            // while storefront access is restricted.
+            await saveDraft(undefined, true)
             if (previewRequestCounter.current !== requestId || draftClientRef.current !== client) return
             if (!client.hasDraft) { setPreviewToken(null); return }
             const sessionRes = await fetch(`/api/themes/${themeId}/preview-session`, {
@@ -1109,6 +1119,13 @@ function ThemeEditorInner() {
         const timeout = window.setTimeout(() => { void syncPreviewDraft() }, isDirty ? 900 : 0)
         return () => window.clearTimeout(timeout)
     }, [hasConflict, isDirty, isLoading, isPublishing, loadError, store, syncPreviewDraft, themeId])
+
+    useEffect(() => {
+        if (!isDirty && !isSaving) return
+        const guard = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
+        window.addEventListener('beforeunload', guard)
+        return () => window.removeEventListener('beforeunload', guard)
+    }, [isDirty, isSaving])
 
     const handleSave = useCallback(async () => {
         if (!store || !themeId || isSaving) return
@@ -1164,13 +1181,15 @@ function ThemeEditorInner() {
             setIsDirty(latestEditorState.current !== snapshot)
             if (latestEditorState.current === snapshot) setHistory({ past: [], future: [] })
             void loadReleases()
+            setIsLiveTheme(true)
+            router.refresh()
             notify({ title: ack.replayed === true || ack.currentVersion > ack.version ? 'Theme publication recovered' : 'Theme published', description: ack.currentVersion > ack.version ? 'The saved version was published. A newer draft revision exists; review it before editing further.' : ack.replayed === true ? 'The earlier publication is confirmed. Review the latest live version and saved draft.' : latestEditorState.current === snapshot ? `${selectedTemplate.label} is now included in the live storefront version.` : 'The previously saved version is live. Your newer edits remain a draft.', variant: 'success' })
         } catch (error) {
             if (draftClientRef.current !== client) return
             if (error instanceof ThemeDraftConflictError) { setReplacementVersion(null); setHasConflict(true); setConflictSource('manual-save') }
             notify({ title: 'Theme publish not confirmed', description: error instanceof Error ? error.message : 'Retry publication to recover its result.', variant: 'critical' })
         } finally { if (draftClientRef.current === client) setIsPublishing(false) }
-    }, [currentReleaseVersion, savedState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
+    }, [currentReleaseVersion, savedState, isDirty, isPublishing, loadReleases, notify, router, selectedTemplate.label, selectedTemplateKey, store, themeId])
 
     const recoverConflict = useCallback(async () => {
         if (conflictRecoveryBusy.current) return
@@ -1408,17 +1427,18 @@ function ThemeEditorInner() {
     }
 
     return (
-        <main className="theme-os">
+        <main className={`theme-os ${editorStyles.editor}`} data-panel={mobilePanel} data-navigation={navigationOpen ? 'open' : 'closed'}>
             <header className="theme-os-topbar">
                 <div className="theme-os-topbar__left">
-                    <Link href={`/${store}/online-store/themes`} className="theme-os-icon-btn" aria-label="Back to themes">
+                    <Link href={`/${store}/online-store/themes`} className="theme-os-icon-btn" aria-label="Back to themes" onClick={event => { if (isDirty || isSaving) { event.preventDefault(); setLeaveRequested(true) } }}>
                         <ArrowLeft size={17} aria-hidden="true" />
                     </Link>
+                    <Button unstyled className="theme-os-icon-btn" aria-label="Toggle navigation panel" aria-pressed={navigationOpen} onClick={() => { setNavigationOpen(value => !value); setMobilePanel('sections') }}><PanelLeft size={17} aria-hidden="true" /></Button>
                     <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'sections' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Sections"
-                        onClick={() => setPanelMode('sections')}
+                        onClick={() => { setPanelMode('sections'); setNavigationOpen(true); setMobilePanel('sections') }}
                     >
                         <Layers3 size={17} aria-hidden="true" />
                     </Button>
@@ -1426,15 +1446,15 @@ function ThemeEditorInner() {
                         className={`theme-os-icon-btn ${panelMode === 'settings' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Theme settings"
-                        onClick={() => setPanelMode('settings')}
+                        onClick={() => { setPanelMode('settings'); setNavigationOpen(true); setMobilePanel('sections') }}
                     >
                         <Settings size={17} aria-hidden="true" />
                     </Button>
                     <Button unstyled
                         className={`theme-os-icon-btn ${panelMode === 'experiences' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
-                        aria-label="Experiences"
-                        onClick={() => setPanelMode('experiences')}
+                        aria-label="Theme styles"
+                        onClick={() => { setPanelMode('experiences'); setMobilePanel('sections') }}
                     >
                         <Sparkles size={17} aria-hidden="true" />
                     </Button>
@@ -1442,7 +1462,7 @@ function ThemeEditorInner() {
                         className={`theme-os-icon-btn ${panelMode === 'versions' ? 'theme-os-icon-btn--active' : ''}`}
                         type="button"
                         aria-label="Versions"
-                        onClick={() => setPanelMode('versions')}
+                        onClick={() => { setPanelMode('versions'); setMobilePanel('sections') }}
                     >
                         <FileJson size={17} aria-hidden="true" />
                     </Button>
@@ -1452,19 +1472,17 @@ function ThemeEditorInner() {
                     <div className="theme-os-theme-pill">
                         <Blocks size={15} aria-hidden="true" />
                         <span>{themeName}</span>
-                        <Badge label={isDirty ? 'Draft' : 'Saved'} variant={isDirty ? 'warning' : 'success'} />
+                        <Badge label={isLiveTheme ? 'Active' : 'Draft theme'} variant={isLiveTheme ? 'success' : 'default'} />
+                        <span aria-live="polite" title="Draft changes save automatically. Publishing updates the storefront.">{isSaving ? 'Saving…' : isDirty ? 'Unsaved' : 'Saved'}</span>
                     </div>
                     <label className="theme-os-page-pill" aria-label="Template">
                         <Laptop size={15} aria-hidden="true" />
-                        <select
+                        <Select unstyled aria-label="Template"
                             value={selectedTemplateKey}
                             onChange={(event) => handleTemplateChange(event.target.value)}
                             disabled={isLoading || isSaving || isPublishing}
-                        >
-                            {templateOptions.map((template) => (
-                                <option key={template.key} value={template.key}>{template.label}</option>
-                            ))}
-                        </select>
+                            options={templateOptions.map(template => ({value:template.key,label:template.label}))}
+                        />
                         <ChevronDown size={14} aria-hidden="true" />
                     </label>
                 </div>
@@ -1491,8 +1509,7 @@ function ThemeEditorInner() {
                 <aside className="theme-os-sidebar" aria-label="Theme editor navigation">
                     <div className="theme-os-sidebar__header">
                         <div>
-                            <p>{schemaSource} schema</p>
-                            <h2>Theme OS</h2>
+                            <h2>{panelMode === 'sections' ? selectedTemplate.label : panelMode === 'settings' ? 'Theme settings' : panelMode === 'versions' ? 'Version history' : 'Theme styles'}</h2>
                         </div>
                         <Badge label={draftVersion ? `v${draftVersion}` : 'Draft'} variant="info" />
                     </div>
@@ -1504,7 +1521,7 @@ function ThemeEditorInner() {
                             selection={selection}
                             addableSections={addableSections}
                             addSectionType={activeAddSectionType}
-                            onSelect={setSelection}
+                            onSelect={value => { setSelection(value); if (window.matchMedia('(max-width: 760px)').matches) setMobilePanel('properties') }}
                             onAddSectionTypeChange={setAddSectionType}
                             onAddSection={addSection}
                             onMoveSection={moveSection}
@@ -1517,7 +1534,7 @@ function ThemeEditorInner() {
                         <ThemeSettingsTree
                             groups={themeGroups}
                             selection={selection}
-                            onSelect={(groupKey) => setSelection({ kind: 'theme', groupKey })}
+                            onSelect={(groupKey) => { setSelection({ kind: 'theme', groupKey }); setMobilePanel('properties') }}
                         />
                     ) : null}
 
@@ -1597,13 +1614,19 @@ function ThemeEditorInner() {
                 />
             </div>
 
-            <SaveBar
+            <nav className={editorStyles.mobileTabs} aria-label="Editor panels">
+                <Button variant={mobilePanel === 'sections' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'sections'} onClick={() => setMobilePanel('sections')}><Layers3 size={16} />Sections</Button>
+                <Button variant={mobilePanel === 'preview' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'preview'} onClick={() => setMobilePanel('preview')}><Eye size={16} />Preview</Button>
+                <Button variant={mobilePanel === 'properties' ? 'primary' : 'secondary'} aria-pressed={mobilePanel === 'properties'} onClick={() => setMobilePanel('properties')}><Settings size={16} />Settings</Button>
+            </nav>
+            <ConfirmDialog open={leaveRequested} title="Leave the editor?" description="Recent changes may still be saving. Stay in the editor to confirm they are saved before leaving." confirmLabel="Leave editor" cancelLabel="Stay in editor" onClose={() => setLeaveRequested(false)} onConfirm={() => { window.location.href = `/${store}/online-store/themes` }}><p>Saved drafts will be available when you return. Your live storefront changes only when you publish.</p></ConfirmDialog>
+            {(isSaving || isDirty) && <SaveBar
                 state={isSaving ? 'saving' : isDirty ? 'unsaved' : 'saved'}
                 saveLabel="Save draft"
                 discardLabel="Discard"
                 onSave={() => void handleSave()}
                 onDiscard={discardChanges}
-            />
+            />}
 
             <ConfirmDialog
                 open={Boolean(sectionPendingRemoval)}
@@ -1768,11 +1791,9 @@ function PropertyPanel({
             </div>
 
             <div className="theme-os-properties__body">
-                <section className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
+                <details className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
+                    <summary>Smart defaults</summary>
                     <div>
-                        <Settings size={16} aria-hidden="true" />
-                        <strong>Smart defaults</strong>
-                    </div>
                     <Button unstyled type="button" aria-label="Apply copy defaults" onClick={() => onAiHook('copy')}>
                         <WandSparkles size={14} aria-hidden="true" />
                         Copy
@@ -1785,10 +1806,11 @@ function PropertyPanel({
                         <Plus size={14} aria-hidden="true" />
                         Block
                     </Button>
+                    </div>
                     <p id="theme-smart-defaults-description" className="theme-os-muted col-span-full">
                         Apply fixed defaults to your theme settings or section.
                     </p>
-                </section>
+                </details>
 
                 {selection.kind === 'theme' && selectedThemeGroup ? (
                     <section className="theme-os-property-card">

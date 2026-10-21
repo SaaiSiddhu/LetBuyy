@@ -1,0 +1,17 @@
+{
+  "run": "a50768272742",
+  "application": "28bcc71d",
+  "fixture": "af09bed8",
+  "proof": {
+    "normalContinueShopping": true,
+    "distinctCartCapabilities": true,
+    "distinctCanonicalOrders": true,
+    "secondVariant": "Small",
+    "secondQuantity": 1,
+    "secondTotalMinor": 21900,
+    "originalCartByteIdentical": true,
+    "originalReceiptRecovered": true,
+    "secondCartRetired": true,
+    "repeatScreenshot": "repeat-order-confirmation.png"
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { bindLiquidPreviewInspector } from '@/lib/theme-engine/liquid-preview-inspector';
 import {
     EDITOR_LEGACY_SELECTION_MESSAGE,
     EDITOR_SELECTION_MESSAGE,
@@ -25,6 +26,7 @@ type PreviewViewport = 'desktop' | 'tablet' | 'mobile';
 type StorefrontPreviewBridgeProps = {
     initialViewport: PreviewViewport;
     sectionIds: string[];
+    sectionTypes?: Record<string, string>;
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -90,7 +92,9 @@ function selectSection(sectionId: string, shouldScroll: boolean) {
 export default function StorefrontPreviewBridge({
     initialViewport,
     sectionIds,
+    sectionTypes,
 }: StorefrontPreviewBridgeProps) {
+    useEffect(() => bindLiquidPreviewInspector(document, getEditorOrigin(), sectionTypes || {}), [sectionTypes]);
     useEffect(() => {
         applyViewport(initialViewport);
         // READY_MESSAGE: only send when the editor origin is known.

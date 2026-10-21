@@ -154,7 +154,7 @@ export default async function SettingsDashboardPage({ params }: PageProps) {
                                 }
 
                                 return (
-                                    <Link key={item.href} href={href} className="settings-dashboard-task">
+                                    <Link prefetch={false} key={item.href} href={href} className="settings-dashboard-task">
                                         <span className="settings-dashboard-task-icon">
                                             <ItemIcon className="letbuyy-icon" aria-hidden="true" />
                                         </span>

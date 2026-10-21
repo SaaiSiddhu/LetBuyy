@@ -83,7 +83,8 @@ test('variant purchases require a choice and retain durable variant identity thr
     Object.assign(globalThis, { CSS: { escape: (value: string) => value } });
     const requests: Array<{ lines: Array<{ product_id: string; variant_id: string; quantity: number; properties: Record<string, string> }> }> = [];
     const variants = [{ id: 'small', price: 199, stock: 3, options: { Size: 'Small' } }, { id: 'large', price: 249, stock: 4, options: { Size: 'Large' } }, { id: 'sold', price: 299, stock: 0, options: { Size: 'Sold' } }];
-    globalThis.fetch = (async (_input, init) => {
+    globalThis.fetch = (async (input, init) => {
+        if (String(input).endsWith('/checkout-status')) return new Response(JSON.stringify({ success: true, data: { cart_status: 'active', checkout_state: null } }));
         const body = JSON.parse(String(init?.body)); requests.push(body);
         return new Response(JSON.stringify({ success: true, data: { ...serverCart, lines: body.lines.map((line: {variant_id: string; quantity: number}) => ({ ...serverCart.lines[0], ...line, unit_price: variants.find(variant => variant.id === line.variant_id)?.price })) } }), { status: 200 });
     }) as typeof fetch;
@@ -131,4 +132,60 @@ test('actual hydration mounts on rendered content when a hoisted Liquid styleshe
         await act(async () => { root.render(createElement(islandsModule.default, { basePath: '', storeId: 'store-1', variantProductIds: ['product-1'] })); });
         assert.equal(button.textContent, 'Choose options'); assert.ok(rendered.querySelector('lb-cart-drawer')); assert.equal(style.childElementCount, 0);
     } finally { await act(async () => root.unmount()); style.remove(); reset(); }
+});
+
+
+test('confirmed cart is retired before a new Buy now and old purchased lines never enter the new intent',async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch,oldItems=JSON.stringify([{id:'old-product',name:'Purchased',quantity:1,price:999,currency:'INR',images:[]}]);
+ window.localStorage.setItem('lb_cart_token','ct_old_completed');window.localStorage.setItem('lb_cart',oldItems);window.localStorage.setItem('lb_cart_server',JSON.stringify({cart_token:'ct_old_completed',lines:[]}));
+ const writes:Array<{method:string;body:{lines:Array<{product_id:string;quantity:number}>}}>=[];
+ globalThis.fetch=(async(input,init)=>{
+  if(String(input).endsWith('/checkout-status'))return new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}}));
+  writes.push({method:String(init?.method),body:JSON.parse(String(init?.body))});return new Response(JSON.stringify({success:true,data:{...serverCart,cart_token:'ct_new_purchase'}}));
+ })as typeof fetch;
+ try{const{button}=purchase();button.click();button.click();await tick();assert.equal(writes.length,1);assert.equal(writes[0].method,'POST');assert.deepEqual(writes[0].body.lines.map(line=>[line.product_id,line.quantity]),[['product-1',1]]);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_new_purchase');assert.deepEqual(navigations,['/checkout']);}finally{globalThis.fetch=originalFetch;reset();}
+});
+
+for(const state of ['contact','payment_intent',null])test('pending checkout '+state+' retains its cart and draft when adding another item',async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch;window.localStorage.setItem('lb_cart_token','ct_pending_purchase');window.localStorage.setItem('lb_cart',JSON.stringify([{id:'old-product',name:'Draft',quantity:1,price:99,currency:'INR',images:[]}]));let method='',products:string[]=[];
+ globalThis.fetch=(async(input,init)=>{
+  if(String(input).endsWith('/checkout-status'))return new Response(JSON.stringify({success:true,data:{cart_status:'active',checkout_state:state}}));
+  method=String(init?.method);products=JSON.parse(String(init?.body)).lines.map((line:{product_id:string})=>line.product_id);return new Response(JSON.stringify({success:true,data:{...serverCart,cart_token:'ct_pending_purchase'}}));
+ })as typeof fetch;
+ try{purchase().button.click();await tick();assert.equal(method,'PATCH');assert.deepEqual(products,['old-product','product-1']);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_pending_purchase');}finally{globalThis.fetch=originalFetch;reset();}
+});
+
+for(const outcome of ['not-found','outage','converted-without-order','active-completed','malformed'] as const)test('unknown previous checkout '+outcome+' preserves storage and starts no replacement purchase',async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch;window.localStorage.setItem('lb_cart_token','ct_unknown_purchase');window.localStorage.setItem('lb_cart','[{"id":"draft"}]');const before=JSON.stringify({...window.localStorage});let writes=0;
+ globalThis.fetch=(async(input)=>{
+  if(!String(input).endsWith('/checkout-status')){writes++;throw new Error('No new intent may be sent');}
+  return new Response(JSON.stringify(outcome==='malformed'?{}:{success:true,data:outcome==='active-completed'?{cart_status:'active',checkout_state:'completed',order:{id:crypto.randomUUID()}}:{cart_status:'converted',checkout_state:'completed'}}),{status:outcome==='not-found'?404:outcome==='outage'?503:200});
+ })as typeof fetch;
+ try{const{button,island}=purchase();button.click();await tick();assert.equal(writes,0);assert.equal(JSON.stringify({...window.localStorage}),before);assert.deepEqual(navigations,[]);assert.match(island.textContent||'',/could not check your previous checkout/i);assert.equal(button.disabled,false);}finally{globalThis.fetch=originalFetch;reset();}
+});
+
+test('delayed committed receipt cannot erase another tab cart or later draft and equivalent in-flight reads coalesce',async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch;const{reconcileStoredCart}=await import('../checkout/cart-lifecycle');
+ for(const change of ['token','items']){
+  window.localStorage.setItem('lb_cart_token','ct_previous_purchase');window.localStorage.setItem('lb_cart','[]');let release!:(response:Response)=>void,calls=0;
+  globalThis.fetch=(async()=>{calls++;return new Promise<Response>(r=>{release=r;});})as typeof fetch;
+  try{const first=reconcileStoredCart('shop'),second=reconcileStoredCart('shop');assert.ok(first);assert.equal(first,second);assert.equal(calls,1);window.localStorage.setItem(change==='token'?'lb_cart_token':'lb_cart',change==='token'?'ct_new_tab':'[{"id":"new-draft"}]');const snapshot=JSON.stringify({...window.localStorage});release(new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}})));assert.equal(await first,'unavailable');assert.equal(JSON.stringify({...window.localStorage}),snapshot);}finally{globalThis.fetch=originalFetch;reset();}
+ }
+});
+
+for(const completed of [true,false])test('React cart bootstrap is read-only and '+(completed?'retires confirmed state before a fresh add':'preserves an unavailable checkout draft'),async()=>{
+ await ready();reset();const originalFetch=globalThis.fetch;Object.assign(globalThis,{localStorage:window.localStorage,IS_REACT_ACT_ENVIRONMENT:true});
+ const{createRoot}=await import('react-dom/client'),{createElement,act,useEffect}=await import('react'),{CartProvider,useCart}=await import('../../context/cart-context');
+ let view:ReturnType<typeof useCart>|undefined;function Probe(){const cart=useCart();useEffect(()=>{view=cart;},[cart]);return null;}
+ const oldItem={id:'old-product',name:'Old draft',price:99,quantity:1,currency:'INR',images:[]};window.localStorage.setItem('lb_cart_token','ct_react_previous');window.localStorage.setItem('lb_cart',JSON.stringify([oldItem]));window.localStorage.setItem('lb_cart_server','{}');let writes=0;
+ globalThis.fetch=(async(input)=>{
+  if(String(input).endsWith('/checkout-status'))return new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}}),{status:completed?200:503});
+  writes++;return new Response(JSON.stringify({success:true,data:{...serverCart,cart_token:'ct_react_next'}}));
+ })as typeof fetch;
+ const mount=document.createElement('div');document.body.append(mount);const root=createRoot(mount);
+ try{
+  await act(async()=>{root.render(createElement(CartProvider,null,createElement(Probe)));});await act(async()=>{await tick();});assert.ok(view);assert.equal(writes,0,'mounting a storefront must not replay cart commands');
+  if(completed){assert.deepEqual(view.items,[]);assert.equal(window.localStorage.getItem('lb_cart_token'),null);assert.equal(window.localStorage.getItem('lb_cart_server'),null);const product:Parameters<typeof view.addToCart>[0]={id:'product-1',name:'Synthetic product',description:'Synthetic product',stock:5,price:199,currency:'INR',images:[]};await act(async()=>{await view!.addToCart(product);await tick();});await act(async()=>{await tick();});assert.equal(writes,1);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_react_next');}
+  else{assert.equal(view.items[0].id,oldItem.id);await act(async()=>{await view!.clearCart();await tick();});assert.equal(writes,0);assert.equal(view.items[0].id,oldItem.id);assert.equal(window.localStorage.getItem('lb_cart_token'),'ct_react_previous');assert.match(view.syncError||'',/could not check your previous checkout/i);}
+ }finally{await act(async()=>root.unmount());globalThis.fetch=originalFetch;reset();}
 });

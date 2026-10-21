@@ -2,6 +2,7 @@
 -- Same backend-only reader/ABI/ACL; full/default public store projection unchanged.
 -- id:UUID selectors cannot collide with a valid store subdomain (colon is excluded).
 BEGIN;
+LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;
 SELECT pg_advisory_xact_lock(hashtextextended('migration370:public-storefront-sql-readers',0));
 DO $guard$
 DECLARE target oid := to_regprocedure('public.read_published_storefront_site_v1(text,boolean)');
@@ -60,5 +61,6 @@ BEGIN
    OR(a.grantee<>p.proowner AND a.is_grantable))) THEN
   RAISE EXCEPTION 'Migration371 refuses changed public reader definition, owner or privileges';
  END IF;
-END $guard$;COMMIT;
+END $guard$;
 NOTIFY pgrst,'reload schema';
+COMMIT;

@@ -32,7 +32,9 @@ export async function GET(
         if (searchParams.get('search')) query.search = searchParams.get('search')!
         if (searchParams.get('category')) query.category = searchParams.get('category')!
 
-        const products = await createMerchantApiClient().products.list(query)
+        const products = searchParams.get('view') === 'summary'
+            ? await createMerchantApiClient().products.listSummary(query)
+            : await createMerchantApiClient().products.list(query)
 
         return NextResponse.json({
             data: products.data,

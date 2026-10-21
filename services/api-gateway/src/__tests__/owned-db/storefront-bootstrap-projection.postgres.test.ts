@@ -53,7 +53,10 @@ for(const name of ['sql','rest'] as const)test(`compact/default ${name} represen
   const releaseCalls=tap.calls.slice(start).filter(c=>c.resource==='theme_releases');
   if(name==='sql'){
    assert.equal(releaseCalls.length,0,'pooled query must succeed rather than silently fall back to REST');
-   assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0,'public site resolution also runs through the authorized SQL routine');
+   const siteCalls=tap.calls.slice(start).filter(c=>c.resource==='sites');
+   assert.equal(siteCalls.length,1,'current permission and publication pointer require one bounded REST authority read');
+   assert.equal(siteCalls[0].search.get('subdomain'),'eq.'+t.subdomain);
+   assert.equal(siteCalls[0].search.get('status'),'eq.published');
   }
   else {assert.equal(releaseCalls.length,1);const call=releaseCalls[0];assert.equal(call.search.get('store_id'),'eq.'+t.siteId);assert.equal(call.search.get('id'),'eq.'+r.release_id);assert.equal(call.search.get('limit'),'1');assert.doesNotMatch(call.search.get('select')!,/release_config|settings_snapshot|asset_manifest/);}
   const legacy=await read(g,t,false);assert.equal(legacy.status,200,legacy.text);assert.equal(legacy.json!.data.projection,undefined);
@@ -152,7 +155,7 @@ test('reader replay and paired rollback preserve existing authority; altered bod
  const t=tenant('reader-rollback');publish(t,config('rollback-real'));
  owned.script(rollback);assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NULL;`),'t');assert.equal(authority(),before);
  const start=tap.calls.length,fallback=await read(sql,t);assert.equal(fallback.status,200,fallback.text);assert.equal(fallback.json!.data.template_config.marker,'rollback-real');assert.ok(tap.calls.slice(start).some(c=>c.resource==='theme_releases'),'old schema uses bounded real REST compatibility');
- owned.script(migration);assert.equal(authority(),before);const retried=tap.calls.length;assert.equal((await read(sql,t)).status,200);assert.equal(tap.calls.slice(retried).filter(c=>['sites','theme_releases'].includes(c.resource)).length,0,'recovered authorized SQL executes with no REST substitute');
+ owned.script(migration);assert.equal(authority(),before);const retried=tap.calls.length;assert.equal((await read(sql,t)).status,200);const retryCalls=tap.calls.slice(retried);assert.equal(retryCalls.filter(c=>c.resource==='sites').length,1,'current site authority stays independent of SQL cache');assert.equal(retryCalls.filter(c=>c.resource==='theme_releases').length,0,'recovered immutable release SQL executes with no REST substitute');
  } finally {owned.script(accessMigration);}
  assert.equal(authority(),currentAuthority);
 });

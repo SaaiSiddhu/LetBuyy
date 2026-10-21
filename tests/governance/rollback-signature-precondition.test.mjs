@@ -788,7 +788,8 @@ test('historical full-definition guards require custody, every restored ABI, and
 });
 
 test('visibility rollback earns full typed profile proof; stripped and forged guards do not', () => {
-    const name='366_theme_publication_visibility.rollback.sql',sql=read(name);
+    for (const name of ['366_theme_publication_visibility.rollback.sql','376_atomic_theme_instance_switch.rollback.sql']) {
+    const sql=read(name);
     const forwardSql=readFileSync(join(rollbackDir,'../migrations/366_theme_publication_visibility.sql'),'utf8');
     assert.deepEqual(guardedRestorations(sql,{forwardSql}),['publish_theme_release']);
     const terms=[
@@ -798,7 +799,7 @@ test('visibility rollback earns full typed profile proof; stripped and forged gu
         '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
         "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
         "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')", "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",
-        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')", "pg_catalog.md5(p.prosrc)<>'8a1479af8ced3bbdb3cd6cc21d957f42'",
+        "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')", `pg_catalog.md5(p.prosrc)<>'${name.startsWith('376')?'56a6b7b15e8a7ec159341fe0331ac593':'8a1479af8ced3bbdb3cd6cc21d957f42'}'`,
     ];
     for(const term of terms){assert.ok(sql.includes(term),term);assert.deepEqual(guardedRestorations(sql.replace(term,'false'),{forwardSql}),[],term+' cannot be removed');}
     for(const [before,after] of [
@@ -812,4 +813,18 @@ test('visibility rollback earns full typed profile proof; stripped and forged gu
         ["RAISE EXCEPTION 'Theme publication", "RAISE WARNING 'Theme publication"],
     ]){assert.ok(sql.includes(before),before);assert.deepEqual(guardedRestorations(sql.replace(before,after),{forwardSql}),[],before+' cannot be substituted');}
     assert.deepEqual(guardedRestorations(sql.replace('DO $visibility_shape$', 'CREATE TABLE public.synthetic_before_guard(id integer);\nDO $visibility_shape$'),{forwardSql}),[]);
+    }
+});
+
+test('metadata rollback requires every reviewed profile, overload and private ACL token',()=>{
+ const sql=read('371_storefront_access_metadata.rollback.sql');
+ assert.deepEqual(guardedRestorations(sql),['read_published_storefront_site_v1']);
+ for(const [before,after] of [
+  ['p.proowner<>','p.proowner='],['OR NOT p.prosecdef','OR p.prosecdef'],
+  ["'p_id_only'","'p_other'"],["'authenticator'","'authenticated'"],
+  ['p.oid IS DISTINCT FROM target','p.oid IS NOT DISTINCT FROM target'],
+  ["'597f30ae0ceee9df27a453fee9cc0991'","'00000000000000000000000000000000'"],
+  ['LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;',''],
+  ['RAISE EXCEPTION','RAISE WARNING']
+ ]) {assert.ok(sql.includes(before));assert.deepEqual(guardedRestorations(sql.replace(before,after)),[],before);}
 });

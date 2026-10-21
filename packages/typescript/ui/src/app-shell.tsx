@@ -110,6 +110,8 @@ export interface NavigationItem {
 export interface NavigationProps extends React.HTMLAttributes<HTMLElement> {
     items: NavigationItem[];
     ariaLabel?: string;
+    /** Host router adapter; plain anchors remain the default outside a routed app. */
+    linkComponent?: React.ComponentType<React.AnchorHTMLAttributes<HTMLAnchorElement>>;
 }
 
 const parentCls = (active: boolean, disabled?: boolean) => cx(
@@ -147,7 +149,8 @@ const Chevron = ({ open }: { open: boolean }) => (
     </svg>
 );
 
-function NavItem({ item }: { item: NavigationItem }) {
+function NavItem({ item, linkComponent }: { item: NavigationItem; linkComponent?: NavigationProps['linkComponent'] }) {
+    const Link = linkComponent ?? 'a';
     const hasChildren = (item.children?.length ?? 0) > 0;
     const anyChildActive = hasChildren && item.children!.some((c) => c.active);
 
@@ -205,7 +208,7 @@ function NavItem({ item }: { item: NavigationItem }) {
         return (
             <li>
                 <div className="relative">
-                    <a
+                    <Link
                         className={parentCls(!!item.active && !anyChildActive, item.disabled)}
                         href={item.disabled ? undefined : item.href}
                         aria-current={item.active && !anyChildActive ? 'page' : undefined}
@@ -217,7 +220,7 @@ function NavItem({ item }: { item: NavigationItem }) {
                         {leading}
                         {/* Reserves the trailing slot so the label never runs under the toggle. */}
                         <span aria-hidden="true" className="w-3 shrink-0" />
-                    </a>
+                    </Link>
                     <button
                         type="button"
                         // Chevron sits flush against the row's right padding —
@@ -234,7 +237,7 @@ function NavItem({ item }: { item: NavigationItem }) {
                     </button>
                 </div>
 
-                {open && <NavChildren id={submenuId} items={item.children!} />}
+                {open && <NavChildren id={submenuId} items={item.children!} linkComponent={linkComponent} />}
             </li>
         );
     }
@@ -242,14 +245,14 @@ function NavItem({ item }: { item: NavigationItem }) {
     return (
         <li>
             {item.href && !hasChildren ? (
-                <a
+                <Link
                     className={parentCls(!!item.active, item.disabled)}
                     href={item.disabled ? undefined : item.href}
                     aria-current={item.active ? 'page' : undefined}
                     aria-disabled={item.disabled || undefined}
                 >
                     {content}
-                </a>
+                </Link>
             ) : (
                 <button
                     type="button"
@@ -263,12 +266,13 @@ function NavItem({ item }: { item: NavigationItem }) {
                 </button>
             )}
 
-            {hasChildren && open && <NavChildren items={item.children!} />}
+            {hasChildren && open && <NavChildren items={item.children!} linkComponent={linkComponent} />}
         </li>
     );
 }
 
-function NavChildren({ items, id }: { items: NavigationChildItem[]; id?: string }) {
+function NavChildren({ items, id, linkComponent }: { items: NavigationChildItem[]; id?: string; linkComponent?: NavigationProps['linkComponent'] }) {
+    const Link = linkComponent ?? 'a';
     return (
         <ul
             id={id}
@@ -279,13 +283,14 @@ function NavChildren({ items, id }: { items: NavigationChildItem[]; id?: string 
             {items.map((child) => (
                 <li key={child.id} className="mb-px">
                     {child.href ? (
-                        <a
+                        <Link
                             className={childCls(!!child.active)}
                             href={child.disabled ? undefined : child.href}
                             aria-current={child.active ? 'page' : undefined}
+                            aria-disabled={child.disabled || undefined}
                         >
                             {child.label}
-                        </a>
+                        </Link>
                     ) : (
                         <button
                             type="button"
@@ -302,12 +307,12 @@ function NavChildren({ items, id }: { items: NavigationChildItem[]; id?: string 
     );
 }
 
-export function Navigation({ items, ariaLabel = 'Primary navigation', className = '', ...props }: NavigationProps) {
+export function Navigation({ items, ariaLabel = 'Primary navigation', linkComponent, className = '', ...props }: NavigationProps) {
     return (
         <nav aria-label={ariaLabel} className={cx('min-w-0', className)} {...props}>
             <ul className="m-0 grid list-none gap-0.5 p-0">
                 {items.map((item) => (
-                    <NavItem key={item.id} item={item} />
+                    <NavItem key={item.id} item={item} linkComponent={linkComponent} />
                 ))}
             </ul>
         </nav>

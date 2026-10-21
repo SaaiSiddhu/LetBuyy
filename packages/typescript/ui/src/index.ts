@@ -10,6 +10,9 @@ export type { InlineErrorProps, InputProps, NumberFieldProps, TextareaProps } fr
 export { Table } from './table';
 export type { TableBulkAction, TableColumn, TableFilterChip, TableProps, TableSavedView } from './table';
 
+export { NavigationLinkProvider } from './navigation/link-provider';
+export type { NavigationLinkProviderProps } from './navigation/link-provider';
+
 export {
     BlockStack,
     Box,

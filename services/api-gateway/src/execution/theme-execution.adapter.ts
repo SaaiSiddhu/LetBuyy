@@ -6,6 +6,7 @@ import {
     collectThemeTemplateValidationIssues,
     hasRenderableThemeTemplate,
     LiquidThemePackageBundleSchema,
+    getThemeDefaultTemplate,
     LETBUYY_CORE_THEME_SLUG,
     LETBUYY_CORE_BUNDLE_SLUG,
     mergeThemeIdentity,
@@ -799,114 +800,26 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
-        const store = await this.verifyStoreOwner(input.store_id, userId);
+        await this.verifyThemeEditorStore(input.store_id, userId);
         const theme = await this.getTheme(slug);
-        if (theme.is_site_private && theme.owned_by_site_id !== store.id) throw new ForbiddenError('This theme belongs to another store.');
-        // Validate before changing the active installation or creating any rows.
-        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
+        if (theme.is_site_private && theme.owned_by_site_id !== input.store_id) throw new ForbiddenError('This theme belongs to another store.');
+        if (Object.keys(input.config_overrides || {}).length) throw new ValidationError('Customize the theme in the editor after adding it.');
+        // Always initialize from the selected design. Never merge outgoing store settings.
+        const templateConfig = mergeThemeIdentity(getThemeDefaultTemplate(theme), theme);
         const runtime = await this.validateTemplateConfig(templateConfig, theme);
-
-
-        const pricingType = theme.letbuyy_pricing_type || (theme.is_premium ? 'paid' : 'free');
-
-        if (theme.is_premium || pricingType !== 'free') {
-            const { data: purchase } = await this.db
-                .from('theme_purchases')
-                .select('id')
-                .eq('user_id', userId)
-                .eq('theme_id', theme.id)
-                .eq('status', 'completed')
-                .single();
-
-            if (!purchase) {
-                throw new ValidationError('This premium theme must be purchased before installation');
-            }
-        }
-
-        await this.db
-            .from('store_themes')
-            .update({ is_active: false })
-            .eq('store_id', input.store_id);
-
-        const { data: installation, error } = await this.db
-            .from('store_themes')
-            .upsert(
-                {
-                    store_id: input.store_id,
-                    theme_id: theme.id,
-                    is_active: true,
-                    config_overrides: input.config_overrides,
-                    installed_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                },
-                { onConflict: 'store_id,theme_id' }
-            )
-            .select()
-            .single();
-
-        if (error || !installation) {
-            throw new Error(`Theme installation failed: ${error?.message || 'Unknown error'}`);
-        }
-
-        const themeInstance = await this.ensureThemeInstance(
-            input.store_id,
-            theme,
-            runtime,
-            userId,
-            templateConfig,
-            true
-        );
-
-        const release = await this.publishReleaseSnapshot({
-            storeId: input.store_id,
-            themeId: theme.slug,
-            releaseConfig: templateConfig,
-            runtime,
-            themeInstanceId: themeInstance?.id || null,
-            publishedBy: userId,
-            publishMessage: `Installed ${theme.name}`,
-            makeStoreLive: store.status === 'published',
-            requestId,
+        const { resolveStoreThemeLimit } = await import('../lib/theme-library-limits');
+        const { limit } = await resolveStoreThemeLimit(this.db, input.store_id);
+        const { data, error } = await this.db.rpc('install_owned_theme_v1', {
+            p_actor: userId, p_site: input.store_id, p_slug: slug,
+            p_config: templateConfig, p_runtime: this.draftRuntime(runtime, 'api'),
+            p_bound_site: this.boundSiteId || null, p_limit: limit, p_request: requestId || null,
         });
-        await this.finalizeInstanceRelease({
-            storeId: input.store_id,
-            themeInstanceId: themeInstance?.id || null,
-            releaseId: release.release_id,
-            actorId: userId,
-            activate: true,
-        });
-
-        const installationId = typeof (installation as DbRecord).id === 'string'
-            ? String((installation as DbRecord).id)
-            : null;
-        if (runtime.themePackageId && runtime.themePackageVersionId && installationId) {
-            const events = new EventExecutionAdapter(this.db);
-            await events.emitDomainEvent({
-                storeId: input.store_id,
-                aggregateType: 'theme',
-                aggregateId: runtime.themePackageId,
-                eventType: 'theme.installed',
-                idempotencyKey: `theme.installed:${input.store_id}:${runtime.themePackageId}:${installationId}`,
-                requestId,
-                actorId: userId,
-                payload: {
-                    site_id: input.store_id,
-                    theme_package_id: runtime.themePackageId,
-                    theme_version_id: runtime.themePackageVersionId,
-                    installation_id: installationId,
-                },
-            });
-        }
-
-        return {
-            installation,
-            theme: {
-                id: theme.id,
-                slug: theme.slug,
-                name: theme.name,
-            },
-            release,
-        };
+        if (error?.code === '42501') throw new ForbiddenError('This theme is not available for this store.');
+        if (error?.code === 'PT409') throw new AppError('Your theme library is full. Archive a theme or upgrade your plan.', 409, 'THEME_LIMIT_REACHED');
+        if (error?.code === 'PT400') throw new ValidationError('Purchase this theme before adding it.');
+        const result = asRecord(data);
+        if (error || !result.theme_instance_id) throw new AppError('Adding the theme was not confirmed. Retry adding it.', 503, 'THEME_INSTALL_UNCONFIRMED');
+        return result;
     }
 
     private async loadEditorDraft(storeId: string, themeSlug: string, templateKey: string): Promise<DraftRecord | null> {
@@ -1390,10 +1303,10 @@ export class ThemeExecutionAdapter {
         const themes = await Promise.all(instanceList.map(async (instance) => {
             const themeSlug = String(instance.theme_slug || '');
 
-            // Fetch theme metadata (no is_active filter — site-private themes have is_active=false)
+            // Include retained private metadata; ownership is checked separately.
             const { data: themeData } = await this.db
                 .from('themes')
-                .select('id, name, slug, description, schema_version')
+                .select('id, name, slug, description, schema_version, thumbnail_url')
                 .eq('slug', themeSlug)
                 .maybeSingle();
 
@@ -1422,6 +1335,7 @@ export class ThemeExecutionAdapter {
                 slug: themeSlug,
                 name: (theme?.name as string | null) || themeSlug,
                 description: (theme?.description as string | null) || null,
+                thumbnail_url: (theme?.thumbnail_url as string | null) || null,
                 instance_id: String(instance.id || ''),
                 instance_status: String(instance.instance_status || 'installed'),
                 installed_at: String(instance.created_at || ''),
@@ -1438,6 +1352,22 @@ export class ThemeExecutionAdapter {
         return { themes };
     }
 
+    private privateThemeDefinition(source: ThemeRecord, config: DbRecord): DbRecord {
+        return {
+            catalog_visible: false,
+            site_type: source.site_type || 'store',
+            config: source.config || {},
+            default_template: config,
+            section_schemas: source.section_schemas || {},
+            block_schemas: source.block_schemas || {},
+            settings_schema: source.settings_schema || {},
+            renderer_manifest: source.renderer_manifest || {},
+            schema_version: source.schema_version || '1.0.0',
+            renderer_version: source.renderer_version || '1.0.0',
+            thumbnail_url: source.thumbnail_url || null,
+        };
+    }
+
     async createSiteTheme(
         storeId: string,
         input: CreateSiteThemeInput,
@@ -1449,16 +1379,26 @@ export class ThemeExecutionAdapter {
 
         const now = new Date().toISOString();
         const newSlug = `site-theme-${crypto.randomUUID()}`;
+        const core = await this.getTheme(LETBUYY_CORE_THEME_SLUG);
+        const blankConfig = structuredClone(getThemeDefaultTemplate(core));
+        blankConfig.themeId = newSlug;
+        blankConfig.sections = { ...asRecord(blankConfig.sections), template: [] };
+        blankConfig.templates = { ...asRecord(blankConfig.templates), index: { sections: {}, order: [] } };
+        if (blankConfig.liquidBundle) {
+            const bundle = asRecord(blankConfig.liquidBundle);
+            blankConfig.liquidBundle = { ...bundle, templates: { ...asRecord(bundle.templates), index: { sections: {}, order: [] } } };
+        }
 
-        // Insert a site-private themes row. is_active=false keeps it out of the public catalog
-        // (GET /themes filters by is_active=true). owned_by_site_id scopes ownership.
+        // A private package must remain editable. Discovery excludes is_site_private
+        // and owned_by_site_id rather than disabling its runtime.
         // Requires migration 190_theme_library_q.sql to add owned_by_site_id + is_site_private.
         const { data: themeRow, error: themeError } = await this.db
             .from('themes')
             .insert({
                 slug: newSlug,
                 name: input.name,
-                is_active: false,
+                ...this.privateThemeDefinition(core, blankConfig),
+                is_active: true,
                 is_site_private: true,
                 owned_by_site_id: storeId,
                 created_at: now,
@@ -1488,6 +1428,7 @@ export class ThemeExecutionAdapter {
                     theme_package_version_id: packageRuntime.themePackageVersionId,
                     theme_slug: newSlug,
                     instance_status: 'installed',
+                    installed_config: blankConfig,
                     created_by: userId,
                     updated_by: userId,
                     created_at: now,
@@ -1552,32 +1493,16 @@ export class ThemeExecutionAdapter {
             throw new NotFoundError('Theme not found in your store');
         }
 
-        // Tenancy step 3: get theme metadata for the source
-        const { data: sourceTheme } = await this.db
-            .from('themes')
-            .select('id, slug, name')
-            .eq('slug', slug)
-            .maybeSingle();
-
-        const sourceThemeRecord = sourceTheme as DbRecord | null;
-        const sourceName = (sourceThemeRecord?.name as string | null) || slug;
+        // Capture the owned source's latest saved design and its schema together.
+        // An unpublished library design can have a draft without a release.
+        const sourceTheme = await this.getTheme(slug);
+        const sourceEditor = await this.loadEditor(slug, storeId, userId);
+        const sourceName = sourceTheme.name || slug;
         const newName = input.name || `Copy of ${sourceName}`;
         const newSlug = `site-theme-${crypto.randomUUID()}`;
         const now = new Date().toISOString();
 
-        // Tenancy step 4: get the release config for cloning (scoped to this store)
-        let cloneConfig: DbRecord = {};
-        if ((sourceInstance as DbRecord).active_release_id) {
-            const { data: releaseData } = await this.db
-                .from('theme_releases')
-                .select('release_config, template_snapshot')
-                .eq('id', String((sourceInstance as DbRecord).active_release_id))
-                .eq('store_id', storeId)
-                .maybeSingle();
-            const release = releaseData as DbRecord | null;
-            cloneConfig = (release?.template_snapshot as DbRecord | null) ||
-                (release?.release_config as DbRecord | null) || {};
-        }
+        const cloneConfig = mergeThemeIdentity(structuredClone(sourceEditor.template_config), { slug: newSlug });
 
         // Insert site-private themes row (duplicate)
         const { data: themeRow, error: themeError } = await this.db
@@ -1585,7 +1510,8 @@ export class ThemeExecutionAdapter {
             .insert({
                 slug: newSlug,
                 name: newName,
-                is_active: false,
+                ...this.privateThemeDefinition(sourceTheme, cloneConfig),
+                is_active: true,
                 is_site_private: true,
                 owned_by_site_id: storeId,
                 created_at: now,
@@ -1845,12 +1771,13 @@ export class ThemeExecutionAdapter {
 
         const now = new Date().toISOString();
 
-        // Tenancy step 4: soft-delete — set deleted_at + instance_status='deleted', scoped by store_id AND id
+        // The schema represents deletion with deleted_at; archived is the valid
+        // non-live status. Do not write a status rejected by the database enum.
         const { error: deleteError } = await this.db
             .from('theme_instances')
             .update({
                 deleted_at: now,
-                instance_status: 'deleted',
+                instance_status: 'archived',
                 updated_at: now,
                 updated_by: userId,
             })

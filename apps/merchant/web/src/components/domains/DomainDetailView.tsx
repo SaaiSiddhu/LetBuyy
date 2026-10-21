@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useState } from 'react'
 import {
     AlertTriangle,
@@ -69,22 +71,26 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
     const [working, setWorking] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
 
+    const beginRead = useReadRequest(JSON.stringify([store, domain]))
     const load = useCallback(async (opts?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!opts?.quiet) setLoading(true)
         try {
             const [h, hist] = await Promise.all([
-                domainsClient.health(store, domain),
-                domainsClient.history(store, domain).catch(() => ({ domain, connected: false, events: [] })),
+                domainsClient.health(store, domain, request.signal),
+                domainsClient.history(store, domain, request.signal).catch(() => ({ domain, connected: false, events: [] })),
             ])
+            if (!request.isCurrent()) return
             setHealth(h)
             setEvents(hist.events || [])
             setHistoryConnected(hist.connected)
         } catch (error) {
+            if (!request.isCurrent()) return
             notify({ title: 'Could not load domain', description: error instanceof Error ? error.message : 'Unable to load domain health', variant: 'critical' })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [domain, notify, store])
+    }, [beginRead, domain, notify, store])
 
     useEffect(() => { void load() }, [load])
 

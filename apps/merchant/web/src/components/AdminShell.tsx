@@ -3,15 +3,18 @@
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import { MerchantNavigationLink } from './MerchantNavigationLink'
 import HeaderBar from './HeaderBar'
 import TrialBanner from './TrialBanner'
-import CommandPalette from './CommandPalette'
-import AISidebar from './AISidebar'
 import { MerchantSecurityContext } from './security/MerchantSecurityContext'
 import type { SessionUser } from '@/lib/auth/session'
-import { AppNavigation, Button, LayoutDashboard, MaterialIcon, Navigation, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
+import { AppNavigation, Button, LayoutDashboard, MaterialIcon, Navigation, NavigationLinkProvider, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
 import { SETTINGS_NAV_GROUPS } from './settings/settings-navigation'
+
+const CommandPalette = dynamic(() => import('./CommandPalette'))
+const AISidebar = dynamic(() => import('./AISidebar'))
 
 /** The one nav drawer, shared by the main nav and the settings nav. */
 const DRAWER_ID = 'admin-nav-drawer'
@@ -75,9 +78,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
     const [aiPanelOpen, setAiPanelOpen] = useState(false)
     const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false)
 
-    // Close on route change. AppNavigation renders plain <a href>, so today the
-    // drawer only *appears* to close because a full document load remounts the
-    // tree — the back-arrow is a real next/link and would otherwise leave it open.
+    // Client navigation retains the shell; close its mobile drawer on arrival.
     useEffect(() => { setSidebarOpen(false) }, [pathname])
 
     // The router restores scroll on the DOCUMENT, which no longer scrolls, so a
@@ -153,9 +154,9 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {
-        return <ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+        return <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
                                     {children}
-                                </MerchantSecurityContext.Provider></ToastProvider>
+                                </MerchantSecurityContext.Provider></ToastProvider></NavigationLinkProvider>
     }
 
     // Settings routes reuse the SAME shell and the SAME drawer — only the nav
@@ -187,7 +188,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
         : `admin-panel-sidebar hidden lg:flex ${railClass}`
 
     return (
-        <ToastProvider>
+        <NavigationLinkProvider linkComponent={MerchantNavigationLink}><ToastProvider>
             <div className="admin-shell">
                 <HeaderBar
                     store={store}
@@ -213,6 +214,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                 )}
 
                 <AppNavigation
+                    linkComponent={MerchantNavigationLink}
                     sections={navigationSections}
                     width="sm"
                     // One frame for every route, settings included: it reserves the
@@ -247,6 +249,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     ) : undefined}
                     footer={isSettingsPage ? undefined : (
                         <Navigation
+                            linkComponent={MerchantNavigationLink}
                             ariaLabel="Settings navigation"
                             items={buildFooterItems(store, storeData.site_type, pathname ?? '/')}
                         />
@@ -325,7 +328,7 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                     />
                 )}
             </div>
-        </ToastProvider>
+        </ToastProvider></NavigationLinkProvider>
     )
 }
 

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Badge, Banner, Button, Card, CreditCard, IndianRupee, Input, Key, normalizeProviderMode, ProviderModeBadge, Section, ShieldCheck, Skeleton, Switch, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
@@ -169,16 +171,19 @@ export default function PaymentsSettingsPage() {
         }
     }, [notify, store])
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
         setFormError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payment-config`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = (await response.json().catch(() => null)) as PaymentConfigPayload | null
+            if (!request.isCurrent()) return
 
             if (!response.ok || !payload?.data) {
                 throw new Error(getPayloadError(payload, 'Unable to load payment settings'))
@@ -193,6 +198,7 @@ export default function PaymentsSettingsPage() {
             setKeySecret('')
             setSaveState('saved')
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load payment settings'
             setLoadError(message)
             notify({
@@ -201,9 +207,9 @@ export default function PaymentsSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadData()

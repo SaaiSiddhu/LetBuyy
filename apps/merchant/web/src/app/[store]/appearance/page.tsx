@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -114,15 +116,18 @@ export default function AppearancePage() {
     const [form, setForm] = useState<AppearanceFormState>(defaultForm)
     const [initialForm, setInitialForm] = useState<AppearanceFormState>(defaultForm)
 
+    const beginRead = useReadRequest(store)
     const loadAppearance = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load appearance settings'))
@@ -133,6 +138,7 @@ export default function AppearancePage() {
             setForm(nextForm)
             setInitialForm(nextForm)
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load appearance settings'
             setForm(defaultForm)
             setInitialForm(defaultForm)
@@ -143,9 +149,9 @@ export default function AppearancePage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadAppearance()

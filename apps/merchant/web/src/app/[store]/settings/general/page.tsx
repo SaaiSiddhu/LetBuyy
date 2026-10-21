@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -195,22 +197,30 @@ export default function GeneralSettingsPage() {
 
     // ── Load ──────────────────────────────────────────────────────────────────
 
+    const beginLocalization = useReadRequest(store)
     const reloadLocalization = useCallback(async (signal?: AbortSignal) => {
+        const request = beginLocalization()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/localization`, { cache: 'no-store', signal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/localization`, { cache: 'no-store', signal: readSignal })
             const payload = await res.json().catch(() => null) as ApiPayload | null
+            if (signal?.aborted || !request.isCurrent()) return
             if (res.ok && isRecord(payload?.data)) setLocalization(payload.data as unknown as LocalizationSummary)
         } catch {
             /* localization is best-effort and must never block the page */
         }
-    }, [store])
+    }, [beginLocalization, store])
 
+    const beginLoad = useReadRequest(store)
     const loadData = useCallback(async (signal?: AbortSignal) => {
+        const request = beginLoad()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal })
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
             const payload = await res.json().catch(() => null) as ApiPayload | null
+            if (signal?.aborted || !request.isCurrent()) return
             if (!res.ok) throw new Error(getPayloadError(payload, 'Unable to load store details'))
 
             const d = isRecord(payload?.data) ? payload.data : null
@@ -250,14 +260,14 @@ export default function GeneralSettingsPage() {
             setSaveState('saved')
             void reloadLocalization(signal)
         } catch (err) {
-            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            if (signal?.aborted || !request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Unable to load store details'
             setLoadError(msg)
             notify({ title: 'Could not load store settings', description: msg, variant: 'critical' })
         } finally {
-            if (!signal?.aborted) setLoading(false)
+            if (!signal?.aborted && request.isCurrent()) setLoading(false)
         }
-    }, [notify, store, reloadLocalization])
+    }, [beginLoad, notify, store, reloadLocalization])
 
     useEffect(() => {
         const ctrl = new AbortController()

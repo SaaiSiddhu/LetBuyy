@@ -50,6 +50,7 @@ type ProductOwnerRow = {
 };
 
 type DatabaseErrorLike = {
+    code?: string;
     message?: string;
     details?: string;
     hint?: string;
@@ -102,14 +103,14 @@ async function listProductStockInventoryRows(
 ) {
     const offset = (page - 1) * limit;
 
-    const buildQuery = (includeDeletedAtFilter: boolean, includeTrackInventoryColumn: boolean) => {
+    const buildQuery = (includeDeletedAtFilter: boolean, includeTrackInventoryColumn: boolean, head = false) => {
         let query = db
             .from('products')
             .select(
                 includeTrackInventoryColumn
                     ? 'id,name,sku,images,stock,track_inventory,updated_at'
                     : 'id,name,sku,images,stock,updated_at',
-                { count: 'exact' }
+                { count: 'exact', head }
             )
             .in('store_id', ownedStoreIds);
 
@@ -118,22 +119,27 @@ async function listProductStockInventoryRows(
         if (productId) query = query.eq('id', productId);
         if (lowStockOnly) query = query.lte('stock', 10);
 
-        return query
-            .order('name', { ascending: true })
-            .range(offset, offset + limit - 1);
+        query = query.order('name', { ascending: true }).order('id', { ascending: true });
+        return head ? query : query.range(offset, offset + limit - 1);
     };
 
-    let { data, error, count } = await buildQuery(true, true);
-
+    let includeDeletedAt = true, includeTrackInventory = true;
+    let { data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory);
     if (isMissingDeletedAtError(error)) {
-        ({ data, error, count } = await buildQuery(false, true));
+        includeDeletedAt = false;
+        ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
     }
-
     if (isMissingColumnError(error, 'track_inventory')) {
-        ({ data, error, count } = await buildQuery(true, false));
+        includeTrackInventory = false;
+        ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
         if (isMissingDeletedAtError(error)) {
-            ({ data, error, count } = await buildQuery(false, false));
+            includeDeletedAt = false;
+            ({ data, error, count } = await buildQuery(includeDeletedAt, includeTrackInventory));
         }
+    }
+    if (error?.code === 'PGRST103' && offset > 0) {
+        const total = await buildQuery(includeDeletedAt, includeTrackInventory, true);
+        return { data: [], count: total.count ?? 0, error: total.error };
     }
 
     if (error) {
@@ -759,9 +765,13 @@ router.get('/levels', async (c) => {
     const storeId = c.req.query('store_id');
     const productId = c.req.query('product_id');
     const lowStockOnly = c.req.query('low_stock') === 'true';
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '50'), 100);
+    const page = Number(c.req.query('page') || '1');
+    const requestedLimit = Number(c.req.query('limit') || '50');
+    const limit = Math.min(requestedLimit, 100);
     const offset = (page - 1) * limit;
+    if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(requestedLimit) || requestedLimit < 1 || !Number.isSafeInteger(offset)) {
+        return c.json(failureBody('BAD_REQUEST', 'page and limit must be positive whole numbers'), 400);
+    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -783,7 +793,7 @@ router.get('/levels', async (c) => {
         return c.json(paginated([], 0, page, limit));
     }
 
-    const buildLevelsQuery = (includeProductDeletedAtFilter: boolean) => {
+    const buildLevelsQuery = (includeProductDeletedAtFilter: boolean, head = false) => {
         let query = db
             .from('inventory_levels')
             .select(`
@@ -798,7 +808,7 @@ router.get('/levels', async (c) => {
                 products!inner(id,name,sku,images,store_id,track_inventory${includeProductDeletedAtFilter ? ',deleted_at' : ''}),
                 product_variants(id,title,sku),
                 inventory_locations(id,name,is_default,status)
-            `, { count: 'exact' })
+            `, { count: 'exact', head })
             .in('store_id', ownedStoreIds)
             .in('products.store_id', ownedStoreIds);
 
@@ -806,15 +816,24 @@ router.get('/levels', async (c) => {
         if (productId) query = query.eq('product_id', productId);
         if (lowStockOnly) query = query.lte('available', 10);
 
-        return query
-            .order('available', { ascending: true })
-            .range(offset, offset + limit - 1);
+        query = query.order('available', { ascending: true }).order('id', { ascending: true });
+        return head ? query : query.range(offset, offset + limit - 1);
     };
 
-    let { data, error, count } = await buildLevelsQuery(true);
+    let includeProductDeletedAt = true;
+    let { data, error, count } = await buildLevelsQuery(includeProductDeletedAt);
 
     if (isMissingDeletedAtError(error)) {
-        ({ data, error, count } = await buildLevelsQuery(false));
+        includeProductDeletedAt = false;
+        ({ data, error, count } = await buildLevelsQuery(includeProductDeletedAt));
+    }
+
+    // A stale/past-end offset is an empty page, not an outage or a new population.
+    // Only this recovery path needs a separate count request.
+    if (error?.code === 'PGRST103' && offset > 0) {
+        const total = await buildLevelsQuery(includeProductDeletedAt, true);
+        if (total.error) return c.json(dbFailureBody(), 500);
+        return c.json(paginated([], total.count ?? 0, page, limit));
     }
 
     if (isInventorySchemaMissingError(error)) {
@@ -832,7 +851,7 @@ router.get('/levels', async (c) => {
 
     const rows = ((data || []) as unknown as InventoryLevelSourceRow[]).map(mapInventoryLevelRecord);
 
-    if (rows.length === 0) {
+    if (rows.length === 0 && (count ?? 0) === 0) {
         const fallback = await listProductStockInventoryRows(db, ownedStoreIds, productId, lowStockOnly, page, limit);
         if (fallback.error) {
             return c.json(dbFailureBody(), 500);

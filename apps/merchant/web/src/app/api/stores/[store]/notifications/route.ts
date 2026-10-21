@@ -63,7 +63,7 @@ export async function GET(
         }
 
         notifications.sort((a, b) => Number(b.unread) - Number(a.unread))
-        return NextResponse.json({ data: notifications.slice(0, 5) })
+        return NextResponse.json({ data: notifications.slice(0, 5), meta: { partial: ordersPayload === null || formsPayload === null } })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to load notifications')
     }

@@ -155,7 +155,7 @@ test('Staff RBAC: enforcement is wired across the high-value write domains (Phas
     ['services/api-gateway/src/routes/orders.ts', /assertStaffPermission\(c, tenant\.siteId, tenant\.userId, 'orders:write'\)/, 4],
     ['services/api-gateway/src/routes/coupons.ts', /assertStaffPermission\(c, [^,]+, customUser\.id, 'marketing:write'\)/, 3],
     ['services/api-gateway/src/routes/customers.ts', /assertStaffPermission\(c, [^,]+, [^,]+, 'customers:write'\)/, 2],
-    ['services/api-gateway/src/routes/shipping-tax.ts', /assertStaffPermission\(c, ownedZone\.store_id, customUser\.id, 'shipping:write'\)/, 3],
+    ['services/api-gateway/src/routes/shipping-tax.ts', /assertStaffPermission\(c, storeId, customUser\.id, 'shipping:write'\)/, 3],
   ];
   for (const [file, re, min] of checks) {
     const src = read(file);

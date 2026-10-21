@@ -54,6 +54,16 @@ module.exports = {
     },
     overrides: [
         {
+            // CSS Modules compiler syntax; keep all other pseudo-class checks.
+            files: [
+                'apps/merchant/web/src/components/theme-editor/editor-workspace.module.css',
+                'apps/merchant/web/src/components/theme-library/theme-workspace.module.css',
+            ],
+            rules: {
+                'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
+            },
+        },
+        {
             files: cssFiles,
             rules: {
                 'declaration-property-value-no-unknown': [

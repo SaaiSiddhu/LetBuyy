@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -245,16 +247,21 @@ export default function NotificationsSettingsPage() {
 
     // ── Load preferences ─────────────────────────────────────────────────────
 
+    const beginPreferences = useReadRequest(store)
+    const beginLogs = useReadRequest(store)
     const loadPreferences = useCallback(async (signal?: AbortSignal) => {
+        const request = beginPreferences()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setPrefsLoading(true)
         setPrefsError(null)
         try {
             const res = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/notifications/preferences`,
-                { cache: 'no-store', signal },
+                { cache: 'no-store', signal: readSignal },
             )
-            if (signal?.aborted) return
+            if (signal?.aborted || !request.isCurrent()) return
             const json = (await res.json()) as { data?: unknown[]; error?: unknown }
+            if (signal?.aborted || !request.isCurrent()) return
             if (!res.ok) {
                 const msg = isRecord(json.error) && typeof json.error.message === 'string'
                     ? json.error.message
@@ -270,13 +277,13 @@ export default function NotificationsSettingsPage() {
             rows.forEach((r) => nextMap.set(prefKey(r.channel, r.category), r.enabled))
             setPrefMap(nextMap)
         } catch (err) {
-            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            if (signal?.aborted || !request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Unable to load preferences'
             setPrefsError(msg)
         } finally {
-            if (!signal?.aborted) setPrefsLoading(false)
+            if (!signal?.aborted && request.isCurrent()) setPrefsLoading(false)
         }
-    }, [store])
+    }, [beginPreferences, store])
 
     // ── Load delivery logs ───────────────────────────────────────────────────
 
@@ -286,6 +293,8 @@ export default function NotificationsSettingsPage() {
         status: string,
         signal?: AbortSignal,
     ) => {
+        const request = beginLogs()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLogsLoading(true)
         setLogsError(null)
         try {
@@ -298,13 +307,14 @@ export default function NotificationsSettingsPage() {
             if (channel) url.searchParams.set('channel', channel)
             if (status) url.searchParams.set('status', status)
 
-            const res = await fetch(url.toString(), { cache: 'no-store', signal })
-            if (signal?.aborted) return
+            const res = await fetch(url.toString(), { cache: 'no-store', signal: readSignal })
+            if (signal?.aborted || !request.isCurrent()) return
             const json = (await res.json()) as {
                 data?: unknown[]
                 meta?: DeliveryMeta
                 error?: unknown
             }
+            if (signal?.aborted || !request.isCurrent()) return
             if (!res.ok) {
                 const msg = isRecord(json.error) && typeof json.error.message === 'string'
                     ? json.error.message
@@ -322,13 +332,13 @@ export default function NotificationsSettingsPage() {
                 has_prev: false,
             })
         } catch (err) {
-            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            if (signal?.aborted || !request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Unable to load delivery logs'
             setLogsError(msg)
         } finally {
-            if (!signal?.aborted) setLogsLoading(false)
+            if (!signal?.aborted && request.isCurrent()) setLogsLoading(false)
         }
-    }, [store])
+    }, [beginLogs, store])
 
     // ── Initial load ─────────────────────────────────────────────────────────
 

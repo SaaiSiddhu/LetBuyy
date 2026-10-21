@@ -1,3 +1,4 @@
+import type { CheckoutStorePresentation } from '@letbuyy/tenant-core';
 import { normalizeStoreRootDomain, buildTenantStorefrontUrl } from '@letbuyy/tenant-core';
 import type { Metadata } from 'next';
 import type { StoreBrandingInput } from '@letbuyy/checkout-core';
@@ -68,7 +69,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
 }
 
 async function verifyHandoff(params: CheckoutSearchParams): Promise<
-    | { ok: true; siteId: string; cartId: string; subdomain: string; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
+    | { ok: true; siteId: string; cartId: string; subdomain: string; presentation?: CheckoutStorePresentation; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
     | { ok: false; status: number; reason: string }
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
@@ -96,7 +97,7 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         };
     }
 
-    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
+    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; presentation?: CheckoutStorePresentation; lines?: VerifiedHandoffLine[] } } | null;
     const siteId = body?.data?.site_id;
     const subdomain = body?.data?.subdomain;
     const verifiedCartId = body?.data?.cart_id;
@@ -107,6 +108,7 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         siteId,
         cartId,
         subdomain,
+        presentation: body?.data?.presentation?.id === siteId && body.data.presentation.subdomain === subdomain ? body.data.presentation : undefined,
         lines: Array.isArray(body?.data?.lines) ? body.data.lines : [],
         handoff: Object.fromEntries(query.entries()),
     };
@@ -147,7 +149,10 @@ export default async function CheckoutOriginPage({
     const verified = await verifyHandoff(params);
     if (!verified.ok) return <InvalidHandoffPage reason={verified.reason} />;
 
-    const store = await StoreService.getStoreBySubdomain(verified.subdomain);
+    // New Gateways return only verified checkout display data. Legacy public
+    // Gateways keep the prior read path; private stores fail closed there.
+    const legacyStore = verified.presentation ? null : await StoreService.getStoreBySubdomain(verified.subdomain);
+    const store = verified.presentation || legacyStore;
     if (!store) return <InvalidHandoffPage reason="This store is no longer available." />;
 
     const brandingInput = await loadBranding(verified.siteId);
@@ -156,7 +161,7 @@ export default async function CheckoutOriginPage({
     // real storefront's CSS variables from — see mapSupabaseToStore in lib/store-service.ts), so
     // checkout inherits the merchant's real theme without a second configuration step. The
     // store_branding row (brandingInput) layers a checkout-specific override on top where set.
-    const branding = sanitizeBranding(brandingInput, store.templateConfig.themeSettings);
+    const branding = sanitizeBranding(brandingInput, verified.presentation?.themeSettings || legacyStore?.templateConfig.themeSettings);
     const cartLines = verified.lines.map(toCartLine).filter((line): line is CheckoutOriginCartLine => line !== null);
 
     return (

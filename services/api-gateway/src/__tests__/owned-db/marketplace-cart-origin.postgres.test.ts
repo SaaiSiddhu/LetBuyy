@@ -726,3 +726,21 @@ function readRequestBody(req: IncomingMessage): Promise<Buffer> {
         req.on('error', reject);
     });
 }
+
+test('approved marketplace carts retain independent authority while storefront password, preview and offline modes change',async()=>{
+ const unapproved=createListing('Synthetic restricted-mode pending listing');submit(unapproved.listingId);
+ try{
+  for(const mode of ['password','preview_only','offline']){
+   psql(`UPDATE sites SET access_mode='${mode}' WHERE id='${seller.siteId}';`);
+   const created=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(approved.listingId,approved.productId))});assert.equal(created.status,201,created.text);
+   const token=created.json!.data.cart_token;assert.equal((await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${token}`)).status,200);
+   assert.equal((await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${token}/checkout-url`)).status,200);
+   const refused=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(unapproved.listingId,unapproved.productId))});assert.equal(refused.status,409,refused.text);
+  }
+ }finally{psql(`UPDATE sites SET access_mode='public' WHERE id='${seller.siteId}';`);}
+});
+
+test('marketplace cart clearing keeps independent origin while storefront navigation is offline',async()=>{
+ const created=await gateway.request(`/v1/storefront/${seller.subdomain}/marketplace-cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartBody(approved.listingId,approved.productId))});assert.equal(created.status,201);const cart=created.json!.data;
+ try{psql(`UPDATE sites SET access_mode='offline' WHERE id='${seller.siteId}';`);const cleared=await gateway.request(`/v1/storefront/${seller.subdomain}/cart/${cart.cart_token}`,{method:'DELETE'});assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.sales_origin,'marketplace');assert.deepEqual(cleared.json!.data.lines,[]);assert.equal(cleared.json!.data.status,'active');}finally{psql(`UPDATE sites SET access_mode='public' WHERE id='${seller.siteId}';`);}
+});

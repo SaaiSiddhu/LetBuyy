@@ -102,10 +102,11 @@ const exhaustiveCatalogSuites = new Set([
     'services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts',
     'services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts',
 ]);
-// These real browser journeys already declare 13/17.5-minute test budgets.
-// Leave bounded room for their owned builds and cleanup instead of killing
-// the 1050-second payout test at the generic 600-second default.
+// These real browser journeys have longer bounded test budgets. Leave room
+// for their owned production builds and cleanup instead of killing them at
+// the generic 600-second default. Explicit --timeout still takes precedence.
 const merchantBrowserTimeouts = new Map([
+    ['tests/owned-db/native-core-storefront-browser.postgres.test.ts', 1_600_000],
     ['services/api-gateway/src/__tests__/owned-db/merchant-staff-browser.postgres.test.ts', 900_000],
     ['services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts', 1_200_000],
 ]);

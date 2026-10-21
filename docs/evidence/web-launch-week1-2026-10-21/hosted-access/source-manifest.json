@@ -1,0 +1,17 @@
+{
+  "apps/commerce/web/src/app/checkout-origin/checkout/page.tsx": "e1a85a2861ba3c79dc7529d3b382cd630cf5c8175edade347197cec1e96fae07",
+  "apps/commerce/web/src/lib/store-service.ts": "e89ec39ea12e052ee12e981357d5c101f6a2d0d335a585b43b7561abbce5264e",
+  "packages/tenant-core/src/index.ts": "675aa5e8e47e34c7be70a227c575704be1db49ab264631d4516d66bf5ddc4f95",
+  "packages/theme-engine/src/index.ts": "581731ee209c9ff246c265e2bc1331117a7030266c7dcccb2ab36fc5b9ea46f1",
+  "packages/theme-engine/test/storefront-presentation.test.ts": "0af5aa698e40374bace146365658fab297627ff6498853f2e8e73936985cdf37",
+  "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts": "f57d7722a103746ac44f1f352ee6161b47bd804dc91ec03e8aaa2b1470e32b73",
+  "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "1772e544bf95724ac93a9763d6abe14857f7a6465e2b6b7f9d30da003f222b41",
+  "services/api-gateway/src/execution/idempotency-execution.adapter.ts": "1d494b15052b9337f95aa69cc71ca2de6581654981b823a38cc3f2b5cbb3859f",
+  "services/api-gateway/src/lib/checkout-store-presentation.ts": "1b5e4379a756c56499e8d3a5cbc843204d149f7fa0fe61e01dc98b30a8ec933b",
+  "services/api-gateway/src/lib/storefront-visitor-access.ts": "403ded6f7349df293c8c923640674d6c9c7e589540d4efbb6641305112c0b43d",
+  "services/api-gateway/src/routes/checkout.ts": "49fe3c2f1d8e3992f7b5c303ea53d615af8b2bc4ff3ab4102a4687eaa0e209e1",
+  "services/api-gateway/src/routes/storefront/cart-routes.ts": "3b6e3dbd8e78fd086f95b2f52b8a81b7de8fdb3dfab97103b10a71e7c5815b53",
+  "tests/localization/theme-localization.test.mjs": "df45ab464f55301008079a8452148f5709fad2b9611c94ad6afc7ad4faf4b0fd",
+  "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "3e02e5968533e3c6aa450523fcb233525df43646bbf8b38dfa55566da137825c",
+  "tests/owned-db/storefront-access-worker.postgres.test.ts": "b0e29f7a97f2c23bff34d166367124257ee980ed5b100ffc0aeaa542ab70c138"
+}

@@ -1,0 +1,29 @@
+{
+  "phase": "WEB-LAUNCH-W1-SESSION-CART-PRIVACY",
+  "base": "a9f572f9",
+  "previousGoalTurn": "PROGRESS: signed hosted purchase/current policy and committed recovery locally verified, no deployment; wider programme remains open.",
+  "outcome": "A checkout session ID/site ID alone cannot disclose contact/address/payment state. Cart deletion honors current storefront authority and cannot resurrect a converted cart, including an in-flight conversion race. Preserve valid guest cart-capability state reads, legitimate cart clearing and independent marketplace origin.",
+  "scope": [
+    "Existing routes/checkout.ts GET/:id, checkout-core read input schema and owned session/recovery fixtures",
+    "Existing storefront/cart-routes.ts load/DELETE and owned/native controls with real PostgreSQL row invariants",
+    "Publication/policy reads use prior fresh authority; no new issuer/schema/runtime/role/dependency",
+    "Native Worker and appropriate full browser/package/type/governance in disposable clone; additive audit and exact provenance"
+  ],
+  "acceptance": [
+    "Reproduce missing-credential state exposure and deletion behavior via mounted actual Gateway before fixing",
+    "Missing checkout cart capability401; wrong/site-mismatched capability404; invalid or duplicate query400; valid own state200/no-store and current dependency failure503, not false absence",
+    "Private-store cart delete refusal with byte-identical row, valid password/public active clear retains response shape/origin; approved marketplace cart clear remains independently usable",
+    "Converted/cart-terminal state never becomes active; real conversion between read and update refuses with no item/coupon/state overwrite",
+    "Source/governance checks not weakened; preserve mobile SDK fields and wire shapes"
+  ],
+  "boundaries": [
+    "Single agent",
+    "No new merge/push/deploy after9c4ae605 handoff",
+    "No shared/restored/hosted DB or provider effects",
+    "Real Razorpay sandbox/login remains owner-deferred"
+  ],
+  "next": [
+    "Broader marketplace cart read freshness and legacy capability entropy",
+    "Managed Hyperdrive/catalogue freshness and remaining full web launch gates"
+  ]
+}

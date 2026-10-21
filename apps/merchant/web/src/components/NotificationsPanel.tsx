@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { Button, Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
+import { Banner, Button, Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
+import { useReadRequest } from '@/lib/api/use-read-request'
 
 interface Notification {
     id: string
@@ -16,16 +17,30 @@ export default function NotificationsPanel() {
     const { store } = useParams<{ store: string }>()
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadedStore, setLoadedStore] = useState<string | null>(null)
+    const [error, setError] = useState(false)
+    const beginRead = useReadRequest(store)
 
-    useEffect(() => {
-        async function load() {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/notifications`, { cache: 'no-store' })
+    const load = useCallback(async () => {
+        const request = beginRead()
+        setLoading(true)
+        setError(false)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/notifications`, { cache: 'no-store', signal: request.signal })
             const payload = await response.json()
-            setNotifications(payload.data || [])
-            setLoading(false)
+            if (!request.isCurrent()) return
+            if (!response.ok) throw new Error('Notifications unavailable')
+            setNotifications(Array.isArray(payload.data) ? payload.data : [])
+            setError(payload.meta?.partial === true)
+        } catch {
+            if (!request.isCurrent()) return
+            setNotifications([])
+            setError(true)
+        } finally {
+            if (request.isCurrent()) { setLoadedStore(store); setLoading(false) }
         }
-        load()
-    }, [store])
+    }, [store, beginRead])
+    useEffect(() => { void load() }, [load])
 
     const unreadCount = notifications.filter((n) => n.unread).length
 
@@ -33,7 +48,7 @@ export default function NotificationsPanel() {
         setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
     }
 
-    if (loading) {
+    if (loading || loadedStore !== store) {
         return (
             <div className="admin-notifications-dropdown">
                 <div className="admin-notifications-header">
@@ -63,6 +78,12 @@ export default function NotificationsPanel() {
                 )}
             </div>
 
+            {error && (
+                <Banner variant="warning" title="Notifications could not be fully loaded" action={<Button variant="secondary" onClick={() => void load()}>Retry</Button>}>
+                    Try loading notifications again.
+                </Banner>
+            )}
+
             {/* List */}
             {notifications.length > 0 ? (
                 <>
@@ -90,13 +111,13 @@ export default function NotificationsPanel() {
                         <Button unstyled>View all notifications</Button>
                     </div>
                 </>
-            ) : (
+            ) : !error ? (
                 <EmptyState
                     icon={<Bell className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="All caught up"
                     body="New orders, customer activity, and store alerts will appear here."
                 />
-            )}
+            ) : null}
         </div>
     )
 }

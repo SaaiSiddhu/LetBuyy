@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -144,26 +146,32 @@ export default function InventoryHistoryPage() {
     const [analyticsLoading, setAnalyticsLoading] = useState(true)
 
     useEffect(() => {
+        let retired = false
+        const controller = new AbortController()
         async function fetchAnalytics() {
             setAnalyticsLoading(true)
             try {
                 const res = await fetch(
-                    `/api/stores/${encodeURIComponent(store)}/inventory/analytics`
+                    `/api/stores/${encodeURIComponent(store)}/inventory/analytics`, { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]) }
                 )
                 if (!res.ok) return
                 const json = (await res.json()) as { data?: InventoryAnalytics }
-                if (json.data) setAnalytics(json.data)
+                if (!retired && json.data) setAnalytics(json.data)
             } catch {
                 // analytics is best-effort — don't block the page
             } finally {
-                setAnalyticsLoading(false)
+                if (!retired) setAnalyticsLoading(false)
             }
         }
+        setAnalytics(null)
         void fetchAnalytics()
+        return () => { retired = true; controller.abort() }
     }, [store])
 
+    const beginRead = useReadRequest(store)
     const fetchHistory = useCallback(
         async (currentPage: number, currentProductFilter: string) => {
+            const request = beginRead()
             setLoading(true)
             setError(null)
             try {
@@ -177,7 +185,7 @@ export default function InventoryHistoryPage() {
                     url.searchParams.set('product_id', currentProductFilter.trim())
                 }
 
-                const res = await fetch(url.toString())
+                const res = await fetch(url.toString(), { cache: 'no-store', signal: request.signal })
                 const json = (await res.json()) as {
                     data?: unknown[]
                     meta?: PageMeta
@@ -185,6 +193,7 @@ export default function InventoryHistoryPage() {
                     message?: string
                 }
 
+                if (!request.isCurrent()) return
                 if (!res.ok) {
                     const msg =
                         typeof json.error === 'string'
@@ -208,20 +217,21 @@ export default function InventoryHistoryPage() {
                     }
                 )
             } catch (err) {
+                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
                 setError(msg)
                 notify({ title: 'Error', description: msg })
             } finally {
-                setLoading(false)
+                if (request.isCurrent()) setLoading(false)
             }
         },
-        [store, notify]
+        [store, notify, beginRead]
     )
 
     useEffect(() => {
-        void fetchHistory(page, productFilter)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        setPage(1)
+        void fetchHistory(1, '')
+    }, [fetchHistory])
 
     function handleSearch() {
         setPage(1)

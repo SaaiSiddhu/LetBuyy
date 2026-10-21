@@ -4,11 +4,7 @@ import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/shar
 import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema, compilePortableToLiquidBundle } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
-import {
-    getDefaultStorefrontThemeTemplate,
-    hasRenderableThemeTemplate,
-    localizeThemeTemplateConfig,
-} from '@letbuyy/theme-engine';
+import { resolveStorefrontThemePresentation } from '@letbuyy/theme-engine';
 import { getUrbanKicksDemoStore as buildUrbanKicksDemoStore } from './demo/urban-kicks-demo';
 
 interface ThemeReleaseRow {
@@ -74,6 +70,14 @@ export class StorefrontStoreError extends Error {
 // request. Route Handlers retain their normal uncached behavior; no module data Map
 // or cross-request permission/publication cache is introduced.
 export const StoreService = {
+    getCatalogThemePreview(templateConfig: Record<string, unknown>, name: string): StoreModel {
+        const demo = buildUrbanKicksDemoStore();
+        const normalized = mapSupabaseToStore({ id: demo.id, name, store_name: demo.subdomain,
+            subdomain: demo.subdomain, site_type: 'store', theme_id: templateConfig.themeId,
+            template_config: templateConfig, currency: 'INR', locale: 'en-IN' });
+        return { ...demo, name, templateConfig: normalized.templateConfig };
+    },
+
     getUrbanKicksDemoStore(): StoreModel {
         return buildUrbanKicksDemoStore();
     },
@@ -581,60 +585,10 @@ function mapSupabaseToStore(
                 : legacyTemplateConfig;
     const themeId = release?.theme_id || (data.theme_id as string) || (rawTemplateConfig.themeId as string) || 'urban-kicks';
     const storeLocale = (data.locale as string) || 'en-IN';
-    const fallbackTemplateConfig = getDefaultStorefrontThemeTemplate(themeId);
-    const resolvedTemplateConfig: Record<string, unknown> = hasRenderableThemeTemplate(rawTemplateConfig)
-        ? {
-            ...rawTemplateConfig,
-            themeId,
-        }
-        : {
-            ...rawTemplateConfig,
-            ...fallbackTemplateConfig,
-            themeSettings: {
-                ...fallbackTemplateConfig.themeSettings,
-                ...asRecord(rawTemplateConfig.themeSettings),
-            },
-            themeId,
-        };
-    const templateConfig = localizeThemeTemplateConfig(resolvedTemplateConfig, storeLocale);
-    const bundleSettingsData = asRecord(asRecord(templateConfig.config).settings_data);
-    // LB-9 — appearance bridge: merge the merchant's appearance settings (sites.site_settings, snake_case)
-    // over the theme defaults so the brand color / font / radius set in the Appearance page reach the
-    // storefront :root tokens (layout.tsx). Merchant appearance wins over the theme bundle.
     const appearanceSettings = asRecord(data.site_settings);
-    // SUSTAINED-G2 — the merchant's Appearance-page custom CSS, raw/unscoped. Passed through
-    // templateConfig.customCss to LiquidRenderer.render(), which is the single Phase-AA
-    // enforcement point (buildLiquidThemeHeadAssets -> validateAndScopeCustomCss) that
-    // validates, scopes and sanitizes it — never touch or pre-scope it here.
+    const { templateConfig, themeSettings } = resolveStorefrontThemePresentation(rawTemplateConfig, appearanceSettings, themeId, storeLocale);
     const customCss = typeof appearanceSettings.custom_css === 'string' && appearanceSettings.custom_css
-        ? appearanceSettings.custom_css
-        : undefined;
-    const appearanceOverrides: Record<string, unknown> = {};
-    if (typeof appearanceSettings.primary_color === 'string' && appearanceSettings.primary_color) {
-        appearanceOverrides.primaryColor = appearanceSettings.primary_color;
-    }
-    if (typeof appearanceSettings.font_family === 'string' && appearanceSettings.font_family) {
-        appearanceOverrides.fontFamily = appearanceSettings.font_family;
-        appearanceOverrides.headingFontFamily = appearanceSettings.font_family;
-    }
-    if (appearanceSettings.border_radius !== undefined && appearanceSettings.border_radius !== null && appearanceSettings.border_radius !== '') {
-        const radius = Number(appearanceSettings.border_radius);
-        if (Number.isFinite(radius)) appearanceOverrides.borderRadius = radius;
-    }
-    const themeSettingsRecord = {
-        ...asRecord(bundleSettingsData.current),
-        ...asRecord(templateConfig.themeSettings),
-        ...appearanceOverrides,
-    };
-    const themeSettings: ThemeSettings = {
-        ...DEFAULT_THEME_SETTINGS,
-        ...themeSettingsRecord,
-        primaryColor: themeSettingsRecord.primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
-        secondaryColor: themeSettingsRecord.secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
-        accentColor: themeSettingsRecord.accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
-        fontFamily: themeSettingsRecord.fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
-        borderRadius: themeSettingsRecord.borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
-    };
+        ? appearanceSettings.custom_css : undefined;
 
     // Handle both formats:
     // 1. Editor format (object): { header: {...}, footer: {...}, template: [...] }

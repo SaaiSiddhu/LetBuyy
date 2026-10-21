@@ -3,18 +3,15 @@ import { LetbuyyApiError } from '@letbuyy/api-client'
 import { MerchantApiRequestError, createMerchantApiClient } from '@/lib/api/client'
 
 const QUERY_COST_RATE_LIMITED = 'QUERY_COST_RATE_LIMITED'
-// Backoff for transient merchant reads — ~16s total to cover both gateway
-// hot-reload (~16ms downtime after wrangler.toml fix) and cold start (~8-10s
-// for wrangler to bind :9010 on first `pnpm dev`). Covers: query-cost rate
-// limits (429), connection failures ("fetch failed" — null HTTP status), and
-// gateway-not-yet-ready (502/503/504). After all attempts the error surfaces.
-const QUERY_COST_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000, 3_500, 5_000, 7_500] as const
-const MERCHANT_READ_RETRY_DELAYS_MS = QUERY_COST_RETRY_DELAYS_MS
+// One short retry can recover a transport interruption. Foreground rendering
+// must not spend 19.75 seconds sleeping or amplify an overloaded query bucket.
+// Read deadlines belong to the transport; explicit page retry handles recovery.
+const MERCHANT_READ_RETRY_DELAYS_MS = [200] as const
 
 /**
  * Extract the HTTP status code carried by a typed API error.
  * Returns null for non-HTTP failures (network, timeout, unexpected throws),
- * which callers treat as transient and rethrow.
+ * which must be classified separately from known HTTP failures.
  */
 function apiErrorStatus(error: unknown): number | null {
     if (error instanceof LetbuyyApiError) return error.status
@@ -50,27 +47,25 @@ async function wait(ms: number): Promise<void> {
 }
 
 /**
- * A merchant read is retryable when the failure is transient: a query-cost rate
- * limit (429), a connection failure (no HTTP status — "fetch failed" when the
- * gateway is down or mid hot-reload), or gateway-not-ready (502/503/504 during
- * boot). These ride out a backend restart instead of crashing the SSR render.
+ * Retry known transient transport failures once. Throttles, deadlines and
+ * unexpected programming/configuration errors must surface without a retry storm.
  */
 function isRetryableReadError(error: unknown): boolean {
-    if (isQueryCostRateLimited(error)) return true
     const status = apiErrorStatus(error)
-    if (status === null) return true
+    if (status === null) return error instanceof TypeError && error.message === 'fetch failed'
     return status === 502 || status === 503 || status === 504
 }
 
 async function retryMerchantRead<T>(operation: () => Promise<T>): Promise<T> {
     let attempt = 0
+    const startedAt = Date.now()
 
     while (true) {
         try {
             return await operation()
         } catch (error) {
             const delay = MERCHANT_READ_RETRY_DELAYS_MS[attempt]
-            if (delay === undefined || !isRetryableReadError(error)) {
+            if (delay === undefined || !isRetryableReadError(error) || Date.now() - startedAt + delay > 1_000) {
                 throw error
             }
 

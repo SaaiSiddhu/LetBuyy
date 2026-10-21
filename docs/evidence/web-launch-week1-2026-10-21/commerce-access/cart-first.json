@@ -1,0 +1,119 @@
+{
+  "runId": "edbdf5324f31",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-7322-mvi2loqt-8861eb"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 0,
+  "tests": 37,
+  "assertionsPassed": 37,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 60.9,
+  "suiteSeconds": 58.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "marketplace-cart-origin.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-7322-mvi2loqt-8861eb",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 12.1,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_marketplace_cart_origin_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.4,
+      "rest": {
+        "container": "letbuyy-exec-edbdf5324f31-rest-2",
+        "upstreamPort": 63662,
+        "proxyPort": 63663
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 509,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    },
+    {
+      "name": "storefront-access-boundary.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-7322-mvi2loqt-8861eb",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 46,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_boundary_postgres",
+      "templateSeconds": 26.8,
+      "provisionSeconds": 1.8,
+      "rest": {
+        "container": "letbuyy-exec-edbdf5324f31-rest-1",
+        "upstreamPort": 63519,
+        "proxyPort": 63520
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 735,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

@@ -518,6 +518,8 @@ function publicationVisibilityGuard(body, definitions) {
     const restored=definitions.filter(fn=>fn.identity===signature);
     if(restored.length!==1||JSON.stringify(restored[0].inputNames)!==JSON.stringify(inputs))return [];
     const array=values=>'ARRAY['+values.map(value=>`'${value}'`).join(',')+']';
+    const reviewedBody = ['8a1479af8ced3bbdb3cd6cc21d957f42','56a6b7b15e8a7ec159341fe0331ac593'].find(hash => nodes[1].branches[0].condition.some(token => token.kind==='string' && token.value===hash));
+    if (!reviewedBody) return [];
     const conditions=[
         'p.oid IS NULL',"p.prokind<>'f'",'NOT p.prosecdef','p.pronargdefaults<>7','p.provariadic<>0',
         "p.provolatile<>'v'",'p.proisstrict','p.proleakproof',"p.proparallel<>'u'",
@@ -535,11 +537,47 @@ function publicationVisibilityGuard(body, definitions) {
         "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')",
         "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",
         "NOT pg_catalog.has_function_privilege('service_role',p.oid,'EXECUTE')",
-        "pg_catalog.md5(p.prosrc)<>'8a1479af8ced3bbdb3cd6cc21d957f42'",
+        `pg_catalog.md5(p.prosrc)<>'${reviewedBody}'`,
     ];
     if(!equalTerms(nodes[1].branches[0].condition,conditions))return [];
     return [{name:'publish_theme_release',identity:signature,input_names:inputs,result_type:'record',returns_set:true,overloads:1,level:'typed-ABI',
-        output_abi:{names,types,modes:[...Array(10).fill('i'),...Array(3).fill('t')]},profile_fingerprint:{body_md5:'8a1479af8ced3bbdb3cd6cc21d957f42',defaults:7,api_roles_closed:true}}];
+        output_abi:{names,types,modes:[...Array(10).fill('i'),...Array(3).fill('t')]},profile_fingerprint:{body_md5:reviewedBody,defaults:7,api_roles_closed:true}}];
+}
+// The backend-only metadata reader retains the exact full-profile/ACL refusal.
+// All predicate tokens, allowed body hashes, argument names and overload checks
+// are literal-reviewed here. Any altered or extra statement earns no proof.
+function storefrontMetadataGuard(body, definitions) {
+    const expected = `
+DECLARE target oid := to_regprocedure('public.read_published_storefront_site_v1(text,boolean)');
+BEGIN
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+     WHERE n.nspname='public' AND p.proname='read_published_storefront_site_v1' AND p.oid IS DISTINCT FROM target) THEN
+  RAISE EXCEPTION 'Migration371 refuses an unexpected public reader overload';
+ END IF;
+ IF target IS NULL THEN RAISE EXCEPTION 'Migration371 requires the existing370 reader'; END IF;
+ IF EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid=target AND(
+  md5(p.prosrc) NOT IN('af4f0af64c32cd0b2e94eb6d14c84456','597f30ae0ceee9df27a453fee9cc0991') OR p.prorettype<>'jsonb'::regtype OR p.proretset
+  OR NOT p.prosecdef OR p.provolatile<>'s' OR p.prokind<>'f' OR p.proleakproof
+  OR p.proparallel<>'u' OR p.pronargdefaults<>0 OR p.provariadic<>0
+  OR p.proisstrict OR p.procost<>100 OR p.prorows<>0 OR p.prosupport<>0
+  OR p.proallargtypes IS NOT NULL OR p.proargmodes IS NOT NULL OR p.probin IS NOT NULL OR p.prosqlbody IS NOT NULL
+  OR p.proargnames IS DISTINCT FROM ARRAY['p_handle','p_id_only']::text[]
+  OR p.proconfig IS DISTINCT FROM ARRAY['search_path=pg_catalog, public']::text[]
+  OR p.proowner<>(SELECT relowner FROM pg_class WHERE oid='public.sites'::regclass)
+  OR p.prolang<>(SELECT oid FROM pg_language WHERE lanname='sql')
+ )) OR NOT has_function_privilege('authenticator',target,'EXECUTE')
+ OR EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a
+  WHERE p.oid=target AND(a.grantee NOT IN(p.proowner,(SELECT oid FROM pg_roles WHERE rolname='authenticator'))
+   OR(a.grantee<>p.proowner AND a.is_grantable))) THEN
+  RAISE EXCEPTION 'Migration371 refuses changed public reader definition, owner or privileges';
+ END IF;
+END`;
+    if (!same(sqlTokens(body),expected)) return [];
+    const signature='public.read_published_storefront_site_v1(text,boolean)';
+    const inputs=['p_handle','p_id_only'];
+    const restored=definitions.filter(fn=>fn.identity===signature);
+    if(restored.length!==1 || JSON.stringify(restored[0].inputNames)!==JSON.stringify(inputs)) return [];
+    return [{name:'read_published_storefront_site_v1',identity:signature,input_names:inputs,result_type:'jsonb',returns_set:false,overloads:1,level:'typed-ABI',profile_fingerprint:{body_md5s:['af4f0af64c32cd0b2e94eb6d14c84456','597f30ae0ceee9df27a453fee9cc0991']}}];
 }
 function baseRollbackSignatureGuards(sql) {
     try {
@@ -551,8 +589,9 @@ function baseRollbackSignatureGuards(sql) {
         const guards=[];
         for(const statement of statements.slice(1,firstMutation)) {
             if(word(statement[0],'do') && statement.length===3 && statement[1].kind==='body') {
-                if(profileRefusal(statement[1].value,guards)||fingerprintRefusal(statement[1].value,guards))continue;
-                const profile=publicationVisibilityGuard(statement[1].value,restoredDefinitions(sql));
+                let profile=storefrontMetadataGuard(statement[1].value,restoredDefinitions(sql));
+                if (!profile.length && (profileRefusal(statement[1].value,guards)||fingerprintRefusal(statement[1].value,guards)))continue;
+                if (!profile.length) profile=publicationVisibilityGuard(statement[1].value,restoredDefinitions(sql));
                 const rows=profile.length?profile:analyzeBlock(statement[1].value, restoredDefinitions(sql));
                 if(!rows.length && !new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
                 guards.push(...rows.map(row=>({...row,guard_start:statement[0].start})));

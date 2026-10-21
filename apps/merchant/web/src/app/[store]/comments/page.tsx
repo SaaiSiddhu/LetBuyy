@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { COMMENT_MODERATION_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
@@ -56,15 +58,18 @@ export default function CommentsPage() {
     const [commentToDelete, setCommentToDelete] = useState<BlogComment | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const beginRead = useReadRequest(store)
     const loadComments = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/blog-comments?limit=100`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load comments'))
@@ -72,6 +77,7 @@ export default function CommentsPage() {
 
             setComments(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load comments'
             setComments([])
             setLoadError(message)
@@ -81,9 +87,9 @@ export default function CommentsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadComments()

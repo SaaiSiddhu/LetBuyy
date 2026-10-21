@@ -34,7 +34,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
 
     return (
         <nav className="flex flex-col gap-[var(--lb-space-5)]" aria-label="Settings">
-            <Link
+            <Link prefetch={false}
                 href={settingsHomeHref}
                 onClick={onNavigate}
                 aria-current={homeActive ? 'page' : undefined}
@@ -70,7 +70,7 @@ export function SettingsIndex({ store, groups, activePathname, onNavigate }: Set
                                 const label = statusLabel(item)
 
                                 return (
-                                    <Link
+                                    <Link prefetch={false}
                                         key={item.href}
                                         href={href}
                                         onClick={onNavigate}

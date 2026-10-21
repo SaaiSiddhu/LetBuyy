@@ -5,8 +5,23 @@ import { readFileSync } from 'node:fs';
 import { getDefaultStorefrontThemeTemplate } from '../src/theme-registry';
 import { parseLiquidThemePackageBundle } from '../src/theme-bundle';
 import { compilePortableToLiquidBundle } from '../src/portable-to-liquid';
+import { createFirstPartyCatalogBundle, firstPartyThemeListings } from '../src/first-party-theme-catalog';
 
 const base = parseLiquidThemePackageBundle(JSON.parse(readFileSync(new URL('../../../database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json', import.meta.url), 'utf8')));
+for (const listing of firstPartyThemeListings()) {
+ test(`${listing.name} preserves preset defaults and upgrades only unchanged legacy starter blocks`, () => {
+  const bundle = createFirstPartyCatalogBundle(listing.slug);
+  const input = getDefaultStorefrontThemeTemplate('letbuyy-core', {});
+  input.themeSettings = { ...input.themeSettings, ...listing.settings };
+  const before = structuredClone(input);
+  const result = compilePortableToLiquidBundle(input, { baseBundle: bundle });
+  assert.deepEqual(input, before);
+  for (const [key, value] of Object.entries(listing.settings)) assert.deepEqual(result.bundle.config.settings_data.current[key], value);
+  assert.equal(Object.keys(result.bundle.templates.index.sections['category-grid-default'].blocks).length, 0);
+  input.sections.template.find(section => section.id === 'category-grid-default')!.blocks![0].settings.name = 'Merchant collection';
+  assert.throws(() => compilePortableToLiquidBundle(input, { baseBundle: bundle }), /Block.*category.*not allowed/);
+ });
+}
 test('persisted Core bundle compiles unchanged legacy default category placeholders without discarding merchant edits', () => {
     const input = getDefaultStorefrontThemeTemplate('letbuyy-core', {});
     const before = structuredClone(input);

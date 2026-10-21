@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo, useRef, type SyntheticEvent } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useDebouncedValue, useReadRequest } from '@/lib/api/use-read-request'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 import { ORDER_STATUS_PRESENTATION, ORDER_PAYMENT_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
 import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Input, MaterialIcon, normalizeProviderMode, Page, PageHeader, ProviderModeBadge, Search, Section, Select, Skeleton, StatusPresentationBadge, Table, useToast, type ProviderMode, type TableBulkAction, type TableColumn } from '@letbuyy/ui'
@@ -175,6 +176,8 @@ export default function OrdersPage() {
     const [filter, setFilter] = useState<OrderStatus>('all')
     const [paymentFilter, setPaymentFilter] = useState<string>('all')
     const [searchQuery, setSearchQuery] = useState('')
+    const appliedSearch = useDebouncedValue(searchQuery.trim())
+    const beginRead = useReadRequest(JSON.stringify([store, filter, paymentFilter, appliedSearch]))
     const [updatingId, setUpdatingId] = useState<string | null>(null)
 
     /**
@@ -222,6 +225,7 @@ export default function OrdersPage() {
     const [refundLoading, setRefundLoading] = useState(false)
 
     const loadOrders = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setError(null)
 
@@ -232,10 +236,11 @@ export default function OrdersPage() {
                 limit: '50',
             })
 
-            if (searchQuery.trim()) query.set('search', searchQuery.trim())
+            if (appliedSearch) query.set('search', appliedSearch)
 
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders?${query.toString()}`)
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders?${query.toString()}`, { signal: request.signal, cache: 'no-store' })
             const payload = await response.json().catch(() => null) as OrdersPayload | null
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 setOrders([])
@@ -248,13 +253,14 @@ export default function OrdersPage() {
             setOrders(rows)
             setTotalCount(Number(payload?.meta?.total || rows.length || 0))
         } catch {
+            if (!request.isCurrent()) return
             setOrders([])
             setTotalCount(0)
             setError('Unable to load orders')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store, filter, paymentFilter, searchQuery])
+    }, [store, filter, paymentFilter, appliedSearch, beginRead])
 
     useEffect(() => { loadOrders() }, [loadOrders])
 
@@ -489,7 +495,7 @@ export default function OrdersPage() {
     const activeFilters = [
         filter !== 'all' ? { label: `Status: ${titleize(filter)}`, onRemove: () => setFilter('all') } : null,
         paymentFilter !== 'all' ? { label: `Payment: ${titleize(paymentFilter)}`, onRemove: () => setPaymentFilter('all') } : null,
-        searchQuery.trim() ? { label: `Search: ${searchQuery.trim()}`, onRemove: () => setSearchQuery('') } : null,
+        appliedSearch ? { label: `Search: ${appliedSearch}`, onRemove: () => setSearchQuery('') } : null,
     ].filter(Boolean) as Array<{ label: string; onRemove: () => void }>
 
     const sortedOrders = useMemo(() => {

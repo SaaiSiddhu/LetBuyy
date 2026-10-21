@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import {
     Badge,
     Button,
@@ -22,6 +23,7 @@ import {
  */
 export interface SiteThemeRecord {
     slug: string
+    thumbnail_url?: string | null
     name: string
     /** Current lifecycle status of the theme instance on this site */
     instance_status: 'active' | 'installed' | 'inactive' | 'archived' | 'deleted'
@@ -66,7 +68,7 @@ function formatEnIn(isoDate: string | null): string {
 
 function statusLabel(theme: SiteThemeRecord): string {
     if (theme.isCurrentlyPublished) return 'Published'
-    if (theme.hasDraft) return 'Draft'
+    if (theme.hasDraft) return 'Saved draft'
     if (theme.instance_status === 'archived') return 'Archived'
     return 'Inactive'
 }
@@ -99,6 +101,7 @@ export function ThemeLibraryCard({
     onRollback,
     busySlug,
 }: ThemeLibraryCardProps) {
+    const router = useRouter()
     const isBusy = busySlug === theme.slug
     const isPublished = theme.isCurrentlyPublished
     const lastDate = theme.last_published_at || theme.last_modified_at
@@ -114,12 +117,12 @@ export function ThemeLibraryCard({
             label: 'Customize',
             icon: <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             onSelect: () => {
-                window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
+                router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
             },
         },
         {
             id: 'preview',
-            label: 'Preview',
+            label: 'Preview in editor',
             icon: <Eye className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             onSelect: () => {
                 window.open(`/${store}/online-store/themes/${theme.slug}/editor`, '_blank', 'noopener,noreferrer')
@@ -181,6 +184,7 @@ export function ThemeLibraryCard({
             className="flex min-w-0 flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
             aria-label={`${theme.name} theme`}
         >
+            {theme.thumbnail_url && <img className="theme-library-thumbnail" src={theme.thumbnail_url} alt={`${theme.name} design preview`} loading="lazy" />}
             {/* Card header */}
             <div className="flex min-w-0 items-start justify-between gap-[var(--lb-space-2)]">
                 <div className="min-w-0">
@@ -220,7 +224,7 @@ export function ThemeLibraryCard({
                 )}
                 {theme.hasDraft && !theme.isCurrentlyPublished && (
                     <span className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-info)]">
-                        Unsaved draft
+                        Saved draft
                     </span>
                 )}
                 <div className="ml-auto flex items-center gap-[var(--lb-space-2)]">
@@ -242,7 +246,7 @@ export function ThemeLibraryCard({
                         type="button"
                         className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)] disabled:opacity-50"
                         onClick={() => {
-                            window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
+                            router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
                         }}
                         disabled={isBusy}
                         aria-label={`Customize ${theme.name}`}

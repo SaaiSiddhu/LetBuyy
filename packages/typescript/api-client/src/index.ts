@@ -2194,6 +2194,11 @@ export interface ProductListQuery extends StoreScopedQuery {
   status?: ProductStatus | 'inactive' | 'all';
 }
 
+/** Table rows omit editor-only content and relational variant hydration. */
+export type ProductListSummary = Pick<Product,
+  'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' |
+  'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at' | 'version'>;
+
 export interface ProductBarcodeLookupQuery extends QueryParams {
   store_id: string;
   barcode: string;
@@ -2721,6 +2726,7 @@ export interface ThemeCatalogResponse {
   next_cursor?: string | null;
   total_is_exact?: boolean;
   current_theme: string | null;
+  current_theme_record?: ThemeCatalogItem | null;
   store_status: string | null;
 }
 
@@ -3288,10 +3294,7 @@ export type InventoryAdjustInput = {
   reason: InventoryAdjustmentReason;
   notes?: string | null;
 };
-export type ProductImportInput = {
-  store_id: string;
-  csv: string;
-};
+export type ProductImportInput = import('@letbuyy/shared-types').ProductCsvImportInput;
 export interface ExportJobSummary extends JsonRecord {
   id: string;
   type: 'products' | 'orders' | 'customers' | 'product_import';
@@ -3401,7 +3404,9 @@ export type ThemeInstallInput = {
 export type ThemeInstallResult = {
   installation: JsonRecord;
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
-  release: JsonRecord;
+  release?: JsonRecord;
+  already_installed?: boolean;
+  theme_instance_id?: string;
 };
 export type ThemePurchaseOrderInput = {
   currency?: 'INR';
@@ -4903,6 +4908,8 @@ export class LetbuyyApiClient {
   readonly products = {
     list: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Product>('/products', { ...options, query }),
+    listSummary: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<ProductListSummary>('/products', { ...options, query: { ...query, view: 'summary' } }),
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/products/${encodePathSegment(id)}`, options),
     create: (input: CreateProductInput, options?: LetbuyyRequestOptions) =>
@@ -5344,7 +5351,7 @@ export class LetbuyyApiClient {
     list: (query?: ThemeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Theme>('/themes', { ...options, query }),
     listCatalog: async (query?: ThemeListQuery, options?: LetbuyyRequestOptions): Promise<ThemeCatalogResponse> => {
-      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; store_status?: unknown }>(
+      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; current_theme_record?: ThemeCatalogItem | null; store_status?: unknown }>(
         '/themes',
         { ...options, query },
       );
@@ -5358,6 +5365,7 @@ export class LetbuyyApiClient {
         limit: numberValue(meta.per_page, data.length),
         has_more: Boolean(meta.has_next),
         current_theme: typeof body.current_theme === 'string' ? body.current_theme : null,
+        current_theme_record: body.current_theme_record || null,
         store_status: typeof body.store_status === 'string' ? body.store_status : null,
       };
     },

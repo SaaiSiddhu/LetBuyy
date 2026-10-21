@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { reconcileStoredCart } from '@/lib/checkout/cart-lifecycle';
 import {
     readStorefrontApiJson,
     storefrontBrowserApiFetch,
@@ -123,6 +124,12 @@ async function syncLiquidCartToServer(items: LiquidCartItem[]): Promise<boolean>
     const subdomain = getLiquidStorefrontSubdomain();
     if (!subdomain) return false;
 
+    const reconciliation = reconcileStoredCart(subdomain);
+    if (reconciliation) {
+        const outcome = await reconciliation;
+        if (outcome === 'retired') return true;
+        if (outcome === 'unavailable') return false;
+    }
     const cartToken = window.localStorage.getItem(CART_TOKEN_STORAGE_KEY);
     try {
         const response = await storefrontBrowserCartFetch(subdomain, cartToken, items);
@@ -309,6 +316,12 @@ class LbAddToCartElement extends LiquidIslandBase {
                 // Keep this document alive until the canonical cart token is
                 // persisted. Opening the drawer here would start a second
                 // create request before the first cart receipt has arrived.
+                const subdomain = getLiquidStorefrontSubdomain();
+                const reconciliation = subdomain ? reconcileStoredCart(subdomain) : null;
+                if (reconciliation && await reconciliation === 'unavailable') {
+                    if (status) status.textContent = 'We could not check your previous checkout. Please try again.';
+                    return;
+                }
                 const items = addCartItem(item, { sync: false, openDrawer: false });
                 if (!await syncLiquidCartToServer(items)) {
                     if (status) status.textContent = 'We could not prepare checkout. Please try again.';
@@ -321,6 +334,12 @@ class LbAddToCartElement extends LiquidIslandBase {
                 this.checkoutPending = false;
                 if (button) button.disabled = false;
             }
+            return;
+        }
+        const subdomain = getLiquidStorefrontSubdomain();
+        const reconciliation = subdomain ? reconcileStoredCart(subdomain) : null;
+        if (reconciliation && await reconciliation === 'unavailable') {
+            if (status) status.textContent = 'We could not check your previous checkout. Please try again.';
             return;
         }
         addCartItem(item);

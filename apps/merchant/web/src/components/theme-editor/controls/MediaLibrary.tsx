@@ -192,6 +192,8 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
     // ── Load media on mount and when search changes ───────────────────────
     useEffect(() => {
         let cancelled = false
+        const controller = new AbortController()
+        const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)])
         setLoadState('loading')
         setLoadError(null)
         setIsNotConnected(false)
@@ -205,12 +207,13 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
                 if (search.trim()) params.set('q', search.trim().slice(0, 200))
 
                 const res = await fetch(
-                    `/api/stores/${encodeURIComponent(storeName)}/themes/media-library?${params.toString()}`
+                    `/api/stores/${encodeURIComponent(storeName)}/themes/media-library?${params.toString()}`, { cache: 'no-store', signal }
                 )
 
                 if (cancelled) return
 
                 const json = await res.json().catch(() => ({ data: [] }))
+                if (cancelled) return
 
                 if (!res.ok) {
                     // NOT-CONNECTED: gateway route may not be deployed yet
@@ -244,6 +247,7 @@ export function MediaLibrary({ storeName, mediaType, onSelect, onClose }: MediaL
 
         return () => {
             cancelled = true
+            controller.abort()
             clearTimeout(timer)
         }
     }, [storeName, mediaType, search])

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Table,
@@ -115,13 +117,16 @@ export default function AiStudioPage() {
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
+    const beginRead = useReadRequest(store)
     const loadAiStudio = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store', signal: request.signal })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load AI Studio'))
@@ -137,6 +142,7 @@ export default function AiStudioPage() {
             }
             setUsage(Array.isArray(payload?.data?.usage) ? payload.data.usage : [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load AI Studio'
             setCredits({ total: 0, used: 0, remaining: 0 })
             setUsage([])
@@ -147,9 +153,9 @@ export default function AiStudioPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadAiStudio()

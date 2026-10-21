@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from './button';
 import { ChevronRight } from './icons';
 import { cx } from './utils';
+import { useNavigationLink } from './navigation/link-provider';
 
 export interface BreadcrumbItem {
     label: string;
@@ -24,6 +25,7 @@ export function Breadcrumbs({
     className = '',
     ...props
 }: BreadcrumbsProps) {
+    const Link = useNavigationLink();
     if (items.length === 0) return null;
 
     return (
@@ -34,9 +36,9 @@ export function Breadcrumbs({
                     return (
                         <li key={`${item.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
                             {item.href ? (
-                                <a className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" href={item.href} aria-current={current ? 'page' : undefined}>
+                                <Link className="rounded-[var(--lb-radius-sm)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]" href={item.href} aria-current={current ? 'page' : undefined}>
                                     {item.label}
-                                </a>
+                                </Link>
                             ) : item.onClick ? (
                                 <Button
                                     unstyled

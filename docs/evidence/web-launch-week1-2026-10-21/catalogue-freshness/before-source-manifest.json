@@ -1,0 +1,8 @@
+{
+  "services/api-gateway/src/lib/storefront-visitor-access.ts": "403ded6f7349df293c8c923640674d6c9c7e589540d4efbb6641305112c0b43d",
+  "services/api-gateway/src/routes/storefront/public-routes.ts": "7c38f92dfb0164bc1227da6c810276c0ac400268d606cda75e2037499c9c82f1",
+  "services/api-gateway/src/routes/storefront.ts": "f85242a60877ec73af1a0ca50e0c33c8e246f5e2653791013de5f3b7dec928b2",
+  "tests/helpers/owned-storefront-snapshot.ts": "6be54483983e16dbec71b544309abbae01b4b84ea4177cbce9d43c31ef8fb285",
+  "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "794bbae8907fa9c41ce874ec63bb0a2a95ed2421094dda72e9def16b4a26ba40",
+  "tests/owned-db/storefront-access-worker.postgres.test.ts": "72b41557a646509e641d08c419117edc7b6f075268ad83320efbb97a88b184af"
+}

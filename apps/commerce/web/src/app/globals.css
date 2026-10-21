@@ -651,3 +651,10 @@ html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .
    liquid-theme.css is the sole owner of Liquid layout, LIQUID_THEME_BASE_CSS remains the sole owner
    of the portable/exported-theme copy. */
 
+
+.catalog-preview-notice { padding: var(--lb-space-3) var(--lb-space-4); background: var(--lb-color-surface); color: var(--lb-color-text); border-bottom: 1px solid var(--lb-color-border); font-size: var(--lb-font-size-caption); text-align: center; }
+.catalog-preview-pages { display: flex; justify-content: center; gap: var(--lb-space-4); padding: var(--lb-space-3); border-bottom: 1px solid var(--lb-color-border); background: var(--lb-color-surface); font-size: var(--lb-font-size-body); }
+.catalog-preview-pages a { color: var(--lb-color-text); text-decoration: underline; text-underline-offset: var(--lb-space-1); }
+.catalog-preview-storefront header { position: sticky; top: 0; }
+.storefront-liquid-editor-section { cursor: pointer; outline-offset: -2px; }
+.storefront-liquid-editor-section:hover, .storefront-liquid-editor-section:focus-visible, .storefront-liquid-editor-section--selected { outline: 2px solid var(--lb-color-focus-ring); }

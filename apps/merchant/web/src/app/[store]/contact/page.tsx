@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button,
@@ -71,15 +73,18 @@ export default function ContactPage() {
     const [submissionToDelete, setSubmissionToDelete] = useState<Submission | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const beginRead = useReadRequest(store)
     const loadSubmissions = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=contact&limit=100`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load contact submissions'))
@@ -92,6 +97,7 @@ export default function ContactPage() {
                 return nextItems.find((item: Submission) => item.id === current.id) || null
             })
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load contact submissions'
             setItems([])
             setSelected(null)
@@ -102,9 +108,9 @@ export default function ContactPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadSubmissions()
