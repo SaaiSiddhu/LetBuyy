@@ -21,7 +21,8 @@
     "Keep server/theme head assets and hydration islands intact when exposing trusted platform control slots between sanitized Liquid regions. No merchant script interpolation.",
     "Address identity/header/lifecycle/server guards unchanged; token-based controls with44px hit areas, visible focus, wrapping/spacing and real CRUD/stale-account checks.",
     "Measure actual iframe innerWidth/fit scale; preserve sandbox, postMessage origin checks, inspector behavior and draft privacy.",
-    "Verify normal merchant collection creation and assignments, homepage/index/next/previous/detail, native preview/public rendering, mobile filter/action geometry, meaningful API isolation/fault and existing COD/buyer lifecycle."
+    "Verify normal merchant collection creation and assignments, homepage/index/next/previous/detail, native preview/public rendering, mobile filter/action geometry, meaningful API isolation/fault and existing COD/buyer lifecycle.",
+    "Preserve flat sanitized Liquid DOM and sticky header containing block; trusted platform controls use canonical escaped markup helpers with same-origin path validation. Verify malicious attribute/query inputs and keyboard traversal through optional Set default action."
   ],
   "standingBoundaries": [
     "Single agent",
@@ -29,5 +30,6 @@
     "No real provider messages/payments",
     "No mobile app UI changes"
   ],
-  "collision": "Prior isolated accepted candidates frozen; primary610074d2 unchanged. Managed tool returned Not a git repository; native stacked worktree fallback used."
+  "collision": "Prior isolated accepted candidates frozen; primary610074d2 unchanged. Managed tool returned Not a git repository; native stacked worktree fallback used.",
+  "ownerSyncAuthorization": "2026-10-21: owner explicitly requested commit all work, merge develop and push GitHub for new-machine pull. No staging/main promotion or deployment requested."
 }
