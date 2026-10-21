@@ -233,8 +233,12 @@ export function compilePortableConfigForPublish(
 /** Recognize only the obsolete first-party demo cards in both portable shapes. */
 export function isUnchangedCoreDemoCategoryBlocks(value: unknown, order?: unknown): boolean {
   const object=(v:unknown):Record<string,unknown>=>v && typeof v==='object' && !Array.isArray(v)?v as Record<string,unknown>:{};
-  const rows=Array.isArray(value)?value.map(v=>{const b=object(v);return [b.id,b] as const;}):Object.entries(object(value));
   const seeds=[['category-sneakers','Sneakers','sneakers','Fresh pairs'],['category-apparel','Apparel','apparel','Daily fits'],['category-accessories','Accessories','accessories','Finish the look']];
+  // jsonb objects have no semantic key order. Match known instance IDs, while
+  // retaining strict explicit block_order and array ordering checks below.
+  const entries=object(value);
+  if(!Array.isArray(value) && Object.keys(entries).length!==seeds.length)return false;
+  const rows=Array.isArray(value)?value.map(v=>{const b=object(v);return [b.id,b] as const;}):seeds.map(seed=>[seed[0],entries[seed[0]]] as const);
   if (order!==undefined && JSON.stringify(order)!==JSON.stringify(seeds.map(seed=>seed[0]))) return false;
   return rows.length===3 && rows.every(([key,value],i)=>{
     const b=object(value),settings=object(b.settings),seed=seeds[i];

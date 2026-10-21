@@ -70,3 +70,19 @@ test('new Core announcement retires only the unchanged frozen duplicate, preserv
   assert.equal(announcement.settings[key],value,'input is never rewritten');
  }
 });
+
+
+test('PostgreSQL jsonb key order does not hide unchanged Core demo defaults; merchant edits still refuse',()=>{
+ const input=getDefaultStorefrontThemeTemplate('letbuyy-core',{});
+ const category=input.sections.template.find(s=>s.id==='category-grid-default')!;
+ const byId=Object.fromEntries(category.blocks!.map(b=>[b.id,{type:b.type,settings:b.settings}]));
+ const keys=['category-apparel','category-sneakers','category-accessories'];
+ const captured={type:category.type,settings:category.settings,blocks:Object.fromEntries(keys.map(k=>[k,byId[k]])),block_order:category.blocks!.map(b=>b.id)};
+ const config={templates:{index:{sections:{'category-grid-default':captured},order:['category-grid-default']}}};
+ const before=structuredClone(config);
+ const result=compilePortableToLiquidBundle(config,{baseBundle:base});
+ assert.equal(Object.keys(result.bundle.templates.index.sections['category-grid-default'].blocks).length,0);
+ assert.deepEqual(config,before,'saved database document is not rewritten');
+ captured.blocks['category-apparel'].settings.name='Merchant authored category';
+ assert.throws(()=>compilePortableToLiquidBundle(config,{baseBundle:base}),/Block.*category.*not allowed/);
+});
