@@ -1,0 +1,66 @@
+{
+  "scope": "Approved isolated production recovery upgrade; no raw records/identities or credential values exported",
+  "records": [
+    {
+      "table": "sites",
+      "before_count": 1,
+      "after_count": 1,
+      "original_records_missing": 0,
+      "changed_original_columns": {},
+      "removed_original_columns": [],
+      "before_common_columns_sha256": "7c13033624300645a0e1f0d2130a33da2689b9ce19102b5408e0239f82261d79",
+      "after_original_rows_common_columns_sha256": "7c13033624300645a0e1f0d2130a33da2689b9ce19102b5408e0239f82261d79",
+      "new_records": 0
+    },
+    {
+      "table": "users_custom",
+      "before_count": 1,
+      "after_count": 2,
+      "original_records_missing": 0,
+      "changed_original_columns": {},
+      "removed_original_columns": [],
+      "before_common_columns_sha256": "833eec9998c2b1a43257ac7eb3c74a7f0ebfd590d0a672c36e94d6e84ffb5a35",
+      "after_original_rows_common_columns_sha256": "833eec9998c2b1a43257ac7eb3c74a7f0ebfd590d0a672c36e94d6e84ffb5a35",
+      "new_records": 1
+    },
+    {
+      "table": "orders",
+      "before_count": 5,
+      "after_count": 5,
+      "original_records_missing": 0,
+      "changed_original_columns": {
+        "site_id": 5,
+        "version": 5,
+        "updated_at": 5
+      },
+      "removed_original_columns": [],
+      "before_common_columns_sha256": "22495422cef3c336644937cae6c76368c25a39f1a156d8cdc1c6dc6518c2cf0c",
+      "after_original_rows_common_columns_sha256": "64872147aa3f0b0244a32b0c3a3b61a9cbd21a26aed48f09af44554470d13a6f",
+      "new_records": 0
+    },
+    {
+      "table": "products",
+      "before_count": 1,
+      "after_count": 1,
+      "original_records_missing": 0,
+      "changed_original_columns": {},
+      "removed_original_columns": [],
+      "before_common_columns_sha256": "1b3e79a7ba2acdfdda83447ebc73119ba301a0994e8517a34303b15ec96abbaf",
+      "after_original_rows_common_columns_sha256": "1b3e79a7ba2acdfdda83447ebc73119ba301a0994e8517a34303b15ec96abbaf",
+      "new_records": 0
+    },
+    {
+      "table": "outbox_events",
+      "before_count": 18,
+      "after_count": 18,
+      "original_records_missing": 0,
+      "changed_original_columns": {},
+      "removed_original_columns": [],
+      "before_common_columns_sha256": "f66fa42cd94dd29aa18bd0a10c9c7b580cb6964c51ed1434476c8075cf2bf64c",
+      "after_original_rows_common_columns_sha256": "f66fa42cd94dd29aa18bd0a10c9c7b580cb6964c51ed1434476c8075cf2bf64c",
+      "new_records": 0
+    }
+  ],
+  "original_records_missing": 0,
+  "expected_addition": "Migration100 creates one historical marketplace demo identity; additional seed data requires production release review, not represented as unchanged production data."
+}

@@ -168,6 +168,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
+        "managed-supabase-migration-admission.postgres.test.ts",
         "merchant-collection-membership-browser.postgres.test.ts",
         "merchant-dashboard-access.postgres.test.ts",
         "merchant-entitlement-authority-browser.postgres.test.ts",

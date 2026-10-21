@@ -8,6 +8,10 @@ It supersedes the old pause instruction only for the owner's requested theme
 release and merchant performance continuation. The parent foundation programme,
 public launch and unrelated historical work remain open.
 
+## 22 October compatibility update
+
+The owner authorized production release, deferred GitHub Actions billing, approved an encrypted recovery backup, and authorized the focused Supabase compatibility repair. The native catalog-lock mechanism and local financial/managed-role checks pass; the hosted provider must install its administrator-owned helper. The owner asked this agent to arrange that provider request. Supabase has confirmed the authenticated staging support submission with the exact SQL bundle attached; installation remains pending. No optional human/AI diagnostic-access grant was made. [Current repair evidence](supabase-compatibility-2026-10-22/README.md) records15 managed-role checks,15 financial checks,70 independent mechanism checks,81 typecheck tasks,114 governance validators and the populated recovery replay. Hosted deployment and branch promotion have not occurred. The original order tenant-key backfill and migration100 demo seed are explicit review findings.
+
 ## Working position
 
 - Repository: `/Volumes/Projects/LetBuyy`, ordinary main checkout with an actual

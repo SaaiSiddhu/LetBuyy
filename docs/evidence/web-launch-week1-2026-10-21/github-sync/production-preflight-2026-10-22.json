@@ -1,6 +1,6 @@
 {
   "date": "2026-10-22",
-  "status": "BLOCKED_HOSTED_MIGRATION_PRIVILEGE_MODEL",
+  "status": "BLOCKED_PROVIDER_ADMIN_CATALOG_FENCE",
   "release_authorized": true,
   "ci_billing_deferral_explicitly_authorized": true,
   "source_revision_at_report": "503367ed7806fc0fab294e67eef0e0f31cd47b6c",
@@ -112,12 +112,40 @@
     "no_real_provider_payments_or_customer_messages": true
   },
   "remaining": [
-    "Human architecture decision for Supabase-compatible financial migration admission",
+    "Provider-supported administrator installation of the reviewed native catalog-lock helper",
     "Exact final source gate including concurrent lifecycle test repair",
     "Rehearse complete corrected upgrade and prove retained order/user/product/outbox conservation",
     "Correct Vercel legacy Git repository/root mappings and missing console/staging deployment contexts",
     "Populate compatible private runtime secrets and validate Cloudflare bindings",
     "Promote develop -> staging -> main with recorded owner CI exception",
     "Deploy and perform signed-in hosted theme/media/merchant/buyer acceptance"
-  ]
+  ],
+  "financial_compatibility_repair_authorized": true,
+  "compatibility_repair_evidence": "supabase-compatibility-2026-10-22/README.md",
+  "local_compatibility_checks": {
+    "managed_role": 15,
+    "financial_conservation": 15,
+    "rollback_admission": 1,
+    "rollback_writer": 1,
+    "payment_ownership": 10,
+    "independent_native_mechanism": 70,
+    "typecheck_tasks": 81,
+    "uncached": true,
+    "owned_lane_governance": 14,
+    "populated_upgrade_pending_migrations": 304,
+    "no_original_core_records_missing": true,
+    "original_order_tenant_key_backfill": "migration108; money fields unchanged",
+    "legacy_demo_seed": "migration100 adds one demo identity; requires production review",
+    "governance": {
+      "pass": 114,
+      "fail": 0,
+      "not_applicable": 1,
+      "branch_history_advisories": "missing local integration refs in isolated clone; no promotion proof"
+    }
+  },
+  "provider_support_request": {
+    "status": "submitted and confirmed",
+    "evidence": "supabase-compatibility-2026-10-22/support-submission.json",
+    "installation": "pending"
+  }
 }

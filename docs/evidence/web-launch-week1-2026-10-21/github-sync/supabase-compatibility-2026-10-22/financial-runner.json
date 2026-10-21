@@ -1,0 +1,119 @@
+{
+  "runId": "3453eb436676",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-30861-mviimtll-6cd781"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 0,
+  "tests": 29,
+  "assertionsPassed": 29,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 41.9,
+  "suiteSeconds": 40.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "managed-supabase-migration-admission.postgres",
+      "path": "tests/owned-db/managed-supabase-migration-admission.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-30861-mviimtll-6cd781",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 27.3,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_managed_supabase_migration_admission_postgres",
+      "templateSeconds": 15.5,
+      "provisionSeconds": 0.8,
+      "rest": {
+        "container": "letbuyy-exec-3453eb436676-rest-1",
+        "upstreamPort": 60423,
+        "proxyPort": 60424
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 3,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "subscription-tax-gross-conservation.postgres",
+      "path": "tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-30861-mviimtll-6cd781",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 13.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_subscription_tax_gross_conservation_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.7,
+      "rest": {
+        "container": "letbuyy-exec-3453eb436676-rest-2",
+        "upstreamPort": 60467,
+        "proxyPort": 60468
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 715,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

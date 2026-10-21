@@ -27,7 +27,8 @@ import {createServer,type Socket} from 'node:net';
 import {chmodSync,mkdtempSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {createHash,X509Certificate} from 'node:crypto';
+import {createHash,X509Certificate,randomBytes} from 'node:crypto';
+import {createVolume,docker,newRunId,removeCluster,requireImagePresent,waitUntilAccepting,FIXTURE_LABEL,OWNER_PID_LABEL,RUN_ID_LABEL,ROLE_LABEL} from '../../../../../scripts/governance/executable-pg-fixture.mjs';
 import {SUPABASE_FAITHFUL_BOOTSTRAP_SQL} from '../../../../../scripts/governance/supabase-faithful-bootstrap.mjs';
 import {removeOwnedNextDirectory,validateOwnedNextDirectoryReceipt} from '../../../../../scripts/governance/owned-next-directory.mjs';
 
@@ -445,4 +446,88 @@ export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 357 | 358
             child.stdin.end(sql);
         }),
     });
+}
+
+
+/** Fresh provider-role cluster, reachable only after the normal fixture guard.
+ * Administrator access exists solely inside this network-disabled synthetic
+ * image. No endpoint, credentials, existing container or recovery data can be
+ * supplied by a caller. All SQL/process access stays in this support module.
+ */
+interface OwnedProviderSession {
+    query(sql:string):Promise<string>;
+    close():void;
+    stopped():Promise<void>;
+}
+export async function createOwnedManagedSupabaseFixture(owned:OwnedDatabase) {
+    const verified=requireOwnedDatabase();
+    if(owned!==verified) throw new Error('Managed provider fixture requires the exact verified parent handle');
+    const image='public.ecr.aws/supabase/postgres:17.6.1.127@sha256:be60aee15997daca475b710b734bc6bfe52cd544dcd7e9fd2ff58210b6747d83';
+    requireImagePresent(image);
+    const runId=newRunId(),name=`letbuyy-managed-admission-${runId}`;
+    const volume=createVolume({name:`${name}-data`,runId});
+    const connections:OwnedProviderSession[]=[];
+    const execute=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+        try {
+            const stdout=execFileSync('docker',['exec','-i',name,'psql','-U',role,'-d','postgres','-qAtX','-v','ON_ERROR_STOP=1'],{
+                input:'SET search_path=public,extensions;\n'+sql,encoding:'utf8',timeout:90_000,stdio:['pipe','pipe','pipe'],
+            });
+            return {ok:true,stdout:stdout.trim(),error:''};
+        } catch(error) {
+            return {ok:false,stdout:'',error:String((error as {stderr?:Buffer|string}).stderr??'Managed fixture SQL failed').slice(-1800)};
+        }
+    };
+    const query=(sql:string,role:'postgres'|'supabase_admin'='postgres')=>{
+        const result=execute(sql,role);if(!result.ok) throw new Error(result.error);return result.stdout;
+    };
+    function session():OwnedProviderSession {
+        const child=spawn('docker',['exec','-i',name,'psql','-U','postgres','-d','postgres','-qAtX','-v','ON_ERROR_STOP=1']);
+        let output='',errors='',ended=false;
+        let pending:{marker:string;done:(value:string)=>void;fail:(error:Error)=>void;timer:ReturnType<typeof setTimeout>}|undefined;
+        child.stdout.on('data',(data:Buffer)=>{
+            output+=data.toString();
+            if(pending&&output.includes(pending.marker)) {
+                const current=pending;pending=undefined;clearTimeout(current.timer);
+                const result=output.slice(0,output.indexOf(current.marker));output='';current.done(result.trim());
+            }
+        });
+        child.stderr.on('data',(data:Buffer)=>{errors+=data.toString();});
+        child.on('exit',()=>{
+            ended=true;
+            if(pending) {clearTimeout(pending.timer);pending.fail(new Error(errors.slice(-1800)));pending=undefined;}
+        });
+        const connection={
+            query(sql:string):Promise<string> {
+                if(ended) return Promise.reject(new Error(errors.slice(-1800)||'Owned managed session ended'));
+                if(pending) return Promise.reject(new Error('One command at a time per owned connection'));
+                return new Promise((done,fail)=>{
+                    const marker='MANAGED_DONE_'+randomBytes(12).toString('hex');
+                    pending={marker,done,fail,timer:setTimeout(()=>{child.kill();fail(new Error('Owned managed SQL timed out'));},90_000)};
+                    child.stdin.write(sql+'\n\\echo '+marker+'\n');
+                });
+            },
+            close(){if(!child.stdin.destroyed)child.stdin.end();},
+            stopped(){return new Promise<void>(done=>{if(ended)done();else child.once('exit',()=>done());});},
+        };
+        connections.push(connection);return connection;
+    }
+    try {
+        docker(['run','-d','--pull','never','--name',name,'--network','none',
+            '--label',`${FIXTURE_LABEL}=1`,'--label',`${OWNER_PID_LABEL}=${process.pid}`,
+            '--label',`${RUN_ID_LABEL}=${runId}`,'--label',`${ROLE_LABEL}=postgres`,
+            '--memory','1g','--memory-swap','1g','--cpus','2','--pids-limit','512',
+            '--mount',`type=volume,source=${volume},target=/var/lib/postgresql/data`,'-e','POSTGRES_PASSWORD',
+            image,'postgres','-D','/etc/postgresql','-c','max_prepared_transactions=2','-c','autovacuum=off','-c','jit=off'],
+            {env:{POSTGRES_PASSWORD:randomBytes(32).toString('hex')}});
+        await waitUntilAccepting(name);
+    } catch(error) {removeCluster({name,runId,volume});throw error;}
+    return {
+        psql:(sql:string)=>query(sql),admin:(sql:string)=>query(sql,'supabase_admin'),session,
+        psqlExpectError(sql:string){const result=execute(sql);if(result.ok)throw new Error('Refused managed-fixture operation unexpectedly succeeded');return result.error;},
+        async close(){
+            for(const connection of connections)connection.close();
+            await Promise.all(connections.map(connection=>connection.stopped()));
+            removeCluster({name,runId,volume});
+        },
+    };
 }

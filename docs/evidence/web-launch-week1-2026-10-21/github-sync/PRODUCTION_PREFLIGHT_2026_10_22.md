@@ -1,3 +1,5 @@
+> Update: the owner authorized the focused compatibility repair. Local native-lock, financial and populated recovery checks now pass. Hosted release still requires a provider administrator to install the reviewed helper. See [current evidence](supabase-compatibility-2026-10-22/README.md). The preflight below records the original discovery.
+
 # Production release preflight — 22 October 2026
 
 The owner authorized deployment of all current work, explicitly deferred GitHub Actions because account billing cannot be resolved now, and approved the encrypted recovery backup. The CI exception does not establish a passed CI run. No additional release approval is requested.
