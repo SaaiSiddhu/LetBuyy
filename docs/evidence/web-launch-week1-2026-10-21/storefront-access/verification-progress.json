@@ -172,8 +172,8 @@
     }
   },
   "remaining": [
+    "Password-attempt admission before KDF, including concurrent/failure/resource no-work-after-refusal proof",
     "Verify current custom-domain and redirect-alias behavior and domain revocation/failure recovery",
-    "Additional malformed/duplicate/forged/cross-site and dependency refusal/recovery coverage",
     "Fresh cart/order and independent marketplace/buyer-history eligibility remains parent launch work",
     "Core/editor/legacy media/performance and wider commerce/operator/provider/hosted gates remain open",
     "Review password-attempt admission before the expensive KDF: current internal verify computes the password check before its limiter; fresh resource/negative proof remains required.",
