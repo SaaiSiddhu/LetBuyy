@@ -162,4 +162,5 @@ blocked ownership, polling scope, arbitrary URL refusal, unfinished/import jobs,
 stream preservation and unsuccessful-body cancellation. Actual native Worker,
 owned PostgreSQL/PostgREST and local R2 verify a 1,103-product, 7,412,460-byte export,
 CSV content and ownership revocation. Extended order/customer/expiry acceptance also passes (1,103 live rows per dataset);
-final browser acceptance remains tracked in the merchant performance audit evidence.
+the normal-sign-in production browser export/download also passes. User-account
+page-by-page acceptance remains tracked in the merchant performance audit evidence.

@@ -6,6 +6,8 @@
 import assert from 'node:assert/strict';
 import test, {after, before} from 'node:test';
 import {createServer, type Server} from 'node:http';
+import {readFileSync} from 'node:fs';
+import {Miniflare} from 'miniflare';
 import {exportJWK} from 'jose';
 import {chromium, expect, type Browser, type BrowserContext, type Page} from '@playwright/test';
 import {hashMerchantPassword} from '../../services/api-gateway/src/lib/merchant-password';
@@ -20,6 +22,7 @@ const ownerId=crypto.randomUUID(),staffId=crypto.randomUUID();
 const email=(id:string)=>`syn-product-browser-${id}@example.invalid`;
 let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
 let proxy:OwnedPooledSqlProxy|undefined,gateway:Gateway|undefined,browser:Browser|undefined;
+let exportStorage:Miniflare|undefined;
 let identityOrigin='',merchantOrigin='',loseReplyFor='';
 let ownerA:BrowserContext,ownerB:BrowserContext,staff:BrowserContext;
 const calls:{path:string;method:string;status:number;lost:boolean;key:string|null;productBody?:string}[]=[];
@@ -66,7 +69,9 @@ before(async()=>{
     const identityPort=await freePort(),merchantPort=await freePort();
     identityOrigin=`http://localhost:${identityPort}`;merchantOrigin=`http://localhost:${merchantPort}`;
     proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();
-    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,...proxy.env()}));
+    exportStorage=new Miniflare({modules:true,script:'export default {fetch(){return new Response("Not found",{status:404})}}',compatibilityDate:'2026-05-25',cf:false,r2Buckets:['R2_BUCKET'],r2Persist:false});
+    await exportStorage.ready;
+    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,R2_BUCKET:await exportStorage.getR2Bucket('R2_BUCKET'),...proxy.env()}));
     bridge=createServer(async(req,res)=>{
         const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks).toString();
         const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
@@ -104,7 +109,7 @@ after(async()=>{
         challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
         providerTransactions:0,hostedVerified:false,privateScreenshots:false}));
     await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);
-    await gateway?.settle();await closePooledSqlClients();await proxy?.stop();
+    await gateway?.settle();await exportStorage?.dispose();await closePooledSqlClients();await proxy?.stop();
     if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}
     globalThis.fetch=originalFetch;
     assert.equal(refusedGatewayExternalRequests,0,'The product journey attempted an undeclared external Gateway request');
@@ -146,6 +151,31 @@ test('production navigation preserves the shell and settles useful nonzero catal
         assert.equal(await page.evaluate(()=>(window as unknown as Record<string,unknown>).merchantNavigationSentinel),marker,'page-header navigation must retain the document and shared shell');
         checkpoints.push('production_nonzero_catalog_empty_orders_three_samples_retained_client_navigation');
     }finally{profileReads=null;await page.close();}
+});
+
+test('production export UI prepares the complete file through the canonical job and downloads without leaving the page',{timeout:150000},async()=>{
+    const page=await ownerA.newPage(),styles:Promise<string>[]=[];
+    page.on('response',response=>{if(response.url().includes('/_next/static/css/'))styles.push(response.text());});
+    try{
+        await page.goto(`${merchantOrigin}/${site.subdomain}/export`);
+        await expect(page.getByRole('heading',{name:'Export and import',exact:true})).toBeVisible();
+        await page.getByRole('button',{name:'Export Products',exact:true}).click();
+        await expect(page.getByText('Export ready',{exact:true})).toBeVisible({timeout:30000});
+        const count=Number(owned.psql(`SELECT count(*) FROM products WHERE store_id='${site.siteId}' AND deleted_at IS NULL`));
+        await expect(page.getByText(`${count.toLocaleString('en-IN')} records are ready to download.`,{exact:true})).toBeVisible();
+        const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name:'Download CSV',exact:true}).click()]);
+        assert.equal(await download.failure(),null);
+        const path=await download.path();assert.ok(path);const csv=readFileSync(path,'utf8');
+        assert.equal(download.suggestedFilename(),'products.csv');
+        assert.ok(csv.startsWith('id,name,description,price,'));
+        const expected=JSON.parse(owned.psql(`SELECT json_agg(id) FROM products WHERE store_id='${site.siteId}' AND deleted_at IS NULL`)) as string[];
+        for(const id of expected)assert.ok(csv.includes(id));
+        await expect(page.getByRole('heading',{name:'Export and import',exact:true})).toBeVisible();
+        assert.equal(new URL(page.url()).pathname,`/${site.subdomain}/export`);
+        const css=await Promise.all(styles);assert.ok(css.length>0,'observe actual loaded production styles');
+        assert.ok(css.every(text=>!text.includes('.theme-os{')),'ordinary merchant page must not load editor-only CSS');
+        checkpoints.push('production_complete_export_download_current_actor_native_r2_no_editor_css');
+    }finally{await page.close();}
 });
 
 test('normal product read and edit use actual positive version, stable variant ID and canonical stock',{timeout:150000},async()=>{
