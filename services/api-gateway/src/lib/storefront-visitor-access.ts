@@ -47,7 +47,7 @@ export async function loadVisitorSite(c:C,selector:{id?:string;handle?:string}):
  const preview=await verifyStorefrontPreviewToken(proof(c,'X-LetBuyy-Storefront-Preview','__Host-lb_preview'),c.env.PREVIEW_SIGNING_KEY);
  return restMetadata(c,selector,preview.valid);
 }
-async function hostBelongs(c:C,host:string,site:VisitorSite){
+export async function storefrontHostBelongsToSite(c:C,host:string,site:Pick<VisitorSite,'id'|'subdomain'|'custom_domain'|'custom_domain_status'>){
  const parsed=resolveStorefrontHost(host,c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
  if(parsed.kind==='subdomain')return parsed.subdomain===site.subdomain;
  if(parsed.kind!=='custom_domain')return false;
@@ -61,7 +61,7 @@ export async function visitorGrants(c:C,site:VisitorSite):Promise<{preview:boole
  let preview=false,password=false;
  if(previewToken){
   const checked=await verifyStorefrontPreviewToken(previewToken,c.env.PREVIEW_SIGNING_KEY);
-  if(checked.valid&&checked.payload?.sid===site.id&&await hostBelongs(c,checked.payload.host,site)){
+  if(checked.valid&&checked.payload?.sid===site.id&&await storefrontHostBelongsToSite(c,checked.payload.host,site)){
    const {data,error}=await getSupabaseAdmin(c).from('site_preview_links').select('jti,scope,theme_id,expires_at,revoked_at').eq('site_id',site.id).eq('jti',checked.payload.jti).is('deleted_at',null).maybeSingle();
    if(error)throw unavailable();
    preview=Boolean(data&&!data.revoked_at&&data.scope===checked.payload.scope&&(data.theme_id??null)===(checked.payload.theme_id??null)&&new Date(data.expires_at).getTime()>Date.now());
@@ -71,7 +71,7 @@ export async function visitorGrants(c:C,site:VisitorSite):Promise<{preview:boole
   const checked=await verifyStorefrontGateToken(gateToken,c.env.STORE_ACCESS_SIGNING_KEY);
   password=Boolean(checked.valid&&checked.payload?.sid===site.id&&site.access_revision
    &&checked.payload.revision&&timingSafeEqualText(checked.payload.revision,site.access_revision)
-   &&await hostBelongs(c,checked.payload.host,site));
+   &&await storefrontHostBelongsToSite(c,checked.payload.host,site));
  }
  return{preview,password};
 }

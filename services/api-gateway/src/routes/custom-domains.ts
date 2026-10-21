@@ -17,9 +17,10 @@ import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custo
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
-import { dbErrorBody, getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
+import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
 import { requireOwnedSite } from '../lib/tenant-context';
-import { resolveStorefrontSiteByHost } from '../middleware/store-context';
+import { storefrontHostBelongsToSite } from '../lib/storefront-visitor-access';
+import { AppError } from '../lib/errors';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
 import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
 import { detectDnsProvider } from '../lib/domain-provider';
@@ -636,10 +637,14 @@ storeAccessRouter.post('/preview-links', async (c) => {
     const jti = randomToken(16);
     const host = normalizeRequestHost(parsed.data.host) || parsed.data.host.toLowerCase();
     const scope = parsed.data.scope as StorefrontPreviewScope;
-    // Globally unique host bootstrap uses the canonical resolver, then binds
-    // it to the already verified owned site before issuing any capability.
-    const resolved = await resolveStorefrontSiteByHost(getSupabaseAdminUnguarded(c), host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
-    if (!resolved || resolved.id !== parsed.data.site_id) {
+    // Tenant is already known: keep the guarded client and explicit owned ID.
+    // Reuse the visitor verifier's host binding rather than opening an unguarded
+    // cross-store bootstrap lookup during an authenticated merchant command.
+    const { data: site, error: siteError } = await db.from('sites')
+        .select('id,subdomain,custom_domain,custom_domain_status')
+        .eq('id', parsed.data.site_id).is('deleted_at', null).maybeSingle();
+    if (siteError) throw new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
+    if (!site || !(await storefrontHostBelongsToSite(c, host, site))) {
         return c.json({ error: { code: 'PREVIEW_HOST_MISMATCH', message: 'Preview host must belong to this store' } }, 400);
     }
     c.header('Cache-Control', 'no-store');
