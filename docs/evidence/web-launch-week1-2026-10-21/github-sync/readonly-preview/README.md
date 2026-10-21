@@ -1,0 +1,1 @@
+Historical local audit-only diagnostic, archived for source transfer. Launcher paths/ports refer to the original machine and require deliberate reconfiguration; it is not a production runtime. No credentials are embedded. Do not use it to bypass production API authorization. Receipt records earlier local observations only.
