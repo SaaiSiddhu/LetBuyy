@@ -1,3 +1,4 @@
+import { routePath } from 'hono/route';
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
@@ -9,6 +10,14 @@ import { AppError } from '../lib/errors';
 import { enqueueRuntimeAlert } from '../lib/runtime-alerting';
 
 type AppContext = Context<{ Bindings: Env }>;
+
+/** Matched route patterns keep cart/reset credentials and IDs out of telemetry. */
+export function getObservabilityRoute(c: Context): string {
+    try {
+        const pattern = routePath(c);
+        return pattern && pattern !== '*' && pattern !== '/*' ? pattern : '/unmatched';
+    } catch { return '/unmatched'; }
+}
 
 interface RuntimeTenant {
     siteId?: string | null;
@@ -173,7 +182,7 @@ function recordRequestAnalyticsEnginePoint(
         traceId: input.traceId,
         index: input.siteId || `${runtimeName(c)}:${c.env.ENVIRONMENT || 'unknown'}`,
         blobs: [
-            c.req.path,
+            getObservabilityRoute(c),
             c.req.method,
             responseStatusClass,
             input.authSource || (input.userId ? 'authenticated' : 'anonymous'),
@@ -242,7 +251,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                 request_id: requestId,
                 trace_id: traceId,
                 site_id: siteId,
-                route: c.req.path,
+                route: getObservabilityRoute(c),
                 method: c.req.method,
                 status_code: responseStatus,
                 latency_ms: latencyMs,
@@ -276,7 +285,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                     correlationId: requestId,
                     traceId,
                     dimensions: {
-                        route: c.req.path,
+                        route: getObservabilityRoute(c),
                         method: c.req.method,
                         status_code: responseStatus,
                         status_class: statusClass(responseStatus),
@@ -292,7 +301,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                     writeStructuredRuntimeLog({
                         request_id: requestId,
                         trace_id: traceId,
-                        route: c.req.path,
+                        route: getObservabilityRoute(c),
                         method: 'OBSERVABILITY_METRIC',
                         status_code: 500,
                         latency_ms: 0,
@@ -313,7 +322,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                     siteId,
                     requestId,
                     traceId,
-                    route: c.req.path,
+                    route: getObservabilityRoute(c),
                     method: c.req.method,
                     statusCode: responseStatus,
                     latencyMs,
@@ -326,7 +335,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                     writeStructuredRuntimeLog({
                         request_id: requestId,
                         trace_id: traceId,
-                        route: c.req.path,
+                        route: getObservabilityRoute(c),
                         method: 'RUNTIME_ALERT',
                         status_code: 500,
                         latency_ms: 0,
@@ -352,8 +361,8 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                         requestId,
                         traceId,
                         method: c.req.method,
-                        path: c.req.path,
-                        route: c.req.path,
+                        path: getObservabilityRoute(c),
+                        route: getObservabilityRoute(c),
                         statusCode: responseStatus,
                         latencyMs,
                         userId,
@@ -371,7 +380,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
                         writeStructuredRuntimeLog({
                             request_id: requestId,
                             trace_id: traceId,
-                            route: c.req.path,
+                            route: getObservabilityRoute(c),
                             method: 'OBSERVABILITY',
                             status_code: 500,
                             latency_ms: 0,

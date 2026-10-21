@@ -89,7 +89,7 @@ try {
     delete env.DATABASE_URL;
     for (const key of Object.keys(env)) if (/^PG/.test(key)) delete env[key];
     env.LETBUYY_OWNED_CLIENT_RUNTIME = '1';
-    const canonicalRoot = readFileSync(join(root,'packages/shared-types/src/brand.ts'),'utf8').match(/export const DEFAULT_STOREFRONT_DOMAIN = '([a-z0-9.-]+)'/)?.[1];
+    const canonicalRoot = env.LETBUYY_OWNED_CLIENT_HOST_MODE ? readFileSync(join(root,'packages/shared-types/src/brand.ts'),'utf8').match(/export const DEFAULT_STOREFRONT_DOMAIN = '([a-z0-9.-]+)'/)?.[1] : undefined;
     env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = resolveOwnedStoreRoot({mode:env.LETBUYY_OWNED_CLIENT_HOST_MODE,requestedRoot:env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,storefrontUrl:env.NEXT_PUBLIC_STOREFRONT_URL,checkoutOrigin:env.CHECKOUT_ORIGIN,canonicalRoot});
     delete env.LETBUYY_OWNED_CLIENT_HOST_MODE;
     env.NEXT_TELEMETRY_DISABLED = '1';

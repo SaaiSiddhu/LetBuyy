@@ -1,3 +1,5 @@
+import { Hono } from 'hono'
+import { getObservabilityRoute } from '../middleware/observability'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
@@ -215,4 +217,18 @@ test('runtime alert enqueue records a metric and fails closed when delivery bind
     assert.equal(sent.length, 1)
     assert.match(JSON.stringify(sent[0]), /incident\.page\.dry_run/)
     assert.match(JSON.stringify(sent[0]), /CAP-C10 automated runtime alert dry-run/)
+})
+
+test('matched route telemetry never persists cart credentials or unmatched raw paths', async () => {
+    const routes: string[] = []
+    const app = new Hono()
+    app.use('*', async (c, next) => { await next(); routes.push(getObservabilityRoute(c)) })
+    app.get('/v1/storefront/:subdomain/cart/:token', c => c.json({ ok: true }))
+    app.use('/v1/*', async (_c, next) => { await next() })
+    const token = 'ct_' + crypto.randomUUID().replaceAll('-', '')
+    await app.request('https://example.invalid/v1/storefront/tenant-a/cart/' + token)
+    await app.request('https://example.invalid/v1/storefront/tenant-b/cart/' + token)
+    await app.request('https://example.invalid/private/' + token)
+    assert.deepEqual(routes, ['/v1/storefront/:subdomain/cart/:token', '/v1/storefront/:subdomain/cart/:token', '/unmatched'])
+    assert.equal(routes.some(route => route.includes(token)), false)
 })

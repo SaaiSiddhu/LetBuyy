@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 // Real canonical Gateway and owned PostgreSQL; only synthetic verified account credentials.
 // No theme/package, storefront, editor release, product or buyer is seeded by this suite.
 import assert from 'node:assert/strict';
@@ -9,7 +10,7 @@ async function fixture(){
  const id=crypto.randomUUID(),email=`syn-core-bootstrap-${id}@example.invalid`;
  owned.psql(`INSERT INTO users_custom(id,email,email_verified)VALUES('${id}','${email}',true);`);
  const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys()));
- return {id,gateway,create:async(theme='letbuyy-core',key=crypto.randomUUID())=>{
+ return {id,email,gateway,create:async(theme='letbuyy-core',key=crypto.randomUUID())=>{
   const slug='syn-core-'+crypto.randomUUID().slice(0,8);
   const body={name:'Synthetic Core Store',subdomain:slug,site_type:'store',theme_id:theme,template_config:{survey:{industry:'food'}}};
   const headers=await signedIdentityHeaders(id,email);
@@ -45,4 +46,68 @@ test('unavailable or invalid Core catalog fails before creating a store and can 
  owned.psql(`UPDATE themes SET default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);
  const recovered=await f.create();assert.equal(recovered.response.status,201);
  }finally{owned.psql(`UPDATE themes SET is_active=true,default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);await f.gateway.settle();}
+});
+test('publication visibility commits with its release; failures and private access remain protected',async()=>{
+ const f=await fixture();const made=await f.create();assert.equal(made.response.status,201);const siteId=String(made.response.json?.data?.id);
+ const publish=(live:boolean)=>owned.psql(`SELECT release_id FROM public.publish_theme_release(p_store_id:='${siteId}'::uuid,p_theme_id:='letbuyy-core',p_release_config:=(SELECT template_config FROM sites WHERE id='${siteId}'),p_published_by:='${f.id}'::uuid,p_make_store_live:=${live});`);
+ try{
+ assert.equal(owned.psql(`SELECT status||'|'||published::text FROM sites WHERE id='${siteId}';`),'draft|false');
+ publish(false);assert.equal(owned.psql(`SELECT status||'|'||published::text FROM sites WHERE id='${siteId}';`),'draft|false','install/release-only work must not open a draft store');
+ owned.psql(`UPDATE sites SET access_mode='offline' WHERE id='${siteId}';
+ CREATE FUNCTION synthetic_theme_visibility_fault() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN IF NEW.store_id='${siteId}'::uuid THEN RAISE EXCEPTION 'synthetic-publication-fault';END IF;RETURN NEW;END$$;
+ CREATE TRIGGER synthetic_theme_visibility_fault BEFORE INSERT ON storefront_cache_tags FOR EACH ROW EXECUTE FUNCTION synthetic_theme_visibility_fault();`);
+ assert.throws(()=>publish(true),'an injected cache-tag fault must roll back the release and visibility together');
+ assert.equal(owned.psql(`SELECT status||'|'||published::text FROM sites WHERE id='${siteId}';`),'draft|false');
+ assert.equal(owned.psql(`SELECT count(*) FROM theme_releases WHERE store_id='${siteId}';`),'1');
+ owned.psql('DROP TRIGGER synthetic_theme_visibility_fault ON storefront_cache_tags;DROP FUNCTION synthetic_theme_visibility_fault();');
+ publish(true);assert.equal(owned.psql(`SELECT status||'|'||published::text||'|'||access_mode FROM sites WHERE id='${siteId}';`),'published|true|offline','publication opens its live bit without overriding a merchant privacy choice');
+ assert.equal(owned.psql(`SELECT count(*) FROM theme_releases WHERE store_id='${siteId}';`),'2');
+ }finally{await f.gateway.settle();}
+});
+
+test('visibility migration and rollback preserve the publisher ABI/profile and refuse unexpected reapplication',()=>{
+ const signature="'public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)'::regprocedure";
+ const profile=()=>owned.psql(`SELECT jsonb_build_object('owner',proowner,'acl',proacl::text,'args',proargnames,'defaults',pronargdefaults,'default_expressions',pg_catalog.pg_get_expr(proargdefaults,0),'all_types',proallargtypes,'modes',proargmodes,'result',pg_catalog.pg_get_function_result(oid),'definer',prosecdef,'config',proconfig)::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
+ const body=()=>owned.psql(`SELECT md5(prosrc) FROM pg_catalog.pg_proc WHERE oid=${signature};`);
+ const before=profile(),forward=readFileSync('database/supabase/migrations/366_theme_publication_visibility.sql','utf8'),rollback=readFileSync('database/supabase/rollback/366_theme_publication_visibility.rollback.sql','utf8');
+ try{
+  assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');owned.psql(rollback);assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84');assert.equal(profile(),before);
+  const definition=owned.psql(`SELECT pg_catalog.pg_get_functiondef(${signature});`).replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION');
+  assert.match(definition,/p_make_store_live boolean DEFAULT true/);
+  owned.psql(definition.replace('p_make_store_live boolean DEFAULT true','p_make_store_live boolean DEFAULT false'));
+  try { assert.throws(()=>owned.psql(forward),'a same-count changed default must refuse the repair');assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84'); }
+  finally { owned.psql(definition); }
+  const allTypes=owned.psql(`SELECT proallargtypes::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
+  owned.psql(`UPDATE pg_catalog.pg_proc SET proallargtypes=proallargtypes[1:12]||ARRAY['text'::regtype::oid] WHERE oid=${signature};`);
+  try { assert.throws(()=>owned.psql(forward),'a changed output ABI must refuse the repair');assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84'); }
+  finally { owned.psql(`UPDATE pg_catalog.pg_proc SET proallargtypes='${allTypes}'::oid[] WHERE oid=${signature};`); }
+  assert.equal(profile(),before);
+  owned.psql(`GRANT EXECUTE ON FUNCTION public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid) TO anon;`);
+  assert.throws(()=>owned.psql(forward),'unexpected public actor execution must be rejected before the repair');assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84');
+  owned.psql(`REVOKE EXECUTE ON FUNCTION public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid) FROM anon;`);
+  owned.psql(forward);assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');assert.equal(profile(),before);
+  assert.throws(()=>owned.psql(forward),'a second forward invocation is not permission to replace an unknown live function');assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');
+ }finally{if(body()==='fa4fae1749dc226ed066e5bf27020c84')owned.psql(forward);}
+});
+
+test('an unpublished Core catalog is available only through a valid store-bound, unexpired preview capability',async()=>{
+ const f=await fixture();try{
+ const a=await f.create(),b=await f.create();assert.equal(a.response.status,201);assert.equal(b.response.status,201);const siteId=String(a.response.json?.data?.id);
+ const headers=()=>signedIdentityHeaders(f.id,f.email,siteId);
+ const created=await f.gateway.request('/v1/products',{method:'POST',headers:{...await headers(),'X-Store-ID':siteId,'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({store_id:siteId,name:'Synthetic private Core product',price:199,stock:5,status:'active',is_active:true})});assert.equal(created.status,201,created.text);const productId=created.json?.data?.id;
+ const loaded=await f.gateway.request(`/v1/themes/letbuyy-core/editor?store_id=${siteId}`,{headers:await headers()});assert.equal(loaded.status,200);
+ const saved=await f.gateway.request('/v1/themes/letbuyy-core/editor/draft',{method:'PUT',headers:await headers(),body:JSON.stringify({store_id:siteId,template_config:loaded.json?.data?.template_config,base_version:loaded.json?.data?.version,idempotency_key:crypto.randomUUID(),template_key:'index'})});assert.equal(saved.status,200);
+ const minted=await f.gateway.request('/v1/themes/letbuyy-core/preview-session',{method:'POST',headers:{...await headers(),'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({store_id:siteId,template_key:'index',ttl_seconds:60})});assert.equal(minted.status,201);const token=String(minted.json?.data?.preview_token);assert.equal(token.length>20,true);
+ const request=(slug:string,capability:string,ids?:string)=>f.gateway.request(`/v1/storefront/${slug}/theme-preview?token=${encodeURIComponent(capability)}&resource=products${ids?'&ids='+encodeURIComponent(ids):''}`);
+ const anonymous=await f.gateway.request(`/v1/storefront/${a.slug}/products`);assert.equal(anonymous.status,404);
+ const preview=await request(a.slug,token);assert.equal(preview.status,200);assert.equal(Array.isArray(preview.json?.data),true,'preview product response is an array, not a silently substituted store document');assert.deepEqual(preview.json?.data?.map((row:{id:string})=>row.id),[productId]);assert.match(preview.headers.get('Cache-Control')||'',/private.*no-store/);
+ const selected=await request(a.slug,token,String(productId));assert.equal(selected.status,200);assert.equal(selected.json?.data?.length,1);
+ assert.equal((await request(a.slug,token,'invalid-id')).status,400);
+ assert.equal((await request(a.slug,token,Array(101).fill(productId).join(','))).status,400,'preview selection has a finite 100-ID contract');
+ assert.deepEqual((await request(a.slug,token,crypto.randomUUID())).json?.data,[]);
+ assert.equal((await f.gateway.request(`/v1/storefront/${a.slug}/theme-preview?token=${encodeURIComponent(token)}&resource=unknown`)).status,400);
+ assert.equal((await request(b.slug,token)).status,404);assert.equal((await request(a.slug,crypto.randomUUID()+'.'+crypto.randomUUID())).status,404);
+ owned.psql(`UPDATE theme_preview_sessions SET expires_at=NOW()-INTERVAL '1 minute' WHERE store_id='${siteId}';`);assert.equal((await request(a.slug,token)).status,404,'a repeated preview read cannot reuse data after its capability expires');
+ assert.equal(owned.psql(`SELECT published FROM sites WHERE id='${siteId}';`),'f','private preview must not open the public store');
+ }finally{await f.gateway.settle();}
 });

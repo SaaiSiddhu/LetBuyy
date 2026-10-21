@@ -504,6 +504,7 @@ export function registerStorefrontPublicRoutes(
     // Signed storefront preview for editor iframes. Uses the same public store payload
     // shape as live rendering, but swaps the current release config with the draft.
     router.get('/:subdomain/theme-preview', async (c) => {
+        c.header('Cache-Control', 'private, no-store');
         const token = c.req.query('token') || '';
         if (!token || token.length > 200) {
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Preview token is required' } }, 400);
@@ -602,6 +603,22 @@ export function registerStorefrontPublicRoutes(
 
         if (!draftLoaded) {
             return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Preview draft not found' } }, 404);
+        }
+
+        const resource = c.req.query('resource');
+        if (resource && resource !== 'products') {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unknown preview resource' } }, 400);
+        }
+        if (resource === 'products') {
+            const rawIds = c.req.query('ids');
+            const ids = rawIds === undefined ? undefined : rawIds.split(',').map((id) => id.trim()).filter(Boolean);
+            if (ids && (ids.length > 100 || ids.some((id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)))) {
+                return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid preview product IDs' } }, 400);
+            }
+            if (ids && !ids.length) return c.json(success([]));
+            const { data, error } = await queryPublicProducts(c, store.id, { page: 1, limit: 100, paginated: true, ids });
+            if (error) return c.json(dbFailureBody(), 500);
+            return c.json(success((data || []).map((product) => toPublicProduct(product))));
         }
 
         const liveRelease = await loadCurrentThemeRelease(c, store.id);

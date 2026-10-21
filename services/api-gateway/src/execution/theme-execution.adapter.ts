@@ -758,6 +758,7 @@ export class ThemeExecutionAdapter {
 
         if (input.makeStoreLive) {
             storeUpdates.status = 'published';
+            storeUpdates.published = true;
             storeUpdates.published_at = publishedAt;
         }
 
@@ -775,6 +776,7 @@ export class ThemeExecutionAdapter {
 
             if (input.makeStoreLive) {
                 minimalUpdates.status = 'published';
+                minimalUpdates.published = true;
                 minimalUpdates.published_at = publishedAt;
             }
 

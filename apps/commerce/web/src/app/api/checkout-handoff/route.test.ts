@@ -1,3 +1,4 @@
+import { DEFAULT_STOREFRONT_DOMAIN } from '@letbuyy/shared-types';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NextRequest } from 'next/server';
@@ -84,4 +85,24 @@ test('foreign origins, malformed cookies, invalid input, and unsafe checkout hos
     await withGateway(() => jsonResponse({ data: { checkout_url: 'https://checkout.attacker.test/checkout' } }), async () => {
         assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' })).status, 503);
     });
+});
+
+test('production handoff honors its explicit checkout origin while rejecting other ports and tenant checkout hosts', async () => {
+    const keys = ['NODE_ENV', 'CHECKOUT_ORIGIN', 'NEXT_PUBLIC_STORE_ROOT_DOMAIN'];
+    const previous = Object.fromEntries(keys.map(key => [key, process.env[key]]));
+    try {
+        Object.assign(process.env, { NODE_ENV: 'production' });
+        process.env.CHECKOUT_ORIGIN = 'https://checkout.localhost:4321';
+        process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN = DEFAULT_STOREFRONT_DOMAIN;
+        const target = new URL(checkoutUrl); target.hostname = 'checkout.localhost'; target.port = '4321';
+        await withGateway(() => jsonResponse({ data: { checkout_url: target.href } }), async () => {
+            assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' })).status, 200);
+            target.port = '4322';
+            assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' })).status, 503);
+            target.hostname = `checkout.${DEFAULT_STOREFRONT_DOMAIN}`; target.port = '4321';
+            assert.equal((await call({ subdomain: 'snaz', cartToken: 'ct_1234567890abcdef' })).status, 503);
+        });
+    } finally {
+        for (const key of keys) if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key];
+    }
 });

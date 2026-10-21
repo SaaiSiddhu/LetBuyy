@@ -70,19 +70,9 @@ interface SetupChecklistItem {
     detail?: string
 }
 
-/**
- * One landscape illustration per step, keyed by actionLink so a step cannot
- * silently lose its art when copy changes. Files live in public/activation/;
- * a missing file is hidden on error, so a half-finished asset set degrades to
- * an empty well rather than broken-image glyphs.
- */
+/** Only shipped assets belong here; other steps use their existing UI icon. */
 const ACTIVATION_ART: Record<string, string> = {
-    'products/new': '/activation/add-product.png',
-    'online-store/themes': '/activation/choose-theme.png',
-    'settings/payments': '/activation/set-up-payments.png',
-    'settings/domains': '/activation/connect-domain.png',
-    'settings/shipping': '/activation/shipping-rates.png',
-    'online-store': '/activation/launch-store.png',
+    'online-store/themes': '/activation/choose-theme-left.png',
 }
 
 /**
@@ -287,8 +277,13 @@ function ActivationBoard({
  * hover, opening a gap around the coded centre — the same read as the Shopify
  * onboarding cards, where the illustration reacts rather than just sitting there.
  */
-function ActivationArt({ art, featured }: { art?: string; featured: boolean }) {
-    if (!art) return null
+function ActivationArt({ art, featured, icon }: { art?: string; featured: boolean; icon: string }) {
+    const [failed, setFailed] = useState(false)
+    if (!art || failed) return (
+        <div className="flex h-full items-center justify-center text-[color:var(--lb-color-text-subdued)]" aria-hidden="true">
+            <MaterialIcon name={icon} size={64} />
+        </div>
+    )
     return (
         <Image
             src={art}
@@ -297,7 +292,7 @@ function ActivationArt({ art, featured }: { art?: string; featured: boolean }) {
             fill
             sizes={featured ? "(max-width: 768px) 92vw, 46vw" : "(max-width: 768px) 92vw, 30vw"}
             className="activation-art__image object-contain"
-            onError={(event) => { event.currentTarget.hidden = true }}
+            onError={() => setFailed(true)}
         />
     )
 }
@@ -375,16 +370,14 @@ function ActivationCard({
                 </p>
             </div>
 
-            {/* Illustration well. The tinted panel is the fallback, so a missing
-                or not-yet-added PNG degrades to a calm empty surface instead of
-                a broken-image glyph. */}
+            {/* Shipped illustration or a meaningful local icon; no requests for missing assets. */}
             <div
                 className={[
                     'activation-art mx-[var(--lb-space-5)]',
                     featured ? 'activation-art--featured' : '',
                 ].filter(Boolean).join(' ')}
             >
-                <ActivationArt art={art} featured={featured} />
+                <ActivationArt art={art} featured={featured} icon={item.icon} />
             </div>
 
             <div className="p-[var(--lb-space-5)] pt-[var(--lb-space-4)]">

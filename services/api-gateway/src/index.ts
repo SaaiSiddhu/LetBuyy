@@ -8,7 +8,7 @@ import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, cs
 import { protectedMutationIdempotency } from './middleware/idempotency';
 import { featureGate } from './middleware/featureFlags';
 import { appPlatformKillSwitch } from './middleware/appPlatformKillSwitch';
-import { observability } from './middleware/observability';
+import { observability, getObservabilityRoute } from './middleware/observability';
 import { internalPerimeter } from './middleware/internal-perimeter';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
@@ -945,7 +945,7 @@ app.onError((err, c) => {
         level: 'error',
         service: 'letbuyy-api',
         request_id: requestId,
-        route: c.req.path,
+        route: getObservabilityRoute(c),
         method: c.req.method,
         status_code: 500,
         error: err instanceof Error ? err.message : 'Unhandled error',

@@ -5515,6 +5515,10 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
+    themePreviewProducts: (subdomain: string, token: string, productIds?: string[], options?: LetbuyyRequestOptions) =>
+      this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, {
+        ...options, query: { token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
+      }),
     navigation: (subdomain: string, location: string, options?: LetbuyyRequestOptions) =>
       this.requestData<NavigationResponse>(`/storefront/${encodePathSegment(subdomain)}/navigation`, { ...options, query: { location } }),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>

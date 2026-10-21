@@ -27,5 +27,15 @@
   "remainingProgramme": [
     "Hosted domains/TLS/cookies, actual email deliverability and Razorpay sandbox acceptance remain separate",
     "Product/variant/images and canonical customer COD order must be verified through actual UI before this full journey is marked complete"
+  ],
+  "observedExpansion": [
+    "Fresh real merchant publication returned200/status published, while public .store page401. Owned PG reproduced published|false|offline after successful live publication.",
+    "Migration366 repairs only the existing publisher body, retaining exact predecessor ABI/profile and ACLs; no backfill or shared/hosted DB application. Rollback restores known prior body and preserves committed owner publications.",
+    "Six dashboard illustration references were absent from public assets. Use shipped theme art or existing local icons; avoid empty wells and repeated failing image requests.",
+    "Owned fixture host mode explicitly allows canonical storefront loopback TLS, backend loopback checks retained, ports paired and negative controls proved.",
+    "Configured hosted checkout origin was accepted by Commerce proxy but rejected by its handoff endpoint because tenant root drove the old allowlist. Exact configured origin/port is now checked consistently.",
+    "Unpublished editor preview loaded a protected store but public-only products; both top-level and per-section product demand now share one capability-authorized bounded catalog, with no shared caching.",
+    "Raw cart bearer token was observed in Gateway route telemetry; route-pattern logging now covers stdout, analytics, durable request logs and global errors. This is scoped telemetry remediation, not a whole-log privacy certification.",
+    "Historical344/354 retirement proofs explicitly retire366 first and restore366 for current business cases. No predecessor guard is weakened."
   ]
 }

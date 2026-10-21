@@ -80,6 +80,22 @@ export const ProductService = {
         }
     },
 
+    // A preview capability may render active products before the store is public.
+    // The existing theme-preview endpoint validates its store/draft/expiry first.
+    async getPreviewProducts(subdomain: string, token: string, selectedIds: string[] = []): Promise<ProductModel[]> {
+        try {
+            const products = await createStorefrontApiClient({ cache: 'no-store' }).storefront.themePreviewProducts(
+                subdomain, token, selectedIds.length ? selectedIds.slice(0, 100) : undefined,
+            );
+            if (!Array.isArray(products)) throw new Error('Invalid preview catalog response');
+            return products.map(mapWorkerProduct);
+        } catch {
+            // A failed fetch can contain the capability URL; never emit that object.
+            console.error('[ProductService] Preview catalog is unavailable');
+            throw new StorefrontCatalogueError('getPreviewProducts', new Error('Preview catalog unavailable'));
+        }
+    },
+
     // Search products for the storefront /search route. Callers should catch: a failed search
     // degrades to an empty result set with a distinct error state, not a thrown storefront error
     // boundary — a shopper mistyping a query is not the same fact as a catalogue outage.
