@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "status": "FINAL_GOVERNANCE_PENDING",
+  "status": "VERIFIED",
   "rootPure": {
     "tests": 2442,
     "pass": 2427,
@@ -110,6 +110,39 @@
         0
       ],
       "tasks": []
+    },
+    {
+      "log": "gateway-unit-acceptance.log",
+      "sha256": "e7bb644ff4357f6400743f8da337417299df9369f7963da90bf25c690ae5bd37",
+      "TAPtests": [
+        1628
+      ],
+      "TAPpass": [
+        1628
+      ],
+      "TAPfail": [
+        0
+      ]
+    },
+    {
+      "log": "affected-root-acceptance.log",
+      "sha256": "9cc01cf0dd234ad150a28bc0cc09f62fece0833e97d6fea6e8b48ffef6f71938",
+      "TAPtests": [
+        21
+      ],
+      "TAPpass": [
+        21
+      ],
+      "TAPfail": [
+        0
+      ]
+    },
+    {
+      "log": "gateway-typecheck-acceptance.log",
+      "sha256": "2829e6d82463d3f936c921702942a67e016a82b12c932c3cfc230bcdb0d47ca4",
+      "TAPtests": [],
+      "TAPpass": [],
+      "TAPfail": []
     }
   ],
   "ownedAcceptance": {
@@ -158,8 +191,8 @@
       },
       {
         "suite": "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts",
-        "receipt": "owned-final.json",
-        "runId": "e19036cbf9df",
+        "receipt": "export-authority-acceptance.json",
+        "runId": "b1e245fbc0f7",
         "pass": 44,
         "fail": 0,
         "skipped": 0
@@ -190,8 +223,8 @@
       },
       {
         "suite": "tests/owned-db/storefront-access-worker.postgres.test.ts",
-        "receipt": "owned-final.json",
-        "runId": "e19036cbf9df",
+        "receipt": "export-authority-acceptance.json",
+        "runId": "b1e245fbc0f7",
         "pass": 11,
         "fail": 0,
         "skipped": 0
@@ -206,9 +239,9 @@
       },
       {
         "suite": "tests/owned-db/merchant-export.postgres.test.ts",
-        "receipt": "owned-corrected.json",
-        "runId": "0a8955e7cd56",
-        "pass": 4,
+        "receipt": "export-authority-acceptance.json",
+        "runId": "b1e245fbc0f7",
+        "pass": 5,
         "fail": 0,
         "skipped": 0
       },
@@ -229,7 +262,7 @@
         "skipped": 0
       }
     ],
-    "tests": 167,
+    "tests": 168,
     "suiteCount": 14,
     "diagnosticsRetained": [
       {
@@ -279,9 +312,17 @@
         "pass": 1,
         "fail": 0,
         "cleanupFailures": 0
+      },
+      {
+        "receipt": "export-authority-acceptance.json",
+        "sha256": "c6b57726ec98eb8fc7d49c5e4c8096e56023bb21865f9e5eff236a189834fc36",
+        "runId": "b1e245fbc0f7",
+        "pass": 60,
+        "fail": 0,
+        "cleanupFailures": 0
       }
     ],
-    "productionSourceNote": "Application runtime source matches259f7a9f;377/378 and registry provenance are newer. Installer and metadata suites rerun through378. Browser completed at0c56948f-compatible runtime before377/378; no claim of a fresh whole167 suite run."
+    "productionSourceNote": "Core/theme/browser application paths match259f7a9f. Later export failure/CSV validation changes pass final native5 and Gateway1628. Migrations377/378 pass final installer/metadata proof. This is not one fresh aggregate run."
   },
   "diagnosticHistory": {
     "rootInitial": {
@@ -305,7 +346,18 @@
       "Stream complete Core fixture to SQL stdin instead of exceeding process argument size.",
       "Hash complete PostgreSQL conservation snapshot within the database instead of overflowing output.",
       "Compare positive SET ROLE result independently of psql SET status."
-    ]
+    ],
+    "governanceInitial": {
+      "PASS": 112,
+      "FAIL": 2,
+      "receipt": "governance-final.json",
+      "repaired": [
+        "Move shared owned SQL helper below the service test boundary.",
+        "Keep internal stored job failures private while preserving controlled CSV validation text."
+      ]
+    },
+    "interruptedBroadPackageLane": "Package test script completed1628 unit checks, then began its broad synthetic DB continuation. It was interrupted, its own resources removed, and it is not counted as database acceptance. Exact test:unit and explicit owned suites subsequently passed.",
+    "reportingCorrection": "A finalizer variable accidentally targeted the private Gateway typecheck log instead of this JSON. The intended JSON was recovered and a genuine Gateway typecheck was rerun to recreate the log; no result was fabricated."
   },
   "secretHistory": {
     "newBlobsScanned": 499,
@@ -323,9 +375,28 @@
     "recoveryGeneratedMetadataExcluded": "RECOVERY_STATE.md"
   },
   "limits": [
-    "Owned acceptance composes the latest successful14 component receipts; it is not one fresh aggregate167-case run.",
-    "Application runtime files match the first owned candidate;377/378 and registry provenance are later and covered by final installer/metadata receipts.",
+    "Owned acceptance composes the latest successful14 component receipts; it is not one fresh aggregate168-case run.",
+    "Core/theme/browser paths match the first owned candidate. Export failure and controlled CSV validation projection changed afterward and pass native5/Gateway1628;377/378 and registry provenance have final installer/metadata proof.",
     "15 existing HUMAN-REQUIRED root skips remain; provider/hosted/load/mobile/cloud acceptance is not inferred.",
     "No restored or hosted database migration, deployment, billing change, or main/staging promotion."
-  ]
+  ],
+  "sourceCheckpoint": "e9a3681edad23f228d2013119884fefa39c74e9b",
+  "governance": {
+    "sourceCheckpoint": "e9a3681edad23f228d2013119884fefa39c74e9b",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "advisories": [
+      {
+        "validator": "branch-dispositions-validator.mjs",
+        "message": "Branch dispositions validator: Local branch without a ledger row: letbuyy/themes-shopify-experience (add a row before building on it)"
+      }
+    ],
+    "log": "governance-acceptance.log",
+    "sha256": "b848769a3f53509535bde0161c2466b4d351ee4f436237a6f14bf73ed49fc5f4"
+  }
 }
