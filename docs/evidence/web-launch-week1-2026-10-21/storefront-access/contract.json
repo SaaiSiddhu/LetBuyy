@@ -10,7 +10,8 @@
     "Owned actual Gateway baseline and access/failure/cache/tenant isolation suite; reviewed inventory/source contracts",
     "Optional guarded371 backend site metadata/revision projection and rollback; preserve370 historical lifecycle guards if body evolves",
     "services/api-gateway/src/middleware/store-context.ts canonical host resolver: distinguish actual missing rows/optional missing legacy alias table from dependency failures; internal resolve and preview issue use this single resolver with owned fault/recovery proof",
-    "tests/owned-db/native-core-storefront-browser.postgres.test.ts: retain complete signup/Core/COD/account journey, then add actual production-browser password form, cookie forwarding, password rotation, general-preview first request/revocation and offline/recovery with owned policy transitions"
+    "tests/owned-db/native-core-storefront-browser.postgres.test.ts: retain complete signup/Core/COD/account journey, then add actual production-browser password form, cookie forwarding, password rotation, general-preview first request/revocation and offline/recovery with owned policy transitions",
+    "apps/commerce/web/src/app/preview/coming-soon/page.tsx and colocated client view: repair native-proven missing unlock form by passing server-resolved rewrite search parameters, preserve normal demo separately, truthful unavailable/throttled feedback and real browser failure/retry"
   ],
   "requirements": {
     "anonymous": "Password and preview-only data refuse; offline refuses even with preview. Status/routing metadata remains a minimal independently allowlisted response. No header/Origin/internal-app identity alone supplies visitor authority.",
