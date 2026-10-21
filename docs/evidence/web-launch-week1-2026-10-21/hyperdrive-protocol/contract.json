@@ -1,0 +1,28 @@
+{
+  "phase": "WEB-LAUNCH-W1-HYPERDRIVE-PROTOCOL",
+  "base": "eba8b295",
+  "outcome": "Correct actual Postgres.js prepared execution for Hyperdrive targets at constructor and unsafe query/scoped-client boundaries while preserving direct connection behavior, current invocation ownership, tenant transactions and mobile API contracts. Finish native unknown projection-response refusal proof.",
+  "scope": [
+    "packages/infrastructure/pooled-sql-adapter/index.ts",
+    "services/api-gateway/src/__tests__/pooled-sql-protocol.test.ts new pure driver-object tests",
+    "services/api-gateway/src/__tests__/owned-db/pooled-tenant-context.postgres.test.ts",
+    "tests/owned-db/worker-sql-invocation.postgres.test.ts",
+    "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+    "tests/performance/storefront-pooled-sql.test.mjs",
+    "phase evidence and existing branch/programme records"
+  ],
+  "contracts": {
+    "target": "HYPERDRIVE binding selects prepared protocol; direct DATABASE_URL/SUPABASE_DB_URL retains unprepared compatibility. Same endpoint with different target modes never shares a client. Preserve binding precedence and explicit feature-off.",
+    "execution": "Constructor prepare:true is insufficient: pinned driver unsafe defaults per-query prepare:false. Canonical adapter owns exact unsafe overload normalization and prepares its Hyperdrive queries, including scoped clients from begin/savepoint/reserve. Preserve other options/onexecute and driver return/rollback behavior. No global/vendor monkeypatch or additional driver.",
+    "ownership": "All I/O-owning clients stay in existing invocation scopes; nested scopes share only their owning request; cleanup/background/error semantics remain. No cross-invocation cache of active driver objects.",
+    "verification": "Pure actual driver Query options must detect old unsafe:false behavior before repair; real owned wire shows prepared statements and literal parameter safety, transaction rollback/GUC/role restoration/concurrency/disconnect and savepoint/reserve paths; native Worker direct and Hyperdrive-shaped binding use real owned wire. Full production browser/Core/cache/publication/COD/account journey and altered future projection refusal/recovery. Existing media/admission predecessor controls retained.",
+    "hosting": "Local binding-shaped direct PostgreSQL is not the managed Hyperdrive proxy. Account cache/protocol/provider acceptance remains explicit; noninteractive staging metadata read previously failed because API auth is unavailable. Do not provision/reconfigure or assume function volatility guarantees remote freshness."
+  },
+  "boundaries": [
+    "One agent",
+    "No new merge/push/deploy or shared database changes",
+    "No hosted cache/binding mutation",
+    "No real payment/message or mobile UI"
+  ],
+  "worktree": "Managed create_worktree returned Not a git repository in workspace context; native Git worktree fallback created this stacked local branch."
+}
