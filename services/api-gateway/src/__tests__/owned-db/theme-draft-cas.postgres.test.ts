@@ -697,7 +697,7 @@ test('legacy release rollback preserves an unrelated active canonical editor dra
         encode(sha256(convert_to(d.working_manifest::text,'UTF8')),'hex') FROM theme_instances i
         JOIN theme_instance_drafts d ON d.id=i.current_draft_id WHERE i.store_id='${j.tenant.siteId}';`);
     const before = snapshot(); assert.match(before, /\|3\|active\|/);
-    const reviewedCurrent = owned.psql(`SELECT release_id FROM public.publish_theme_release('${j.tenant.siteId}','${slug}',${quoteSql(JSON.stringify(j.config))}::jsonb,NULL,NULL,'${j.owner}','Synthetic legacy caller',false,NULL,NULL);`);
+    const reviewedCurrent = owned.scriptLarge(`SELECT release_id FROM public.publish_theme_release('${j.tenant.siteId}','${slug}',${quoteSql(JSON.stringify(j.config))}::jsonb,NULL,NULL,'${j.owner}','Synthetic legacy caller',false,NULL,NULL);`);
     assert.equal(snapshot(), before, 'the legacy publisher itself must preserve the unrelated active draft');
     const before354Reapply = rollbackConservationSnapshot();
     owned.script(sql376('rollback'));
