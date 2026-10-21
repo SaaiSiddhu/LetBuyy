@@ -269,6 +269,7 @@ function holdingPage(req: NextRequest, status: number, reason: string, site?: St
   const destination = req.nextUrl.clone();
   destination.pathname = '/preview/coming-soon';
   destination.searchParams.set('reason', reason);
+  if (site?.subdomain) destination.searchParams.set('store', site.subdomain);
   if (site?.access_message) destination.searchParams.set('message', site.access_message);
   return noIndex(NextResponse.rewrite(destination, { status }));
 }
