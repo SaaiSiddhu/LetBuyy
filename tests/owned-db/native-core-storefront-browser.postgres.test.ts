@@ -377,7 +377,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.goto(`${merchantOrigin}/${subdomain}/settings/general`);await expect(page.locator('.settings-general-seo-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);await expect(page.locator('.settings-general-seo-preview-title')).toHaveText('Synthetic Core Search Listing');
   stage='storefront-visitor-access';console.info('OWNED_NATIVE_STAGE storefront-visitor-access');
   const visitorContext=await browser.newContext(),visitor=await visitorContext.newPage();buyerDiagnostic=visitor;visitor.setDefaultTimeout(30_000);visitor.setDefaultNavigationTimeout(60_000);
-  const storePassword='Synthetic-Visitor-Password-42!',rotatedPassword='Synthetic-Rotated-Visitor-Password-42!';
+  const storePassword=crypto.randomUUID()+crypto.randomUUID(),rotatedPassword=crypto.randomUUID()+crypto.randomUUID();
   const accessHash=await hashStoreAccessPassword(storePassword),rotatedHash=await hashStoreAccessPassword(rotatedPassword);
   owned.psql(`UPDATE sites SET access_mode='password',access_password_hash='${accessHash}' WHERE id='${siteId}';`);
   assert.equal((await visitor.goto(tenantOrigin))?.status(),401);await expect(visitor.getByLabel('Store password',{exact:true})).toBeVisible();

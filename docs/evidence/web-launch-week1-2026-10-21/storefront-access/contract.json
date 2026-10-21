@@ -33,5 +33,6 @@
     "No mobile UI"
   ],
   "worktree": "Managed tool returned Not a git repository; native managed-by-Git worktree fallback used.",
-  "continuation": "Source-sync bookkeeping reconciled locally with develop d6cd8f37; source push permission applied only to the completed handoff. Remaining engineering stays local."
+  "continuation": "Source-sync bookkeeping reconciled locally with develop d6cd8f37; source push permission applied only to the completed handoff. Remaining engineering stays local.",
+  "bootstrapDecision": "Public metadata receives an untrusted globally unique site ID/normalized handle before validated actor/tenant authority exists. Its single-row bootstrap client is explicitly reviewed and re-verified by current visitor policy/proof before response/cache. Known-owned merchant preview issuance retains guarded ID lookup. This supersedes the earlier tentative guarded-public-ID split, which did not satisfy the sites owner-scope registry."
 }

@@ -39,6 +39,10 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'cross-tenant payment-replay detection: a provider payment id is unique across the provider, and scoping it to one site would delete the cross-tenant protection',
         boundedIn: { file: 'lib/payment-route-support.ts', symbol: 'assertProviderPaymentNotReplayed' },
     },
+    'lib/storefront-visitor-access.ts': {
+        why: 'globally unique storefront ID/normalized handle bootstrap before validated tenant identity; one candidate metadata row, never visitor authority by itself; current policy/site/host/proof checked before response or cache',
+        boundedIn: { file: 'lib/storefront-visitor-access.ts', symbol: 'restMetadata' },
+    },
     'routes/internal-store-access.ts': {
         why: 'host -> site bootstrap: the tenant is not known until the host resolves, so no scope predicate can exist yet',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },

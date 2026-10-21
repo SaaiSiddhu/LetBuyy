@@ -6,8 +6,8 @@
   "adaptation": "Only dynamic compile replaced with static imported modules; unchanged Argon2id/PHC implementation.",
   "files": {
     "runtime.mjs": {
-      "bytes": 41493,
-      "sha256": "5ec897d0c5d5e9f0f790f5828051916e827dceb48029cc3560322b42476a446d"
+      "bytes": 41507,
+      "sha256": "38c6674b719a5c56547171c02527c06fcb37e85732aba115512578b1955144b9"
     },
     "argon2.wasm": {
       "bytes": 6660,

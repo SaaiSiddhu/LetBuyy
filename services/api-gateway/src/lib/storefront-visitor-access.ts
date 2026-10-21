@@ -5,7 +5,7 @@ import {verifyStorefrontGateToken,verifyStorefrontPreviewToken} from '@letbuyy/a
 import {normalizeStorefrontHandle,resolveStorefrontHost} from '@letbuyy/tenant-core';
 import {getPooledSql} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import type {Env} from '../index';
-import {getSupabaseAdmin} from './supabase';
+import {getSupabaseAdmin,getSupabaseAdminUnguarded} from './supabase';
 import {AppError} from './errors';
 import {sha256Hex,timingSafeEqualText} from './crypto';
 type C=Context<{Bindings:Env}>;
@@ -21,7 +21,10 @@ function proof(c:C,name:string,cookie:string){
  return value&&value.length<=4096?value:null;
 }
 async function restMetadata(c:C,selector:{id?:string;handle?:string},preview:boolean):Promise<VisitorSite|null>{
- let query=getSupabaseAdmin(c).from('sites').select(metadataFields).is('deleted_at',null);
+ // ID/handle is an untrusted globally unique lookup key, not validated
+ // tenant authority. Resolve one candidate row with the reviewed bootstrap
+ // client; authorizeVisitorSite rechecks policy/proof before any data/cache.
+ let query=getSupabaseAdminUnguarded(c).from('sites').select(metadataFields).is('deleted_at',null);
  query=selector.id?query.eq('id',selector.id):query.eq('subdomain',selector.handle!);
  if(!preview)query=query.eq('status','published').not('published','is',false);
  const {data,error}=await query.maybeSingle();if(error)throw unavailable();if(!data)return null;
