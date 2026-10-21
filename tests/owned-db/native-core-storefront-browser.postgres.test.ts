@@ -388,7 +388,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [verifyOutage]=await Promise.all([visitor.waitForResponse(r=>new URL(r.url()).pathname==='/store-access/password'),visitor.getByRole('button',{name:'Enter store',exact:true}).click()]);assert.equal(verifyOutage.status(),503);await expect(visitor.getByText('Store access is temporarily unavailable. Please try again.',{exact:true})).toBeVisible();passwordVerifyUnavailable=false;
   await unlock(storePassword);
   const gateCookie=(await visitorContext.cookies()).find(c=>c.name==='__Host-lb_store_gate');assert.ok(gateCookie?.httpOnly&&gateCookie.secure);
-  assert.equal((await visitor.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(visitor.getByRole('heading',{name:productName,exact:true})).toBeVisible();
+  assert.equal((await visitor.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(visitor.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
   assert.equal((await visitor.goto(`${tenantOrigin}/collections`))?.status(),200);await expect(visitor.locator('[data-theme-renderer="liquid"]')).toBeVisible();
   owned.psql(`UPDATE sites SET access_password_hash='${rotatedHash}' WHERE id='${siteId}';`);assert.equal((await visitor.goto(tenantOrigin))?.status(),401);await unlock(rotatedPassword);
   owned.psql(`UPDATE sites SET access_mode='preview_only' WHERE id='${siteId}';`);assert.equal((await visitor.goto(tenantOrigin))?.status(),401);
@@ -397,7 +397,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const shareContext=await browser.newContext(),share=await shareContext.newPage();share.setDefaultNavigationTimeout(60_000);buyerDiagnostic=share;
   assert.equal((await share.goto(tenantOrigin+'?lb_preview='+encodeURIComponent(issuedPreview.data.token)))?.status(),200,'first preview request forwards its verified capability before response cookie exists');await expect(share.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
   const previewCookie=(await shareContext.cookies()).find(c=>c.name==='__Host-lb_preview');assert.ok(previewCookie?.httpOnly&&previewCookie.secure);
-  assert.equal((await share.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(share.getByRole('heading',{name:productName,exact:true})).toBeVisible();
+  assert.equal((await share.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(share.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
   const revoked=await gateway.dispatch('/v1/store-access/preview-links/'+issuedPreview.data.jti+'?site_id='+siteId,{method:'DELETE',headers:{...await signedIdentityHeaders(ownerId,email,siteId),'X-Idempotency-Key':crypto.randomUUID()}});assert.equal(revoked.status,200);
   assert.equal((await share.goto(tenantOrigin))?.status(),401);await expect(share.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
   owned.psql(`UPDATE sites SET access_mode='offline' WHERE id='${siteId}';`);assert.equal((await share.goto(tenantOrigin))?.status(),503);
