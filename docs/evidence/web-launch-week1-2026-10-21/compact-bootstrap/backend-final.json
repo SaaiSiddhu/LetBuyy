@@ -1,0 +1,121 @@
+{
+  "runId": "5cf8edd6b902",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-13890-mvhsz163-848c2c"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 1,
+  "tests": 10,
+  "assertionsPassed": 9,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 43.9,
+  "suiteSeconds": 41.9,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-bootstrap-projection.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-13890-mvhsz163-848c2c",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 6,
+      "pass": 5,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 32.1,
+      "firstFailure": "not ok 1 - compact/default SQL and REST representations agree on the pinned publication without ",
+      "failures": [
+        "not ok 1 - compact/default SQL and REST representations agree on the pinned publication without duplicate artifacts or draft fallback"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_bootstrap_projection_postgres",
+      "templateSeconds": 24.1,
+      "provisionSeconds": 1.5,
+      "rest": {
+        "container": "letbuyy-exec-5cf8edd6b902-rest-1",
+        "upstreamPort": 54988,
+        "proxyPort": 54989
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 142,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    },
+    {
+      "name": "storefront-collection-discovery.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-collection-discovery.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-13890-mvhsz163-848c2c",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 9.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_collection_discovery_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-5cf8edd6b902-rest-2",
+        "upstreamPort": 55040,
+        "proxyPort": 55041
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 54,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}
