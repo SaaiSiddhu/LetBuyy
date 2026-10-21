@@ -2,16 +2,16 @@
 // No seeded user, session, verified email, password or store. Resend HTTP is captured;
 // this is provider-fixture acceptance, not real inbox delivery or hosted cookie proof.
 import {tmpdir} from 'node:os';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createServer,request as forwardHttpRequest,type Server} from 'node:http';
 import {createServer as createHttpsServer,type Server as HttpsServer} from 'node:https';
-import {createRequire,builtinModules} from 'node:module';
-import {Miniflare} from 'miniflare';
+import {NativeGateway} from '../helpers/native-owned-gateway';
 import {DEFAULT_STOREFRONT_DOMAIN} from '@letbuyy/shared-types';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
-import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET,nextClientAddress} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,startOwnedPooledSqlProxy,createOwnedCheckoutTlsCertificate,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
 async function freePort() {
@@ -27,26 +27,7 @@ async function ready(origin:string, child:OwnedClientProcess) {
     }
     throw new Error('Owned app did not become ready');
 }
-class NativeGateway {
- private constructor(readonly mf:Miniflare){}
- static async create(env:Record<string,unknown>,capture:(request:Request)=>Promise<Response>){
-  const req=createRequire(new URL('../../services/api-gateway/package.json',import.meta.url));
-  const compiler=createRequire(req.resolve('wrangler'))('esbuild') as {build(options:unknown):Promise<{outputFiles?:{text:string}[]}>};
-  const result=await compiler.build({entryPoints:[new URL('../../services/api-gateway/src/index.ts',import.meta.url).pathname],absWorkingDir:new URL('../..',import.meta.url).pathname,
-   bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',tsconfig:'services/api-gateway/tsconfig.json',external:['cloudflare:*','node:*'],conditions:['workerd','worker','browser'],logLevel:'silent',
-   banner:{js:"import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-owned-gateway.mjs');"},
-   plugins:[{name:'native-node-builtins',setup(build:{onResolve(options:{filter:RegExp},handler:(args:{path:string})=>{path:string;external:true}|undefined):void}){const native=new Set(builtinModules);build.onResolve({filter:/^[a-z][\w/]*$/},args=>native.has(args.path)?{path:'node:'+args.path,external:true}:undefined);}}]});
-  assert.equal(result.outputFiles?.length,1);const restOrigin=new URL(String(env.SUPABASE_URL)).origin;
-  const mf=new Miniflare({modules:true,script:result.outputFiles![0].text,compatibilityDate:'2026-05-25',compatibilityFlags:['nodejs_compat'],cf:false,
-   durableObjects:{RUNTIME_COORDINATOR:{className:'LetbuyyRuntimeDurableObject',useSQLite:true}},durableObjectsPersist:false,r2Buckets:['REEL_ORIGINALS_BUCKET','R2_BUCKET'],r2Persist:false,bindings:env as never,
-   outboundService:async(request:Request)=>{const url=new URL(request.url);if(url.origin==='https://api.resend.com')return await capture(request) as never;
-    assert.equal(url.origin,restOrigin,'native Gateway may reach only its owned REST service or the explicit email fixture');
-    return await fetch(request.url,{method:request.method,headers:Object.fromEntries(request.headers.entries()),body:['GET','HEAD'].includes(request.method)?undefined:request.body,duplex:'half',redirect:'error'} as RequestInit) as never;}});
-  try{await mf.ready;return new NativeGateway(mf);}catch(error){await mf.dispose();throw error;}
- }
- async dispatch(path:string,init:RequestInit){const headers=new Headers(init.headers);headers.set('CF-Connecting-IP',nextClientAddress());return this.mf.dispatchFetch('https://gateway.test'+path,{...init,headers} as never);}
- async settle(){await this.mf.dispose();}
-}
+
 test('fresh merchant builds and publishes Core Liquid then a customer orders a real variant',{timeout:1000_000},async()=>{
  const email=`syn-public-${crypto.randomUUID()}@example.invalid`,password='Synthetic-Public-Signup-42!';
  const subdomain='syn-signup-'+crypto.randomUUID().slice(0,8);
@@ -68,7 +49,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks),headers=new Headers();
    for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
    try{const result=await gateway!.dispatch(req.url??'/',{method:req.method,headers,...(body.length?{body}:{})});
-    calls.push({path:(req.url??'/').split('?')[0],status:result.status,key:headers.get('X-Idempotency-Key')||undefined});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(Buffer.from(await result.arrayBuffer()));
+    if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}calls.push({path:(req.url??'/').split('?')[0],status:result.status,key:headers.get('X-Idempotency-Key')||undefined});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(Buffer.from(await result.arrayBuffer()));
    }catch{res.writeHead(500);res.end('{}');}
   });
   await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
@@ -93,7 +74,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
   for(const app of [identity,merchant,commerce])app.stderr.on('data',d=>errors.push(d.toString().slice(0,600)));
   await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant),ready(commerceHttpOrigin+'/api/buyer-auth/session',commerce)]);
-  browser=await chromium.launch({headless:true,args:[`--ignore-certificate-errors-spki-list=${tlsSpki}`,'--no-proxy-server',`--host-resolver-rules=MAP *.${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP ${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP checkout.localhost 127.0.0.1, MAP api.localhost 127.0.0.1`]});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  stage='native-signup';const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
+  browser=await chromium.launch({headless:true,args:[`--ignore-certificate-errors-spki-list=${tlsSpki}`,'--no-proxy-server',`--host-resolver-rules=MAP *.${DEFAULT_STOREFRONT_DOMAIN}:443 127.0.0.1:${tlsPort}, MAP *.${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP ${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP checkout.localhost 127.0.0.1, MAP api.localhost 127.0.0.1`]});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  stage='native-signup';const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
   const signupCopy=await page.locator('body').innerText();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
   await page.getByLabel('Email',{exact:true}).fill(email);
@@ -137,11 +118,11 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await expect(page.locator('body')).toContainText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);
   stage='product-create';await page.goto(`${merchantOrigin}/${subdomain}/products/new`);
   await page.getByLabel('Title',{exact:true}).fill(productName);await page.getByLabel('Price',{exact:true}).fill('199');await page.getByLabel('Product status',{exact:true}).selectOption('active');
-  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+  const png=readFileSync(new URL('../fixtures/week1-synthetic-product.png',import.meta.url));
   const uploaded=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/upload')&&r.request().method()==='POST');
   await page.locator('input[type="file"]').setInputFiles({name:'synthetic-core-product.png',mimeType:'image/png',buffer:png});
   const upload=await uploaded;assert.equal(upload.status(),201);const imageUrl=(await upload.json()).data.url;
-  await expect(page.locator(`img[src="${imageUrl}"]`)).toBeVisible();await expect.poll(()=>page!.locator(`img[src="${imageUrl}"]`).evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBe(1);
+  await expect(page.locator(`img[src="${imageUrl}"]`)).toBeVisible();await expect.poll(()=>page!.locator(`img[src="${imageUrl}"]`).evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBe(320);
   const raw=await gateway.dispatch(new URL(imageUrl).pathname,{method:'GET'});assert.equal(raw.status,200);assert.deepEqual(Buffer.from(await raw.arrayBuffer()),png);
   await page.getByRole('button',{name:'Add option',exact:true}).click();await page.getByPlaceholder('Option name (Size, Color, Material)').fill('Size');await page.getByRole('button',{name:'Done',exact:true}).click();
   for(const value of ['Small','Large']){await page.getByPlaceholder('Add value',{exact:true}).fill(value);await page.getByRole('button',{name:'Add value',exact:true}).click();}
@@ -149,6 +130,18 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const [saved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/products')&&r.request().method()==='POST'),page.getByRole('button',{name:'Save product',exact:true}).click()]);assert.equal(saved.status(),201);
   const productId=owned.psql(`SELECT id FROM products WHERE store_id='${siteId}' AND name='${productName}';`);assert.match(productId,/^[a-f0-9-]{36}$/);assert.equal(owned.psql(`SELECT count(*) FROM product_variants WHERE product_id='${productId}';`),'2');
   await page.goto(`${merchantOrigin}/${subdomain}/products/${productId}`);await expect(page.getByLabel('Title',{exact:true})).toHaveValue(productName);await expect(page.getByLabel('Stock for Small',{exact:true})).toHaveValue('3');
+  stage='merchant-manual-collection';const collectionTitle='Synthetic Native Collection';
+  await page.goto(`${merchantOrigin}/${subdomain}/products/collections`);await page.getByRole('button',{name:'New collection',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill(collectionTitle);
+  const [collectionCreated]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/collections')&&r.request().method()==='POST'),page.getByRole('button',{name:'Create collection',exact:true}).first().click()]);assert.equal(collectionCreated.status(),201);
+  const collectionId=owned.psql(`SELECT id FROM collections WHERE store_id='${siteId}' AND title='${collectionTitle}';`);assert.match(collectionId,/^[a-f0-9-]{36}$/);
+  await page.getByRole('row').filter({hasText:collectionTitle}).getByRole('button',{name:'Manage products',exact:true}).click();await page.getByRole('checkbox',{name:productName,exact:true}).check();
+  const [membersSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith(`/collections/${collectionId}/products`)&&r.request().method()==='PUT'),page.getByRole('button',{name:'Save products',exact:true}).click()]);assert.equal(membersSaved.status(),200);
+  assert.equal(owned.psql(`SELECT count(*) FROM collection_products WHERE collection_id='${collectionId}' AND product_id='${productId}';`),'1');
+  stage='native-search-index-scheduler';
+  assert.ok(Number(owned.psql(`SELECT count(*) FROM outbox_events WHERE aggregate_id='${productId}' AND event_type IN('product.created','product.updated');`))>0,'normal product commands produced durable events');
+  await gateway.runScheduled();
+  assert.equal(owned.psql(`SELECT count(*) FROM search_documents WHERE site_id='${siteId}' AND object_type='product' AND object_id='${productId}' AND status='active' AND deleted_at IS NULL;`),'1','actual scheduler indexed the real merchant product');
+  assert.ok(Number(owned.psql(`SELECT count(*) FROM platform_queue_jobs WHERE site_id='${siteId}' AND queue_name='search-indexing' AND status='succeeded';`))>0,'nonzero search queue work completed');
   stage='shipping-config';await page.goto(`${merchantOrigin}/${subdomain}/settings/shipping`);await page.getByRole('button',{name:'Add zone',exact:true}).first().click();await page.getByLabel('Zone name',{exact:true}).fill('Synthetic native zone');await page.getByLabel('Countries',{exact:true}).fill('IN');
   await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/zones')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add zone',exact:true}).last().click()]);
   await page.getByRole('button',{name:'Add rate',exact:true}).click();await page.getByLabel('Rate name',{exact:true}).fill('Synthetic native delivery');await page.getByLabel('Price (₹, 0 for free)',{exact:true}).fill('20');
@@ -185,6 +178,14 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true});
   }
   await buyer.setViewportSize({width:1280,height:900});
+  stage='shopper-collection-search';await buyer.goto(`${tenantOrigin}/collections/${collectionId}`);await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();await expect(buyer.locator(`a[href="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();
+  let searchScreenshot='';
+  for(const width of [1280,360]){await buyer.setViewportSize({width,height:900});await buyer.goto(`${tenantOrigin}/search`);await buyer.locator('.lb-search').getByRole('searchbox',{name:'Search products',exact:true}).fill('Synthetic Native Variant');
+   const submit=buyer.locator('.lb-search').getByRole('button',{name:'Search',exact:true});await expect(submit).toBeVisible();const area=await submit.boundingBox();assert.ok(area&&area.width>=44&&area.height>=44,'search has an actual usable hit area');
+   await Promise.all([buyer.waitForURL(u=>u.searchParams.get('search')==='Synthetic Native Variant'),submit.click()]);await buyer.waitForLoadState('networkidle');console.info('OWNED_SEARCH_DOM '+JSON.stringify({path:new URL(buyer.url()).pathname,query:new URL(buyer.url()).searchParams.get('search'),text:(await buyer.locator('body').innerText()).slice(0,2500),products:await buyer.locator('a[href*="/product/"]').evaluateAll(els=>els.map(el=>({href:el.getAttribute('href'),text:el.textContent?.trim()})))}));await expect(buyer.locator(`a[href$="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();assert.equal(await buyer.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+1),true);
+   if(width===360){searchScreenshot=`${tmpdir()}/letbuyy-native-core-search-${owned.runId}.png`;await buyer.screenshot({path:searchScreenshot,fullPage:true});}
+  }
+  await buyer.setViewportSize({width:1280,height:900});await buyer.goto(tenantOrigin);
   await buyer.getByRole('button',{name:'Choose options',exact:true}).first().click();await buyer.waitForURL(url=>url.pathname===`/product/${productId}`);assert.equal(await buyer.evaluate(()=>JSON.parse(localStorage.getItem('lb_cart')||'[]').length),0,'variant card opens the picker without adding an unspecified product');await buyer.goto(tenantOrigin);
   await buyer.getByRole('link',{name:'Catalog',exact:true}).click();await buyer.locator(`a[href="/product/${productId}"]`).filter({hasText:productName}).first().click();await expect(buyer.locator(`img[src="${imageUrl}"]`).first()).toBeVisible();
   await buyer.waitForFunction(()=>Boolean(customElements.get('lb-add-to-cart')&&customElements.get('lb-variant-picker')));await expect(buyer.getByRole('button',{name:'Buy now',exact:true})).toBeDisabled();await buyer.getByRole('button',{name:'Large',exact:true}).click();await expect(buyer.getByRole('button',{name:'Buy now',exact:true})).toBeEnabled();stage='customer-handoff';console.info('OWNED_NATIVE_CORE_PRESETS '+JSON.stringify({nativeWorkerd:true,nativeR2:true,presets,publicScreenshot}));const [handoff]=await Promise.all([buyer.waitForResponse(r=>new URL(r.url()).pathname==='/api/checkout-handoff'&&r.request().method()==='POST'),buyer.getByRole('button',{name:'Buy now',exact:true}).click()]);assert.equal(handoff.status(),200,'configured hosted checkout handoff');await buyer.waitForURL(u=>u.hostname==='checkout.localhost'&&u.pathname==='/checkout');
@@ -195,12 +196,23 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   assert.equal(owned.psql(`SELECT (amount*100)::bigint FROM order_shipping_lines WHERE order_id='${orders[0].id}';`),'2000');
   assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${siteId}' AND aggregate_id='${orders[0].id}' AND event_type='order.paid';`),'0','unpaid COD must not be announced as paid');
   const orderScreenshot=`${tmpdir()}/letbuyy-native-core-order-${owned.runId}.png`;await buyer.screenshot({path:orderScreenshot,fullPage:true});await buyerContext.close();
+  stage='canonical-buyer-registration';const accountContext=await browser.newContext(),accountPage=await accountContext.newPage();buyerDiagnostic=accountPage;accountPage.setDefaultTimeout(30_000);accountPage.setDefaultNavigationTimeout(60_000);accountPage.on('requestfailed',r=>{const u=new URL(r.url());if(u.hostname===`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`)console.info('OWNED_BUYER_NAV_FAILURE '+JSON.stringify({host:u.host,path:u.pathname,error:r.failure()?.errorText}));});
+  await accountPage.goto(`${tenantOrigin}/customers/login`);await accountPage.getByRole('link',{name:'Continue with LetBuyy',exact:true}).click();await expect(accountPage.getByRole('heading',{name:'Sign in',exact:true})).toBeVisible();await accountPage.getByRole('link',{name:'Create an account',exact:true}).click();
+  await expect(accountPage.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:90_000});const accountEmail=`syn-core-account-${crypto.randomUUID()}@example.invalid`;await accountPage.getByLabel('Email',{exact:true}).fill(accountEmail);await accountPage.getByLabel('Password',{exact:true}).fill(password);
+  const [accountCreated]=await Promise.all([accountPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/buyer/register'&&r.request().method()==='POST'),accountPage.getByRole('button',{name:'Create account',exact:true}).click()]);assert.equal(accountCreated.status(),201);
+  await accountPage.getByRole('button',{name:'Continue to Synthetic Public Store',exact:true}).click();await accountPage.waitForURL(u=>u.hostname===`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`&&['/account',`/store/${subdomain}/account`].includes(u.pathname));await accountPage.waitForLoadState('networkidle');console.info('OWNED_BUYER_ACCOUNT_SECTIONS '+JSON.stringify(await accountPage.locator('.lb-account').evaluateAll(els=>els.map(el=>({section:el.getAttribute('data-section-id'),visible:el.getBoundingClientRect().height>0,hiddenAncestor:Boolean(el.closest('[hidden]'))})))));const accountView=accountPage.locator('.lb-account').filter({visible:true});await expect(accountView,'exactly one visible account section').toHaveCount(1);await expect(accountView.getByText(`Signed in to LetBuyy as ${accountEmail}`,{exact:true})).toBeVisible();
+  const accountScreenshot=`${tmpdir()}/letbuyy-native-core-account-${owned.runId}.png`;await accountPage.screenshot({path:accountScreenshot,fullPage:true});
+  stage='canonical-buyer-profile';await accountView.getByRole('link',{name:'Settings',exact:true}).click();await accountPage.getByLabel('Full name',{exact:true}).fill('Synthetic Core Account');const [profileSaved]=await Promise.all([accountPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/buyer/profile'&&r.request().method()==='PATCH'),accountPage.getByRole('button',{name:'Save profile',exact:true}).click()]);assert.equal(profileSaved.status(),200);await accountPage.reload();await expect(accountPage.getByLabel('Full name',{exact:true})).toHaveValue('Synthetic Core Account');
+  stage='canonical-buyer-address';await accountPage.goto(`${tenantOrigin}/account/addresses`);await accountPage.getByRole('button',{name:'+ Add address',exact:true}).click();for(const[label,value]of [['Full name','Synthetic Core Account'],['Address line 1','Synthetic Account Road'],['City','Bengaluru'],['State','Karnataka'],['PIN Code','560001']])await accountPage.getByLabel(label,{exact:true}).fill(value);
+  const [addressSaved]=await Promise.all([accountPage.waitForResponse(r=>new URL(r.url()).pathname==='/api/buyer/addresses'&&r.request().method()==='POST'),accountPage.getByRole('button',{name:'Save address',exact:true}).click()]);assert.equal(addressSaved.status(),201);await accountPage.reload();await expect(accountPage.getByText('Synthetic Account Road',{exact:false}).first()).toBeVisible();
+  stage='canonical-buyer-order-privacy';await accountPage.goto(`${tenantOrigin}/account/orders`);await expect(accountPage.getByText('No orders yet.',{exact:true})).toBeVisible();await accountPage.goto(`${tenantOrigin}/account/orders/${orders[0].id}`);await expect(accountPage.getByText('Order not found.',{exact:true})).toBeVisible();
+  await accountPage.goto(`${tenantOrigin}/account/wishlist`);await expect(accountPage.getByText('Connect your verified store account in',{exact:false})).toBeVisible();await accountContext.close();
   stage='merchant-order-readback';await page.goto(`${merchantOrigin}/${subdomain}/orders`);await expect(page.getByText('Synthetic Native Buyer',{exact:true}).filter({visible:true}).first()).toBeVisible({timeout:30_000});
   stage='merchant-domain-labels';await page.goto(`${merchantOrigin}/${subdomain}/settings/domains`);await expect(page.locator('.domains-row-domain').filter({hasText:`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`})).toBeVisible();
   await page.goto(`${merchantOrigin}/${subdomain}/online-store/preferences`);await expect(page.getByLabel('Homepage title',{exact:true})).toBeVisible();await expect(page.locator('p').filter({hasText:new RegExp(`^${subdomain}\\.${DEFAULT_STOREFRONT_DOMAIN.replaceAll('.','\\.')}$`)})).toBeVisible();
   await page.getByLabel('Homepage title',{exact:true}).fill('Synthetic Core Search Listing');const [seoSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save changes',exact:true}).click()]);assert.equal(seoSaved.status(),200);
   await page.goto(`${merchantOrigin}/${subdomain}/settings/general`);await expect(page.locator('.settings-general-seo-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);await expect(page.locator('.settings-general-seo-preview-title')).toHaveText('Synthetic Core Search Listing');
-  console.info('OWNED_NATIVE_CORE '+JSON.stringify({nativeWorkerd:true,nativeR2:true,seededAccount:false,seededStore:false,seededProduct:false,productionApps:3,providerFixtureOnly:true,store,productVariants:2,uploadedExactPng:true,normalEditorPublish:true,unpublishedPreviewVerified:true,merchantDomainLabelsVerified:true,preferencesSeoReadback:true,anonymousDraftDenied:true,presets,realTenantTlsHost:true,customerOrders:orders.length,codTotalMinor:orders[0].total,screenshot,publicScreenshot,orderScreenshot}));
+  console.info('OWNED_NATIVE_CORE '+JSON.stringify({nativeWorkerd:true,nativeR2:true,seededAccount:false,seededStore:false,seededProduct:false,productionApps:3,providerFixtureOnly:true,store,productVariants:2,uploadedExactPng:true,imageDimensions:[320,320],normalEditorPublish:true,unpublishedPreviewVerified:true,merchantDomainLabelsVerified:true,preferencesSeoReadback:true,anonymousDraftDenied:true,presets,realTenantTlsHost:true,actualScheduledSearchIndex:true,manualCollectionShopperVerified:true,searchSubmissionVerified:true,canonicalBuyerProfileAddressVerified:true,unrelatedOrderDenied:true,searchScreenshot,accountScreenshot,customerOrders:orders.length,codTotalMinor:orders[0].total,screenshot,publicScreenshot,orderScreenshot}));
   assert.doesNotMatch(signupCopy,/₹20|14 days free/);
  }catch(error){console.info('OWNED_NATIVE_CORE_FAILURE '+JSON.stringify({stage,path:page?new URL(page.url()).pathname:null,buyer:buyerDiagnostic?{host:new URL(buyerDiagnostic.url()).host,path:new URL(buyerDiagnostic.url()).pathname}:null,storeState:owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('status',status,'published',published,'accessMode',access_mode,'theme',theme_id))::text,'[]') FROM sites WHERE subdomain='${subdomain}';`),calls:calls.slice(-15).map(({path,status})=>({path:path.replace(/ct_[A-Za-z0-9_-]+/g,'[redacted-cart-token]'),status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw new Error((error instanceof Error?error.message:String(error)).replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'));
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await stopOwnedClientRuntime(commerce);await gateway?.settle();await pooled.stop();if(tls){tls.closeAllConnections();await new Promise<void>(r=>tls!.close(()=>r()));}if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}

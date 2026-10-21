@@ -414,6 +414,13 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 /* ---- search ---- */
 .lb-search form { display: flex; gap: .5rem; align-items: center; }
 .lb-search button, .lb-search__terms { font-weight: 600; }
+.lb-search button {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: .5rem;
+  border-radius: var(--radius); background: var(--primary); color: var(--text-inverse);
+}
+.lb-search button svg { inline-size: 1.25rem; block-size: 1.25rem; }
+.lb-search input[type="search"] { min-inline-size: 0; flex: 1; }
 /* T2a/W3a — below the desktop breakpoint, search lives as a link inside the hamburger drawer
    (.lb-header__nav-search) instead of competing for width in the compact header row; the inline
    <lb-search> island (used standalone on the standalone search page too, hence no width was ever

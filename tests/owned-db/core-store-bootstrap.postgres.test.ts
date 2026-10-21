@@ -45,9 +45,9 @@ test('unavailable or invalid Core catalog fails before creating a store and can 
  owned.psql("UPDATE themes SET is_active=true,default_template='{}'::jsonb WHERE slug='letbuyy-core';");
  const invalid=await f.create();assert.equal(invalid.response.status,503,'malformed canonical Core cannot fall back to portable-only content');
  assert.equal(owned.psql(`SELECT count(*) FROM sites WHERE custom_user_id='${f.id}';`),'0');
- owned.psql(`UPDATE themes SET default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);
+ owned.script(`UPDATE themes SET default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);
  const recovered=await f.create();assert.equal(recovered.response.status,201);
- }finally{owned.psql(`UPDATE themes SET is_active=true,default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);await f.gateway.settle();}
+ }finally{owned.script(`UPDATE themes SET is_active=true,default_template='${original.replace(/'/g,"''")}'::jsonb WHERE slug='letbuyy-core';`);await f.gateway.settle();}
 });
 test('publication visibility commits with its release; failures and private access remain protected',async()=>{
  const f=await fixture();const made=await f.create();assert.equal(made.response.status,201);const siteId=String(made.response.json?.data?.id);
@@ -161,7 +161,7 @@ test('Core starter copy patch is catalog-only, owner-safe, idempotent and revers
   assert.equal(sites(),oldSites,'existing merchant drafts are unchanged');
   assert.equal(releases(),oldReleases,'published snapshots are unchanged');
   const custom=before.replaceAll('Discover our latest products.','Merchant-defined announcement');
-  owned.psql(`UPDATE themes SET default_template='${custom.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);
+  owned.script(`UPDATE themes SET default_template='${custom.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);
   owned.psql(rollback);owned.psql(forward);assert.equal(core(),custom,'unrecognized custom copy is retained');
- }finally{owned.psql(`UPDATE themes SET is_site_private=false,default_template='${before.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);}
+ }finally{owned.script(`UPDATE themes SET is_site_private=false,default_template='${before.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);}
 });

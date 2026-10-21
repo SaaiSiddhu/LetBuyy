@@ -600,10 +600,12 @@ export class QueueExecutionAdapter {
     }
 
     private async applyProductSearchIndex(job: PlatformQueueJob, productId: string): Promise<boolean> {
+        if (!job.site_id) return false;
         const { data, error } = await this.db
             .from('products')
             .select('id, store_id, name, description, sku, category, product_type, vendor, tags, status, is_active, price, deleted_at')
             .eq('id', productId)
+            .eq('store_id', job.site_id)
             .maybeSingle();
 
         if (error) throw new Error(`Product search source lookup failed: ${error.message}`);
@@ -621,10 +623,12 @@ export class QueueExecutionAdapter {
     }
 
     private async applyOrderSearchIndex(job: PlatformQueueJob, orderId: string): Promise<boolean> {
+        if (!job.site_id) return false;
         const { data, error } = await this.db
             .from('orders')
             .select('id, store_id, order_number, customer_name, customer_email, status, total, deleted_at')
             .eq('id', orderId)
+            .eq('store_id', job.site_id)
             .maybeSingle();
 
         if (error) throw new Error(`Order search source lookup failed: ${error.message}`);

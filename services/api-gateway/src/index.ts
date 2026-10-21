@@ -462,48 +462,27 @@ function secondsSince(value: string | null, nowMs: number): number {
     return Math.max(0, Math.floor((nowMs - timestamp) / 1000));
 }
 
-function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
-    if (result.error) throw new Error(`${label} pending work check failed: ${result.error.message}`);
-    return Number(result.count || 0) > 0;
-}
-
+// A scheduled invocation intentionally asks across tenants. Keep the ordinary
+// query guard enabled; only the backend-only RPC may inspect pending existence.
 async function hasPendingScheduledDispatchWork(
     db: ReturnType<typeof getSupabaseAdminFromEnv>,
     queueNames: ScheduledQueueName[],
     includeWebhookDeliveries: boolean,
 ): Promise<ScheduledDispatchPreflightResult> {
-    const now = new Date().toISOString();
-    const [outboxResult, queueResult, webhookResult] = await Promise.all([
-        db.from('outbox_events')
-            .select('id', { count: 'exact', head: true })
-            .in('status', ['queued', 'failed'])
-            .lte('available_at', now)
-            .lte('next_attempt_at', now),
-        db.from('platform_queue_jobs')
-            .select('id', { count: 'exact', head: true })
-            .in('queue_name', queueNames)
-            .in('status', ['queued', 'failed'])
-            .lte('available_at', now)
-            .is('deleted_at', null),
-        includeWebhookDeliveries
-            ? db.from('webhook_deliveries')
-                .select('id', { count: 'exact', head: true })
-                .in('status', ['pending', 'failed'])
-                .lte('next_attempt_at', now)
-                .is('deleted_at', null)
-            : Promise.resolve({ count: 0, error: null }),
-    ]);
-
-    const outbox = hasCount(outboxResult, 'Outbox');
-    const queues = hasCount(queueResult, 'Platform queue');
-    const webhookDeliveries = hasCount(webhookResult, 'Webhook delivery');
-
-    return {
-        hasWork: outbox || queues || webhookDeliveries,
-        outbox,
-        queues,
-        webhookDeliveries,
-    };
+    const { data, error } = await db.rpc('scheduled_dispatch_has_pending_work', {
+        p_queue_names: queueNames,
+        p_include_webhook_deliveries: includeWebhookDeliveries,
+    });
+    if (error || !data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('Scheduled pending-work preflight unavailable');
+    }
+    const value = data as Record<string, unknown>;
+    const keys = ['hasWork', 'outbox', 'queues', 'webhookDeliveries'] as const;
+    if (keys.some(key => typeof value[key] !== 'boolean')
+        || value.hasWork !== (value.outbox || value.queues || value.webhookDeliveries)) {
+        throw new Error('Scheduled pending-work preflight returned an invalid result');
+    }
+    return data as ScheduledDispatchPreflightResult;
 }
 
 function scheduledDispatchHadWork(
