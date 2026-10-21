@@ -18,7 +18,8 @@ import {
     type StorefrontProductReviewsQueryInput,
 } from '../schemas/review.schema';
 import { registerStorefrontInternalPaymentRoutes } from './storefront/internal-payment-routes';
-import { registerStorefrontPublicRoutes } from './storefront/public-routes';
+import { registerStorefrontPublicRoutes, type StorefrontThemeReleaseReadOptions } from './storefront/public-routes';
+import { AppError } from '../lib/errors';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from '../lib/order-confirmation-email';
@@ -733,9 +734,9 @@ async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): P
     return normalizeSqlRecords(rows)[0] || null;
 }
 
-async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null> {
+async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null | undefined> {
     const sql = getPooledSql(c.env);
-    if (!sql) return null;
+    if (!sql) return undefined;
     const rows = await sql.unsafe<StorefrontSiteRecord[]>(
         `select ${STOREFRONT_SITE_RELEASE_SELECT}
          from sites
@@ -744,26 +745,29 @@ async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Pro
            and deleted_at is null
          limit 1`,
         [handle, 'published'],
-    ).catch(() => []);
+    );
     return normalizeSqlRecords(rows)[0] || null;
 }
 
-async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
+async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions): Promise<StorefrontThemeReleaseRecord | null | undefined> {
     const sql = getPooledSql(c.env);
-    if (!sql) return null;
+    if (!sql) return undefined;
+    const fields = options.projection === 'render-v1'
+        ? `id, theme_id, theme_instance_id, theme_package_version_id, release_version, NULL::jsonb AS release_config, release_manifest,
+           CASE WHEN template_snapshot IS NULL OR template_snapshot IN ('null'::jsonb, 'false'::jsonb, '0'::jsonb, '\"\"'::jsonb)
+                THEN release_config ELSE template_snapshot END AS template_snapshot,
+           schema_manifest_version, engine_version, published_at`
+        : `id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
+           template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
+           schema_manifest_version, engine_version, published_at`;
+    const fence = options.releaseId
+        ? 'and id = $3 and release_status in ($2, $4) and published_at is not null'
+        : 'and is_current = true and release_status = $2';
+    const values = options.releaseId ? [storeId, 'published', options.releaseId, 'superseded'] : [storeId, 'published'];
     const rows = await sql.unsafe<StorefrontThemeReleaseRecord[]>(
-        `select id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
-                template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
-                schema_manifest_version, engine_version, published_at
-         from theme_releases
-         where store_id = $1
-           and is_current = true
-           and release_status = $2
-           and deleted_at is null
-         order by release_version desc
-         limit 1`,
-        [storeId, 'published'],
-    ).catch(() => []);
+        `select ${fields} from theme_releases
+         where store_id = $1 and deleted_at is null ${fence}
+         order by release_version desc limit 1`, values);
     return normalizeSqlRecords(rows)[0] || null;
 }
 
@@ -882,8 +886,10 @@ async function loadSiteByHandle(
 
     const db = getSupabaseAdmin(c);
     if (options.publishedOnly) {
-        const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
-        if (pooledSite) return pooledSite;
+        try {
+            const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
+            if (pooledSite !== undefined) return pooledSite;
+        } catch { /* bounded independent REST fallback; never translate failure into absence */ }
     }
 
     const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
@@ -913,42 +919,60 @@ async function loadSiteByHandle(
     }
 
     if (isSchemaMismatchError(error)) {
-        ({ data } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).maybeSingle());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).maybeSingle());
     }
 
+    if (error) throw new AppError('Storefront is unavailable', 503, 'STOREFRONT_UNAVAILABLE');
     return (data as StorefrontSiteRecord | null) || null;
 }
 
-async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
+async function loadCurrentThemeRelease(c: AppContext, storeId: string, options: StorefrontThemeReleaseReadOptions = {}): Promise<StorefrontThemeReleaseRecord | null> {
+    const unavailable = () => new AppError('Published theme is unavailable', 503, 'PUBLICATION_UNAVAILABLE');
+    if (options.releaseId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(options.releaseId)) throw unavailable();
+    const checked = (row: StorefrontThemeReleaseRecord | null) => {
+        if (options.releaseId && (!row || row.id !== options.releaseId
+            || (options.releaseVersion != null && row.release_version !== options.releaseVersion))) throw unavailable();
+        return row;
+    };
+    let pooled: StorefrontThemeReleaseRecord | null | undefined;
+    try { pooled = await loadCurrentThemeReleaseFromPooledSql(c, storeId, options); }
+    catch { /* one independently verified REST fallback; errors there remain unavailable */ }
+    if (pooled !== undefined) return checked(pooled);
+
     const db = getSupabaseAdmin(c);
-    const pooledRelease = await loadCurrentThemeReleaseFromPooledSql(c, storeId);
-    if (pooledRelease) return pooledRelease;
-
-    const baseQuery = (select: string, includeDeletedAtFilter: boolean) => {
-        let query = db
-            .from('theme_releases')
-            .select(select)
-            .eq('store_id', storeId)
-            .eq('is_current', true)
-            .eq('release_status', 'published');
-
-        if (includeDeletedAtFilter) query = query.is('deleted_at', null);
+    const baseQuery = (fields: string, includeDeleted: boolean, selectedId?: string) => {
+        let query = db.from('theme_releases').select(fields).eq('store_id', storeId);
+        const id = options.releaseId || selectedId;
+        if (id) {
+            query = query.eq('id', id).in('release_status', ['published', 'superseded']);
+            if (options.releaseId) query = query.not('published_at', 'is', null);
+        } else query = query.eq('is_current', true).eq('release_status', 'published');
+        if (includeDeleted) query = query.is('deleted_at', null);
         return query.order('release_version', { ascending: false }).limit(1);
     };
-
-    const extendedSelect = 'id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest, template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest, schema_manifest_version, engine_version, published_at';
-    const legacySelect = 'id, theme_id, release_version, release_config, published_at';
-    let { data, error } = await baseQuery(extendedSelect, true).maybeSingle();
-
-    if (error || !data) {
-        ({ data, error } = await baseQuery(legacySelect, true).maybeSingle());
+    const metadata = 'id,theme_id,theme_instance_id,theme_package_version_id,release_version,release_manifest,schema_manifest_version,engine_version,published_at';
+    const fields = options.projection === 'render-v1' ? metadata + ',template_snapshot'
+        : metadata + ',release_config,template_snapshot,settings_snapshot,asset_manifest,cache_manifest,data_binding_manifest';
+    const legacyFields = 'id,theme_id,release_version,release_config,published_at';
+    let includeDeleted = true;
+    let { data, error } = await baseQuery(fields, includeDeleted).maybeSingle();
+    if (error && isSchemaMismatchError(error)) {
+        includeDeleted = !isMissingColumnError(error, 'deleted_at');
+        ({ data, error } = await baseQuery(legacyFields, includeDeleted).maybeSingle());
+        if (error && includeDeleted && isMissingColumnError(error, 'deleted_at')) {
+            includeDeleted = false;
+            ({ data, error } = await baseQuery(legacyFields, includeDeleted).maybeSingle());
+        }
     }
-
-    if (error || !data) {
-        ({ data } = await baseQuery(legacySelect, false).maybeSingle());
+    if (error) throw unavailable();
+    let row = (data as unknown as StorefrontThemeReleaseRecord | null) || null;
+    // Snapshot wins even when empty; only a falsy snapshot needs legacy config.
+    if (row && options.projection === 'render-v1' && !row.template_snapshot && row.release_config === undefined) {
+        const fallback = await baseQuery('id,release_config', includeDeleted, row.id).maybeSingle();
+        if (fallback.error || !fallback.data) throw unavailable();
+        row = { ...row, release_config: (fallback.data as unknown as StorefrontThemeReleaseRecord).release_config };
     }
-
-    return (data as StorefrontThemeReleaseRecord | null) || null;
+    return checked(row);
 }
 
 function appBlockFromRegistryRegistration(registration: Record<string, unknown>): AppBlockInstance | null {

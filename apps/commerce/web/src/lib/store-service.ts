@@ -17,7 +17,7 @@ interface ThemeReleaseRow {
     theme_instance_id?: string | null;
     theme_package_version_id?: string | null;
     release_version: number;
-    release_config: Record<string, unknown> | null;
+    release_config?: Record<string, unknown> | null;
     release_manifest?: Record<string, unknown> | null;
     template_snapshot?: Record<string, unknown> | null;
     settings_snapshot?: Record<string, unknown> | null;
@@ -455,7 +455,7 @@ const fetchWorkerStore = cache(async (subdomain: string, anyStatus: boolean): Pr
 
     const data = anyStatus
         ? await client.storefront.status(subdomain)
-        : await client.storefront.getStore(subdomain);
+        : await client.storefront.getRenderStore(subdomain);
 
     return (data as WorkerStorePayload | undefined) || null;
 });
@@ -569,11 +569,16 @@ function mapSupabaseToStore(
     const releaseManifest = asRecord(release?.release_manifest);
     const legacyTemplateConfig = asRecord(data.template_config);
     const manifestTemplateConfig = asRecord(releaseManifest.templateConfig);
-    const rawTemplateConfig = Object.keys(releaseConfig).length > 0
-        ? releaseConfig
-        : Object.keys(manifestTemplateConfig).length > 0
-            ? manifestTemplateConfig
-            : legacyTemplateConfig;
+    if (data.projection != null && data.projection !== 'render-v1') throw new Error('Unsupported public storefront projection');
+    // render-v1 already resolved the same precedence at the canonical API owner.
+    // A legacy response from an older Gateway still follows the original path.
+    const rawTemplateConfig = data.projection === 'render-v1'
+        ? legacyTemplateConfig
+        : Object.keys(releaseConfig).length > 0
+            ? releaseConfig
+            : Object.keys(manifestTemplateConfig).length > 0
+                ? manifestTemplateConfig
+                : legacyTemplateConfig;
     const themeId = release?.theme_id || (data.theme_id as string) || (rawTemplateConfig.themeId as string) || 'urban-kicks';
     const storeLocale = (data.locale as string) || 'en-IN';
     const fallbackTemplateConfig = getDefaultStorefrontThemeTemplate(themeId);

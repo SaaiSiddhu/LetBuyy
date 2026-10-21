@@ -87,3 +87,36 @@ test('canonical tenant URLs preserve TLS apex ports and scoped local path origin
   for(const slug of ['accounts','one/two','a.b','../escape'])assert.throws(()=>buildTenantStorefrontUrl(slug));
   for(const url of ['javascript:alert(1)','https://user:pass@localhost','https://localhost?token=bad'])assert.throws(()=>buildTenantStorefrontUrl('native-shop',{baseUrl:url}));
 });
+
+
+test('render-v1 selects one effective published config and removes only equal ordered bundle fallbacks', async () => {
+  const { mapPublicStorePayload, mapPublicStoreRenderPayload } = await import('../src/index');
+  const bundle = { schema_version: '1.0.0', files: { layout: 'Synthetic Liquid source', section: 'Synthetic section' } };
+  const equalBundle = { files: { section: 'Synthetic section', layout: 'Synthetic Liquid source' }, schema_version: '1.0.0' };
+  const config = { themeSettings: { primaryColor: 'synthetic-primary' }, liquidBundle: bundle };
+  const distinct = { schema_version: '1.0.0', files: { layout: 'Synthetic distinct fallback' } };
+  const store = { id: 'synthetic-site', name: 'Synthetic public store', template_config: { secretDraftMarker: 'not-effective' } };
+  const release = { id: 'synthetic-release', theme_id: 'letbuyy-core', release_version: 4, published_at: '2026-10-21T00:00:00Z', release_config: config, template_snapshot: config,
+    release_manifest: { renderer_engine: 'liquid', liquidBundle: equalBundle, themeBundle: bundle, bundle: distinct, templateConfig: config, customMetadata: { keep: true } } };
+  const before = JSON.stringify({store,release}), legacyBefore = mapPublicStorePayload(store,release);
+  const compact = mapPublicStoreRenderPayload(store,release);
+  assert.deepEqual(compact.template_config,config);
+  assert.equal(compact.projection,'render-v1');
+  assert.deepEqual(compact.current_theme_release?.release_manifest,{renderer_engine:'liquid',bundle:distinct,customMetadata:{keep:true}});
+  assert.equal('release_config' in compact.current_theme_release!,false);
+  assert.equal('template_snapshot' in compact.current_theme_release!,false);
+  assert.equal(JSON.stringify({store,release}),before,'projection never rewrites persisted snapshots');
+  assert.deepEqual(mapPublicStorePayload(store,release),legacyBefore,'default/mobile representation is unchanged');
+});
+
+test('render-v1 preserves manifest-only and legacy fallback precedence without discarding distinct or ordered arrays', async () => {
+  const { mapPublicStoreRenderPayload } = await import('../src/index');
+  const store = { id: 'synthetic-site', template_config: { legacy: true } };
+  const release = { id:'synthetic-release',theme_id:'letbuyy-core',release_version:1,published_at:null,release_config:{ignoredWhenSnapshotIsEmpty:true},template_snapshot:{},release_manifest:{templateConfig:{manifest:true},liquidBundle:{files:['a','b']},themeBundle:{files:['b','a']}} };
+  const compact = mapPublicStoreRenderPayload(store,release);
+  assert.deepEqual(compact.template_config,{manifest:true});
+  assert.deepEqual(compact.current_theme_release?.release_manifest,{liquidBundle:{files:['a','b']},themeBundle:{files:['b','a']}});
+  assert.deepEqual(mapPublicStoreRenderPayload(store,null).template_config,{legacy:true});
+  const noConfig = mapPublicStoreRenderPayload(store,{...release,template_snapshot:{},release_manifest:{}});
+  assert.deepEqual(noConfig.template_config,{legacy:true});
+});
