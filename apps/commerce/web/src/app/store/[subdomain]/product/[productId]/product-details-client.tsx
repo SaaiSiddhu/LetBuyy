@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ProductModel } from '@letbuyy/commerce-core';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine/theme-settings';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 import { useCart, type CartVariantContext } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';

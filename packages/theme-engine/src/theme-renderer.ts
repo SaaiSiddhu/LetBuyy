@@ -1669,9 +1669,6 @@ export interface RenderedHtmlSanitizerOptions {
 
 interface ThemeDomPurifyRuntime {
   purify: DOMPurify;
-  createDocument(html: string): {
-    head: { innerHTML: string; querySelectorAll(selector: string): ArrayLike<{ textContent: string | null }> };
-  };
 }
 
 // DOMPurify singleton — one instance shared across all concurrent requests in this worker.
@@ -1714,15 +1711,7 @@ async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
         data.keepAttr = false;
       }
     });
-    return {
-      purify,
-      createDocument: (html: string) => {
-        const s7DocStart = Date.now();
-        const doc = new JSDOM(html).window.document;
-        s7ProfileMark('createDocument:new JSDOM', s7DocStart);
-        return doc;
-      },
-    };
+    return { purify };
   })();
   const s7WasPending = !s7WasAlreadyInitialized;
   const resolved = await domPurifyPromise;
@@ -1754,16 +1743,19 @@ export async function sanitizeRenderedHtml(
 ): Promise<string> {
   const s7SanitizeStart = Date.now();
   if (S7_PROFILE_ENABLED) s7ProfileSanitizeCallCount += 1;
-  const { purify, createDocument } = await getThemeDomPurify();
+  const { purify } = await getThemeDomPurify();
 
   if (options.allowHeadMetadata) {
     const s7PurifyStart = Date.now();
     const sanitizedDocument = purify.sanitize(
       `<!doctype html><html><head>${html}</head><body></body></html>`,
-      LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG,
+      { ...LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG, RETURN_DOM: true },
     );
     s7ProfileMark('sanitizeRenderedHtml:purify.sanitize(allowHeadMetadata)', s7PurifyStart, { htmlLength: html.length });
-    const result = createDocument(sanitizedDocument).head.innerHTML.trim();
+    // WHOLE_DOCUMENT + RETURN_DOM returns the sanitized <html> element. Read
+    // its head directly; serializing and reparsing in a new JSDOM window adds
+    // work and retains a separate window for each render. No raw input is read.
+    const result = sanitizedDocument.ownerDocument?.head.innerHTML.trim() ?? '';
     s7ProfileMark('sanitizeRenderedHtml:total(allowHeadMetadata)', s7SanitizeStart, { htmlLength: html.length });
     return result;
   }
@@ -1791,19 +1783,19 @@ export async function sanitizeRenderedHtml(
 // wholeDocument layoutHtml path already uses). Extraction happens AFTER that pass, by reading
 // `.textContent` off the resulting sanitized <style> DOM node(s) — not by string-slicing the raw
 // input. A hostile theme-setting value containing a literal `</style>` breakout sequence is
-// neutralized by the DOM round-trip itself: jsdom's HTML parser would already have split it into
+// neutralized by DOMPurify's HTML parser: it has already split the input into
 // separate nodes before DOMPurify ever ran, and any injected tag (e.g. <script>) is stripped by
 // the same FORBID_TAGS/allowlist config the whole-document layout pass relies on — proven by the
 // adversarial test in liquid-s1-w5-adversarial-security.test.ts covering this function.
 export async function sanitizeLiquidHeadStyleText(rawHeadHtml: string): Promise<string> {
   if (!rawHeadHtml || rawHeadHtml.trim() === '') return '';
-  const { purify, createDocument } = await getThemeDomPurify();
+  const { purify } = await getThemeDomPurify();
   const sanitizedDocument = purify.sanitize(
     `<!doctype html><html><head>${rawHeadHtml}</head><body></body></html>`,
-    LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG,
+    { ...LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG, RETURN_DOM: true },
   );
-  const head = createDocument(sanitizedDocument).head;
-  const styleNodes = Array.from(head.querySelectorAll('style'));
+  const head = sanitizedDocument.ownerDocument?.head;
+  const styleNodes = Array.from<{ textContent: string | null }>(head?.querySelectorAll('style') ?? []);
   return styleNodes.map((node) => node.textContent ?? '').join('\n').trim();
 }
 

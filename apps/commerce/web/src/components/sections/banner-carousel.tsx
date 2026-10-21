@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import Link from 'next/link';
 import { Button, ChevronLeft, ChevronRight, ArrowRight } from '@letbuyy/ui';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine/theme-settings';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 
 interface BannerSlide {

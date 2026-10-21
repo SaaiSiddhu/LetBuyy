@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine/theme-settings';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import Image from 'next/image';

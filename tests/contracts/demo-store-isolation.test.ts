@@ -8,7 +8,7 @@ import ts from 'typescript';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const storeServicePath = join(testDir, '../../apps/commerce/web/src/lib/store-service.ts');
 const productServicePath = join(testDir, '../../apps/commerce/web/src/lib/product-service.ts');
-const previewPagePath = join(testDir, '../../apps/commerce/web/src/app/preview/page.tsx');
+const previewPagePath = join(testDir, '../../apps/commerce/web/src/app/preview/preview-content.tsx');
 const demoShortcutPath = join(testDir, '../../apps/commerce/web/src/app/demo/urban-kicks/page.tsx');
 const editorPagePath = join(testDir, '../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
 const themeGovernancePath = join(testDir, '../../docs/governance/theme-engine-governance.md');

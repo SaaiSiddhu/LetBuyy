@@ -113,7 +113,7 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
 });
 
 test('W1: preview/editor-mode callers are unaffected (a real merchant preview still always requests the index/customers-account template which always exists in a valid bundle)', () => {
-  const preview = read('apps/commerce/web/src/app/preview/page.tsx');
+  const preview = read('apps/commerce/web/src/app/preview/preview-content.tsx');
   const layout = read(`${STORE_ROOT}/layout.tsx`);
   const accountLayout = read(`${STORE_ROOT}/account/layout.tsx`);
   // S6/W2 — preview/page.tsx now resolves a `routeContext` variable (demo-only, `route_type`-gated

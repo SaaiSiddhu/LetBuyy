@@ -39,6 +39,10 @@ function storefrontGatewayBaseUrl(): string {
 
 const nextConfig: NextConfig = {
   ...(sessionRuntimeDistDir ? { distDir: sessionRuntimeDistDir } : {}),
+  // Resolve the shared UI's named exports at build time. The root storefront
+  // uses only its theme provider; its barrel also exports admin tables and other
+  // client boundaries that otherwise join the storefront's initial chunk group.
+  experimental: { optimizePackageImports: ['@letbuyy/ui'] },
   compress: true, // Enable gzip compression for cost savings
 
   // theme-engine's Liquid sanitizer dynamically imports jsdom for server-side

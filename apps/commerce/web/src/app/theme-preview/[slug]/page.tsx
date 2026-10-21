@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { hasRenderableThemeTemplate, type StoreTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient } from '@/lib/api/client';
-import PreviewPage from '../../preview/page';
+import PreviewContent from '../../preview/preview-content';
 import CatalogPreviewNavigation from '@/components/CatalogPreviewNavigation';
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -31,6 +31,6 @@ export default async function CatalogThemePreview({ params, searchParams }: {
         notFound();
     return <>
         <aside className="catalog-preview-notice">{String(record.name)} theme · Interactive design preview with sample products. Your store is unchanged.</aside>
-        <CatalogPreviewNavigation slug={slug}><PreviewPage searchParams={Promise.resolve({ demo: 'urban-kicks', route_type: (await searchParams).route_type })} catalogTemplate={record.default_template as StoreTemplateConfig} catalogName={String(record.name)}/></CatalogPreviewNavigation>
+        <CatalogPreviewNavigation slug={slug}><PreviewContent searchParams={Promise.resolve({ demo: 'urban-kicks', route_type: (await searchParams).route_type })} catalogTemplate={record.default_template as StoreTemplateConfig} catalogName={String(record.name)}/></CatalogPreviewNavigation>
     </>;
 }

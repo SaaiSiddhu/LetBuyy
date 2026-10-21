@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine/theme-settings';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import { Button, Input, Mail, Send, CheckCircle } from '@letbuyy/ui';
 

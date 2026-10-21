@@ -209,18 +209,64 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const publicScreenshot=`${tmpdir()}/letbuyy-native-core-store-${owned.runId}.png`;await buyer.screenshot({path:publicScreenshot,fullPage:true});
   stage='public-read-profile';console.info('OWNED_NATIVE_STAGE public-read-profile');
   const profileEditorUrl=page.url();await page.goto('about:blank');await buyer.waitForLoadState('networkidle');
+  await buyer.addInitScript(() => {
+   const metrics = { lcpMs: null as number | null, cls: 0 };
+   Object.assign(window, { __ownedStorefrontMetrics: metrics });
+   new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) metrics.lcpMs = entry.startTime;
+   }).observe({ type: 'largest-contentful-paint', buffered: true });
+   new PerformanceObserver(list => {
+    for (const entry of list.getEntries() as (PerformanceEntry & { hadRecentInput: boolean; value: number })[]) {
+     if (!entry.hadRecentInput) metrics.cls += entry.value;
+    }
+   }).observe({ type: 'layout-shift', buffered: true });
+  });
   const readProfiles=[];
+  const performanceSession = await buyer.context().newCDPSession(buyer);
+  await performanceSession.send('Network.enable');
+  const networkResources: { path: string; cached: boolean; type: string; encodedBytes: number }[] = [];
+  const networkRequests = new Map<string, (typeof networkResources)[number]>();
+  performanceSession.on('Network.responseReceived', ({ requestId, response, type }) => {
+   const resource = { path: new URL(response.url).pathname, cached: Boolean(response.fromDiskCache || response.fromPrefetchCache || response.fromServiceWorker), type, encodedBytes: 0 };
+   networkResources.push(resource);networkRequests.set(requestId, resource);
+  });
+  performanceSession.on('Network.loadingFinished', ({ requestId, encodedDataLength }) => {
+   const resource = networkRequests.get(requestId);
+   if (resource) resource.encodedBytes = encodedDataLength;
+   networkRequests.delete(requestId);
+  });
+  for (const profile of [
+   { name: 'desktop-loopback', width: 1280, cpuRate: 1, latency: 0, download: -1, upload: -1 },
+   { name: 'mobile-lab', width: 390, cpuRate: 4, latency: 80, download: 200_000, upload: 93_750 },
+  ]) {
+  await buyer.setViewportSize({ width: profile.width, height: 900 });
+  await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: profile.cpuRate });
+  await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: profile.latency, downloadThroughput: profile.download, uploadThroughput: profile.upload });
   for(const [kind,path]of [['home',''],['product',`/product/${productId}`],['collection-index','/collections']] as const){
-   for(let sample=0;sample<3;sample++){
-    await buyer.waitForLoadState('networkidle');const startIndex=calls.length,began=performance.now();
+   for(let sample=0;sample<5;sample++){
+    await buyer.waitForLoadState('networkidle');const startIndex=calls.length,networkStartIndex=networkResources.length,began=performance.now();
     const document=await buyer.goto(`${tenantOrigin}${path}`,{waitUntil:'domcontentloaded'});assert.equal(document?.status(),200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     if(kind==='home')await expect(buyer.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
     if(kind==='product'){await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await expect(buyer.getByRole('button',{name:'Add to cart',exact:true})).toBeDisabled();}
     if(kind==='collection-index')await expect(buyer.locator('.lb-category-grid a').filter({visible:true})).toHaveCount(24);
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-mobile-nav') && customElements.get('lb-variant-picker')));
     const usefulReadyMs=Math.round((performance.now()-began)*100)/100;
     const timing=await buyer.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;return{ttfbMs:n.responseStart-n.startTime,responseEndMs:n.responseEnd-n.startTime,domContentLoadedMs:n.domContentLoadedEventEnd-n.startTime,decodedDocumentBytes:n.decodedBodySize};});
     await buyer.waitForLoadState('networkidle');
+    const browserMetrics = await buyer.evaluate(() => {
+     const metrics = (window as unknown as { __ownedStorefrontMetrics: { lcpMs: number | null; cls: number } }).__ownedStorefrontMetrics;
+     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+     return { ...metrics, resourceRequests: resources.length, resourceTransferBytes: resources.reduce((sum, resource) => sum + resource.transferSize, 0),
+      resources: resources.map(resource => ({ type: resource.initiatorType, path: new URL(resource.name).pathname, transferBytes: resource.transferSize, decodedBytes: resource.decodedBodySize })) };
+    });
+    let variantFeedbackMs: number | null = null;
+    if (kind === 'product') {
+     const started = performance.now();
+     await buyer.getByRole('button', { name: 'Large', exact: true }).click();
+     await expect(buyer.getByRole('button', { name: 'Buy now', exact: true })).toBeEnabled();
+     variantFeedbackMs = Math.round((performance.now() - started) * 100) / 100;
+    }
     const reads=calls.slice(startIndex).filter(call=>call.path===`/v1/storefront/${subdomain}`||call.path.startsWith(`/v1/storefront/${subdomain}/`));
     const counts:Record<string,number>={};for(const call of reads){const key=call.path.replace(subdomain,':store').replace(productId,':product')+(call.navigationLocation?'?location='+call.navigationLocation:'');counts[key]=(counts[key]??0)+1;}
     const navigationReads=reads.filter(call=>call.path.endsWith('/navigation')).length;
@@ -233,10 +279,64 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     assert.equal(counts['/v1/storefront/:store/status'],1,`${kind} needs one current status read per new document`);
     if(kind==='product')assert.equal(skuReads,1,'metadata/page share one public SKU read in this render');
     if(kind==='product'||kind==='collection-index')assert.equal(catalogReads,0,'Liquid chrome must not fetch an unused catalog');
-    readProfiles.push({kind,sample,usefulReadyMs,...timing,upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
+    readProfiles.push({profile:profile.name,sample,kind,usefulReadyMs,variantFeedbackMs,...timing,...browserMetrics,networkResources:networkResources.slice(networkStartIndex),upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
    }
   }
-  console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture',samples:readProfiles}));
+  }
+  // A separate cold HTTP-cache cohort exercises actual script/font downloads.
+  // Keep it separate from the matched warm samples above and from field data.
+  for (const profile of [
+   { name: 'desktop-loopback-cold-http', width: 1280, cpuRate: 1, latency: 0, download: -1, upload: -1 },
+   { name: 'mobile-lab-cold-http', width: 390, cpuRate: 4, latency: 80, download: 200_000, upload: 93_750 },
+  ]) {
+   await buyer.setViewportSize({ width: profile.width, height: 900 });
+   await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: profile.cpuRate });
+   await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: profile.latency, downloadThroughput: profile.download, uploadThroughput: profile.upload });
+   await performanceSession.send('Network.setCacheDisabled', { cacheDisabled: true });
+   for (let sample = 0; sample < 3; sample++) {
+    await performanceSession.send('Network.clearBrowserCache');
+    await buyer.goto('about:blank');const startIndex = calls.length, networkStartIndex = networkResources.length, began = performance.now();
+    const document = await buyer.goto(tenantOrigin, { waitUntil: 'domcontentloaded' });assert.equal(document?.status(), 200);
+    await expect(buyer.getByRole('heading', { level: 1, name: marker, exact: true })).toBeVisible();
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-mobile-nav') && customElements.get('lb-variant-picker')));
+    const usefulReadyMs = Math.round((performance.now() - began) * 100) / 100;
+    await buyer.waitForLoadState('networkidle');
+    const browserMetrics = await buyer.evaluate(() => {
+     const metrics = (window as unknown as { __ownedStorefrontMetrics: { lcpMs: number | null; cls: number } }).__ownedStorefrontMetrics;
+     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+     return { ...metrics, ttfbMs: navigation.responseStart - navigation.startTime, decodedDocumentBytes: navigation.decodedBodySize,
+      resourceRequests: resources.length, resourceTransferBytes: resources.reduce((sum, resource) => sum + resource.transferSize, 0),
+      resources: resources.map(resource => ({ type: resource.initiatorType, path: new URL(resource.name).pathname, transferBytes: resource.transferSize, decodedBytes: resource.decodedBodySize })) };
+    });
+    const reads = calls.slice(startIndex).filter(call => call.path === `/v1/storefront/${subdomain}` || call.path.startsWith(`/v1/storefront/${subdomain}/`));
+    assert.deepEqual(reads.filter(call => call.status >= 400), []);
+    const resources = networkResources.slice(networkStartIndex);
+    const scripts = resources.filter(resource => resource.type === 'Script' && resource.path.startsWith('/_next/'));
+    assert.ok(scripts.length > 0 && scripts.every(resource => !resource.cached && resource.encodedBytes > 0), 'cold cohort must download actual scripts rather than reuse a warm HTTP cache');
+    readProfiles.push({ profile: profile.name, sample, kind: 'home', usefulReadyMs, ...browserMetrics, networkResources: resources, upstreamReads: reads.length, upstreamResponseBytes: reads.reduce((sum, call) => sum + call.bytes, 0) });
+   }
+   await performanceSession.send('Network.setCacheDisabled', { cacheDisabled: false });
+  }
+  await performanceSession.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await performanceSession.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+  await performanceSession.detach();await buyer.setViewportSize({width:1280,height:900});
+  console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful content plus registered shopping controls; five sequential samples per route/profile, HTTP cache retained; mobile lab is 390px viewport, 4x CPU slowdown, 80ms latency, 1.6Mbps down/750Kbps up, not a physical phone or field INP. Resource bytes may be zero for warm/cross-origin entries without Timing-Allow-Origin; upstream reads are HTTP, not SQL statements.',samples:readProfiles}));
+  stage = 'catalog-and-react-preview';console.info('OWNED_NATIVE_STAGE catalog-and-react-preview');
+  for (const slug of ['forge','sense','aura','craft','refresh','ride','dawn','bloom','nova','summit']) {
+   const preview = await buyer.goto(`${commerceOrigin}/theme-preview/letbuyy-${slug}`, { waitUntil: 'networkidle' });
+   assert.equal(preview?.status(), 200);
+   await expect(buyer.locator('[data-letbuyy-preview-route="true"]')).toBeVisible();
+   await expect(buyer.locator('div[data-theme-renderer="liquid"]')).toBeVisible();
+  }
+  await buyer.goto(`${commerceOrigin}/preview?demo=urban-kicks&engine=react&route_type=product`, { waitUntil: 'domcontentloaded' });
+  await expect(buyer.getByRole('heading', { name: 'Aero Runner 90', exact: true })).toBeVisible();
+  await expect(buyer.locator('[data-section-id="product-detail-default"][data-renderer-key="productDetail"]')).toBeVisible();
+  await expect(buyer.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
+  await buyer.getByRole('button', { name: 'Increase quantity', exact: true }).click();
+  await expect(buyer.getByRole('button', { name: 'Decrease quantity', exact: true })).toBeEnabled();
+  console.info('OWNED_PREVIEW_ENTRYPOINTS '+JSON.stringify({allTenCatalogIdentities:true,reactProductSSR:true,routePropsValid:true}));
+  await buyer.goto(tenantOrigin, { waitUntil: 'networkidle' });
   // Fetch the script as a resource, not a document: rendering the generic404
   // document legitimately prefetches its Continue shopping Link into a new RSC request.
   const resourceStart=calls.length;const resourceStatus=await buyer.evaluate(async()=>{
@@ -304,8 +404,22 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     await buyer.setViewportSize({width,height:900});const document=await buyer.goto(tenantOrigin,{waitUntil:'networkidle'});assert.equal(document?.status(),200);assert.match(document!.headers()['cache-control']||'',/no-store/);
     const rendered=buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]');await expect(rendered).toBeVisible();assert.equal(await rendered.evaluate(el=>getComputedStyle(el).getPropertyValue('--primary').trim()),reference.primaryColor);
     assert.equal(await buyer.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth+1),true);
+    if (width === 360) {
+     await buyer.getByRole('button', { name: 'Menu', exact: true }).click();
+     await expect(buyer.locator('[data-lb-nav-toggle]')).toHaveAttribute('aria-expanded', 'true');
+     await buyer.getByRole('button', { name: 'Close menu', exact: true }).click();
+     await expect(buyer.locator('[data-lb-nav-toggle]')).toHaveAttribute('aria-expanded', 'false');
+    }
+    await buyer.goto(`${tenantOrigin}/product/${productId}`, { waitUntil: 'networkidle' });
+    await expect(buyer.getByRole('heading', { level: 1, name: productName, exact: true })).toBeVisible();
+    assert.equal(await rendered.evaluate(el => getComputedStyle(el).getPropertyValue('--primary').trim()), reference.primaryColor);
+    await buyer.getByRole('button', { name: 'Large', exact: true }).click();
+    await expect(buyer.getByRole('button', { name: 'Buy now', exact: true })).toBeEnabled();
+    await buyer.goto(`${tenantOrigin}/collections`, { waitUntil: 'networkidle' });
+    await expect(buyer.locator('.lb-category-grid a').filter({ visible: true })).toHaveCount(24);
+    assert.equal(await buyer.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth + 1), true);
    }
-   presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true});
+   presets.push({name,applied:true,reloaded:true,published:true,exactStoredValues:true,widths:[1280,360],renderedPrimary:true,routes:['home','product','collection-index'],variantSelection:true,mobileMenu:true});
   }
   await buyer.setViewportSize({width:1280,height:900});
   stage='shopper-collection-search';console.info('OWNED_NATIVE_STAGE shopper-collection-search');

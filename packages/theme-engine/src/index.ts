@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DEFAULT_THEME_SETTINGS, type ThemeSettings } from './theme-settings';
 import { SlugSchema, UuidSchema } from '@letbuyy/shared-types';
 import { BUILT_IN_SECTION_SCHEMAS } from './built-in-section-schemas';
 import {
@@ -11,6 +12,7 @@ import {
 import { localizeThemeTemplateConfig, LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
 
 export * from './theme-registry';
+export * from './theme-settings';
 export * from './built-in-section-schemas';
 export * from './execution-runtime';
 export * from './theme-governance';
@@ -121,36 +123,6 @@ export type BuiltInSectionType =
 
 export type SectionType = BuiltInSectionType | (string & {});
 export type LegacySectionType = 'hero' | 'product_grid' | 'featured_collection' | 'newsletter' | 'header' | 'footer';
-
-export interface ThemeSettings {
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
-  fontFamily: string;
-  headingFontFamily: string;
-  borderRadius: number;
-  enableAnimations: boolean;
-  enableShadows: boolean;
-  isDark?: boolean;
-  surfaceColor?: string;
-}
-
-export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
-  primaryColor: '#00B3B3',
-  secondaryColor: '#008080',
-  accentColor: '#A4E500',
-  backgroundColor: '#FFFFFF',
-  textColor: '#1A1A2E',
-  fontFamily: 'Inter',
-  headingFontFamily: 'Inter',
-  borderRadius: 12,
-  enableAnimations: true,
-  enableShadows: true,
-  isDark: false,
-  surfaceColor: '#F9FAFB',
-};
 
 export interface SectionModel {
   id: string;

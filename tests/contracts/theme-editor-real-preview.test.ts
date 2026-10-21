@@ -14,7 +14,7 @@ const centerPanelSource = readFileSync(
     'utf8',
 );
 const storefrontPreviewSource = readFileSync(
-    join(testDir, '../../apps/commerce/web/src/app/preview/page.tsx'),
+    join(testDir, '../../apps/commerce/web/src/app/preview/preview-content.tsx'),
     'utf8',
 );
 
