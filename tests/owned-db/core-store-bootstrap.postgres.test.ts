@@ -71,7 +71,13 @@ test('visibility migration and rollback preserve the publisher ABI/profile and r
  const body=()=>owned.psql(`SELECT md5(prosrc) FROM pg_catalog.pg_proc WHERE oid=${signature};`);
  const before=profile(),forward=readFileSync('database/supabase/migrations/366_theme_publication_visibility.sql','utf8'),rollback=readFileSync('database/supabase/rollback/366_theme_publication_visibility.rollback.sql','utf8');
  try{
-  assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');owned.psql(rollback);assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84');assert.equal(profile(),before);
+  const refuseOverload=(sql:string)=>{
+   owned.psql("CREATE FUNCTION public.publish_theme_release(p_synthetic_unknown integer) RETURNS integer LANGUAGE sql AS 'SELECT 1';");
+   try { assert.throws(()=>owned.psql(sql),'an unknown sibling overload must refuse before publication function changes');assert.equal(profile(),before); }
+   finally { owned.psql('DROP FUNCTION public.publish_theme_release(integer);'); }
+  };
+  assert.equal(body(),'8a1479af8ced3bbdb3cd6cc21d957f42');refuseOverload(rollback);owned.psql(rollback);assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84');assert.equal(profile(),before);
+  refuseOverload(forward);
   const definition=owned.psql(`SELECT pg_catalog.pg_get_functiondef(${signature});`).replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION');
   assert.match(definition,/p_make_store_live boolean DEFAULT true/);
   owned.psql(definition.replace('p_make_store_live boolean DEFAULT true','p_make_store_live boolean DEFAULT false'));
