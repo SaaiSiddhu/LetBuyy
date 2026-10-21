@@ -145,3 +145,11 @@ export async function authorizeHostedStorefrontPurchase(c:C,siteId:string,admiss
   ||typeof value.host!=='string'||value.host.length>300||!await storefrontHostBelongsToSite(c,value.host,site))
   throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
 }
+
+/** Lookup only: no visitor/tenant grant. The recovery reader must still prove
+ * its cart capability before returning even a minimal receipt. */
+export async function resolveCheckoutRecoverySite(c:C,handle:string):Promise<{id:string}|null>{
+ const normalized=normalizeStorefrontHandle(handle);if(!normalized)return null;
+ const site=await restMetadata(c,{handle:normalized},true);
+ return site?{id:site.id}:null;
+}
