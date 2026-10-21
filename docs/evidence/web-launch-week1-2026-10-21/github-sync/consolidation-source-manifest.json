@@ -1,6 +1,6 @@
 {
-  "sourceCheckpoint": "956978a7273f1ed6614ca44f01f179c726bd06fb",
-  "productionFingerprint": "a6e3c92534b817201f24ae1b9b90d7b13b03c3b9f859540c0e696bbf86f2e08f",
+  "sourceCheckpoint": "e9a3681edad23f228d2013119884fefa39c74e9b",
+  "productionFingerprint": "19bcb0ee6a943a139e28fc27aed4ce91df658b62b44ab30128259c9f30a8dd11",
   "fingerprintMethod": "SHA256 of sorted compact JSON path-to-file-SHA256 map",
   "files": {
     "apps/commerce/web/package.json": "5478b1c2f0d9623562e522028abc376a562a84e99afb8eb554c95c53159b05a4",
@@ -208,13 +208,14 @@
     "services/api-gateway/src/execution/theme-execution.adapter.ts": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
     "services/api-gateway/src/lib/checkout-store-presentation.ts": "1b5e4379a756c56499e8d3a5cbc843204d149f7fa0fe61e01dc98b30a8ec933b",
     "services/api-gateway/src/lib/customer-pagination.ts": "760a702a37ee396c5e98f4104831fa4e10e07e6cb9b7b6802d6783ab380a7b92",
+    "services/api-gateway/src/lib/public-errors.ts": "dd95aa7264f8e9241668e3a2e62c904f5fc2aa4acfd4c37b0510f25d61fa9597",
     "services/api-gateway/src/lib/storefront-visitor-access.ts": "296449e110d7767d60b4d7217f888be40403e0ac88fb826649812f0afd5ff411",
     "services/api-gateway/src/lib/theme-library-limits.ts": "125530bb49c672a79cf190038fdbccc6a07a27a16026764bee891b9fd5ee26a6",
     "services/api-gateway/src/routes/ai.ts": "11dd732da7eb4bb3f0f0d27c3457b32fdb348b59e58a5b6fe8259483aac746c8",
     "services/api-gateway/src/routes/checkout.ts": "328ecff89e333d512fe68a0a80036dc19cc68f6ec7408b60a154e2ece8ba6f23",
     "services/api-gateway/src/routes/commerce-analytics.ts": "858a95e88a7c0a803da1c9a802c20cb9cbf6d480431738f8d441d96fbf866cb8",
     "services/api-gateway/src/routes/custom-domains.ts": "fd99d211ae1a3c796a8fc41477a4e0a206ce15fcd491dfa2ba7e531e75f5f5cb",
-    "services/api-gateway/src/routes/export.ts": "c6536f92daadda2b7c850fd52ac92420fad17b675a93de9272f4f6ddef4256e6",
+    "services/api-gateway/src/routes/export.ts": "35f28c2f20d6a77c838ed8df7aea33fdfa7786205ae110f3414345cfc0d3fd46",
     "services/api-gateway/src/routes/inventory.ts": "220ce7920b633e81ae59bb9379a8ce6358b22257e1b0de3c12b06d98579d63f2",
     "services/api-gateway/src/routes/products.ts": "2b7c02e074499856a27a7b767702141c44aae3b3ba2e5ad56e2d01e3a5c54176",
     "services/api-gateway/src/routes/storefront.ts": "41519cd6c48ff8d2cdf7f9db4be04a10c507a1c76684b145ca17785a871c1520",
@@ -231,7 +232,10 @@
     "database/supabase/rollback/371_storefront_access_metadata.rollback.sql",
     "database/supabase/rollback/377_theme_install_event_contract.rollback.sql",
     "database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql",
+    "services/api-gateway/src/lib/public-errors.ts",
+    "services/api-gateway/src/routes/export.ts",
     "services/api-gateway/src/tenant/tenant-tables.registry.ts"
   ],
-  "runtimeApplicationsUnchangedFromFirstOwnedCandidate": true
+  "runtimeApplicationsUnchangedFromFirstOwnedCandidate": false,
+  "applicationDifferenceScope": "Only export job failure projection and controlled CSV validation changed after the browser-tested candidate; final native export5, Gateway1628 and types cover those paths. Later377/378 migrations are covered by final installer/metadata receipts."
 }
