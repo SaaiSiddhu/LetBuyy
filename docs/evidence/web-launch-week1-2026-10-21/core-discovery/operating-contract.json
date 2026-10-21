@@ -1,0 +1,22 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-DISCOVERY",
+  "source": "dcd9b9f47325adaff75fe6208ede19f131956110",
+  "environment": "Local owned verification only",
+  "compatibility": [
+    "Deploy additive Gateway list/preview-resource support before the consuming web application when a rollout is separately authorized.",
+    "Old clients remain valid; existing collection detail and product/mobile interfaces are unchanged.",
+    "No schema migration or business-data mutation introduced by this phase. Inherited programme prerequisites remain.",
+    "Public summaries are no-store; preview resource stays private/no-store behind the existing store/token/expiry/draft checks. No cross-request private cache."
+  ],
+  "failureRecovery": [
+    "Current Core grid reads are mandatory for rendering that grid: failure reaches the existing whole-page retry boundary rather than rendering false empty data. This does not prove optional-component isolation or full-store outage behavior.",
+    "Backend-only rollback while new web serves makes discovery unavailable by design. Coordinate backend/web rollback; do not hide contract failure with empty data.",
+    "Application rollback restores prior discovery behavior, including its known synthetic wrapper limitation; it is not a claim of launch acceptance. Saved store/draft/release documents are untouched."
+  ],
+  "readBudget": [
+    "At most24 manual summaries per invocation, title/id order, fixed projected fields, no exact count or product/membership fanout.",
+    "No database sort-cost, maximum payload size or useful-page latency improvement has been measured.",
+    "Collection pagination and misleading persisted browse-every copy are open; no merchant data/copy was silently rewritten."
+  ],
+  "release": "No merge/push/deploy, hosted cutover, real provider effects or shared DB writes were performed."
+}

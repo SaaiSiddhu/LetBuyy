@@ -1,0 +1,55 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-DISCOVERY",
+  "status": "LOCAL_BOUNDED_COLLECTION_DISCOVERY_VERIFIED",
+  "source": "dcd9b9f47325adaff75fe6208ede19f131956110",
+  "runtimeSource": "4537594031741e0d12ebab4d4a7687abd58a3349",
+  "scope": "Manual merchant collections now connect through the canonical Gateway and typed client to the existing Core homepage and collections index. The collection grid currently displays the first24 active, nondeleted summaries ordered by title/id. This is local scope acceptance, not full Week1 or production acceptance.",
+  "verification": {
+    "ownedBackend": {
+      "passed": 3,
+      "receipt": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-core-discovery/owned-preview.json",
+      "scope": "Real mounted Gateway/PostgREST/ownedPG; inactive/deleted/tenant exclusion, limit/order/projection/no-fanout, empty/draft/missing, named collection read failure and retry"
+    },
+    "nativeBrowser": {
+      "passed": 1,
+      "receipt": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-core-discovery/owned-index-final.json",
+      "source": "dcd9b9f47325adaff75fe6208ede19f131956110",
+      "scope": "Normal public signup/store/product/image/variants/collection, private resource, public home/index/detail, outage/retry, presets/search/COD/buyer privacy"
+    },
+    "commercePackage": 1261,
+    "reviewedDbInventory": 14,
+    "typechecks": [
+      "Commerce",
+      "Gateway",
+      "typed API client"
+    ],
+    "canonicalGate": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "canonicalGateSha256": "1de9ca9b712285aed8d83e2e4b7fe54bc99b3b74407d417918b1d4b6333f4a61",
+    "cleanup": "All owned receipts terminal; no remaining owned containers/networks/volumes; no stray stopped processes reported.",
+    "reportQA": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-core-discovery/report-qa.json"
+  },
+  "runtimeCompatibility": "apps/packages/services bytes unchanged after45375940 through final source. Backend implementation in owned-preview backend3 is unchanged in final source; later helper/pages and test/inventory/docs changes separately checked.",
+  "open": [
+    "Discovery is bounded to the first24 manual collections. Pagination and the index theme copy saying every collection remain open before claiming complete browse-all acceptance; smart-collection publication is not covered.",
+    "No useful-page speed or production capacity improvement is claimed. This adds the necessary discovery read; navigation duplication and compilation costs still need equivalent useful-task measurement.",
+    "Private preview capability/data is proven; complete Liquid editor visual/CSS parity and measured viewport geometry remain unaccepted.",
+    "Provider transport is a local fixture; Turnstile uses official test keys. No real email delivery or Razorpay acceptance.",
+    "Original port9000 remains on the old primary checkout; no merge, push, deploy, shared DB writes or hosted .com/.store acceptance.",
+    "The original dated audit populations and totals are preserved. Passing counts overlap prior receipts and are not added to those totals."
+  ],
+  "notClaimed": [
+    "FullWeek1 completion",
+    "Completebrowse-all pagination",
+    "Fullprivateeditorvisualparity",
+    "Productionperformance/capacity",
+    "Hosted/provider acceptance",
+    "Deployment",
+    "Independentreview/formalhumanacceptance"
+  ]
+}

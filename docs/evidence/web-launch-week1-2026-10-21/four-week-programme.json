@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Core catalog45/source13 refresh, background search and normal buyer profile/addressCRUD locally verified. Next finish homepage collection discovery, action styling, mobile filter/editor viewport review and useful-page navigation performance; then inventory/discount/order/refund/customer reconciliation.",
+  "currentFocus": "Core bounded manual collection discovery is now locally verified through normal homepage/index/detail browser journeys, preview capability and outage/retry. Next complete pagination/honest browse-all, action/filter/private-editor usability and measured useful-page performance; then inventory/discount/order/refund/customer/operator reconciliation.",
   "weeks": [
     {
       "week": 1,
@@ -72,7 +72,8 @@
   "week2BillingReceipt": "84cbe1e9 source;72 owned acceptance cases pass;919 merchant and1249 commerce package tests pass; canonical114/114. Raw pre-cleanup sweep method red retained. Actual supplier profile, Razorpay sandbox and hosted launch are not verified.",
   "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance.",
   "week2CoreReceipt": "ff6dcc78 final source; browser c4c121da runtime inputs and publisher body unchanged. Core6 + CAS35 + full native browser1 =42 selected passing cases; canonical114/114, governance799/799. Raw gate1 solely pre-cleanup stale-artifact method red; attribution and owned cleanup pass. No provider or hosted release.",
-  "week1Closure": "Named foundation repairs and expanded Core merchant/shopper/buyer journey locally verified. Full Week1 remains open for actual collection discovery, theme visual/action/preview parity and measured useful-page performance. Provider/hosted acceptance remains separate.",
+  "week1Closure": "Named foundation, Core catalog/search/account and bounded real collection discovery repairs locally verified. Full Week1 remains open for collection pagination, theme visual/action/filter/preview parity and measured useful-page performance. Hosted/provider acceptance is separate.",
   "week1CoreCopyReceipt": "20b10aff source; owned8/8 including normal private/public browser and charged COD; theme1890/1890; canonical114/114; cleanup verified. Earlier editor mismatch and build-only dependency failure retained. Existing snapshots untouched; no deployment.",
-  "week1CoreCatalogReceipt": "336d508e9857033437ad606dcd91771aaee4027c source; selected owned14, theme1891, Gateway1608, queue75, Commerce1261, governance802 and canonical114 pass; cleanup verified. Scope and runtime-compatible receipts in core-catalog/acceptance.json. No provider/hosted release."
+  "week1CoreCatalogReceipt": "336d508e9857033437ad606dcd91771aaee4027c source; selected owned14, theme1891, Gateway1608, queue75, Commerce1261, governance802 and canonical114 pass; cleanup verified. Scope and runtime-compatible receipts in core-catalog/acceptance.json. No provider/hosted release.",
+  "week1CoreDiscoveryReceipt": "dcd9b9f47325adaff75fe6208ede19f131956110; backend3 plus production-built native browser1 across compatible receipts, Commerce1261, reviewed inventory14, types and canonical114 pass. core-discovery/acceptance.json records bounded scope, retained failures, cleanup and limitations; no deployment."
 }
