@@ -11,7 +11,7 @@
   "scripts/governance/test-suite-catalog.mjs": "730ef2e25841e60524ea47b1d00f00355163d6a65bae55d112d22248561c977b",
   "scripts/validators/dependency-manifest-validator.mjs": "75363eab536dbc6c7e4fbbae3e43a9433a3d04b7cad4d1a47c073ad6fc7dbf4b",
   "services/api-gateway/package.json": "006f5ca798153eb68abd401b65c386cc412430dfe3104747ea14264fd3b0da75",
-  "services/api-gateway/src/__tests__/owned-db/store-password-admission.postgres.test.ts": "5c6280189e61addb9d6bf72bde83bee5991244494feee07e6aea5ef2430f8c06",
+  "services/api-gateway/src/__tests__/owned-db/store-password-admission.postgres.test.ts": "b6298b599178da179e7c96cf1f970e93e7e052b901cf340aa804960a0554550c",
   "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts": "38dac3f20a4a6820a3fe172555f9eda955a6c8ec20f528e6cc6795cc6d50cada",
   "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts": "e24e037bde7dc0dee97303ab1d56c979e8967e97919816e8d0ab8c3b20af2f09",
   "services/api-gateway/src/__tests__/store-access-password.test.ts": "0e42272799b847660b82b5fff694db8cee859a346e33116dc862e3fc1e037de9",
