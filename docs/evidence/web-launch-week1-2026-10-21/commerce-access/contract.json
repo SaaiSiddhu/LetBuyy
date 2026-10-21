@@ -17,5 +17,6 @@
     "Preserve mobile/shared wire contracts and realm isolation",
     "No weakening existing validators or migration guards"
   ],
-  "initialFinding": "Cart and order routes resolve published store but do not themselves check access_mode; catalogue guard context is only set by catalogue paths. Actual effects must be reproduced before asserting exposure."
+  "initialFinding": "Cart and order routes resolve published store but do not themselves check access_mode; catalogue guard context is only set by catalogue paths. Actual effects must be reproduced before asserting exposure.",
+  "purchasePurpose": "Preview capabilities authorize reads only. Public published storefronts admit shopping; published password-mode storefronts require current password proof. Preview-only storefronts do not admit purchase carts/orders; independent approved marketplace authority is separate."
 }
