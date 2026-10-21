@@ -11,7 +11,7 @@ import {sha256Hex,timingSafeEqualText} from './crypto';
 type C=Context<{Bindings:Env}>;
 export type VisitorSite={id:string;subdomain:string|null;custom_domain?:string|null;custom_domain_status?:string|null;access_mode?:string|null;published?:boolean|null;status:string;access_revision?:string|null};
 export type VisitorGrant={site:VisitorSite;preview:boolean;password:boolean};
-declare module 'hono'{interface ContextVariableMap{storefrontVisitorGrant:VisitorGrant|undefined}}
+declare module 'hono'{interface ContextVariableMap{storefrontVisitorGrant:VisitorGrant|undefined;storefrontPurchaseGrant:VisitorGrant|undefined}}
 const metadataFields='id,subdomain,custom_domain,custom_domain_status,access_mode,published,status,access_password_hash';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const unavailable=()=>new AppError('Store access is unavailable',503,'STOREFRONT_ACCESS_UNAVAILABLE');
@@ -93,4 +93,63 @@ export async function authorizeVisitor(c:C,selector:{id?:string;handle?:string})
  if(prior&&(selector.id===prior.site.id||selector.handle===prior.site.subdomain))return prior;
  const site=await loadVisitorSite(c,selector);if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
  return authorizeVisitorSite(c,site);
+}
+
+/** Commands must not admit against a potentially cached SQL/Hyperdrive policy.
+ * One current bounded REST metadata read precedes storefront cart/order work.
+ * This is a request admission snapshot, not a claim of transaction-wide locking.
+ */
+export async function authorizeFreshStorefrontPurchase(c:C,siteId:string):Promise<VisitorGrant>{
+ c.header('Cache-Control','no-store');
+ if(!uuid.test(siteId))throw new AppError('Invalid store id',400,'VALIDATION');
+ const prior=c.get('storefrontPurchaseGrant');
+ if(prior?.site.id===siteId.toLowerCase())return prior;
+ const site=await restMetadata(c,{id:siteId.toLowerCase()},false);
+ if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
+ const grant=await authorizeVisitorSite(c,site);
+ // A share/theme preview is a read capability, never purchase authority.
+ if(site.access_mode==='preview_only'||site.access_mode==='password'&&!grant.password)
+  throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
+ c.set('storefrontPurchaseGrant',grant);
+ return grant;
+}
+
+export type HostedStorefrontAdmission={version:1;mode:'public'|'password';revision:string|null;host?:string;expires_at:number;signature:string};
+/** Translate an already verified password gate to the existing server-issued
+ * checkout handoff. No raw gate cookie/password/identity token is persisted. */
+export async function issueHostedStorefrontAdmission(c:C,siteId:string,signature:string,expiresAt:number):Promise<HostedStorefrontAdmission>{
+ const grant=await authorizeFreshStorefrontPurchase(c,siteId);
+ if(grant.site.access_mode!=='password')return{version:1,mode:'public',revision:null,expires_at:expiresAt,signature};
+ const checked=await verifyStorefrontGateToken(proof(c,'X-LetBuyy-Storefront-Gate','__Host-lb_store_gate'),c.env.STORE_ACCESS_SIGNING_KEY);
+ if(!checked.valid||!checked.payload||checked.payload.sid!==siteId||!checked.payload.revision||!grant.site.access_revision
+  ||!timingSafeEqualText(checked.payload.revision,grant.site.access_revision))throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
+ return{version:1,mode:'password',revision:grant.site.access_revision,host:checked.payload.host,expires_at:Math.min(expiresAt,checked.payload.exp),signature};
+}
+/** Fresh purchase eligibility for a cryptographically verified hosted link.
+ * An old public link cannot borrow a newer private link's stored admission.
+ * Public legacy links remain usable only while the store is currently public. */
+export async function authorizeHostedStorefrontPurchase(c:C,siteId:string,admission:unknown,signature:string):Promise<void>{
+ c.header('Cache-Control','no-store');
+ if(!uuid.test(siteId))throw new AppError('Invalid store id',400,'VALIDATION');
+ const site=await restMetadata(c,{id:siteId.toLowerCase()},false);
+ if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
+ const mode=site.access_mode??'public';
+ if(mode==='public')return;
+ if(mode==='offline')throw new AppError('Store is offline',503,'STOREFRONT_OFFLINE');
+ if(mode==='preview_only')throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
+ if(mode!=='password')throw unavailable();
+ const value=admission&&typeof admission==='object'&&!Array.isArray(admission)?admission as Partial<HostedStorefrontAdmission>:null;
+ if(!value||value.version!==1||value.mode!=='password'||typeof value.signature!=='string'||!timingSafeEqualText(value.signature,signature)
+  ||typeof value.revision!=='string'||!site.access_revision||!timingSafeEqualText(value.revision,site.access_revision)
+  ||typeof value.expires_at!=='number'||!Number.isSafeInteger(value.expires_at)||value.expires_at<=Date.now()/1000
+  ||typeof value.host!=='string'||value.host.length>300||!await storefrontHostBelongsToSite(c,value.host,site))
+  throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
+}
+
+/** Lookup only: no visitor/tenant grant. The recovery reader must still prove
+ * its cart capability before returning even a minimal receipt. */
+export async function resolveCheckoutRecoverySite(c:C,handle:string):Promise<{id:string}|null>{
+ const normalized=normalizeStorefrontHandle(handle);if(!normalized)return null;
+ const site=await restMetadata(c,{handle:normalized},true);
+ return site?{id:site.id}:null;
 }

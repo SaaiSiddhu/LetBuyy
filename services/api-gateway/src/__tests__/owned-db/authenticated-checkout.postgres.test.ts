@@ -278,3 +278,14 @@ test('the authenticated checkout RPC is backend-only and its rollback preserves 
     assert.equal(psql(`SELECT to_regprocedure('${signature}') IS NOT NULL;`), 't');
     assert.deepEqual(ownership(orderId), before);
 });
+
+test('current storefront restriction denies new direct orders before durable order, inventory or idempotency work',async()=>{
+ const before=psql(`SELECT jsonb_build_object('orders',(SELECT count(*) FROM orders WHERE store_id='${site.siteId}'),'reserved',(SELECT coalesce(sum(reserved),0) FROM inventory_levels WHERE store_id='${site.siteId}'),'claims',(SELECT count(*) FROM idempotency_keys WHERE site_id='${site.siteId}'))::text;`);
+ try{
+  for(const mode of ['password','preview_only','offline']){
+   psql(`UPDATE sites SET access_mode='${mode}' WHERE id='${site.siteId}';`);
+   const key='synthetic-access-order-'+crypto.randomUUID();const response=await createOrder(orderBody(key));assert.equal(response.status,mode==='offline'?503:401,response.text);
+  }
+  assert.equal(psql(`SELECT jsonb_build_object('orders',(SELECT count(*) FROM orders WHERE store_id='${site.siteId}'),'reserved',(SELECT coalesce(sum(reserved),0) FROM inventory_levels WHERE store_id='${site.siteId}'),'claims',(SELECT count(*) FROM idempotency_keys WHERE site_id='${site.siteId}'))::text;`),before);
+ }finally{psql(`UPDATE sites SET access_mode='public' WHERE id='${site.siteId}';`);}
+});

@@ -1,3 +1,4 @@
+import { authorizeFreshStorefrontPurchase } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
@@ -182,6 +183,8 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 404
             );
         }
+
+        await authorizeFreshStorefrontPurchase(c, store.id);
 
         // A supplied token is never downgraded to a guest checkout. Its site binding is checked
         // against the store resolved from the route, and the live account epoch is revalidated

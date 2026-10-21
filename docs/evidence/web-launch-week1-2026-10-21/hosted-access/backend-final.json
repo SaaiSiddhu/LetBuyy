@@ -1,0 +1,157 @@
+{
+  "runId": "4c3f45c516d6",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-49751-mvi49uuw-45b45a"
+  ],
+  "reaped": [],
+  "suites": 3,
+  "gatewayDbSuites": 3,
+  "failedSuites": 0,
+  "tests": 57,
+  "assertionsPassed": 57,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 281.9,
+  "suiteSeconds": 269.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "hosted-checkout-buyer-ownership.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-49751-mvi49uuw-45b45a",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 72.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_hosted_checkout_buyer_ownership_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 9.9,
+      "rest": {
+        "container": "letbuyy-exec-4c3f45c516d6-rest-2",
+        "upstreamPort": 60803,
+        "proxyPort": 60810
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 571,
+        "refused": 0,
+        "upstreamErrors": 8
+      }
+    },
+    {
+      "name": "marketplace-cart-origin.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-49751-mvi49uuw-45b45a",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 26.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_marketplace_cart_origin_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 6.2,
+      "rest": {
+        "container": "letbuyy-exec-4c3f45c516d6-rest-3",
+        "upstreamPort": 61157,
+        "proxyPort": 61162
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 596,
+        "refused": 0,
+        "upstreamErrors": 5
+      }
+    },
+    {
+      "name": "storefront-access-boundary.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-access-boundary.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-49751-mvi49uuw-45b45a",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 33,
+      "pass": 33,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 170.2,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_boundary_postgres",
+      "templateSeconds": 91.2,
+      "provisionSeconds": 4.4,
+      "rest": {
+        "container": "letbuyy-exec-4c3f45c516d6-rest-1",
+        "upstreamPort": 60219,
+        "proxyPort": 60220
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1108,
+        "refused": 0,
+        "upstreamErrors": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "runId": "65a738164eec",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-36426-mvi79bo9-6d28b0"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 1,
+  "tests": 11,
+  "assertionsPassed": 10,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 942.5,
+  "suiteSeconds": 938.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "native-core-storefront-browser.postgres",
+      "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-36426-mvi79bo9-6d28b0",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 912.4,
+      "firstFailure": "not ok 1 - fresh merchant builds and publishes Core Liquid then a customer orders a real variant",
+      "failures": [
+        "not ok 1 - fresh merchant builds and publishes Core Liquid then a customer orders a real variant"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_native_core_storefront_browser_postgres",
+      "templateSeconds": 69.8,
+      "provisionSeconds": 4.8,
+      "rest": {
+        "container": "letbuyy-exec-65a738164eec-rest-1",
+        "upstreamPort": 49608,
+        "proxyPort": 49609
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 5597,
+        "refused": 0,
+        "upstreamErrors": 3
+      }
+    },
+    {
+      "name": "storefront-access-worker.postgres",
+      "path": "tests/owned-db/storefront-access-worker.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-36426-mvi79bo9-6d28b0",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 25.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_worker_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 2.9,
+      "rest": {
+        "container": "letbuyy-exec-65a738164eec-rest-2",
+        "upstreamPort": 61717,
+        "proxyPort": 61718
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 561,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

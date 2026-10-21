@@ -1,6 +1,7 @@
 'use client';
 
 import type { CartItem, StorefrontCartLineInput } from '@letbuyy/checkout-core';
+import { CART_RETIRED_EVENT, reconcileStoredCart } from '@/lib/checkout/cart-lifecycle';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -142,22 +143,61 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const lastSyncPayloadRef = useRef('');
 
     useEffect(() => {
-        setItems((prev) => (prev.length > 0 ? prev : readCachedItems()));
-        setCartToken(window.localStorage.getItem(CART_TOKEN_STORAGE_KEY));
-        setHasLoadedStorage(true);
+        let alive = true;
+        const retired = () => {
+            setItems([]);
+            setCartToken(null);
+            lastSyncPayloadRef.current = '';
+        };
+        const load = () => {
+            if (!alive) return;
+            const cached = readCachedItems();
+            // Returning to the storefront is a read. Only a deliberate mutation
+            // syncs a draft; mounting must not replay pre-checkout cart contents.
+            lastSyncPayloadRef.current = JSON.stringify(cached.map(cartLineInputFromItem));
+            setItems(cached);
+            setCartToken(window.localStorage.getItem(CART_TOKEN_STORAGE_KEY));
+            setHasLoadedStorage(true);
+        };
+        window.addEventListener(CART_RETIRED_EVENT, retired);
+        const subdomain = getStorefrontSubdomain();
+        const reconciliation = subdomain ? reconcileStoredCart(subdomain) : null;
+        if (reconciliation) void reconciliation.then(load);
+        else load();
+        return () => { alive = false; window.removeEventListener(CART_RETIRED_EVENT, retired); };
     }, []);
+
+    async function prepareCartMutation(): Promise<boolean> {
+        const subdomain = getStorefrontSubdomain();
+        const reconciliation = subdomain ? reconcileStoredCart(subdomain) : null;
+        if (reconciliation && await reconciliation === 'unavailable') {
+            setSyncError('We could not check your previous checkout. Please try again.');
+            return false;
+        }
+        return true;
+    }
 
     async function syncCartToServer(nextItems: CartItem[]) {
         const subdomain = getStorefrontSubdomain();
         if (!subdomain) return;
 
+        const reconciliation = reconcileStoredCart(subdomain);
+        if (reconciliation) {
+            const outcome = await reconciliation;
+            if (outcome === 'retired') return;
+            if (outcome === 'unavailable') {
+                setSyncError('We could not check your previous checkout. Please try again.');
+                return;
+            }
+        }
+        const currentToken = window.localStorage.getItem(CART_TOKEN_STORAGE_KEY);
         const body = {
             lines: nextItems.map(cartLineInputFromItem),
         };
 
         try {
-            const response = await storefrontBrowserApiFetch(subdomain, cartToken ? `/cart/${cartToken}` : '/cart', {
-                method: cartToken ? 'PATCH' : 'POST',
+            const response = await storefrontBrowserApiFetch(subdomain, currentToken ? `/cart/${currentToken}` : '/cart', {
+                method: currentToken ? 'PATCH' : 'POST',
                 body: JSON.stringify(body),
             });
             const result = await readStorefrontApiJson<ServerCart>(response);
@@ -219,7 +259,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         void syncCartToServer(items);
     }, [items, hasLoadedStorage, cartToken]);
 
-    const addToCart = (product: ProductModel, variantContext?: CartVariantContext) => {
+    const addToCart = async (product: ProductModel, variantContext?: CartVariantContext) => {
+        if (!await prepareCartMutation()) return;
         setItems(prev => {
             const cartLineKey = variantContext?.variantId
                 ? `${product.id}:${variantContext.variantId}`
@@ -255,7 +296,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(true);
     };
 
-    const removeFromCart = (productId: string, variantId?: string | null) => {
+    const removeFromCart = async (productId: string, variantId?: string | null) => {
+        if (!await prepareCartMutation()) return;
         setItems(prev => prev.filter(i => {
             const iVariantId = (i as CartItem & { variantId?: string | null }).variantId ?? null;
             if (i.id !== productId) return true;
@@ -264,7 +306,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }));
     };
 
-    const updateQuantity = (productId: string, quantity: number, variantId?: string | null) => {
+    const updateQuantity = async (productId: string, quantity: number, variantId?: string | null) => {
+        if (!await prepareCartMutation()) return;
         if (quantity < 1) {
             removeFromCart(productId, variantId);
             return;
@@ -276,7 +319,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }));
     };
 
-    const clearCart = () => setItems([]);
+    const clearCart = async () => { if (await prepareCartMutation()) setItems([]); };
 
     const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
     const cartCount = items.reduce((count, item) => count + item.quantity, 0);

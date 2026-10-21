@@ -759,3 +759,8 @@ export function tenantRlsPolicyTemplate(table: string): TenantRlsPolicyTemplate 
     ].join(' '),
   };
 }
+
+/** Checkout display data after verified handoff; never an auth or pricing grant. */
+export type CheckoutStorePresentation = Pick<StoreModel,'id'|'sellerId'|'name'|'subdomain'|'codEnabled'|'onlinePaymentEnabled'> & {
+  themeSettings: StoreTemplateConfig['themeSettings'];
+};

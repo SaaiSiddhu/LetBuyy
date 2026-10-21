@@ -1,0 +1,16 @@
+{
+  "source": "a9c36553",
+  "wranglerDryRunExit": 0,
+  "buildCheckHook": true,
+  "wasm": {
+    "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm": {
+      "bytes": 6660,
+      "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+    },
+    "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm": {
+      "bytes": 7442,
+      "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+    }
+  },
+  "scope": "Local compiled artifact only; no upload/deployment/hosted acceptance"
+}

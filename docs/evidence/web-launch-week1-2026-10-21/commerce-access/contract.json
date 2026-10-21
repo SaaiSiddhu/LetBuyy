@@ -1,0 +1,22 @@
+{
+  "phase": "WEB-LAUNCH-W1-COMMERCE-ACCESS",
+  "base": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b",
+  "objective": "Fresh storefront cart and order eligibility across read/mutation/handoff, preserving persisted approved marketplace sales origin and independent buyer history/recovery.",
+  "acceptance": [
+    "Prove actual mounted HTTP route behavior, persisted effects and mode/password/revocation changes before fixing",
+    "Storefront cart create/read/update/identity/discount/handoff and order-intent admission honor current store publication and visitor authority before data/business writes",
+    "Existing marketplace carts derive their origin from stored state, require current canonical approved listing authority, and cannot gain bypass from a client channel field",
+    "Already committed order recovery, buyer history and genuine payment reconciliation retain their independent capabilities and are not blanket denied by storefront navigation mode",
+    "Metadata admission must have a deliberately authoritative fresh path; owned Hyperdrive-shaped wire does not prove managed query-cache freshness",
+    "Appropriate positive/negative/dependency/recovery and browser integration, source manifest and additive report evidence"
+  ],
+  "constraints": [
+    "Single agent",
+    "No new merge/push after completed machine handoff without renewed authorization",
+    "No deployment/shared/restored/hosted writes/provider effects",
+    "Preserve mobile/shared wire contracts and realm isolation",
+    "No weakening existing validators or migration guards"
+  ],
+  "initialFinding": "Cart and order routes resolve published store but do not themselves check access_mode; catalogue guard context is only set by catalogue paths. Actual effects must be reproduced before asserting exposure.",
+  "purchasePurpose": "Preview capabilities authorize reads only. Public published storefronts admit shopping; published password-mode storefronts require current password proof. Preview-only storefronts do not admit purchase carts/orders; independent approved marketplace authority is separate."
+}
