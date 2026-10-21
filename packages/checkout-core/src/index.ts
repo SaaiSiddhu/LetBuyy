@@ -1782,6 +1782,7 @@ export interface OrderItem {
 
 export interface CartItem extends ProductModel {
   quantity: number;
+  variantId?: string | null;
   selectedVariant?: Record<string, string>;
 }
 
