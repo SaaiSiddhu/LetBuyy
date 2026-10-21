@@ -1,0 +1,58 @@
+{
+  "source": "20b10affde63866b2b62202ee7fac492d220a53c",
+  "base": "d9a987dc79bdac26a6c5ae95b9595c678c9215d5",
+  "files": [
+    {
+      "path": "database/supabase/migrations/367_core_starter_announcement.sql",
+      "sha256": "240ebc55d8acaa28e01124316580609b80b77e80b688f3e0124a905ed5f55577"
+    },
+    {
+      "path": "database/supabase/rollback/367_core_starter_announcement.rollback.sql",
+      "sha256": "695a6293055367fd0533f614a6d84f676fc27d0718d93436650c8669475cbcac"
+    },
+    {
+      "path": "database/supabase/seeds/generated/letbuyy-core-liquid-bundle.json",
+      "sha256": "33dc237c5157d50edbcc3d31e1f6b29719651c6436955b56f908c835d9ea3d8e"
+    },
+    {
+      "path": "packages/theme-engine/examples/index.json",
+      "sha256": "749bf973a215ba856aa9b729d628d6b09038df759da275c04ce6eaffa944ca31"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/bundle.json",
+      "sha256": "34b4f7ff7d710ffcf1728035f59b066b40274b86537841cfac871019a74083c6"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/files/sections/announcement-bar.liquid",
+      "sha256": "6cea3c43b4f82bb6b461994dd44135aeb33440124f896a4cca39c90135936e1d"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/files/templates/header.json",
+      "sha256": "d1375bdeb9b30ef1a0a8bba70093bace9e1cecac75db43932221081ecb62be93"
+    },
+    {
+      "path": "packages/theme-engine/examples/letbuyy-core-liquid/manifest.json",
+      "sha256": "3a7b80d3150c3d6bd86673f0e13283a0be4d2af10803556511765f6079be1814"
+    },
+    {
+      "path": "packages/theme-engine/src/portable-to-liquid.ts",
+      "sha256": "c3fedc57ddcc102c659271877b14b7de34cf5cc1733fc8d73e3575154d153258"
+    },
+    {
+      "path": "packages/theme-engine/src/theme-bundle-core.ts",
+      "sha256": "5362a0d5c54c0d99b5425784768a888437599252bb8cab5dd61c1eaea525ebca"
+    },
+    {
+      "path": "packages/theme-engine/test/core-launch-compatibility.test.ts",
+      "sha256": "94920dd10a1d7c7c399151554e4fb0d006ecdb9bcf72becd8d88523a42e88fce"
+    },
+    {
+      "path": "tests/owned-db/core-store-bootstrap.postgres.test.ts",
+      "sha256": "876ccec607290676e6229ba23a074729d39d70e3d4ff533f355565485ada845a"
+    },
+    {
+      "path": "tests/owned-db/native-core-storefront-browser.postgres.test.ts",
+      "sha256": "1da6883af25982a24008536eab945b86f1650fc6e62710f27c9401214083ba0a"
+    }
+  ]
+}

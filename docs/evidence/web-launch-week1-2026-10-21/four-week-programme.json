@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Core integration locally verified; correct starter copy and measure navigation demand next, then inventory/discount/order/refund/customer journeys. Provider/hosted acceptance remains open.",
+  "currentFocus": "Technical foundation and fresh Core store-to-COD locally verified; starter announcement now correct in private editor and public storefront. Next reconcile13 Core seed/source section differences and measure navigation demand, then inventory/discount/order/refund/customer journeys.",
   "weeks": [
     {
       "week": 1,
@@ -72,5 +72,6 @@
   "week2BillingReceipt": "84cbe1e9 source;72 owned acceptance cases pass;919 merchant and1249 commerce package tests pass; canonical114/114. Raw pre-cleanup sweep method red retained. Actual supplier profile, Razorpay sandbox and hosted launch are not verified.",
   "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance.",
   "week2CoreReceipt": "ff6dcc78 final source; browser c4c121da runtime inputs and publisher body unchanged. Core6 + CAS35 + full native browser1 =42 selected passing cases; canonical114/114, governance799/799. Raw gate1 solely pre-cleanup stale-artifact method red; attribution and owned cleanup pass. No provider or hosted release.",
-  "week1Closure": "Technical foundation locally verified; Core launch-copy and broader theme acceptance remain open. Not public-production acceptance."
+  "week1Closure": "Named foundation blockers and starter copy locally verified. Broader Core section/catalog and visual acceptance remain open; provider/hosted readiness is separate.",
+  "week1CoreCopyReceipt": "20b10aff source; owned8/8 including normal private/public browser and charged COD; theme1890/1890; canonical114/114; cleanup verified. Earlier editor mismatch and build-only dependency failure retained. Existing snapshots untouched; no deployment."
 }

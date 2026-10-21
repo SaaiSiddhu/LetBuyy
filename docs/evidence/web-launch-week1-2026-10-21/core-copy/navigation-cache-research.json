@@ -1,0 +1,15 @@
+{
+  "status": "SOURCE_CACHE_KEY_EVIDENCE_MEASUREMENT_PENDING",
+  "appVersion": {
+    "next": "16.1.6",
+    "react": "19.2.3"
+  },
+  "appSource": "apps/commerce/web/src/lib/api/client.ts:49",
+  "observed": "A fresh X-Request-ID is supplied for every storefront API read, including navigation with next.revalidate.",
+  "installedFrameworkSource": "node_modules/.pnpm/next@16.1.6*/node_modules/next/dist/server/lib/incremental-cache/index.js:240",
+  "frameworkBehavior": "Next16.1.6 includes headers in its fetch data-cache key and removes only traceparent/tracestate in the inspected code.",
+  "primarySource": "https://github.com/vercel/next.js/blob/v16.1.6/packages/next/src/server/lib/incremental-cache/index.ts",
+  "researchDate": "2026-10-21",
+  "inference": "Random request IDs can generate distinct public read cache entries; confirm actual production-built request counts/freshness before modifying trace propagation or claiming latency gains.",
+  "next": "Equivalent owned homepage/PDP before/after, exact tenant scope, public freshness and private/no-store negative controls. No new shared private cache."
+}

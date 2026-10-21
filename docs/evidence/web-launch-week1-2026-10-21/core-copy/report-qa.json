@@ -1,0 +1,20 @@
+{
+  "html": "copy-repairs.html",
+  "references": 11,
+  "missing": [],
+  "visualReview": "All three final captures viewed; private and public neutral announcement confirmed. Earlier editor mismatch capture retained. Synthetic1px upload is not representative photography. Offline report QA, no file-access restriction bypass.",
+  "images": [
+    {
+      "path": "public-core-store.png",
+      "sha256": "6b6c1f723213a42e2e6c10ac93b812393a64b9727a3b217ca7aeef6aed7582e1"
+    },
+    {
+      "path": "merchant-core-editor.png",
+      "sha256": "4d487aff883c0fd7d42ca0e05ad5c14e6339d30728789d070d3775e74de23478"
+    },
+    {
+      "path": "customer-cod-order.png",
+      "sha256": "f3454d8201e2c27f10aef92ced9f5470af83f29df03c57c8607cf6a770a31037"
+    }
+  ]
+}
