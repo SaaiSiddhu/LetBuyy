@@ -1,0 +1,100 @@
+{
+  "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
+  "status": "LOCAL_VERIFIED_CATALOGUE_READ_AND_NORMAL_VISITOR_LIFECYCLE",
+  "formalAcceptance": "Not a whole-storefront/Week1/launch or hosted acceptance",
+  "applicationCheckpoint": "b49e7b3a",
+  "currentBranch": "letbuyy/week1-storefront-access",
+  "sourceManifestMatches": 39,
+  "evidence": {
+    "finalNative": {
+      "run": "527d4c97b786",
+      "pass": 1,
+      "fail": 0,
+      "scope": "Full original normal signup/store/product/exact media/variants/private editor/ten presets/publication/search/COD/account privacy + normal password form/wrong/outage retry/unlock/rotation/general-preview issue/first SSR/read/revoke/offline/public-cookie recovery"
+    },
+    "currentBackend": {
+      "run": "0b17141f7b82",
+      "pass": 23,
+      "fail": 0,
+      "scope": "SQL/REST20 + native password/cache3"
+    },
+    "compatibleMigrationAndMediaRegression": {
+      "run": "a9c9fb7aea09",
+      "pass": 54,
+      "fail": 0,
+      "scope": "Access20 + guarded371/historical370 lifecycle10 + native private media24; same static Wasm algorithm assets"
+    },
+    "nativeSql": {
+      "pass": 2,
+      "fail": 0,
+      "scope": "Direct and HYPERDRIVE-shaped owned wire; not managed Hyperdrive"
+    },
+    "gatewayUnit": {
+      "pass": 1614,
+      "fail": 0
+    },
+    "authCore": {
+      "pass": 30,
+      "fail": 0
+    },
+    "commercePackage": {
+      "pass": 1263,
+      "fail": 0
+    },
+    "moduleBoundaryControls": {
+      "pass": 9,
+      "fail": 0
+    },
+    "types": "Gateway and Commerce PASS",
+    "canonicalGate": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "gateAdvisories": [],
+    "artifact": {
+      "source": "b49e7b3a",
+      "scope": "Real local default Wrangler dry-run; no uploads/deployment",
+      "hookPassed": true,
+      "dryRunExited": true,
+      "errorMarkerPresent": false,
+      "dynamicCompilerCalls": 0,
+      "wasmAssets": {
+        "e4cdc523e88360df8f26f17ea8c50d2f8ff1421b-argon2.wasm": {
+          "bytes": 6660,
+          "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+        },
+        "c6f286e6f01e19f49c2439685e34a41f73cf8329-blake2b.wasm": {
+          "bytes": 7442,
+          "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+        }
+      }
+    }
+  },
+  "cleanup": "Final native and backend receipts have empty failures/remaining containers/networks/volumes. All processes/runs terminal.",
+  "retainedFailures": [
+    "Direct API policy exposure before repair",
+    "Gate/preview purpose confusion before repair",
+    "Host outage false404 and foreign-host preview issuance200",
+    "Missing password input in actual browser",
+    "Native dynamic Wasm compile failure: setter500 and valid-password401",
+    "Third full browser ambiguous product/recommendation heading selector (fixture corrected to H1)",
+    "First canonical gate108PASS6FAIL; concrete boundary/tooling fixes retained; no validator suppressed",
+    "Offline fresh clone install lacked speed-insights tarball; locked online install/artifact reproduction passed; first Wrangler log path sandbox-denied, supported private log rerun passed"
+  ],
+  "limits": [
+    "Node/REST guard tests do not independently certify the entire platform RLS state",
+    "Managed Hyperdrive/cache/fresh route and actual hosted paths remain unverified",
+    "Pre-KDF password attempt admission still must be repaired and proved",
+    "Fresh cart/order eligibility and independent marketplace/buyer-history channel behavior still required",
+    "Redirect-domain preview browser behavior not accepted",
+    "Remaining Core/editor/media/performance, wider commerce/operator and real payment/email/delivery/hosted launch gates remain open"
+  ],
+  "merged": false,
+  "pushedAfterSourceHandoff": false,
+  "deployed": false,
+  "week1Complete": false,
+  "fourWeekGoal": "ACTIVE"
+}

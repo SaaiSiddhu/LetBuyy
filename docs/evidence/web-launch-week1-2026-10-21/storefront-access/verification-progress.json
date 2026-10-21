@@ -1,6 +1,6 @@
 {
   "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
-  "status": "GOVERNANCE_AND_NATIVE_CRYPTO_CACHE_PASS_FULL_BROWSER_RUNNING",
+  "status": "LOCAL_VERIFIED_CATALOGUE_READ_AND_NORMAL_VISITOR_LIFECYCLE",
   "sourceCheckpoint": "b49e7b3a",
   "baseDevelop": "d6cd8f3748147c9ab4dd4d5e251888eb89c6ae15",
   "backend": {
@@ -30,6 +30,12 @@
       "pass": 54,
       "fail": 0,
       "suites": "Node/SQL access20, migration10 and other native private-media compiler24",
+      "cleanup": "empty"
+    },
+    "governedFinal": {
+      "run": "0b17141f7b82",
+      "pass": 23,
+      "fail": 0,
       "cleanup": "empty"
     }
   },
@@ -115,10 +121,13 @@
     },
     "repair": "Server page resolves rewritten searchParams and passes explicit props to client view; actual shopper gate has no demo switcher; canonical UI tokens and truthful invalid/throttled/unavailable feedback. Added actual verifier503/retry proof.",
     "currentRun": {
-      "status": "RUNNING_NOT_ACCEPTED",
-      "session": 23819,
+      "status": "PASS_TERMINAL",
+      "run": "527d4c97b786",
+      "pass": 1,
+      "fail": 0,
       "source": "b49e7b3a",
-      "directory": "native-access-governed-final"
+      "directory": "native-access-governed-final",
+      "cleanup": "empty"
     },
     "references": [
       {
@@ -163,11 +172,8 @@
     }
   },
   "remaining": [
-    "Complete normal production-browser unlock, first-link SSR forwarding, revocation/offline/public-cookie recovery on final serving code",
     "Verify current custom-domain and redirect-alias behavior and domain revocation/failure recovery",
     "Additional malformed/duplicate/forged/cross-site and dependency refusal/recovery coverage",
-    "Final native CacheAPI warm protected reads and before-cache revocation proof",
-    "Run final canonical gate in disposable clone after owned suites are terminal",
     "Fresh cart/order and independent marketplace/buyer-history eligibility remains parent launch work",
     "Core/editor/legacy media/performance and wider commerce/operator/provider/hosted gates remain open",
     "Review password-attempt admission before the expensive KDF: current internal verify computes the password check before its limiter; fresh resource/negative proof remains required.",
@@ -177,5 +183,6 @@
   "pushedAfterHandoff": false,
   "deployed": false,
   "week1Complete": false,
-  "fourWeekGoal": "ACTIVE"
+  "fourWeekGoal": "ACTIVE",
+  "nextAction": "Claim and repair password attempt admission before KDF with actual native no-hash-after-refusal proof, then fresh cart/order/channel eligibility; preserve the catalogue/visitor proofs."
 }
