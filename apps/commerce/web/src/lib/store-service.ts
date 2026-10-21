@@ -74,6 +74,14 @@ export class StorefrontStoreError extends Error {
 // request. Route Handlers retain their normal uncached behavior; no module data Map
 // or cross-request permission/publication cache is introduced.
 export const StoreService = {
+    getCatalogThemePreview(templateConfig: Record<string, unknown>, name: string): StoreModel {
+        const demo = buildUrbanKicksDemoStore();
+        const normalized = mapSupabaseToStore({ id: demo.id, name, store_name: demo.subdomain,
+            subdomain: demo.subdomain, site_type: 'store', theme_id: templateConfig.themeId,
+            template_config: templateConfig, currency: 'INR', locale: 'en-IN' });
+        return { ...demo, name, templateConfig: normalized.templateConfig };
+    },
+
     getUrbanKicksDemoStore(): StoreModel {
         return buildUrbanKicksDemoStore();
     },

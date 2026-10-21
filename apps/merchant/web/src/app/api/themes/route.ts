@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         const themes = payload.data
         const currentThemeSlug = payload.current_theme
 
-        currentTheme = themes.find((theme) => (
+        currentTheme = payload.current_theme_record || themes.find((theme) => (
             (currentThemeSlug && theme.slug === currentThemeSlug) ||
             theme.active === true
         )) || null

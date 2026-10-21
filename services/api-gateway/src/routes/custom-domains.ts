@@ -590,6 +590,17 @@ customDomainsRouter.get('/domains/:domain/history', async (c) => {
     return c.json(success({ domain, connected: events !== null, events: events || [] }));
 });
 
+storeAccessRouter.get('/', async (c) => {
+    const siteId = z.uuid().safeParse(c.req.query('site_id'));
+    if (!siteId.success) return c.json({ error: { code: 'VALIDATION', message: 'A valid site_id is required' } }, 400);
+    const { db, response } = await requireOwnedSite(c, siteId.data);
+    if (response) return response;
+    const { data, error } = await db.from('sites').select('access_mode,access_message,access_password_hash,published,status').eq('id', siteId.data).single();
+    if (error || !data) return c.json(dbErrorBody(), 503);
+    return c.json(success({ access_mode: data.access_mode, access_message: data.access_message,
+        has_password: Boolean(data.access_password_hash), published: data.published, status: data.status }));
+});
+
 storeAccessRouter.put('/', async (c) => {
     const parsed = StoreAccessSchema.safeParse(await c.req.json().catch(() => null));
     if (!parsed.success) {
@@ -598,26 +609,17 @@ storeAccessRouter.put('/', async (c) => {
 
     const { db, customUser, response } = await requireOwnedSite(c, parsed.data.site_id);
     if (response) return response;
-    if (parsed.data.access_mode === 'password' && !parsed.data.password) {
-        return c.json({ error: { code: 'PASSWORD_REQUIRED', message: 'Password mode requires a store password' } }, 400);
-    }
+    const passwordHash = parsed.data.password && parsed.data.access_mode === 'password'
+        ? await hashStoreAccessPassword(parsed.data.password, { signal: c.req.raw.signal }) : null;
+    const { data, error } = await db.rpc('set_owned_storefront_access_v1', {
+        p_actor: customUser?.id, p_site: parsed.data.site_id, p_bound_site: c.get('auth').user.storeId || null,
+        p_mode: parsed.data.access_mode, p_message: parsed.data.access_message || null, p_password_hash: passwordHash,
+    });
+    if (error?.code === '42501') return c.json({ error: { code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' } }, 404);
+    if (error?.code === 'PT400') return c.json({ error: { code: 'PASSWORD_REQUIRED', message: 'Set a password before restricting access.' } }, 400);
+    if (error) return c.json(dbErrorBody(), 503);
+    return c.json(success(data));
 
-    const accessPasswordHash = parsed.data.password
-        ? await hashStoreAccessPassword(parsed.data.password, { signal: c.req.raw.signal })
-        : parsed.data.access_mode === 'password'
-            ? undefined
-            : null;
-
-    const updatePayload: Record<string, unknown> = {
-        access_mode: parsed.data.access_mode,
-        access_message: parsed.data.access_message || null,
-        updated_by: customUser?.id || null,
-    };
-    if (accessPasswordHash !== undefined) updatePayload.access_password_hash = accessPasswordHash;
-
-    const { error } = await db.from('sites').update(updatePayload).eq('id', parsed.data.site_id);
-    if (error) return c.json(dbErrorBody(), 500);
-    return c.json(success({ site_id: parsed.data.site_id, access_mode: parsed.data.access_mode }));
 });
 
 storeAccessRouter.post('/preview-links', async (c) => {

@@ -1,5 +1,6 @@
 'use client'
 
+import { StorefrontVisibility } from '@/components/theme-library/StorefrontVisibility'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -38,12 +39,6 @@ const advancedPreferences = [
         description: 'Default image for social previews when a store link is shared.',
         icon: ImageIcon,
         value: 'No image connected',
-    },
-    {
-        title: 'Password protection',
-        description: 'Restrict storefront access while preparing publication.',
-        icon: Lock,
-        value: 'Locked pending safe editing',
     },
     {
         title: 'Google Analytics',
@@ -193,7 +188,9 @@ export default function PreferencesPage() {
                     description="Control search previews and storefront preference fields."
                     breadcrumbs={[{ label: 'Online Store' }, { label: 'Preferences' }]}
                 />
-                <Card>
+                <StorefrontVisibility store={store} inline />
+
+            <Card>
                     <Section title="Search engine listing">
                         <Skeleton variant="card" lines={7} />
                     </Section>
@@ -288,7 +285,7 @@ export default function PreferencesPage() {
                     action={<Badge label="Read-only" variant="warning" />}
                 >
                     <Banner variant="warning" title="Advanced fields are read-only">
-                        Social image, password protection, analytics ID, and favicon controls are locked pending safe editing.
+                        Social image, analytics ID, and favicon controls are locked pending safe editing.
                     </Banner>
 
                     <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">

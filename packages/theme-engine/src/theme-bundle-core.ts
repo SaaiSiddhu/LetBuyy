@@ -27,12 +27,19 @@ import {
   createUrbanKicksLiquidThemeBundleFixture,
   type LiquidThemePackageBundle,
 } from './theme-bundle';
+import { getExperience } from './theme-presets';
 
 /** Canonical first-party theme catalog slug (merchant-never-sees-this; "Experience" is the UX term). */
 export const LETBUYY_CORE_THEME_SLUG = 'letbuyy-core';
 export const LETBUYY_CORE_STARTER_ANNOUNCEMENT = 'Discover our latest products.';
 /** Canonical Liquid bundle slug for the Core theme (parallels 'urban-kicks-liquid'). */
 export const LETBUYY_CORE_BUNDLE_SLUG = 'letbuyy-core-liquid';
+
+/** The ten catalog designs use the same Core section code and compatibility repairs. */
+export function isFirstPartyCoreBundleSlug(slug: unknown): boolean {
+  return slug === LETBUYY_CORE_BUNDLE_SLUG || (typeof slug === 'string'
+    && slug.startsWith('letbuyy-') && Boolean(getExperience(slug.slice('letbuyy-'.length))));
+}
 /** Retained legacy alias — existing stores persist sites.theme_id='urban-kicks'; never break them. */
 export const URBAN_KICKS_THEME_SLUG = 'urban-kicks';
 export const URBAN_KICKS_BUNDLE_SLUG = 'urban-kicks-liquid';

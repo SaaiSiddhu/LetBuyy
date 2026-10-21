@@ -194,24 +194,24 @@ test('phase-q: ThemeLibraryCard uses aria-label for action menu buttons', () => 
     assert.match(src, /Dropdown/, 'ThemeLibraryCard must use Dropdown for action menu');
 });
 
-test('phase-q: workspace tab strip uses ARIA tablist/tab/tabpanel pattern', () => {
-    const src = read(`${MCP_BASE}/app/[store]/online-store/themes/page.tsx`);
-    assert.match(src, /role="tablist"/, 'themes page must use tablist role');
-    assert.match(src, /role="tab"/, 'themes page must use tab role');
-    assert.match(src, /role="tabpanel"/, 'themes page must use tabpanel role');
-    assert.match(src, /aria-selected/, 'tab buttons must have aria-selected');
+test('theme workspace exposes discovery and the library together as named regions', () => {
+    const src = read(`${MCP_BASE}/components/theme-library/ThemeWorkspace.tsx`);
+    assert.match(src, /aria-label=\{marketplace \? 'Theme marketplace catalog' : 'Discover themes'\}/);
+    assert.match(src, /<ThemeLibraryWorkspace/);
+    assert.doesNotMatch(src, /activeTab|role="tabpanel"/, 'discovery is no longer hidden behind a tab');
 });
 
 // ── Page imports ThemeLibraryWorkspace ───────────────────────────────────────
 
 test('phase-q: themes page imports and renders ThemeLibraryWorkspace', () => {
     const src = read(`${MCP_BASE}/app/[store]/online-store/themes/page.tsx`);
-    assert.match(src, /ThemeLibraryWorkspace/, 'themes page must import ThemeLibraryWorkspace');
+    assert.match(src, /ThemeWorkspace/, 'themes page must import the shared workspace');
     assert.match(
         src,
-        /from '@\/components\/theme-library\/ThemeLibraryWorkspace'/,
+        /from '@\/components\/theme-library\/ThemeWorkspace'/,
         'must import from correct path'
     );
+    assert.match(read(`${MCP_BASE}/components/theme-library/ThemeWorkspace.tsx`), /<ThemeLibraryWorkspace/);
 });
 
 // ── en-IN date format ──────────────────────────────────────────────────────────
@@ -286,12 +286,14 @@ test('phase-q-hardening: handlePublish sends store_name as URL query parameter, 
         /\/editor\?store_name=/,
         'handlePublish must include store_name as a query parameter in the /editor URL',
     );
-    // Confirm make_store_live is still present in the source (required by the gateway publish contract)
+    // The authenticated BFF owns live publication; the client supplies its loaded
+    // actor/store/revision context and a stable intent rather than inventing it.
     assert.match(
-        src,
+        read(`${MCP_BASE}/app/api/themes/[themeId]/editor/route.ts`),
         /make_store_live/,
-        'handlePublish must still pass make_store_live in the request body',
+        'the BFF must publish through the canonical gateway contract',
     );
+    for (const field of ['actorId', 'storeId', 'baseVersion', 'idempotencyKey']) assert.ok(src.includes(field));
     // The editor fetch must NOT smuggle store_name as JSON body alongside the query param
     // (that would mean it appears in JSON.stringify body, not needed with query param)
     const handlePublishBlock = src.slice(src.indexOf('handlePublish'), src.indexOf('handleDuplicate'));

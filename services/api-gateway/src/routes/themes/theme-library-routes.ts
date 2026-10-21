@@ -33,71 +33,10 @@ import {
     type DuplicateSiteThemeInput,
     type RenameSiteThemeInput,
 } from '../../schemas/theme.schema';
-import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
 import { ThemeExecutionAdapter } from '../../execution/theme-execution.adapter';
 
-interface StoreThemeLimit {
-    limit: number | null;
-    plan_name: string;
-}
-
-export async function resolveStoreThemeLimit(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    storeId: string,
-): Promise<StoreThemeLimit> {
-    const { data: site } = await db
-        .from('sites')
-        .select('site_type')
-        .eq('id', storeId)
-        .maybeSingle();
-    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
-
-    const { data: sub } = await db
-        .from('subscriptions')
-        .select('plan')
-        .eq('store_id', storeId)
-        .in('status', ['active', 'past_due', 'failed'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
-
-    const { data: planRow } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', siteType)
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .maybeSingle();
-
-    const plan = applyStorePlanTierDefaults(
-        (planRow as BillingPlanCatalogRecord) ||
-            ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord),
-    );
-
-    const rawThemeLimit = (plan.limits as Record<string, unknown> | null | undefined)?.themes;
-    const themeLimit = rawThemeLimit === null || rawThemeLimit === undefined
-        ? null
-        : Number(rawThemeLimit);
-
-    return {
-        limit: Number.isFinite(themeLimit) ? themeLimit : null,
-        plan_name: plan.name || slug,
-    };
-}
-
-export async function countInstalledSiteThemes(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    storeId: string,
-): Promise<number> {
-    const { count } = await db
-        .from('theme_instances')
-        .select('id', { count: 'exact', head: true })
-        .eq('store_id', storeId)
-        .not('instance_status', 'in', '(archived,deleted)')
-        .is('deleted_at', null);
-    return count || 0;
-}
+import { countInstalledSiteThemes, resolveStoreThemeLimit } from '../../lib/theme-library-limits';
+export { countInstalledSiteThemes, resolveStoreThemeLimit } from '../../lib/theme-library-limits';
 
 function getRequestId(c: Context<{ Bindings: Env }>): string {
     return c.req.header('x-request-id') || crypto.randomUUID();

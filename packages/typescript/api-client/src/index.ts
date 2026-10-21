@@ -2721,6 +2721,7 @@ export interface ThemeCatalogResponse {
   next_cursor?: string | null;
   total_is_exact?: boolean;
   current_theme: string | null;
+  current_theme_record?: ThemeCatalogItem | null;
   store_status: string | null;
 }
 
@@ -3401,7 +3402,9 @@ export type ThemeInstallInput = {
 export type ThemeInstallResult = {
   installation: JsonRecord;
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
-  release: JsonRecord;
+  release?: JsonRecord;
+  already_installed?: boolean;
+  theme_instance_id?: string;
 };
 export type ThemePurchaseOrderInput = {
   currency?: 'INR';
@@ -5344,7 +5347,7 @@ export class LetbuyyApiClient {
     list: (query?: ThemeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Theme>('/themes', { ...options, query }),
     listCatalog: async (query?: ThemeListQuery, options?: LetbuyyRequestOptions): Promise<ThemeCatalogResponse> => {
-      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; store_status?: unknown }>(
+      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; current_theme_record?: ThemeCatalogItem | null; store_status?: unknown }>(
         '/themes',
         { ...options, query },
       );
@@ -5358,6 +5361,7 @@ export class LetbuyyApiClient {
         limit: numberValue(meta.per_page, data.length),
         has_more: Boolean(meta.has_next),
         current_theme: typeof body.current_theme === 'string' ? body.current_theme : null,
+        current_theme_record: body.current_theme_record || null,
         store_status: typeof body.store_status === 'string' ? body.store_status : null,
       };
     },

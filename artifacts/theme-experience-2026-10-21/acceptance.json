@@ -1,0 +1,334 @@
+{
+  "generatedAt": "2026-10-21T14:44:15.849380+00:00",
+  "result": "local_acceptance_passed",
+  "branch": "letbuyy/themes-shopify-complete",
+  "baseCommit": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b",
+  "sourceFingerprint": {
+    "algorithm": "SHA256 of newline-joined sorted path:SHA256(file bytes)",
+    "value": "ed18c3b7529bb25b6db38e0d58cb6c7b2b3b2cb67709230e7cf4d63a495cd21e",
+    "fileCount": 89,
+    "files": {
+      ".stylelintrc.cjs": "f8f55d29262c4b6a10d26819f2e6dfbf5249cca9810e8ac784055523f05b7c5a",
+      "apps/commerce/web/package.json": "5478b1c2f0d9623562e522028abc376a562a84e99afb8eb554c95c53159b05a4",
+      "apps/commerce/web/public/theme-previews/aura.svg": "1226570ad797382af8d05c4991161559cddaa7c9c0c3ab90e58d2fe8159af281",
+      "apps/commerce/web/public/theme-previews/bloom.svg": "2f0afb24fca96bd686a9b819ab282618e7721bf86397cc0870aef84ca36713da",
+      "apps/commerce/web/public/theme-previews/craft.svg": "bb606904996e9b081e766dfa91008b591f9cf45d85119886fcc04808caa0d116",
+      "apps/commerce/web/public/theme-previews/dawn.svg": "209256c88ba70b1460cef035a29b0f97bc4a4c5f959b2788cb3898784b2d552d",
+      "apps/commerce/web/public/theme-previews/forge.svg": "b2885f32544b8e57b924afed6005238064757de638f3523550349b659d62c330",
+      "apps/commerce/web/public/theme-previews/nova.svg": "dc856629b06ef85c9954be2be1fd9a900997ff0ffddd7516c8e1dfbd296122b2",
+      "apps/commerce/web/public/theme-previews/refresh.svg": "5dd631a8a58b57f2b99709fedffbb63e2d81fcca4af7dac0d4b403aa1c441ae6",
+      "apps/commerce/web/public/theme-previews/ride.svg": "af57e7dcdb89eb24eac4c1ca51f9fbb07e50b20140983e74113ed4e4804be95b",
+      "apps/commerce/web/public/theme-previews/sense.svg": "eb96c6f78430b9c0ad0ef573b500820ff737c7b077c526aaa7690971ec5e9347",
+      "apps/commerce/web/public/theme-previews/summit.svg": "c60ddb1bf02d9762a6f7e7dcd981965d52d4205d98d9b6c1fa1e9569498deca7",
+      "apps/commerce/web/src/app/globals.css": "dc1bf0a068a3c38555f2f503d7bf469298529765d26f9434ad9b57777d704388",
+      "apps/commerce/web/src/app/preview/coming-soon/coming-soon-client.tsx": "51569ef832eef8e6243aef6a47acb4d86c12b43f657e24203ae086d9ab884fbf",
+      "apps/commerce/web/src/app/preview/page.tsx": "3bf998172a7458b2c411274089df78ec682510c25c2179df2e815699d8cc4919",
+      "apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx": "e2153bf1fd069ec33e18c781d99386e3515e3155e0252d50a14818ccd64e062b",
+      "apps/commerce/web/src/app/store/[subdomain]/layout.tsx": "f1ee77bb8b912387c6b65875c7e41ccf4fd6203aab2f6cab3230d40e122925c1",
+      "apps/commerce/web/src/app/theme-preview/[slug]/page.tsx": "d3ce4eb59a068c9d4d6771bfa8427f45453496e0950f9f536fdfcd377518e409",
+      "apps/commerce/web/src/components/CatalogPreviewNavigation.tsx": "0e75cc186ed0a6ec63ee2b5ff1a08cb3c0e4a7f563f6c649b5778b73eda7061c",
+      "apps/commerce/web/src/components/StorefrontAccessGate.tsx": "ba70ce1fb9fc3f50a09db448e01e3e8ae4a88b60d268fe4f20faa1e4dd72ffcb",
+      "apps/commerce/web/src/components/storefront-access-gate.module.css": "b221de4a789b188377e962d02abdf8e8015b1cd74e78907d652134b95f11c4d9",
+      "apps/commerce/web/src/lib/store-service.ts": "8bae2a0b3b4a22d135ba82b77b4ad27a4cc4aa7462910e0927a72d3566553ac8",
+      "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.test.ts": "edc03aedac62cf9287460ef9228a8ec0507b2a2551c40181a61571664f8feae5",
+      "apps/commerce/web/src/lib/theme-engine/liquid-preview-inspector.ts": "24979f63999d0865d610248bd9d6b13b80bcced6d6751dae8828f3f2e7c6a5c6",
+      "apps/frozen/theme-store/public/theme-previews/aura.svg": "1226570ad797382af8d05c4991161559cddaa7c9c0c3ab90e58d2fe8159af281",
+      "apps/frozen/theme-store/public/theme-previews/bloom.svg": "2f0afb24fca96bd686a9b819ab282618e7721bf86397cc0870aef84ca36713da",
+      "apps/frozen/theme-store/public/theme-previews/craft.svg": "bb606904996e9b081e766dfa91008b591f9cf45d85119886fcc04808caa0d116",
+      "apps/frozen/theme-store/public/theme-previews/dawn.svg": "209256c88ba70b1460cef035a29b0f97bc4a4c5f959b2788cb3898784b2d552d",
+      "apps/frozen/theme-store/public/theme-previews/forge.svg": "b2885f32544b8e57b924afed6005238064757de638f3523550349b659d62c330",
+      "apps/frozen/theme-store/public/theme-previews/nova.svg": "dc856629b06ef85c9954be2be1fd9a900997ff0ffddd7516c8e1dfbd296122b2",
+      "apps/frozen/theme-store/public/theme-previews/refresh.svg": "5dd631a8a58b57f2b99709fedffbb63e2d81fcca4af7dac0d4b403aa1c441ae6",
+      "apps/frozen/theme-store/public/theme-previews/ride.svg": "af57e7dcdb89eb24eac4c1ca51f9fbb07e50b20140983e74113ed4e4804be95b",
+      "apps/frozen/theme-store/public/theme-previews/sense.svg": "eb96c6f78430b9c0ad0ef573b500820ff737c7b077c526aaa7690971ec5e9347",
+      "apps/frozen/theme-store/public/theme-previews/summit.svg": "c60ddb1bf02d9762a6f7e7dcd981965d52d4205d98d9b6c1fa1e9569498deca7",
+      "apps/frozen/theme-store/src/app/preview/[token]/page.tsx": "d57e1bb7cd116db696702178af10a6e2dab8ad4cc5b1a99223a78c228d0fe3dc",
+      "apps/frozen/theme-store/src/lib/theme-service.ts": "3ad6ac47ee04ef07412096b99247d7e6f564c79e6bed9716dbf874f6a44ca4df",
+      "apps/merchant/web/public/theme-previews/aura.svg": "1226570ad797382af8d05c4991161559cddaa7c9c0c3ab90e58d2fe8159af281",
+      "apps/merchant/web/public/theme-previews/bloom.svg": "2f0afb24fca96bd686a9b819ab282618e7721bf86397cc0870aef84ca36713da",
+      "apps/merchant/web/public/theme-previews/craft.svg": "bb606904996e9b081e766dfa91008b591f9cf45d85119886fcc04808caa0d116",
+      "apps/merchant/web/public/theme-previews/dawn.svg": "209256c88ba70b1460cef035a29b0f97bc4a4c5f959b2788cb3898784b2d552d",
+      "apps/merchant/web/public/theme-previews/forge.svg": "b2885f32544b8e57b924afed6005238064757de638f3523550349b659d62c330",
+      "apps/merchant/web/public/theme-previews/nova.svg": "dc856629b06ef85c9954be2be1fd9a900997ff0ffddd7516c8e1dfbd296122b2",
+      "apps/merchant/web/public/theme-previews/refresh.svg": "5dd631a8a58b57f2b99709fedffbb63e2d81fcca4af7dac0d4b403aa1c441ae6",
+      "apps/merchant/web/public/theme-previews/ride.svg": "af57e7dcdb89eb24eac4c1ca51f9fbb07e50b20140983e74113ed4e4804be95b",
+      "apps/merchant/web/public/theme-previews/sense.svg": "eb96c6f78430b9c0ad0ef573b500820ff737c7b077c526aaa7690971ec5e9347",
+      "apps/merchant/web/public/theme-previews/summit.svg": "c60ddb1bf02d9762a6f7e7dcd981965d52d4205d98d9b6c1fa1e9569498deca7",
+      "apps/merchant/web/src/app/[store]/online-store/preferences/page.tsx": "34360debd86ef1d0e1a9b311eaffe0d3934ed6740a45f5256977f2b8bf1fd237",
+      "apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx": "31d5cde84e5c45667414fe48b11bcefcd23ac5d877f63eb8c290ca7e097a6948",
+      "apps/merchant/web/src/app/[store]/online-store/themes/marketplace/page.tsx": "bd2fe750cbc807bcb874f6810cd9cd56e2c354ba0fbd906990dda23280224ca2",
+      "apps/merchant/web/src/app/[store]/online-store/themes/page.tsx": "cb08724d3eb806536fc7190a82ad236ea2fbc1aaac11c8d9058965202828038b",
+      "apps/merchant/web/src/app/api/stores/[store]/access/route.ts": "3c2a4c793d3c566a7dc019546325cc53e24750c9fffde79fc056c774b78ef00b",
+      "apps/merchant/web/src/app/api/themes/route.ts": "c9e2888aaf4ff41b1715907c181238c8abb07b813064815f6dfb79cd286785a9",
+      "apps/merchant/web/src/app/globals.css": "fc6efa967bb67c6116dbfac0b6bfb7aa27c846e21b40a38701a0414420f8a348",
+      "apps/merchant/web/src/components/theme-editor/editor-workspace.module.css": "4e73c14cc6e0229d5b3e4216719aa1ecf2ae7b39ef3cc546313c5f1f0d431bc2",
+      "apps/merchant/web/src/components/theme-library/StorefrontVisibility.tsx": "4aa04a15bea2df584c8dfc2b80f5740fdee523c4df417327b74c0a15960fd985",
+      "apps/merchant/web/src/components/theme-library/ThemeLibraryCard.tsx": "1bd6168f5d59e186fb0d9baa4ed5069d0d1521b5f12331cfc24ce78845569f79",
+      "apps/merchant/web/src/components/theme-library/ThemeLibraryWorkspace.tsx": "4331afb01c34a09d80cf280d460c6d6febce73d1e67eaced03b2f99e15053695",
+      "apps/merchant/web/src/components/theme-library/ThemeWorkspace.tsx": "2c44527e726565a944a9d5cc4bc9ca266ad79fc4623617faa5964dac4b4d326e",
+      "apps/merchant/web/src/components/theme-library/theme-workspace.module.css": "e8e36e44edc1b94b92e0631eeae4cd7b7e1a8d615d1c5d279b2fba9665914e8b",
+      "apps/merchant/web/src/lib/theme-draft-client.ts": "f65d8a3334d58eb76c05fbb30eb674cb705796d23a60e546dc9e3ea3d741e310",
+      "apps/merchant/web/tests/theme-draft-client.test.mjs": "c162e7e00ef45b53acda55b85237173c736b3a19a8ee09cccde62050fee207ee",
+      "apps/merchant/web/tests/theme-library-q.test.mjs": "6360b743715b537f565533287613f28f37973dbe0e391b50c3f4fb70e37efea6",
+      "config/governance/secret-scan-exceptions.json": "e46e2071a170a58651154e43f8af6a5ad6bf6d57000644e5c27c2c84f64cd404",
+      "database/supabase/migrations/372_first_party_theme_catalog.sql": "0b7390291aa5c488624eabfd2f1035a1f6786c638150ae9a702da015def47c13",
+      "database/supabase/migrations/373_theme_library_install.sql": "21d4abb18dbf8c45cc5d8fa607d8de8d7f3be586b0ba9353a8fed05e9fbe3fc7",
+      "database/supabase/migrations/374_owned_storefront_visibility.sql": "d7c0ed99b6480ede94fd7c59a5b9cc65d291b2985bc7e8bf3e5e4fdd23cde54a",
+      "database/supabase/migrations/375_private_theme_editability.sql": "bcc70368a81a85ae6a33e42c9208d6d80e077ee6e98f3c9d66977f4c12e07e27",
+      "database/supabase/migrations/376_atomic_theme_instance_switch.sql": "d53975f48aca7311bd4bbdd1c8c723d80f3e6ce1c6bb525a518b08cc4fbb3a13",
+      "database/supabase/rollback/372_first_party_theme_catalog.rollback.sql": "789caaeb0a8ec81b3cb97e9674ffd0599c9ee5b19b96f5ef8701a2f5f0e25cd7",
+      "database/supabase/rollback/373_theme_library_install.rollback.sql": "36cddf04439b8356ea68b9bf7ede79fefa5b5a91e1c93a8103be1f5bd3ee2494",
+      "database/supabase/rollback/374_owned_storefront_visibility.rollback.sql": "3566dc91ac3f29e745cc23943c43f1c0797369ed55c076ac3ffa4b423ae2e6a1",
+      "database/supabase/rollback/375_private_theme_editability.rollback.sql": "6ae3ed905c146196d0705ef3278a59e6d1006ede85635b5ce10b9162f3f06484",
+      "database/supabase/rollback/376_atomic_theme_instance_switch.rollback.sql": "6db0c3a7b137741f9a17587fe3c7b97bf4f7e9bb1eeec23caa60658c7668eb42",
+      "packages/theme-engine/src/first-party-theme-catalog.ts": "7bf755d73639ae0a758195f288fa493d8f1cba997fb8996728048d2295c4b26f",
+      "packages/theme-engine/src/portable-to-liquid.ts": "f0ddbd1c77b012de0a3e820726ea899a47b3ce1173b0f96ac4ac81c8d9c568ac",
+      "packages/theme-engine/src/theme-bundle-core.ts": "222de2ed0abc1386952c0ac914733bd6e5e909851b11beab821203a47496f0b7",
+      "packages/theme-engine/src/theme-presets.ts": "075ce97877a05f88502c4ea3e0f29efbb43227aefc4a4d5db8b339a417846c54",
+      "packages/theme-engine/test/core-launch-compatibility.test.ts": "b9835bba5a8557e4ea8cb5136021374a732d1220acd2e25beb353327010e2755",
+      "packages/typescript/api-client/src/index.ts": "7bba94f58baf08e8dcc342918f0b2e14b20261d08a5eaaca5ec1f6dffe02962e",
+      "scripts/liquid-parity/README.md": "a4a31bf76da8a9e2bac603b773a18d1d107964b349e4b085560027271f6fe58f",
+      "scripts/liquid-parity/build-first-party-catalog.mjs": "4af9b9720b9314460bbb26779fe622e94888f977c1ab679f22b5dbf074f9f472",
+      "scripts/validators/app-api-route-inventory.mjs": "762a8b3988468a6598f046f14b663062830e060db5379e37982da103b523191c",
+      "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts": "0eda0bf686610a97aa487cf9036cf18d8da9b0ad7697c7658ac799ffe8c57d0b",
+      "services/api-gateway/src/execution/theme-execution.adapter.ts": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
+      "services/api-gateway/src/lib/theme-library-limits.ts": "125530bb49c672a79cf190038fdbccc6a07a27a16026764bee891b9fd5ee26a6",
+      "services/api-gateway/src/routes/custom-domains.ts": "fd99d211ae1a3c796a8fc41477a4e0a206ce15fcd491dfa2ba7e531e75f5f5cb",
+      "services/api-gateway/src/routes/themes.ts": "217573a7a4fecc5c91e64354b8d5096ddf629366b4787ea9f70cd0fd51151e25",
+      "services/api-gateway/src/routes/themes/theme-library-routes.ts": "b8fb88e0d9f029bac7b0cfec746b37d5fc5a7e344396acb68e580853f9bcbee2",
+      "tests/owned-db/theme-experience-visual-qa.manual.ts": "de47b5d077d331a953841b7d2179b6a77d74eea2ccb3ea152117ae575d498bfd"
+    }
+  },
+  "governance": {
+    "receipt": "governance-release.json",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "command": "node scripts/validate-governance.mjs --lane=gate --report-json=<receipt>",
+    "isolation": "Disposable checkout; active worktree dependencies and runtimes were not cleaned by the gate.",
+    "generatedAt": "2026-10-21T14:46:49.050Z"
+  },
+  "focusedChecks": {
+    "gatewayThemeAndPassword": {
+      "tests": 99,
+      "pass": 99,
+      "fail": 0,
+      "skipped": 0
+    },
+    "merchantDraftAndLibrary": {
+      "tests": 41,
+      "pass": 41,
+      "fail": 0,
+      "skipped": 0
+    },
+    "liquidInspector": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0
+    },
+    "editorBridge": {
+      "tests": 39,
+      "pass": 39,
+      "fail": 0,
+      "skipped": 0
+    },
+    "coreCompatibility": {
+      "tests": 27,
+      "pass": 27,
+      "fail": 0,
+      "skipped": 0
+    },
+    "isolatedBenchmark": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "skipped": 0
+    },
+    "typechecks": {
+      "merchant": {
+        "passed": true,
+        "logBytes": 144
+      },
+      "commerce": {
+        "passed": true,
+        "logBytes": 144
+      },
+      "gateway": {
+        "passed": true,
+        "logBytes": 146
+      },
+      "frozenMarketplace": {
+        "passed": true,
+        "logBytes": 155
+      }
+    }
+  },
+  "ownedRuntimeReceipts": {
+    "access-result": {
+      "runId": "5851f08e7308",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "catalog-renderer-result": {
+      "runId": "0fd442a28e3c",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "acceptance-visual-result": {
+      "runId": "330a92bbe038",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "catalog-visual-result": {
+      "runId": "a80cdea83606",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "inspector-visual-result": {
+      "runId": "c12eee7d4e01",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "finalPersistedState": {
+    "theme": "letbuyy-forge",
+    "drafts": 2,
+    "installed": 1,
+    "published": true,
+    "accessMode": "public",
+    "headingSaved": true
+  },
+  "verifiedJourneys": [
+    "All ten canonical catalog designs and sample home/product previews",
+    "Add without publication; concurrent retries preserve customizations; deletion/reinstallation",
+    "Owned draft load/save/reopen and independent theme configuration",
+    "Undo/redo after saving; section add/reorder/hide/remove",
+    "Direct library publication; editor publication; private-copy publication and switching live themes",
+    "Published text and design rendered by the storefront",
+    "Real iframe widths 1440/820/390; responsive navigation and separate 390/820 application layouts",
+    "Argon2 password setup/wrong/correct/keep/rotate/remove; access revision revocation; offline/public; ownership and secret exclusion",
+    "Actual rendered preview pointer and Enter selection; hover bridge and sidebar-to-canvas outline",
+    "Logout, password authentication again, installed library retained, Active/Saved heading recovered",
+    "Last-write rollback, dependency failure/recovery and cross-merchant denial"
+  ],
+  "screenshots": {
+    "shopify-themes-desktop.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "shopify-editor-1440.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-themes-desktop.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-discover-desktop.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-desktop.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-inspector.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-tablet.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-mobile.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-app-mobile-settings.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-editor-app-tablet.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-published-storefront.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-storefront-offline.png": {
+      "width": 65536,
+      "height": 4292542531
+    },
+    "leadby-password-settings.png": {
+      "width": 65536,
+      "height": 4292542531
+    }
+  },
+  "limits": [
+    "No hosted deployment, push, merge or hosted database mutation performed. Migrations 372\u2013376 must precede matching application release.",
+    "Shopify trial prevented publication; its tablet preview mode was not observed. Reference workflows not safely exercised were recorded as unavailable or unverified.",
+    "Browser automation refused input within the scaled cross-origin iframe. Pointer/keyboard were verified on the same signed preview opened directly; combined iframe click-to-sidebar automation remains unverified.",
+    "Password lifecycle was verified through the real backend/access layer. The UI form was inspected without entering a new authentication credential through browser automation.",
+    "Hosted media upload and native iOS/Android behavior were not verified in the local fixture.",
+    "One pre-existing timing benchmark failed during concurrent builds; its unchanged isolated rerun passed 5/5. Earlier failed receipts remain as history."
+  ],
+  "productionDataUsed": false,
+  "report": "docs/evidence/theme-experience-2026-10-21/README.md",
+  "cssLint": {
+    "passed": true,
+    "command": "node_modules/.bin/stylelint \"apps/**/src/**/*.css\" \"packages/**/src/**/*.css\"",
+    "scope": "Two new CSS Modules explicitly recognize compiler :global syntax; all other pseudo-class checks remain active."
+  },
+  "finalizedAt": "2026-10-21T14:47:06.811268+00:00"
+}
