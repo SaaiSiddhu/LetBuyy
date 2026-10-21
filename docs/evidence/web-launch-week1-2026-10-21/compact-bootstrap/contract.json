@@ -26,5 +26,17 @@
     "No mobile app UI changes"
   ],
   "worktree": "Native worktree fallback reused after managed tool Not a git repository in this workspace context; prior candidate frozen.",
-  "knownSeparateAcceptance": "Public/private theme draft capabilities stay unchanged. Password/preview_only/offline storefront API authorization across all public catalog routes is a separate existing security surface; do not claim that front-end Proxy gates alone prove direct API privacy."
+  "knownSeparateAcceptance": "Public/private theme draft capabilities stay unchanged. Password/preview_only/offline storefront API authorization across all public catalog routes is a separate existing security surface; do not claim that front-end Proxy gates alone prove direct API privacy.",
+  "sqlAuthorizationRepair": {
+    "reason": "Actual authenticator NOINHERIT transport has no direct theme table SELECT; existing raw SQL falls back with42501. Do not weaken the no-fallback assertion.",
+    "scope": [
+      "migration370 and paired guarded rollback",
+      "Existing site-by-handle ID/full readers and pinned release reader call two fixed-shape public-read routines",
+      "Existing REST public store ID lookups also reject explicit published=false; private capability lookup remains independently scoped",
+      "Owned mounted Worker no-fallback and ACL/definition/rollback tests; native bundled SQL/cache/publication journey"
+    ],
+    "authority": "Backend-only fixed public projection, not merchant authority. No app_tenant GUC from an anonymous parameter; no table grants, role membership, RLS disablement, new login or service-role connection. No public/anon/authenticated/app_tenant/service_role execute grant. Existing trusted authenticator transport receives EXECUTE only on these exact routines; normal Data API role switching cannot inherit it.",
+    "reads": "Site routine handle equality, status published/deleted null/published IS DISTINCT FROM false, fixed full projection or id-only boolean shape. Release routine matching live published site/store, exact optional pinned release ID/version, published/superseded timestamp fence or verified current legacy release; fixed legacy/render-v1 projections only. All selectors bounded to one row, no dynamic SQL/fields/ordering.",
+    "lifecycle": "Serialized atomic migration; guard name/signature, body hash, ABI, owner, search_path and exact ACL before repeat/rollback. Unknown replacement/grant/owner/overload refuses unchanged. Paired rollback retires only the exact owned routines and preserves existing grants/roles/data. Prove actual restricted-role calls and private/foreign refusals; original direct table42501 remains required."
+  }
 }
