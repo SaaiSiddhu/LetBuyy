@@ -62,7 +62,7 @@ class NativeGateway {
  async settle() { await this.mf.dispose(); }
 }
 for(const transport of ['direct','hyperdrive-shaped'] as const)test(`Gateway ${transport} SQL belongs to each native Worker invocation; exact predecessor reproduces warm-request failure`,{timeout:120000},async()=>{
- const tenants=[newSyntheticTenant('native-sql-a'),newSyntheticTenant('native-sql-b')];
+ const tenants=[newSyntheticTenant((transport==='direct'?'direct':'hyper')+'-sql-a'),newSyntheticTenant((transport==='direct'?'direct':'hyper')+'-sql-b')];
  const actors=[randomUUID(),randomUUID()]; const products=[randomUUID(),randomUUID()];
  for(let i=0;i<2;i++) {const tenant=tenants[i];seedSyntheticTenant(owned.psql,tenant);owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actors[i]}','syn-native-${actors[i]}@example.invalid',true);UPDATE sites SET custom_user_id='${actors[i]}' WHERE id='${tenant.siteId}';INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES('${products[i]}','${tenant.siteId}','${tenant.siteId}','Native SQL original','native-${products[i]}',100,5,true,'active');`);}
  const proxy=await startOwnedPooledSqlProxy(owned);
