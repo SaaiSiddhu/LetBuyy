@@ -1,0 +1,28 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-DISCOVERY",
+  "base": "2753c63a365272d366aac40164507cf12a438a48",
+  "outcome": "Normal merchant-created active collections appear as real Core homepage links, opening their actual assigned eligible products.",
+  "scope": [
+    "services/api-gateway/src/routes/storefront/public-routes.ts existing public collection owner",
+    "packages/typescript/api-client/src/index.ts typed storefront collection list",
+    "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx public collection discovery drop",
+    "apps/commerce/web/src/lib/theme-engine/collection-discovery.ts helper if needed",
+    "Existing owned collection/browser tests and affected unit/package scripts",
+    "Programme, evidence and branch records"
+  ],
+  "contracts": [
+    "Public published-store resolution before tenant-scoped collection read; no IDs from another store.",
+    "Active and nondeleted collections only; explicit projection; finite first24 ordered by title then id; no product fanout or exact count.",
+    "Core homepage category-grid consumes actual collections through existing Liquid renderer; no new React section or rewrite of immutable bundles/migrations.",
+    "One public no-store read only when rendered page needs category-grid; successful empty is empty. Unavailable collection discovery must not be silently presented as no collections: existing page error/retry owns failure.",
+    "Existing collection detail and order/cart/mobile interfaces preserved.",
+    "Browser proof must create merchant collection through normal UI then follow homepage card to actual products; backend negative/isolation/limit checks."
+  ],
+  "standingBoundaries": [
+    "Single agent",
+    "No merge/push/deploy or shared database writes",
+    "No real provider effects",
+    "No mobile UI changes"
+  ],
+  "collision": "Prior Core/catalog candidates frozen for review; primary unchanged. New stacked isolated worktree; existing preview remains in prior checkout. Managed worktree tool returned Not a git repository; native fallback used."
+}
