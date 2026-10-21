@@ -192,6 +192,12 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await expect(collectionCard).toBeVisible();await expect(collectionCard).toHaveAttribute('href',`/store/${subdomain}/collections/${collectionId}`);
   await expect(buyer.locator('.lb-category-grid').getByRole('link',{name:'All Products',exact:true})).toHaveCount(0);
   await collectionCard.click();await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();await expect(buyer.locator(`a[href="/product/${productId}"]`).filter({hasText:productName}).first()).toBeVisible();
+  await buyer.goto(`${tenantOrigin}/collections`);
+  const indexCard=buyer.locator('.lb-category-grid').getByRole('link',{name:collectionTitle,exact:true});
+  await expect(indexCard).toBeVisible();await expect(buyer.getByText('No collections yet',{exact:true})).toHaveCount(0);
+  const collectionScreenshot=`${tmpdir()}/letbuyy-native-collections-${owned.runId}.png`;await buyer.screenshot({path:collectionScreenshot,fullPage:true});
+  await indexCard.click();await expect(buyer.getByRole('heading',{level:1,name:collectionTitle,exact:true})).toBeVisible();
+  console.info('OWNED_COLLECTION_INDEX '+JSON.stringify({indexCardVisible:true,actualDetailOpened:true,collectionScreenshot}));
   collectionListUnavailable=true;await buyer.goto(tenantOrigin);
   await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
   await expect(buyer.getByText('No collections yet',{exact:true})).toHaveCount(0);
