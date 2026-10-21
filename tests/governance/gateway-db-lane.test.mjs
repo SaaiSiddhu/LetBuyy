@@ -129,6 +129,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "storefront-buyer-orders.postgres.test.ts",
         "storefront-buyer-reviews.postgres.test.ts",
         "storefront-buyer-wishlist.postgres.test.ts",
+        "storefront-collection-discovery.postgres.test.ts",
         "storefront-customer-address-atomicity.postgres.test.ts",
         "storefront-customer-profile.postgres.test.ts",
         "storefront-web-onboarding-browser.postgres.test.ts",
