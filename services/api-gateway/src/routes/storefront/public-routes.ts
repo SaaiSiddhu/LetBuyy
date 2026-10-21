@@ -1,3 +1,4 @@
+import {authorizeVisitor,authorizeVisitorSite,type VisitorSite} from '../../lib/storefront-visitor-access';
 import { resolveLiquidBundleArtifact } from '../../lib/theme-release-bundle';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
@@ -232,9 +233,9 @@ export function registerStorefrontPublicRoutes(
     dependencies: StorefrontPublicRouteDependencies,
 ): void {
     const {
-        loadSiteByHandle,
-        loadPublishedStore,
-        loadPublishedStoreById,
+        loadSiteByHandle: rawSiteByHandle,
+        loadPublishedStore: rawPublishedStore,
+        loadPublishedStoreById: rawPublishedStoreById,
         loadCurrentThemeRelease,
         loadPublicStorefrontAppBlocks,
         listPublicProductReviews,
@@ -257,6 +258,40 @@ export function registerStorefrontPublicRoutes(
         getRequestId,
         emitStorefrontOrderPaidEvent,
     } = dependencies;
+    const loadPublishedStore: typeof rawPublishedStore = (c,handle) => {
+        const allowed=c.get('storefrontVisitorGrant');
+        return allowed?.site.subdomain===handle ? Promise.resolve(allowed.site) : rawPublishedStore(c,handle);
+    };
+    const loadPublishedStoreById: typeof rawPublishedStoreById = (c,id) => {
+        const allowed=c.get('storefrontVisitorGrant');
+        return allowed?.site.id===id ? Promise.resolve(allowed.site) : rawPublishedStoreById(c,id);
+    };
+    const loadSiteByHandle: typeof rawSiteByHandle = (c,handle,options) => {
+        const allowed=c.get('storefrontVisitorGrant');
+        return rawSiteByHandle(c,handle,{publishedOnly:options.publishedOnly&&!(allowed?.preview&&allowed.site.subdomain===handle)});
+    };
+    const catalogueGuard = async (c:AppContext,next:()=>Promise<void>) => {
+        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
+        await authorizeVisitor(c,{handle:c.req.param('subdomain')});
+        await next();c.header('Cache-Control','no-store');
+    };
+    // Guard before Cache API lookup. Private buyer history and marketplace channel
+    // endpoints keep their own authority; these are store catalogue populations.
+    for(const resource of ['products','collections','categories','navigation','pages','policies','blog','search']){
+        router.use(`/:subdomain/${resource}`,catalogueGuard);
+        router.use(`/:subdomain/${resource}/*`,catalogueGuard);
+    }
+    const idGuard = async(c:AppContext,next:()=>Promise<void>)=>{
+        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
+        await authorizeVisitor(c,{id:c.req.param('storeId')});await next();c.header('Cache-Control','no-store');
+    };
+    router.use('/store/:storeId',idGuard);router.use('/store/:storeId/*',idGuard);
+    router.use('/reviews',async(c,next)=>{
+        if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
+        const ids=c.req.queries('store_id');
+        if(!ids||ids.length!==1)return c.json({error:{code:'VALIDATION',message:'One store_id is required'}},400);
+        await authorizeVisitor(c,{id:ids[0]});await next();c.header('Cache-Control','no-store');
+    });
     registerStorefrontMarketplaceFeedRoutes(router, dependencies);
 
     // MKT-2 — the single-listing read, beside the feed and taxonomy above.
@@ -421,40 +456,9 @@ export function registerStorefrontPublicRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid store id' } }, 400);
         }
 
-        const db = getSupabaseAdmin(c);
-        const selectStore = (selectFields: string, includeDeletedAtFilter: boolean) => {
-            let query = db
-                .from('sites')
-                .select(selectFields)
-                .eq('id', storeId)
-                .eq('status', 'published');
-
-            if (includeDeletedAtFilter) query = query.is('deleted_at', null);
-
-            return query;
-        };
-
-        let { data, error } = await selectStore(STOREFRONT_SITE_RELEASE_SELECT, true).single();
-
-        if (error || !data) {
-            ({ data, error } = await selectStore(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).single());
-        }
-
-        if (error || !data) {
-            ({ data, error } = await selectStore(STOREFRONT_SITE_SELECT, true).single());
-        }
-
-        if (error || !data) {
-            ({ data, error } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, true).single());
-        }
-
-        if (error || !data) {
-            ({ data } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, false).single());
-        }
-
-        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
-        const store = data as unknown as StorefrontSiteRecord;
+        const allowed=await authorizeVisitor(c,{id:storeId});
+        const store=allowed.site.subdomain?await loadSiteByHandle(c,allowed.site.subdomain,{publishedOnly:!allowed.preview}):null;
+        if(!store||store.id!==storeId.toLowerCase())return c.json({error:{code:'NOT_FOUND',message:'Store not found'}},404);
         const [release, appBlocks] = await Promise.all([
             loadCurrentThemeRelease(c, store.id, { releaseId: store.current_theme_release_id, releaseVersion: store.storefront_release_version }),
             loadPublicStorefrontAppBlocks(c, store.id),
@@ -713,8 +717,14 @@ export function registerStorefrontPublicRoutes(
         }
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
         // A cache hit must never skip the current publication/visibility fence.
-        const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
-        if (!store || store.published === false) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+        let store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+        if(store&&(store.access_mode==null||store.access_mode==='public')&&store.published!==false){
+            await authorizeVisitorSite(c,store as unknown as VisitorSite);
+        }else{
+            const allowed=await authorizeVisitor(c,{handle:c.req.param('subdomain')});
+            if(!store&&allowed.preview)store=await loadSiteByHandle(c,c.req.param('subdomain'),{publishedOnly:false});
+        }
+        if(!store)return c.json({error:{code:'NOT_FOUND',message:'Store not found'}},404);
         const snapshot = await sha256Hex(JSON.stringify(store));
         const reply = await cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle, snapshot), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const [release, appBlocks] = await Promise.all([

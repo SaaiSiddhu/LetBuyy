@@ -920,7 +920,7 @@ async function loadCurrentThemeRelease(c: AppContext, storeId: string, options: 
         return row;
     };
     let pooled: StorefrontThemeReleaseRecord | null | undefined;
-    try { pooled = await loadCurrentThemeReleaseFromPooledSql(c, storeId, options); }
+    try { if(!c.get('storefrontVisitorGrant')?.preview)pooled = await loadCurrentThemeReleaseFromPooledSql(c, storeId, options); }
     catch { /* one independently verified REST fallback; errors there remain unavailable */ }
     if (pooled !== undefined) return checked(pooled);
 
