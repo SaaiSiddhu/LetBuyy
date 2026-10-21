@@ -58,9 +58,11 @@ At initial discovery the hosted references were placeholders. **22 October updat
 the owner supplied the isolated LetBuyy CLI activation, and read-only provider
 queries verified the actual accounts/projects. Source target references were
 subsequently mapped in `e710c884`. [The current release preflight](../core-read-performance/resume/release-preflight.json)
-supersedes that initial unknown-target boundary: hosted schemas are materially
-behind the candidate, recovery and environment configuration are not qualified,
-and the owner says GitHub Actions billing cannot be resolved yet. Existing cloud
+supersedes that initial unknown-target boundary. The subsequent
+[shared production preflight](PRODUCTION_PREFLIGHT_2026_10_22.md) owns the verified
+encrypted recovery archive/restore and the managed-role 347/360 financial migration
+blocker. Hosted schema/environment compatibility remains unresolved; the owner
+says GitHub Actions billing cannot be resolved in this session. Existing cloud
 versions were inspected; no candidate promotion, deployment or shared database
 mutation was performed by this work.
 

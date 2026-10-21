@@ -1,0 +1,20 @@
+{
+  "staging": [
+    {
+      "rolname": "postgres",
+      "rolsuper": false,
+      "rolcreaterole": true,
+      "rolbypassrls": true,
+      "can_set_checkout_version": false
+    }
+  ],
+  "production": [
+    {
+      "rolname": "postgres",
+      "rolsuper": false,
+      "rolcreaterole": true,
+      "rolbypassrls": true,
+      "can_set_checkout_version": false
+    }
+  ]
+}

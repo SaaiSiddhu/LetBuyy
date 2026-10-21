@@ -36,7 +36,14 @@
         "pitr_enabled": false,
         "backups": []
       },
-      "interpretation": "Provider API lists no physical backups. Required encrypted logical backup and restore proof have not been established. This does not claim provider storage has no other recovery mechanism."
+      "interpretation": "Provider API lists no physical backups. Required encrypted logical backup and restore proof have not been established. This does not claim provider storage has no other recovery mechanism.",
+      "logicalRecoveryUpdate": {
+        "archiveHashIndependentlyMatched": true,
+        "bytes": 20197072,
+        "sha256": "72131dd9f20c302e416ab68846ed6c26b12ea7a42042829882d2c846277e8d70",
+        "restoreProof": "Recorded by separate release preflight85b5383e on an owned network-disabled PostgreSQL17.6 restore. This work independently checked the encrypted file hash; it did not decrypt or use recovered production rows as fixtures.",
+        "offMachineAndObjects": "Not certified"
+      }
     },
     "readOnlyAPI": "https://supabase.com/docs/reference/api/v1-read-only-query"
   },
@@ -117,11 +124,21 @@
     "concurrentLocalChanges": "Target registries were independently committed as e710c884 while this work was running. Preserved, verified against the read-only inventory and not swept into our implementation commits. They are now included in branch ancestry."
   },
   "resumeOrder": [
-    "Restore GitHub Actions billing and run exact candidate CI; do not repeatedly rerun the unchanged billing blocker.",
-    "Capture encrypted recoverable database baseline with its human-owned key and rehearse current hosted schema to canonical schema in an isolated PostgreSQL17 clone. Verify data, roles, grants, FORCE RLS, functions and migration lineage. Never reset/replay or mark old migrations applied to get green.",
+    "Resolve financial admission compatibility under the human architecture decision recorded in the shared release preflight. Establish the required CI/approval disposition; never describe the unavailable run as passing.",
+    "Use the verified encrypted recovery baseline to rehearse the complete supported PostgreSQL17 upgrade with data, roles, grants, FORCE RLS, functions and lineage conserved. No reset/replay or fabricated applied history.",
     "Repair existing Vercel root directories/Node/Git links, provision only missing canonical staging/console targets, wire environment-specific secret names and identity/access signing values through the approved secret stores. Keep existing connections and recovery identities.",
     "Merge reviewed candidate into develop with required gates, promote staging by fast-forward, deploy governed staging versions, verify actual managed Workers/Hyperdrive/media/DNS/TLS/browser journeys, migrations and recovery.",
     "Only after staging acceptance promote the identical candidate to main, capture pre-migration backup, dispatch the governed production workflow, verify exact versions and buyer journeys, retain previous Worker/Vercel versions and compatible DB recovery."
   ],
-  "anonymousHostedHTTP": "See hosted-http-preflight.json: health/login200 do not certify this candidate. Merchant origin redirects to an older accounts .store host, and the generic storefront alias returned404; no designated hosted tenant was qualified."
+  "anonymousHostedHTTP": "See hosted-http-preflight.json: health/login200 do not certify this candidate. Merchant origin redirects to an older accounts .store host, and the generic storefront alias returned404; no designated hosted tenant was qualified.",
+  "currentRecoveryAndMigrationAuthority": "../../github-sync/PRODUCTION_PREFLIGHT_2026_10_22.md and production-preflight-2026-10-22.json, committed85b5383e, supersede our earlier missing-logical-backup finding. This file remains the dated read-only account/schema snapshot.",
+  "latestBlocker": {
+    "migrations": [
+      347,
+      360
+    ],
+    "reason": "347 binds a custom function parameter without the managed role SET privilege;360 requires postgres.rolsuper and catalog locks. Source inspected independently; managed-role-preflight.json independently confirms rolsuper=false and can_set_checkout_version=false in both projects.",
+    "disposition": "No privilege escalation, guard removal, catalog update or fabricated migration history. Financial admission/rollback compatibility requires the human architecture decision requested in the shared release preflight under PRIME-R1.",
+    "CI": "Billing remains unresolved in this session. The separate preflight records an owner CI deferral; no green CI or production promotion is claimed here."
+  }
 }
