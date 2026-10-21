@@ -106,3 +106,37 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: both GraphQL aliases ho
   owned.psql(`UPDATE sites SET access_mode='offline' WHERE id=${q(t.siteId)};`);const closed=await request(token);assert.ok(closed.json!.errors);assert.equal(closed.text.includes(marker),false);owned.psql(`UPDATE sites SET access_mode='password' WHERE id=${q(t.siteId)};`);
  }
 });
+
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: primary and secondary domain capabilities follow current ownership and alias state`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-domain-bind'),foreign=newSyntheticTenant(lane+'-domain-other');seedSyntheticTenant(owned.psql,t);seedSyntheticTenant(owned.psql,foreign);
+ const primary='primary-'+t.siteId+'.example.invalid',alias='alias-'+t.siteId+'.example.invalid',foreignHost='foreign-'+foreign.siteId+'.example.invalid';
+ const hash=await hashStoreAccessPassword('Synthetic-domain-password-42!');
+ owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)},custom_domain=${q(primary)},custom_domain_status='active' WHERE id=${q(t.siteId)};INSERT INTO site_domains(site_id,domain,status,role,redirect_to)VALUES(${q(t.siteId)},${q(alias)},'active','redirect',${q(primary)}),(${q(foreign.siteId)},${q(foreignHost)},'active','redirect',NULL);`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);
+ const make=(host:string)=>createStorefrontGateToken({sid:t.siteId,host,exp:Math.floor(Date.now()/1000)+600,revision},key);
+ const primaryToken=await make(primary),aliasToken=await make(alias),foreignToken=await make(foreignHost);
+ const read=(token:string)=>gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{'X-LetBuyy-Storefront-Gate':token}});
+ assert.equal((await read(primaryToken)).status,200);owned.psql(`UPDATE sites SET custom_domain_status='pending' WHERE id=${q(t.siteId)};`);assert.equal((await read(primaryToken)).status,401);
+ assert.equal((await read(aliasToken)).status,200);assert.equal((await read(foreignToken)).status,401,'another site alias is never a host binding for this store');
+ for(const mutation of ["status='pending'","deleted_at=now()"]){
+  owned.psql(`UPDATE site_domains SET status='active',deleted_at=NULL WHERE site_id=${q(t.siteId)};UPDATE site_domains SET ${mutation} WHERE site_id=${q(t.siteId)};`);assert.equal((await read(aliasToken)).status,401);
+ }
+ owned.psql(`UPDATE site_domains SET status='active',deleted_at=NULL WHERE site_id=${q(t.siteId)};`);
+ try{faultResource='site_domains';assert.equal((await read(aliasToken)).status,503);}finally{faultResource='';}assert.equal((await read(aliasToken)).status,200);
+});
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: malformed foreign and expired proofs refuse; live preview dependencies fail unavailable and recover`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-proof-refuse');seedSyntheticTenant(owned.psql,t);const host=t.subdomain+'.letbuyy.store',hash=await hashStoreAccessPassword('Synthetic-proof-password-42!');
+ owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),exp=Math.floor(Date.now()/1000)+600;
+ const read=(proof:string)=>gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{'X-LetBuyy-Storefront-Gate':proof}});
+ const good=await createStorefrontGateToken({sid:t.siteId,host,exp,revision},key);
+ for(const proof of ['synthetic.invalid',await createStorefrontGateToken({sid:crypto.randomUUID(),host,exp,revision},key),await createStorefrontGateToken({sid:t.siteId,host,exp:1,revision},key),await createStorefrontGateToken({sid:t.siteId,host,exp,revision:'0'.repeat(64)},key),await createStorefrontGateToken({sid:t.siteId,host,exp,revision},'synthetic-wrong-signing-key')])assert.equal((await read(proof)).status,401);
+ assert.equal((await gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{Cookie:'__Host-lb_store_gate='+good}})).status,200);
+ const duplicate=await gateway.request('/v1/storefront/reviews?store_id='+t.siteId+'&store_id='+crypto.randomUUID());assert.equal(duplicate.status,400);
+ const jti=crypto.randomUUID();owned.psql(`UPDATE sites SET access_mode='preview_only' WHERE id=${q(t.siteId)};INSERT INTO site_preview_links(site_id,jti,scope,expires_at)VALUES(${q(t.siteId)},${q(jti)},'share-link',to_timestamp(${exp}));`);
+ const preview=await createStorefrontPreviewToken({sid:t.siteId,host,exp,jti,scope:'share-link'},key);
+ const previewRead=()=>gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{'X-LetBuyy-Storefront-Preview':preview}});
+ assert.equal((await previewRead()).status,200);try{faultResource='site_preview_links';const failed=await previewRead();assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private/);}finally{faultResource='';}assert.equal((await previewRead()).status,200);
+});
