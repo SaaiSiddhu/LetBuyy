@@ -35,10 +35,10 @@ function publish(t:SyntheticTenant,config:unknown){return JSON.parse(owned.psql(
 const read=(g:Gateway,t:SyntheticTenant,compact=true)=>g.request(`/v1/storefront/${t.subdomain}${compact?'?projection=render-v1':''}`);
 const config=(marker:string)=>({marker,themeSettings:{primaryColor:marker},liquidBundle:{files:{'layout/theme.liquid':('Synthetic '+marker+' ').repeat(800)}}});
 
-test('compact/default SQL and REST representations agree on the pinned publication without duplicate artifacts or draft fallback',async()=>{
- const t=tenant('projection'),published=config('published'),r=publish(t,published);
+for(const name of ['sql','rest'] as const)test(`compact/default ${name} representations agree on the pinned publication without duplicate artifacts or draft fallback`,async()=>{
+ const g=name==='sql'?sql:rest;
+ const t=tenant('projection-'+name),published=config('published'),r=publish(t,published);
  owned.psql(`UPDATE sites SET template_config=${j({marker:'private-draft-marker'})} WHERE id=${q(t.siteId)};`);
- for(const [name,g]of [['sql',sql],['rest',rest]] as const){
   const start=tap.calls.length,compact=await read(g,t);assert.equal(compact.status,200,name+': '+compact.text);
   const body=compact.json!.data;assert.equal(body.projection,'render-v1');assert.deepEqual(body.template_config,published);
   assert.equal(body.current_theme_release.id,r.release_id);assert.equal(body.current_theme_release.release_version,r.release_version);
@@ -50,7 +50,6 @@ test('compact/default SQL and REST representations agree on the pinned publicati
   const legacy=await read(g,t,false);assert.equal(legacy.status,200,legacy.text);assert.equal(legacy.json!.data.projection,undefined);
   assert.deepEqual(legacy.json!.data.current_theme_release.release_config,published);assert.deepEqual(legacy.json!.data.current_theme_release.template_snapshot,published);
   assert.ok(Buffer.byteLength(compact.text)<Buffer.byteLength(legacy.text)*0.6,'one config transport must materially reduce repeated artifacts');
- }
 });
 
 test('verified legacy absence and manifest-only snapshots preserve existing configuration precedence',async()=>{
