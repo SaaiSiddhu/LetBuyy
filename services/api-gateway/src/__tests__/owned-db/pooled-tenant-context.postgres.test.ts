@@ -44,7 +44,7 @@ test('Hyperdrive-shaped owned wire prepares unsafe statements in root, transacti
     });
     const reserved=await sql.reserve();try{await check(reserved);}finally{reserved.release();}
     const direct=getPooledSql({DATABASE_URL:proxy.env().HYPERDRIVE.connectionString},{maxConnections:3,idleTimeoutSeconds:10,connectTimeoutSeconds:5})!;
-    assert.notEqual(direct,sql,'target protocol belongs to client identity');
+    assert.ok(direct!==sql,'target protocol belongs to client identity');
     const unprepared=direct.unsafe(statement,[literal]);
     assert.equal((unprepared as unknown as {options:{prepare:boolean}}).options.prepare,false);
     assert.equal((await unprepared)[0].protocol_literal,literal);
