@@ -27,7 +27,7 @@ test('explicit Core web creation stores a validated Liquid document and replays 
  assert.equal(config.liquidBundle?.package?.slug,'letbuyy-core-liquid','the new store must use the actual catalog Liquid package');
  assert.equal(Object.keys(config.liquidBundle.config.settings_data.presets).length,10);
  assert.equal(config.liquidBundle.templates.header.sections['announcement-default'].settings.text,'Discover our latest products.');
- assert.doesNotMatch(JSON.stringify(config.liquidBundle),/Free shipping on fresh drops this week\./);
+ assert.doesNotMatch(JSON.stringify(config),/Free shipping on fresh drops this week\./);
  assert.equal(config.survey.industry,'food');assert.equal(config.themeId,'letbuyy-core');
  assert.equal(owned.psql(`SELECT status FROM sites WHERE id='${siteId}';`),'draft');
  const replay=await r.replay();assert.equal(replay.status,201);assert.equal(replay.json?.data?.id,siteId);
