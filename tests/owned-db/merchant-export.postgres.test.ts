@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test, { before, after } from 'node:test';
 import { createRequire, builtinModules } from 'node:module';
 import { Miniflare } from 'miniflare';
+import { nativeGatewayWasmPlugin, nativeGatewayModules, NATIVE_GATEWAY_MODULE_ROOT } from '../helpers/native-gateway-wasm';
 import { requireOwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { gatewayEnv, newIdentityKeys, nextClientAddress, signedIdentityHeaders } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 
@@ -28,13 +29,13 @@ before(async () => {
         bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022', tsconfig: 'services/api-gateway/tsconfig.json',
         banner: { js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire('file:///letbuyy-export-owned.mjs');" },
         external: ['cloudflare:*', 'node:*'], conditions: ['workerd', 'worker', 'browser'], logLevel: 'silent',
-        plugins: [{ name: 'native-node-builtins', setup(build: { onResolve(options: { filter: RegExp }, handler: (args: { path: string }) => unknown): void }) {
+        plugins: [nativeGatewayWasmPlugin(), { name: 'native-node-builtins', setup(build: { onResolve(options: { filter: RegExp }, handler: (args: { path: string }) => unknown): void }) {
             const native = new Set(builtinModules);
             build.onResolve({ filter: /^[a-z][\w/]*$/ }, args => native.has(args.path) ? { path: 'node:' + args.path, external: true } : undefined);
         } }],
     });
     const origin = new URL(owned.restUrl).origin;
-    mf = new Miniflare({ modules: true, script: bundle.outputFiles[0].text, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
+    mf = new Miniflare({ modules: nativeGatewayModules(bundle.outputFiles[0].text), modulesRoot: NATIVE_GATEWAY_MODULE_ROOT, compatibilityDate: '2026-05-25', compatibilityFlags: ['nodejs_compat'], cf: false,
         bindings: gatewayEnv(owned, await newIdentityKeys()) as never, r2Buckets: ['R2_BUCKET'], r2Persist: false,
         durableObjects: { RUNTIME_COORDINATOR: { className: 'LetbuyyRuntimeDurableObject', useSQLite: true } }, durableObjectsPersist: false,
         outboundService: async (request: Request) => {
