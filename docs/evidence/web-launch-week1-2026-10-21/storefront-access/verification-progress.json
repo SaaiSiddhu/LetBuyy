@@ -1,7 +1,7 @@
 {
   "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
   "status": "BACKEND_LOCALLY_VERIFIED_NATIVE_AND_FINAL_GATE_IN_PROGRESS",
-  "sourceCheckpoint": "c8555546b3b130273a18034a3931846a49d3acf8",
+  "sourceCheckpoint": "8ac9d54d",
   "baseDevelop": "d6cd8f3748147c9ab4dd4d5e251888eb89c6ae15",
   "backend": {
     "sqlAndRestMigrationRun": {
@@ -34,13 +34,18 @@
       "pass": 1263,
       "fail": 0,
       "segments": [
-        144,
         142,
+        144,
         977
-      ]
+      ],
+      "postGateRepair": "1263PASS0FAIL"
     },
     "gatewayTypes": "PASS after adding async to the named fault seam callback",
-    "commerceTypes": "PASS"
+    "commerceTypes": "PASS after gate repair",
+    "inventory": {
+      "pass": 14,
+      "fail": 0
+    }
   },
   "beforeControls": {
     "typedPurpose": "one pass/three fail before purpose guard",
@@ -68,10 +73,35 @@
     "Normal owner preview issue/revoke and foreign-host insertion refusal"
   ],
   "native": {
-    "status": "RUNNING_NOT_ACCEPTED",
-    "session": 59293,
-    "scope": "complete existing signup/Core/COD/account journey plus new unlock/rotation/preview/recovery steps",
-    "sourceCaveat": "First native bundle started before guarded-issuer narrowing c8555546; final candidate native acceptance must be established separately."
+    "firstRun": {
+      "run": "fdbd6add31cb",
+      "pass": 0,
+      "fail": 1,
+      "stage": "storefront-visitor-access",
+      "observed": "Password mode returned401 but no Store password input existed. Original signup/Core/product/image/ten-presets/COD/account stages had completed before this new assertion. Overall browser suite failed.",
+      "cleanup": "empty"
+    },
+    "repair": "Server page resolves rewritten searchParams and passes explicit props to client view; actual shopper gate has no demo switcher; canonical UI tokens and truthful invalid/throttled/unavailable feedback. Added actual verifier503/retry proof.",
+    "currentRun": {
+      "status": "RUNNING_NOT_ACCEPTED",
+      "session": 14599,
+      "source": "8ac9d54d",
+      "directory": "native-access-repaired"
+    },
+    "references": [
+      {
+        "title": "Next.js App Router useSearchParams",
+        "url": "https://nextjs.org/docs/app/api-reference/functions/use-search-params",
+        "reviewed": "2026-10-21",
+        "use": "Server Page searchParams passed to client content; native runtime result remains acceptance authority."
+      },
+      {
+        "title": "Next.js rewritten query discussion",
+        "url": "https://github.com/vercel/next.js/issues/58256",
+        "reviewed": "2026-10-21",
+        "use": "Maintainer clarification corroborates that client hook follows unchanged browser URL, while Page receives destination search parameters."
+      }
+    ]
   },
   "remaining": [
     "Complete normal production-browser unlock, first-link SSR forwarding, revocation/offline/public-cookie recovery on final serving code",
