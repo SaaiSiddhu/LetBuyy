@@ -1,0 +1,32 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-USABILITY",
+  "base": "27abd93744f49787045609c37f94b114c29f75ff",
+  "outcome": "Complete real collection browsing beyond24, place first-party filter/pagination between existing Liquid header/body/footer, make address actions usable on mobile and verify private Core Liquid preview with actual viewport dimensions.",
+  "scope": [
+    "Gateway existing public-routes collection/preview-resource readers and theme-release bundle helper extraction from existing theme-execution adapter",
+    "Typed SDK collection browsing/preview page contracts; existing array response stays compatible",
+    "Commerce collection-discovery helper, collections index page, composition engine and Liquid page assembly; existing filter/first-party pagination controls only",
+    "Commerce liquid-theme.css and preview route stylesheet/preview metadata consumer",
+    "Merchant CenterPanel and existing preview CSS: actual desktop/tablet/mobile iframe viewport presented at fit scale",
+    "Existing owned collection discovery and native Core browser suites, assembly/contract/viewport unit tests and relevant package registration",
+    "Evidence, programme and branch registry"
+  ],
+  "contracts": [
+    "No new runtime, renderer, React theme section, identity issuer or database authority. Existing Liquid fragments stay sanitized; existing theme files and published snapshots remain untouched.",
+    "Existing summary array endpoints retain title/id-ordered first24 behavior. Add explicit browse mode returning a finite page with UUID keyset before/after cursors, stable id order and25-row lookahead; no count/product fanout or offset scan.",
+    "Cursor never authorizes a tenant; published resolution/preview token-store-expiry-draft verification and active/deleted/store predicates remain mandatory. Invalid/mixed cursors refuse.",
+    "No cross-request private cache or capability URL logging. Cursor navigation does not include bearer tokens. Concurrent catalog changes are current-page reads, not a frozen cross-page snapshot; resetting to first page recovers.",
+    "Existing canonical preview and publisher use the same validated Liquid-bundle recognition. Preview metadata must select actual Liquid for a Liquid draft; unknown/malformed bundles never force activation.",
+    "Keep server/theme head assets and hydration islands intact when exposing trusted platform control slots between sanitized Liquid regions. No merchant script interpolation.",
+    "Address identity/header/lifecycle/server guards unchanged; token-based controls with44px hit areas, visible focus, wrapping/spacing and real CRUD/stale-account checks.",
+    "Measure actual iframe innerWidth/fit scale; preserve sandbox, postMessage origin checks, inspector behavior and draft privacy.",
+    "Verify normal merchant collection creation and assignments, homepage/index/next/previous/detail, native preview/public rendering, mobile filter/action geometry, meaningful API isolation/fault and existing COD/buyer lifecycle."
+  ],
+  "standingBoundaries": [
+    "Single agent",
+    "No merge/push/deploy/shared DB writes",
+    "No real provider messages/payments",
+    "No mobile app UI changes"
+  ],
+  "collision": "Prior isolated accepted candidates frozen; primary610074d2 unchanged. Managed tool returned Not a git repository; native stacked worktree fallback used."
+}
