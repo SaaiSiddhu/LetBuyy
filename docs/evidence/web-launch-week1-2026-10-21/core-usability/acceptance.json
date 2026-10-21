@@ -1,8 +1,8 @@
 {
   "date": "2026-10-21",
   "status": "LOCAL_SCOPED_USABILITY_VERIFIED",
-  "implementationCommit": "676d432b2d68a0c0543bc01bfb5f07a3365c2e02",
-  "contentIdentity": "source-manifest.json in sibling github-sync directory; runtime source frozen during final owned run",
+  "implementationCommit": "1a06354233c7b317ba2314626514f432fa13bedf",
+  "contentIdentity": "github-sync/final-source-manifest.json pins final runtime inputs. Only Merchant CSS/CenterPanel changed after first full owned pass; final native browser repeated on exact1a063542 inputs.",
   "owned": {
     "runId": "729beafd0cc5",
     "suites": 2,
@@ -25,7 +25,10 @@
       "ten preset apply/publish/render",
       "search submission/filter placement and mobile address hit targets/keyboard focus",
       "COD order/merchant readback, profile/address CRUD, cross-tab stale identity refusal and unrelated order privacy"
-    ]
+    ],
+    "finalNativeRunId": "caf6012b282f",
+    "finalNativePassed": 1,
+    "counting": "Unique scoped cases remain5: four unchanged backend cases plus one final native browser. Repeated browser executions are not extra unique tests."
   },
   "unit": {
     "commerce": {
@@ -52,14 +55,15 @@
     "environmentTrackedFiles": 9908,
     "reviewedExceptions": 89,
     "unapprovedHistoryCredentialFindings": 0,
-    "uniqueIntroducedPathBlobs": 364
+    "uniqueIntroducedPathBlobs": 379
   },
   "priorFailuresRetained": [
     "First native run refused ambiguous Create collection locator; scoped to the actual New collection form.",
     "Second native run incorrectly assumed Delete immediately follows Edit; optional Set default is a legitimate intervening keyboard stop. Final test traverses it and verifies Delete focus and2px outline.",
     "Static source assertions were updated for preserved flat assembly and typed control slots; meaningful escaping/DOM-order tests retained.",
     "A --help probe of a runner without help support selected all suites in a sandbox with Docker unavailable; no tests executed and this is not acceptance evidence.",
-    "Offline disposable-clone install missed a cached tarball; locked network install succeeded."
+    "Offline disposable-clone install missed a cached tarball; locked network install succeeded.",
+    "First sync gate failed tsxInlineStyles674 above673 baseline. Scoped runtime CSS variables corrected it without raising baseline; final gate114PASS. Seven misplaced launch rows were moved from Promotions to Rows so the validator actually checks them."
   ],
   "remaining": [
     "Core full visual/section/editor acceptance and useful-page performance",
@@ -67,5 +71,16 @@
     "real provider sandbox/hosted release/remaining merchant operator commerce gates"
   ],
   "deployment": false,
-  "week1Complete": false
+  "week1Complete": false,
+  "initialImplementationCommit": "676d432b2d68a0c0543bc01bfb5f07a3365c2e02",
+  "gate": {
+    "source": "1a06354233c7b317ba2314626514f432fa13bedf",
+    "PASS": 114,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1,
+    "advisories": [],
+    "environment": "disposable clone with full local branch refs; no active owned browser during gate"
+  }
 }

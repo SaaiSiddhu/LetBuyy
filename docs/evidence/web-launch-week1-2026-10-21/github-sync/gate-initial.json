@@ -1,0 +1,2155 @@
+{
+  "generatedAt": "2026-10-21T05:49:14.987Z",
+  "lane": "gate",
+  "repoRoot": "/private/tmp/letbuyy-github-sync-gate-20261021",
+  "discovered": [
+    "android-identity-validator.mjs",
+    "api-client-runtime-base-validator.mjs",
+    "app-api-route-inventory.mjs",
+    "app-utils-service-role-edge-validator.mjs",
+    "architecture-validator.mjs",
+    "beta-readiness-validator.mjs",
+    "branch-dispositions-validator.mjs",
+    "branch-lag-guard-validator.mjs",
+    "canonical-ledger-only-validator.mjs",
+    "ci-simulation-validator.mjs",
+    "circular-import-validator.mjs",
+    "cloudflare-binding-validator.mjs",
+    "cloudflare-environment-validator.mjs",
+    "cloudflare-topology-validator.mjs",
+    "cms-slugify-validator.mjs",
+    "commission-bps-zero-validator.mjs",
+    "committed-secret-placeholder-validator.mjs",
+    "cookie-realm-validator.mjs",
+    "custom-domain-target-validator.mjs",
+    "cycle-budget-validator.mjs",
+    "d1-governance-validator.mjs",
+    "dart-dead-source-validator.mjs",
+    "date-format-validator.mjs",
+    "dead-residue-validator.mjs",
+    "dependency-graph-validator.mjs",
+    "dependency-manifest-validator.mjs",
+    "deploy-matrix-topology-validator.mjs",
+    "deployment-lineage-validator.mjs",
+    "deployment-safety-validator.mjs",
+    "dev-auth-bypass-validator.mjs",
+    "domain-boundary-validator.mjs",
+    "durable-object-validator.mjs",
+    "env-isolation-validator.mjs",
+    "environment-honesty-validator.mjs",
+    "environment-validator.mjs",
+    "fail-closed-internal-routes-validator.mjs",
+    "foundation-antifabrication-gate.mjs",
+    "foundation-sql-policy-residue-validator.mjs",
+    "foundation-stepup-report-validator.mjs",
+    "frozen-path-override-gate.mjs",
+    "generated-artifact-validator.mjs",
+    "governance-common.mjs",
+    "identity-sole-issuer-validator.mjs",
+    "import-validator.mjs",
+    "inr-currency-format-validator.mjs",
+    "legacy-site-type-validator.mjs",
+    "manifest-lineage-validator.mjs",
+    "marketing-dead-twin-validator.mjs",
+    "marketplace-single-source-validator.mjs",
+    "merchant-domains-settings-validator.mjs",
+    "meta-no-theater-validator.mjs",
+    "migration-safety-validator.mjs",
+    "mobile-token-validator.mjs",
+    "mobile-topology-honesty-validator.mjs",
+    "no-blanket-service-role-validator.mjs",
+    "no-new-react-sections-validator.mjs",
+    "no-noop-test-script-validator.mjs",
+    "no-public-using-true-validator.mjs",
+    "no-rejected-package-imports-validator.mjs",
+    "no-reserved-service-activation-validator.mjs",
+    "no-scan-generated-agents-validator.mjs",
+    "no-self-custody-rail-validator.mjs",
+    "one-system-per-domain-validator.mjs",
+    "operational-lifecycle-validator.mjs",
+    "package-export-validator.mjs",
+    "package-ownership-validator.mjs",
+    "payment-rail-allowlist-validator.mjs",
+    "phase-b-common.mjs",
+    "phase-c-forced-decisions-validator.mjs",
+    "platform-domain-literal-validator.mjs",
+    "pricing-catalog-validator.mjs",
+    "production-readiness-validator.mjs",
+    "production-safety-validator.mjs",
+    "prompt-perimeter-validator.mjs",
+    "provider-evidence-validator.mjs",
+    "provider-isolation-validator.mjs",
+    "provider-mode-badge-validator.mjs",
+    "queue-topology-validator.mjs",
+    "raw-error-message-validator.mjs",
+    "reference-isolation-validator.mjs",
+    "repository-intelligence-validator.mjs",
+    "reserved-subdomain-single-source-validator.mjs",
+    "rls-force-coverage-validator.mjs",
+    "rollback-integrity-validator.mjs",
+    "route-line-count-validator.mjs",
+    "route-ownership-validator.mjs",
+    "runtime-manifest-validator.mjs",
+    "runtime-topology-validator.mjs",
+    "runtime-validator.mjs",
+    "secret-scan-core.mjs",
+    "secret-topology-validator.mjs",
+    "sequential-migration-validator.mjs",
+    "session-security-validator.mjs",
+    "settings-apps-dead-twin-validator.mjs",
+    "shell-single-validator.mjs",
+    "single-source-crypto-validator.mjs",
+    "single-writer-ownership-validator.mjs",
+    "source-ledger-residue-validator.mjs",
+    "stale-artifact-validator.mjs",
+    "stepup-crypto-validator.mjs",
+    "storefront-access-gate-validator.mjs",
+    "storefront-domain-policy.mjs",
+    "storefront-seo-access-validator.mjs",
+    "supply-chain-validator.mjs",
+    "tenant-isolation-validator.mjs",
+    "test-coverage-governance-validator.mjs",
+    "theme-editor-dead-shell-validator.mjs",
+    "theme-governance-validator.mjs",
+    "token-source-single-validator.mjs",
+    "tooling-governance-validator.mjs",
+    "topology-drift-validator.mjs",
+    "topology-json-antifabrication-validator.mjs",
+    "typescript-dead-source-validator.mjs",
+    "typescript-governance-validator.mjs",
+    "undeclared-import-validator.mjs",
+    "validate-design-system.mjs",
+    "web-v1-scope-perimeter-validator.mjs",
+    "whole-repo-end-state-validator.mjs",
+    "workflow-trigger-coverage-validator.mjs",
+    "workspace-lifecycle-validator.mjs",
+    "wrangler-env-validator.mjs"
+  ],
+  "inventory": {
+    "discoveredCount": 121,
+    "executableCount": 115,
+    "declaredCount": 115,
+    "gateDeclared": 114,
+    "reportDeclared": 1,
+    "library": [
+      "app-api-route-inventory.mjs",
+      "governance-common.mjs",
+      "phase-b-common.mjs",
+      "secret-scan-core.mjs",
+      "storefront-domain-policy.mjs"
+    ],
+    "hookOnly": [
+      "frozen-path-override-gate.mjs"
+    ],
+    "undeclared": [],
+    "missing": [],
+    "problems": []
+  },
+  "counts": {
+    "PASS": 113,
+    "FAIL": 1,
+    "BLOCKED": 0,
+    "SKIP": 0,
+    "NOT_APPLICABLE": 1
+  },
+  "advisories": [
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: environment chain not measurable here (missing local refs: develop, staging, main) — expected in a shallow CI clone"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-next-runtime-cleanup not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-gift-barrier-labels not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-checkout-browser not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-clean-checkout not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-workflow-context not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-platform-acceptance not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-branch-lag-monitor not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-machine-readiness not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/machine-handoff-ci not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/local-complete-integration not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov3-letbuyy-skill-and-branch-model not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/db-1-mig-208-210 not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test-1-notification-preference-guard not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov4-owner-decisions-record not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt0-channel-listings-foundation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt1-marketplace-routes not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm1-listing-moderation-routes not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm3-marketplace-categories-routes not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk0-restore-checkout-idempotency-lock not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk1-purchase-parent-child-orders not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sec1-public-product-cost-exposure not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt2-marketplace-listing-detail not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sec2-variant-sku-barcode-exposure not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt3-marketplace-detail-variants not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/cus1-canonical-marketplace-data-layer not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/build1-customer-app-debug-signing not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test1-run-deterministic-guards-in-ci not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mig0-migration-actor-realm not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test2-name-prefix-collision-hardening not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb1-retire-firebase-admin-app not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb2-customer-app-canonical-catalogue not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb3-canonical-customer-session not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/route1-restore-route-file-headroom not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/dec1-owner-decisions-2026-09-05 not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/route2-fix-blog-marker-regression not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mig2-retire-migration-actor-realm not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer1-platform-buyer-identity not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer2-buyer-realm-issuance not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/rl1-storeless-auth-identity-key not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer3-buyer-account-endpoints not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer4-identity-buyer-routes not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer5-link-buyer-to-store-customer not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm2-marketplace-moderation-screen not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/notif1-buyer-notification-inbox not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ret1-buyer-return-requests not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ship1-product-shipping-profile not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/upd1-mobile-release-gate not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gw1-unguarded-admin-client not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ban1-marketplace-banners not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/infra1-turbo-continue not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/infra2-safe-delete-retired-adapters not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/soc1-seller-follow-graph not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/per1-personalization-signals not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chat1-buyer-support-tickets not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy1-merchant-funded-loyalty-ledger not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1-prepaid-ad-credits not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk1-checkout-definition-lineage-guard not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy2-redeem-takes-authoritative-amount not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy3-checkout-loyalty-tender not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy4-loyalty-earn-sweeper not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/guard1-buyer-owned-tables not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/disp1-row-placement-guard not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ledger1-stored-value-write-fence not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy5-merchant-loyalty-program-settings not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads2-merchant-ad-campaign-surface not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov5-money-rpc-reachability not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov6-table-reachability not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gate1-ambient-red-attribution not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/dart1-dead-source-reference-soundness not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1a-ad-spend-metering not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1b-sponsored-feed-ranking not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1c-signed-ad-event-ingress not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/bill1-subscribe-fabricates-payment not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/charge1-shared-payment-verifier not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/charge2-ad-credit-purchase not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy4-restore-loyalty-on-refund not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads4-release-campaign-budget not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy5-record-value-at-earn not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/searchpath1-qualify-extension-calls not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen1-orders-route-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/tenantinv1-inventory-adjustments-tenant-column not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/harness1-supabase-faithful-bootstrap not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/rollback1-checkout-signature-precondition not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/exec1-executable-suite-runner not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/harness2-bootstrap-fidelity-scoped not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen2-customers-route-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen3-app-store-route-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/drift1-app-store-column-predicate not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen4-internal-console-route-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/orderdetail1-customer-order-fields not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pendingcod1-orders-filter not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/committed1-release-decrement not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/qualify2-parameter-default-blind-spot not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wiretype1-checkout-body-duplicates not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wiretype2-internal-payment-union-enforcement not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/integ1-develop-integration-evidence not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0-app-builds-and-e2e-blocker not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0b-correct-the-e2e-diagnosis not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0c-docker-pull-path-wedged not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wishlist1-bound-the-wishlist-writes not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/activity1-bound-the-activity-log not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen5-billing-oauth-route-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen6-developer-routes-size not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/driftguard1-canonical-predicate-characterisation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/secscan1-attribute-ambient-secret-red not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gateguard1-refuse-gate-without-install not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gatediff1-persist-failure-sets not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/webhooktest1-restore-razorpay-signature-guard not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/renamestale1-phase-m-stale-assertions not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/archivepath1-stage6-sweep-overreach not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/contractscope1-last-ambient-contracts not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalecount1-truncated-offender-lists not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/lintattr1-attribute-the-lint-lane not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts1-remeasure-section-5 not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalecount2-adopt-offender-totals not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/hexattr1-classify-cap-c77 not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts2-complete-section-5 not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/refstale1-hazards-and-ci-facts not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/secreg1-stale-security-findings not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/directory1-public-store-directory-exposure not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pay4-late-capture-after-release not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ful1-fulfillment-variant-type not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pay8-webhook-retry-reclaim not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm4-operator-moderation-chain not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/uni1-roadmap-reconcile not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts3-primary-on-develop not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalemethod1-classify-by-method not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/bil1-single-subscription-activation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/node20-package-test-runners not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/idui1-identity-light-restyle not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/grant1-service-role-fresh-db-grants not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/localdev1-dev-env-renamed-apps not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/evid2-agrimore-concept-synthesis not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/branch3-three-branches-only not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p0-founder-decisions not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p1-app-moves not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p2-reference-isolation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p3-buyer-linkage not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-sec1-definer-execute not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4a-buyer-verification not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-sec2-identity-email-relay not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4b-buyer-code-pkce not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4c-storefront-sign-in not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4d-marketplace-mobile not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-fix1-full-gate-regressions not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p5b-staff-paths-fail-closed not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/liqcontract1-liquid-source-contracts not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/handoff1-cloud-continuation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-fix2-product-tenant-guard not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-b-cloud-validation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-d3-marketplace-order-visibility not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-e-console-mfa-hardening not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-f-staff-membership-investigation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g-storefront-search-form not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g2-custom-css-wiring not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g3-locale-filter-wiring not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-i-acceptance-closure not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-h-acceptance-pass not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-k-buyer-profile-addresses not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-j-harness-isolation not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-l-marketplace-account-ui not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-m-account-switch-verification not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/phase1r-firebase-free-marketplace not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: MERGED_DEVELOP row letbuyy/phase2-shared-buyer-identity not checked: develop ref missing locally"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: ACTIVE row letbuyy/week1-launch-blockers: branch not present locally (claimed in another clone?)"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: ACTIVE row letbuyy/week2-shipping-tax: branch not present locally (claimed in another clone?)"
+    },
+    {
+      "validator": "branch-dispositions-validator.mjs",
+      "message": "Branch dispositions validator: Local branch without a ledger row: letbuyy/week1-core-usability (add a row before building on it)"
+    }
+  ],
+  "problems": [
+    "validate-design-system.mjs: FAIL (exit 1)"
+  ],
+  "ok": false,
+  "exitCode": 1,
+  "results": [
+    {
+      "name": "foundation-antifabrication-gate.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 385,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "tenant-isolation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2509,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "production-safety-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 76,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "session-security-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 447,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "operational-lifecycle-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 83,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "validate-design-system.mjs",
+      "lane": "gate",
+      "status": "FAIL",
+      "exitCode": 1,
+      "durationMs": 589,
+      "required": true,
+      "reason": "validator exited 1",
+      "advisories": []
+    },
+    {
+      "name": "mobile-token-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 141,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "theme-governance-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 78,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "beta-readiness-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 85,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "architecture-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 535,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "runtime-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 125,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "reference-isolation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2083,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "runtime-manifest-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 202,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "runtime-topology-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "topology-drift-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 70,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "package-ownership-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 122,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "import-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 655,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "dependency-manifest-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 383,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "undeclared-import-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 393,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "dependency-graph-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 872,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "circular-import-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 474,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cycle-budget-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 1332,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "package-export-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 601,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "provider-isolation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 421,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "supply-chain-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 203,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "typescript-governance-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 111,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cloudflare-topology-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 75,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "wrangler-env-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cloudflare-environment-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cloudflare-binding-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 79,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "env-isolation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 70,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "environment-honesty-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 194,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cookie-realm-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 91,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "reserved-subdomain-single-source-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 75,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "storefront-access-gate-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 89,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "custom-domain-target-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 127,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "merchant-domains-settings-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "storefront-seo-access-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 70,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "platform-domain-literal-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 293,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "route-ownership-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 813,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "legacy-site-type-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 123,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "app-utils-service-role-edge-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 237,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "migration-safety-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 441,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "sequential-migration-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 198,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "deployment-safety-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 120,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "secret-topology-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 70,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "domain-boundary-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 186,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "single-writer-ownership-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 250,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "fail-closed-internal-routes-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 78,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "source-ledger-residue-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 194,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "foundation-sql-policy-residue-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 138,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "dead-residue-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "repository-intelligence-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "mobile-topology-honesty-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 111,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "android-identity-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 149,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "route-line-count-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 88,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "single-source-crypto-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 120,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "cms-slugify-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 124,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "inr-currency-format-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 143,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "date-format-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 152,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "marketplace-single-source-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "api-client-runtime-base-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "marketing-dead-twin-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 81,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "theme-editor-dead-shell-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 128,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "typescript-dead-source-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 219,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "dart-dead-source-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 123,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "settings-apps-dead-twin-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 142,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "raw-error-message-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 108,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "dev-auth-bypass-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-noop-test-script-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 71,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "environment-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2723,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "generated-artifact-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 124,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "stale-artifact-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 292,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "tooling-governance-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 77,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "ci-simulation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 75,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "workflow-trigger-coverage-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 79,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "committed-secret-placeholder-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 109,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "d1-governance-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 70,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "deployment-lineage-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "durable-object-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 79,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "manifest-lineage-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 80,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "production-readiness-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 88,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "provider-evidence-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 71,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "queue-topology-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 74,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "rollback-integrity-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "test-coverage-governance-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 77,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "workspace-lifecycle-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 126,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "commission-bps-zero-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 317,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "pricing-catalog-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 162,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "canonical-ledger-only-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 382,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-self-custody-rail-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 450,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "payment-rail-allowlist-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 331,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "stepup-crypto-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 319,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "identity-sole-issuer-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 273,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-blanket-service-role-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 227,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-public-using-true-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 174,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "rls-force-coverage-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 94,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "provider-mode-badge-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 252,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "one-system-per-domain-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 212,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-rejected-package-imports-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 330,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-reserved-service-activation-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 869,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-new-react-sections-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 77,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "token-source-single-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 224,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "shell-single-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 229,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "meta-no-theater-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 78,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "phase-c-forced-decisions-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "branch-lag-guard-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 107,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "branch-dispositions-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2464,
+      "required": true,
+      "reason": null,
+      "advisories": [
+        "Branch dispositions validator: environment chain not measurable here (missing local refs: develop, staging, main) — expected in a shallow CI clone",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-next-runtime-cleanup not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-gift-barrier-labels not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-checkout-browser not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-clean-checkout not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-workflow-context not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-platform-acceptance not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-branch-lag-monitor not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ci-machine-readiness not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/machine-handoff-ci not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/local-complete-integration not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov3-letbuyy-skill-and-branch-model not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/db-1-mig-208-210 not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test-1-notification-preference-guard not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov4-owner-decisions-record not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt0-channel-listings-foundation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt1-marketplace-routes not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm1-listing-moderation-routes not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm3-marketplace-categories-routes not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk0-restore-checkout-idempotency-lock not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk1-purchase-parent-child-orders not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sec1-public-product-cost-exposure not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt2-marketplace-listing-detail not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sec2-variant-sku-barcode-exposure not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mkt3-marketplace-detail-variants not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/cus1-canonical-marketplace-data-layer not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/build1-customer-app-debug-signing not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test1-run-deterministic-guards-in-ci not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mig0-migration-actor-realm not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/test2-name-prefix-collision-hardening not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb1-retire-firebase-admin-app not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb2-customer-app-canonical-catalogue not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/fb3-canonical-customer-session not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/route1-restore-route-file-headroom not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/dec1-owner-decisions-2026-09-05 not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/route2-fix-blog-marker-regression not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/mig2-retire-migration-actor-realm not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer1-platform-buyer-identity not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer2-buyer-realm-issuance not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/rl1-storeless-auth-identity-key not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer3-buyer-account-endpoints not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer4-identity-buyer-routes not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/buyer5-link-buyer-to-store-customer not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm2-marketplace-moderation-screen not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/notif1-buyer-notification-inbox not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ret1-buyer-return-requests not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ship1-product-shipping-profile not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/upd1-mobile-release-gate not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gw1-unguarded-admin-client not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ban1-marketplace-banners not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/infra1-turbo-continue not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/infra2-safe-delete-retired-adapters not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/soc1-seller-follow-graph not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/per1-personalization-signals not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chat1-buyer-support-tickets not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy1-merchant-funded-loyalty-ledger not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1-prepaid-ad-credits not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/chk1-checkout-definition-lineage-guard not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy2-redeem-takes-authoritative-amount not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy3-checkout-loyalty-tender not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy4-loyalty-earn-sweeper not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/guard1-buyer-owned-tables not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/disp1-row-placement-guard not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ledger1-stored-value-write-fence not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy5-merchant-loyalty-program-settings not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads2-merchant-ad-campaign-surface not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov5-money-rpc-reachability not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gov6-table-reachability not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gate1-ambient-red-attribution not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/dart1-dead-source-reference-soundness not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1a-ad-spend-metering not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1b-sponsored-feed-ranking not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads1c-signed-ad-event-ingress not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/bill1-subscribe-fabricates-payment not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/charge1-shared-payment-verifier not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/charge2-ad-credit-purchase not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy4-restore-loyalty-on-refund not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ads4-release-campaign-budget not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/loy5-record-value-at-earn not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/searchpath1-qualify-extension-calls not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen1-orders-route-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/tenantinv1-inventory-adjustments-tenant-column not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/harness1-supabase-faithful-bootstrap not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/rollback1-checkout-signature-precondition not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/exec1-executable-suite-runner not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/harness2-bootstrap-fidelity-scoped not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen2-customers-route-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen3-app-store-route-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/drift1-app-store-column-predicate not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen4-internal-console-route-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/orderdetail1-customer-order-fields not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pendingcod1-orders-filter not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/committed1-release-decrement not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/qualify2-parameter-default-blind-spot not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wiretype1-checkout-body-duplicates not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wiretype2-internal-payment-union-enforcement not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/integ1-develop-integration-evidence not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0-app-builds-and-e2e-blocker not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0b-correct-the-e2e-diagnosis not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/e2e0c-docker-pull-path-wedged not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/wishlist1-bound-the-wishlist-writes not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/activity1-bound-the-activity-log not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen5-billing-oauth-route-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/routelen6-developer-routes-size not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/driftguard1-canonical-predicate-characterisation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/secscan1-attribute-ambient-secret-red not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gateguard1-refuse-gate-without-install not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/gatediff1-persist-failure-sets not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/webhooktest1-restore-razorpay-signature-guard not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/renamestale1-phase-m-stale-assertions not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/archivepath1-stage6-sweep-overreach not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/contractscope1-last-ambient-contracts not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalecount1-truncated-offender-lists not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/lintattr1-attribute-the-lint-lane not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts1-remeasure-section-5 not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalecount2-adopt-offender-totals not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/hexattr1-classify-cap-c77 not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts2-complete-section-5 not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/refstale1-hazards-and-ci-facts not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/secreg1-stale-security-findings not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/directory1-public-store-directory-exposure not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pay4-late-capture-after-release not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/ful1-fulfillment-variant-type not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/pay8-webhook-retry-reclaim not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/adm4-operator-moderation-chain not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/uni1-roadmap-reconcile not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/skillfacts3-primary-on-develop not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/stalemethod1-classify-by-method not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/bil1-single-subscription-activation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/node20-package-test-runners not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/idui1-identity-light-restyle not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/grant1-service-role-fresh-db-grants not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/localdev1-dev-env-renamed-apps not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/evid2-agrimore-concept-synthesis not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/branch3-three-branches-only not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p0-founder-decisions not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p1-app-moves not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p2-reference-isolation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p3-buyer-linkage not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-sec1-definer-execute not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4a-buyer-verification not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-sec2-identity-email-relay not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4b-buyer-code-pkce not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4c-storefront-sign-in not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p4d-marketplace-mobile not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-fix1-full-gate-regressions not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-p5b-staff-paths-fail-closed not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/liqcontract1-liquid-source-contracts not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/handoff1-cloud-continuation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/appid-fix2-product-tenant-guard not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-b-cloud-validation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-d3-marketplace-order-visibility not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-e-console-mfa-hardening not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-f-staff-membership-investigation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g-storefront-search-form not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g2-custom-css-wiring not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-g3-locale-filter-wiring not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-i-acceptance-closure not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-h-acceptance-pass not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-k-buyer-profile-addresses not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-j-harness-isolation not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-l-marketplace-account-ui not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/sustained-m-account-switch-verification not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/phase1r-firebase-free-marketplace not checked: develop ref missing locally",
+        "Branch dispositions validator: MERGED_DEVELOP row letbuyy/phase2-shared-buyer-identity not checked: develop ref missing locally",
+        "Branch dispositions validator: ACTIVE row letbuyy/week1-launch-blockers: branch not present locally (claimed in another clone?)",
+        "Branch dispositions validator: ACTIVE row letbuyy/week2-shipping-tax: branch not present locally (claimed in another clone?)",
+        "Branch dispositions validator: Local branch without a ledger row: letbuyy/week1-core-usability (add a row before building on it)"
+      ]
+    },
+    {
+      "name": "deploy-matrix-topology-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 76,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "topology-json-antifabrication-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 73,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "no-scan-generated-agents-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 126,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "prompt-perimeter-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 129,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "whole-repo-end-state-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 79,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "web-v1-scope-perimeter-validator.mjs",
+      "lane": "gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 666,
+      "required": true,
+      "reason": null,
+      "advisories": []
+    },
+    {
+      "name": "foundation-stepup-report-validator.mjs",
+      "lane": "report",
+      "status": "NOT_APPLICABLE",
+      "exitCode": null,
+      "durationMs": 0,
+      "required": false,
+      "reason": "not part of the --lane=gate selection",
+      "advisories": []
+    }
+  ]
+}

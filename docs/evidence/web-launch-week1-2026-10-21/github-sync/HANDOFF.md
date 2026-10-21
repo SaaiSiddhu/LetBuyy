@@ -6,7 +6,7 @@ The owner explicitly requested committing the current launch work, merging it in
 
 The cumulative launch branch contains the earlier local develop integration and all completed web repair slices: theme ownership and atomic uploads, Worker SQL request lifetime, bounded request admission, Core theme/category JSONB compatibility, public/private image delivery, shipping/tax integration, billing activation, public merchant signup, Core adoption/publication and variant checkout, honest starter copy, catalog refresh/search scheduling, buyer address identity guards, collection discovery and the current collection pagination/private preview/mobile control changes. Read the adjacent phase acceptance records for exact scopes and limitations. A source sync does not close the four-week launch programme or Week 1.
 
-The current usability implementation is commit `676d432b`. Its source manifest and final verification are recorded in this directory. Earlier accepted phase evidence is under `docs/evidence/web-launch-week1-2026-10-21/` and `docs/evidence/web-launch-week2-2026-10-21/`.
+The current usability implementation is commit `676d432b`, followed by the scoped CSS-variable viewport correction `1a063542`. Its source manifest and final verification are recorded in this directory. Earlier accepted phase evidence is under `docs/evidence/web-launch-week1-2026-10-21/` and `docs/evidence/web-launch-week2-2026-10-21/`.
 
 ## Pull on the new machine
 
