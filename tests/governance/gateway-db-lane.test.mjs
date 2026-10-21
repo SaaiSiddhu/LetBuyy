@@ -123,6 +123,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "shipping-tax-settings.postgres.test.ts",
         "smart-collection-preview.postgres.test.ts",
         "store-creation-idempotency.postgres.test.ts",
+        "store-password-admission.postgres.test.ts",
         "storefront-access-boundary.postgres.test.ts",
         "storefront-bootstrap-projection.postgres.test.ts",
         "storefront-buyer-data.postgres.test.ts",

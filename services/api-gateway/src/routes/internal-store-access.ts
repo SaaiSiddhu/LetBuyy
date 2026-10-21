@@ -1,12 +1,14 @@
-import {loadVisitorSite,visitorGrants} from '../lib/storefront-visitor-access';
+import {loadVisitorSite,visitorGrants,storefrontHostBelongsToSite} from '../lib/storefront-visitor-access';
 import { Hono } from 'hono';
+import { z } from 'zod';
+import { AppError } from '../lib/errors';
 import type { Context } from 'hono';
 import {
     normalizeRequestHost,
     resolveStorefrontHost,
 } from '@letbuyy/tenant-core';
 import type { Env } from '../index';
-import { dbErrorBody, getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { verifyInternalAppRequest } from '../lib/internal-auth';
 import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { verifyStoreAccessPassword } from '../lib/store-access-password';
@@ -67,73 +69,71 @@ router.get('/resolve', async (c) => {
     }));
 });
 
+const VerifyPasswordSchema = z.object({
+    site_id: z.string().uuid(),
+    host: z.string().min(1).max(300).optional(),
+    password: z.string().min(1).max(128),
+    ip: z.union([z.ipv4(), z.ipv6()]).nullish(),
+});
+const ATTEMPT_WINDOW_MS = 15 * 60_000;
+const unavailable = () => new AppError('Store access is unavailable', 503, 'STOREFRONT_ACCESS_UNAVAILABLE');
+function canonicalIp(value: string): string {
+    return value.includes(':') ? new URL(`http://[${value}]`).hostname.slice(1, -1) : value;
+}
+
 router.post('/verify', async (c) => {
     const unauthorized = await requireStorefrontInternal(c);
     if (unauthorized) return unauthorized;
 
-    const body = await c.req.json().catch(() => null) as {
-        site_id?: string;
-        host?: string;
-        password?: string;
-        ip?: string;
-    } | null;
-    const siteId = body?.site_id;
-    const host = normalizeRequestHost(body?.host || c.req.header('Host')) || '';
-    const password = body?.password || '';
-    if (!siteId || !host || !password) {
-        return c.json({ error: { code: 'VALIDATION', message: 'site_id, host, and password are required' } }, 400);
+    const parsed = VerifyPasswordSchema.safeParse(await c.req.json().catch(() => null));
+    if (!parsed.success) return c.json({ error: { code: 'VALIDATION', message: 'Valid site_id, host, password and client address are required' } }, 400);
+    const siteId = parsed.data.site_id.toLowerCase();
+    const host = normalizeRequestHost(parsed.data.host || c.req.header('Host')) || '';
+    const address = parsed.data.ip || c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For')?.split(',')[0]?.trim();
+    if (!host || !address || !z.union([z.ipv4(), z.ipv6()]).safeParse(address).success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'A valid store host and client address are required' } }, 400);
     }
+    const ip = canonicalIp(address);
+    const denied = (resetAt: number) => {
+        c.header('Retry-After', String(Math.max(1, Math.ceil((resetAt - Date.now()) / 1000))));
+        return c.json({ success: false, error: { code: 'STORE_ACCESS_THROTTLED', message: 'Store access is temporarily unavailable. Try again later.' } }, 429);
+    };
+
+    // Reserve on the existing atomic backend before DB/hash work. Correct
+    // credentials cannot bypass a closed quota; missing admission is unavailable.
+    const directLimit = await checkRateLimitKey(c.env, {
+        key: `store-gate:${siteId}:${host}:${ip}`,
+        prefix: 'rl:store-gate', windowMs: ATTEMPT_WINDOW_MS, max: 30,
+    });
+    if (directLimit.unavailable) { c.header('Retry-After', '1'); throw unavailable(); }
+    if (!directLimit.allowed) return denied(directLimit.resetAt);
 
     const db = getSupabaseAdmin(c);
-    const ip = body?.ip || c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For')?.split(',')[0]?.trim() || null;
-    const recentQuery = db
-        .from('site_gate_attempts')
-        .select('id, ok, ts')
-        .eq('site_id', siteId)
-        .eq('host', host)
-        .gte('ts', new Date(Date.now() - 15 * 60_000).toISOString())
-        .order('ts', { ascending: false })
-        .limit(20);
-    const { data: recentAttempts } = ip ? await recentQuery.eq('ip', ip) : await recentQuery;
+    const { data: recentAttempts, error: historyError } = await db.from('site_gate_attempts')
+        .select('id, ok, ts').eq('site_id', siteId).eq('host', host).eq('ip', ip)
+        .is('deleted_at', null).gte('ts', new Date(Date.now() - ATTEMPT_WINDOW_MS).toISOString())
+        .order('ts', { ascending: false }).limit(20);
+    if (historyError) throw unavailable();
+    let failures = 0;
+    for (const attempt of recentAttempts || []) { if (attempt.ok) break; failures++; }
+    if (failures >= 5) return denied(new Date(recentAttempts![0].ts).getTime() + ATTEMPT_WINDOW_MS);
 
-    const { data: site, error } = await db
-        .from('sites')
-        .select('id, access_password_hash, access_mode')
-        .eq('id', siteId)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (error) return c.json(dbErrorBody(), 500);
-
-    const ok = Boolean(site && site.access_mode === 'password' && await verifyStoreAccessPassword(password, site.access_password_hash));
-    const consecutiveFailures = (recentAttempts || []).reduce((count: number, attempt: { ok?: boolean }) => (
-        count >= 0 && attempt.ok === true ? -1 : count >= 0 ? count + 1 : count
-    ), 0);
-    const directLimit = await checkRateLimitKey(c.env, {
-        key: `store-gate:${siteId}:${host}:${ip || 'unknown'}`,
-        prefix: 'rl:store-gate',
-        windowMs: 15 * 60_000,
-        max: 30,
-    });
-    const lockedOut = consecutiveFailures >= 5 || !directLimit.allowed;
-
-    await db.from('site_gate_attempts').insert({
-        site_id: siteId,
-        ip,
-        host,
-        ok,
-    });
-
-    if (!ok && lockedOut) {
-        return c.json({ success: false, error: { code: 'STORE_ACCESS_THROTTLED', message: 'Store access is temporarily unavailable. Try again later.' } }, 429);
-    }
-
-    if (!ok) {
+    const { data: site, error } = await db.from('sites')
+        .select('id, subdomain, custom_domain, custom_domain_status, access_password_hash, access_mode')
+        .eq('id', siteId).is('deleted_at', null).maybeSingle();
+    if (error) throw unavailable();
+    if (!site || site.access_mode !== 'password' || !(await storefrontHostBelongsToSite(c, host, site))) {
         return c.json({ success: false, error: { code: 'INVALID_PASSWORD', message: 'Invalid store password' } }, 401);
     }
+    if (!site.access_password_hash) throw unavailable();
 
-    c.header('Cache-Control','no-store');
-    return c.json(success({ site_id: siteId, ok: true,access_revision:await sha256Hex(site!.access_password_hash) }));
+    const ok = await verifyStoreAccessPassword(parsed.data.password, site.access_password_hash, { signal: c.req.raw.signal });
+    // A valid-password grant is not acknowledged until its required attempt
+    // record persists. An unavailable writer is never treated as success.
+    const { error: writeError } = await db.from('site_gate_attempts').insert({ site_id: siteId, ip, host, ok });
+    if (writeError) throw unavailable();
+    if (!ok) return c.json({ success: false, error: { code: 'INVALID_PASSWORD', message: 'Invalid store password' } }, 401);
+    return c.json(success({ site_id: siteId, ok: true, access_revision: await sha256Hex(site.access_password_hash) }));
 });
 
 export default router;

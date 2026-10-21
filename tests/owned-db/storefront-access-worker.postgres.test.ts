@@ -50,3 +50,19 @@ test('actual warmed native catalogue CacheAPI never skips current password, prev
  owned.psql(`UPDATE sites SET access_mode='public' WHERE id=${q(t.siteId)};`);assert.equal((await read(path)).status,200);
  console.info('OWNED_NATIVE_ACCESS_CACHE '+JSON.stringify({actualCacheHit:true,passwordDenialBeforeCache:true,passwordProofHit:true,rotationRevoked:true,previewRevoked:true,offlineDenied:true,publicRecovered:true}));
 });
+
+
+async function nativeGateTenant(tag:string){const t=newSyntheticTenant(tag);seedSyntheticTenant(owned.psql,t);const password=crypto.randomUUID()+crypto.randomUUID(),hash=await hashStoreAccessPassword(password);owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);return{...t,password,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,ip:'2001:db8::beef'};}
+async function gateVerify(t:Awaited<ReturnType<typeof nativeGateTenant>>,override:Record<string,unknown>={}){const r=await gateway.dispatch('/v1/internal/store-access/verify',{method:'POST',headers:{'X-Internal-API-Secret':INTERNAL_SECRET,'Content-Type':'application/json'},body:JSON.stringify({site_id:t.siteId,host:t.host,ip:t.ip,password:t.password,...override})});const status=r.status,retry=r.headers.get('Retry-After');await r.arrayBuffer();return{status,retry};}
+async function stableQuotaWindow(){const remaining=900_000-Date.now()%900_000;if(remaining<15_000)await new Promise(r=>setTimeout(r,remaining+50));}
+test('native exhausted atomic quota refuses before an actual malformed KDF state',async()=>{
+ await stableQuotaWindow();const t=await nativeGateTenant('native-gate-limit');
+ for(let i=0;i<30;i++)assert.equal((await gateVerify(t)).status,200);
+ owned.psql(`UPDATE sites SET access_password_hash='synthetic-corrupt-hash' WHERE id=${q(t.siteId)};`);
+ const denied=await gateVerify(t);assert.equal(denied.status,429,'a closed quota must not evaluate corrupt hash and return unavailable');assert.ok(Number(denied.retry)>0);assert.equal((await gateVerify(t,{site_id:t.siteId.toUpperCase(),host:t.host.toUpperCase(),ip:'2001:0db8:0000:0000:0000:0000:0000:beef'})).status,429,'equivalent identifiers share one quota');assert.equal(owned.psql(`SELECT count(*) FROM site_gate_attempts WHERE site_id=${q(t.siteId)};`),'30');
+});
+test('four actual native requests race for the last quota slot; correct credentials never bypass refusal',async()=>{
+ await stableQuotaWindow();const t=await nativeGateTenant('native-gate-race');for(let i=0;i<29;i++)assert.equal((await gateVerify(t)).status,200);
+ const results=await Promise.all(Array.from({length:4},()=>gateVerify(t)));assert.deepEqual(results.map(r=>r.status).sort(),[200,429,429,429]);assert.equal(owned.psql(`SELECT count(*) FROM site_gate_attempts WHERE site_id=${q(t.siteId)};`),'30');
+ console.info('OWNED_NATIVE_GATE_ADMISSION '+JSON.stringify({race:4,admitted:1,refused:3,correctPasswordCannotBypass:true}));
+});

@@ -603,7 +603,7 @@ storeAccessRouter.put('/', async (c) => {
     }
 
     const accessPasswordHash = parsed.data.password
-        ? await hashStoreAccessPassword(parsed.data.password)
+        ? await hashStoreAccessPassword(parsed.data.password, { signal: c.req.raw.signal })
         : parsed.data.access_mode === 'password'
             ? undefined
             : null;
