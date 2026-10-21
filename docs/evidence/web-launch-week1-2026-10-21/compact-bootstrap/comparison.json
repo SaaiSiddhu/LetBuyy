@@ -1,0 +1,44 @@
+{
+  "before": "a92763b7 verified read-performance final9sample fixture",
+  "afterTestSource": "7923c73a native run; application sources unchanged during execution",
+  "result": "Payload reduction observed; useful DOM timings slower. SQL authorization remains unresolved; no speed/SLA/hosted claim.",
+  "limits": "Local small synthetic one-product/two-variant/26-collection population; native Worker/owned PostgreSQL; SQL fallback occurs. No large-store or field-network acceptance.",
+  "rows": [
+    {
+      "page": "home",
+      "nBefore": 3,
+      "nAfter": 3,
+      "readsBefore": 8,
+      "readsAfter": 8,
+      "bytesBefore": 689479,
+      "bytesAfter": 148457,
+      "bodyReductionPercent": 78.47,
+      "usefulReadyBeforeMs": 319.48,
+      "usefulReadyAfterMs": 380.68
+    },
+    {
+      "page": "product",
+      "nBefore": 3,
+      "nAfter": 3,
+      "readsBefore": 7,
+      "readsAfter": 7,
+      "bytesBefore": 686649,
+      "bytesAfter": 145627,
+      "bodyReductionPercent": 78.79,
+      "usefulReadyBeforeMs": 248.48,
+      "usefulReadyAfterMs": 282.78
+    },
+    {
+      "page": "collection-index",
+      "nBefore": 3,
+      "nAfter": 3,
+      "readsBefore": 7,
+      "readsAfter": 7,
+      "bytesBefore": 686892,
+      "bytesAfter": 145870,
+      "bodyReductionPercent": 78.76,
+      "usefulReadyBeforeMs": 274.86,
+      "usefulReadyAfterMs": 351.99
+    }
+  ]
+}

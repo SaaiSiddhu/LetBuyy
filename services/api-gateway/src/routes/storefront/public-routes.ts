@@ -16,7 +16,7 @@ import { registerStorefrontMarketplaceFeedRoutes, type StorefrontMarketplaceFeed
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
-import { mapPublicStorePayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
+import { mapPublicStorePayload, mapPublicStoreRenderPayload, normalizeStorefrontHandle, type PublishedStoreRecord, type StorefrontSiteRecord, type StorefrontThemeReleaseRecord } from '@letbuyy/tenant-core';
 import { StorefrontAnalyticsBeaconSchema, type StorefrontAnalyticsBeacon } from '@letbuyy/shared-types';
 import type { AppBlockInstance } from '@letbuyy/shared-types';
 
@@ -194,11 +194,13 @@ type ThemeEditorDraftRow = {
     auto_saved_at: string | null;
 };
 
+export type StorefrontThemeReleaseReadOptions = { releaseId?: string | null; releaseVersion?: number | null; projection?: 'render-v1' };
+
 type StorefrontPublicRouteDependencies = StorefrontMarketplaceFeedDependencies & {
     loadSiteByHandle: (c: AppContext, handle: string, options: { publishedOnly: boolean }) => Promise<StorefrontSiteRecord | null>;
     loadPublishedStore: (c: AppContext, subdomain: string) => Promise<PublishedStoreRecord | null>;
     loadPublishedStoreById: (c: AppContext, storeId: string) => Promise<PublishedStoreRecord | null>;
-    loadCurrentThemeRelease: (c: AppContext, storeId: string) => Promise<StorefrontThemeReleaseRecord | null>;
+    loadCurrentThemeRelease: (c: AppContext, storeId: string, options?: StorefrontThemeReleaseReadOptions) => Promise<StorefrontThemeReleaseRecord | null>;
     loadPublicStorefrontAppBlocks: (c: AppContext, storeId: string) => Promise<AppBlockInstance[]>;
     listPublicProductReviews: (c: AppContext) => Promise<Response>;
     queryPublicProducts: (c: AppContext, storeId: string, options: PublicProductQueryOptions) => Promise<PublicProductQueryResult>;
@@ -454,7 +456,7 @@ export function registerStorefrontPublicRoutes(
 
         const store = data as unknown as StorefrontSiteRecord;
         const [release, appBlocks] = await Promise.all([
-            loadCurrentThemeRelease(c, store.id),
+            loadCurrentThemeRelease(c, store.id, { releaseId: store.current_theme_release_id, releaseVersion: store.storefront_release_version }),
             loadPublicStorefrontAppBlocks(c, store.id),
         ]);
         return c.json(success({
@@ -701,30 +703,34 @@ export function registerStorefrontPublicRoutes(
         }));
     });
 
-    // GET /storefront/:subdomain — Public published store data and immutable current release
+    // Public/default mobile shape remains stable; web explicitly requests render-v1.
     router.get('/:subdomain', async (c) => {
+        const params = new URL(c.req.url).searchParams;
+        const projection = params.get('projection');
+        if ((projection !== null && projection !== 'render-v1') || params.getAll('projection').length > 1
+            || (projection && [...params.keys()].some(key => key !== 'projection'))) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unsupported storefront projection' } }, 400);
+        }
         const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
-        return cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
-            const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
-            if (!store) {
-                return {
-                    status: 404,
-                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
-                };
-            }
-
+        // A cache hit must never skip the current publication/visibility fence.
+        const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+        if (!store || store.published === false) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+        const snapshot = await sha256Hex(JSON.stringify(store));
+        const reply = await cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle, snapshot), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
             const [release, appBlocks] = await Promise.all([
-                loadCurrentThemeRelease(c, store.id),
+                loadCurrentThemeRelease(c, store.id, { releaseId: store.current_theme_release_id, releaseVersion: store.storefront_release_version, ...(projection ? { projection } : {}) }),
                 loadPublicStorefrontAppBlocks(c, store.id),
             ]);
             return {
-                body: success({
-                    ...mapPublicStorePayload(store, release),
-                    app_blocks: appBlocks,
-                }),
+                body: success({ ...(projection ? mapPublicStoreRenderPayload(store, release) : mapPublicStorePayload(store, release)), app_blocks: appBlocks }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:bootstrap', 'storefront:theme'),
             };
-        });
+        }, { bypassCache: !store.current_theme_release_id });
+        // Internal Cache API entries are content-keyed. Downstream caches must not
+        // bypass the live site check; no cross-request private reuse is introduced.
+        const headers = new Headers(reply.headers);
+        headers.set('Cache-Control', 'no-store');
+        return new Response(reply.body, { status: reply.status, headers });
     });
 
     // GET /storefront/:subdomain/status — Public limited status data for gated storefront routing.

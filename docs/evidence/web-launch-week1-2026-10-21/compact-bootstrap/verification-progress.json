@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-21",
+  "phase": "WEB-LAUNCH-W1-COMPACT-BOOTSTRAP",
+  "status": "IN_PROGRESS_SQL_AUTHORIZATION_DEFECT_REPRODUCED",
+  "testedSource": "65f3657f backend;7923c73a native fixture",
+  "gatewayUnit": {
+    "pass": 1608,
+    "fail": 0
+  },
+  "inventory": {
+    "pass": 14,
+    "fail": 0
+  },
+  "gatewayTypes": "PASS",
+  "ownedBackend": {
+    "projection": {
+      "pass": 6,
+      "fail": 1,
+      "tests": 7,
+      "run": "ba97ecff350b"
+    },
+    "collectionRegression": {
+      "pass": 4,
+      "fail": 0,
+      "run": "5cf8edd6b902"
+    },
+    "cleanup": "no remaining containers/networks/volumes"
+  },
+  "sqlObservation": {
+    "principal": "authenticator",
+    "hasThemeReleaseSelect": false,
+    "actualReadErrorCode": "42501",
+    "noRestFallbackAssertion": "FAIL \u2014 retained"
+  },
+  "correction": "The formerly failing pooled no-REST-fallback case is now passing through migration370 fixed-shape readers; direct table42501 remains intentional. Earlier failed-run facts below are preserved.",
+  "native": {
+    "run": "19542a07efc6",
+    "pass": 1,
+    "fail": 0,
+    "journey": "Normal signup/onboarding/product/exactR2image/two variants/26collections/private preview/ten preset publications/search/COD/buyer CRUD/stale-account/order privacy/merchant readback",
+    "cache": "Actual native Cache API HIT for default and compact shapes; correct release/config after each normal publication; warmed unpublished404; legacy response browser compatibility",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "sourceSyncedDevelop": "8f415c0f6244dbef4f8e284d9152e509f35b0a30",
+  "laterLocalChangesPushed": false,
+  "accepted": false,
+  "week1Complete": false,
+  "fourWeekGoal": "ACTIVE",
+  "commerceUnit": {
+    "pass": 1263,
+    "fail": 0,
+    "skip": 0
+  },
+  "retainedFailures": [
+    "First native run passed profiles then failed new test JSON decoding; corrected row_to_json and rerun whole journey passed.",
+    "Offline/incorrect-filter or pre-execution output-path errors are excluded from test acceptance.",
+    "Compact SQL no-fallback assertion remains red: actual restricted transport permission42501."
+  ],
+  "canonical": {
+    "source": "0e40befa",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "advisories": [],
+    "firstFailure": "First gate113PASS/1FAIL because handoff merge retained two branch rows; duplicate removed, direct validator and entire isolated gate rerun pass.",
+    "meaning": "Static/repository gate only. The separate real SQL authorization test still fails; phase not accepted."
+  },
+  "next": "Extend existing contract/claim for a narrow canonical backend-only public SQL reader with guarded migration/rollback, preserving existing public/private/mobile contracts; prove restricted transport SQL success and authorization/refusal without broadening table grants. Broader password/offline API privacy remains separately unproven.",
+  "supersededBy": "sql-repair-progress.json"
+}

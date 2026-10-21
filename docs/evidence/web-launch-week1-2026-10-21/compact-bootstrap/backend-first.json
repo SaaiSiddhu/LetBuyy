@@ -1,0 +1,83 @@
+{
+  "runId": "023a01413444",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-5556-mvhsxboy-e73849"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 6,
+  "assertionsPassed": 5,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 36.5,
+  "suiteSeconds": 32.9,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-bootstrap-projection.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-5556-mvhsxboy-e73849",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 6,
+      "pass": 5,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 32.9,
+      "firstFailure": "not ok 1 - compact/default SQL and REST representations agree on the pinned publication without ",
+      "failures": [
+        "not ok 1 - compact/default SQL and REST representations agree on the pinned publication without duplicate artifacts or draft fallback"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_bootstrap_projection_postgres",
+      "templateSeconds": 24.5,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-023a01413444-rest-1",
+        "upstreamPort": 54861,
+        "proxyPort": 54862
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 142,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

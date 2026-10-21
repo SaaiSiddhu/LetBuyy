@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-21",
+  "scope": "Research and source observation only; not a hosted proof or configuration change",
+  "observedSource": {
+    "adapter": "packages/infrastructure/pooled-sql-adapter/index.ts",
+    "clientPrepare": false,
+    "driver": "postgres3.4.9 locked",
+    "unsafeDefault": "installed postgres/src/index.js:119-126 sets query prepare:false independently of client defaults",
+    "configuredTargets": "Gateway has staging/production HYPERDRIVE bindings; current owned native fixture uses a direct owned DATABASE_URL, not the managed Hyperdrive service"
+  },
+  "primarySources": [
+    {
+      "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/postgres-drivers-and-libraries/postgres-js/",
+      "checked": "2026-10-21",
+      "pageUpdated": "2026-10-01",
+      "finding": "Cloudflare warns against prepare:false with Postgres.js transaction pooling; unsafe query generators may override it. Installed version meets documented minimum; no dependency upgrade is established as necessary."
+    },
+    {
+      "url": "https://developers.cloudflare.com/hyperdrive/concepts/query-caching/",
+      "checked": "2026-10-21",
+      "pageUpdated": "2026-07-05",
+      "finding": "Eligible SELECT caching is on by default, writes do not invalidate prior matching cached reads, and freshness-critical populations need a supported cache-disabled path. Do not rely on SQL comments or infer managed behavior from direct local wire tests."
+    }
+  ],
+  "nextRepair": "Bounded canonical adapter/query execution mode repair: distinguish direct/Supavisor and Hyperdrive targets, include actual protocol mode in client reuse identity, preserve invocation ownership and transaction/GUC semantics. Prove parameterized unsafe statements and transactions at actual driver level and native Worker; separately verify managed configuration/freshness before hosted acceptance. Do not merely flip the constructor flag and assume unsafe() changed.",
+  "changedDriver": false,
+  "changedHostedConfiguration": false,
+  "stagingReadOnlyMetadataAttempt": {
+    "rawLogPrivate": true,
+    "apiTokenRequired": true,
+    "authorizationError": false,
+    "apiResultObserved": false
+  }
+}

@@ -586,6 +586,71 @@ export function mapPublicStorePayload(
   };
 }
 
+/** Web render representation; the default public/mobile payload remains unchanged. */
+export type PublicStorefrontRenderRelease = Pick<PublicStorefrontThemeRelease,
+  'id' | 'theme_id' | 'theme_instance_id' | 'theme_package_version_id' | 'release_version'
+  | 'release_manifest' | 'schema_manifest_version' | 'engine_version' | 'published_at'>;
+export type PublicStorefrontRenderPayload = Omit<PublicStorefrontPayload, 'current_theme_release' | 'template_config'> & {
+  projection: 'render-v1';
+  template_config: Record<string, unknown>;
+  current_theme_release: PublicStorefrontRenderRelease | null;
+};
+
+function publicThemeRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+// JSONB object key order is not meaningful. Arrays remain ordered. A conservative
+// depth cap only declines deduplication; it never deletes an uncertain fallback.
+function samePublicThemeJson(left: unknown, right: unknown, depth = 0): boolean {
+  if (left === right) return true;
+  if (depth > 64 || left === null || right === null || typeof left !== 'object' || typeof right !== 'object') return false;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left) && Array.isArray(right) && left.length === right.length
+      && left.every((value, index) => samePublicThemeJson(value, right[index], depth + 1));
+  }
+  const keys = Object.keys(left);
+  return keys.length === Object.keys(right).length && keys.every(key =>
+    Object.prototype.hasOwnProperty.call(right, key)
+    && samePublicThemeJson((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key], depth + 1));
+}
+
+export function mapPublicStoreRenderPayload(store: StorefrontSiteRecord, release?: StorefrontThemeReleaseRecord | null): PublicStorefrontRenderPayload {
+  // Exactly the existing web mapper precedence, before its localization/defaults.
+  const snapshot = publicThemeRecord(release?.template_snapshot || release?.release_config);
+  const manifest = { ...publicThemeRecord(release?.release_manifest) };
+  const manifestConfig = publicThemeRecord(manifest.templateConfig);
+  const config = Object.keys(snapshot).length ? snapshot
+    : Object.keys(manifestConfig).length ? manifestConfig : publicThemeRecord(store.template_config);
+  if (samePublicThemeJson(manifest.templateConfig, config)) delete manifest.templateConfig;
+  const earlierBundles: unknown[] = [];
+  if (config.liquidBundle) earlierBundles.push(config.liquidBundle);
+  for (const key of ['liquidBundle', 'themeBundle', 'bundle']) {
+    const candidate = manifest[key];
+    if (!candidate) continue;
+    if (earlierBundles.some(earlier => samePublicThemeJson(earlier, candidate))) delete manifest[key];
+    else earlierBundles.push(candidate);
+  }
+  return {
+    ...store,
+    name: store.name || store.store_name,
+    subdomain: store.subdomain || store.store_name,
+    projection: 'render-v1',
+    template_config: config,
+    current_theme_release: release ? {
+      id: release.id,
+      theme_id: release.theme_id,
+      theme_instance_id: release.theme_instance_id || null,
+      theme_package_version_id: release.theme_package_version_id || null,
+      release_version: release.release_version,
+      release_manifest: manifest,
+      schema_manifest_version: release.schema_manifest_version || '1.0.0',
+      engine_version: release.engine_version || 'legacy',
+      published_at: release.published_at,
+    } : null,
+  };
+}
+
 export interface TenantContext {
   site_id: string;
   subdomain?: string;

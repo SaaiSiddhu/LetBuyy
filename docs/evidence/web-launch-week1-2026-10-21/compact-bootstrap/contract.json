@@ -1,0 +1,42 @@
+{
+  "phase": "WEB-LAUNCH-W1-COMPACT-BOOTSTRAP",
+  "base": "a92763b70f110db1c4d9ed5eb094e48ed40e568a",
+  "outcome": "Reduce oversized published bootstrap transport without losing effective configuration, metadata, renderer fallback, publication consistency, tenant/privacy boundaries or old mobile/API clients. Correct release lookup outage-as-absence behavior and verify the actual native publication/cache/profile path.",
+  "scope": [
+    "packages/tenant-core/src/index.ts and test/index.test.ts: canonical optional render-v1 public projection and JSON-equivalent duplicate alias removal; original default map unchanged",
+    "services/api-gateway/src/routes/storefront.ts/public-routes.ts: opt-in representation validation/cache key, release pointer/tenant/status pinning, bounded SQL and REST selectors and explicit error/absence distinction",
+    "services/api-gateway/src/routes/themes.ts and existing cache helpers/tests only as needed to invalidate both default and compact bootstrap variants for publish/rollback",
+    "packages/typescript/api-client/src/index.ts and existing tests: explicit new compact public reader, existing methods/default response unchanged",
+    "apps/commerce/web/src/lib/store-service.ts: explicit render-v1 config selection and compact public reads; private preview reader unchanged, legacy old-Gateway response still accepted, unknown projection refuses",
+    "Existing owned collection/core browser suites or new registered owned publication suite plus inventory when necessary; source/type/package tests, phase/evidence/programme/branch records"
+  ],
+  "contracts": {
+    "representation": "GET /v1/storefront/:handle?projection=render-v1 opts into one canonical effective raw template_config plus compact release metadata. Default response remains the existing shape. Unknown/duplicate projection and unrecognized compact query inputs refuse before cache/DB. Distinct fallback bundle aliases and all other manifest activation/metadata stay intact; remove only structurally equal earlier candidates.",
+    "selection": "Match current mapper precedence: nonempty record(template_snapshot || release_config), else nonempty manifest.templateConfig, else site.template_config; no demo substitution introduced. Original fallback/localization/appearance/runtime validation remain app-owned.",
+    "release": "Derive release ID/version from the published site record; query matching store and pinned release. A concurrent publication marks the old immutable row superseded (migration366), so a pinned row may be published or superseded but must have a publication timestamp, matching ID/store/version and no deletion. Missing/mismatched/unreadable mandatory release is sanitized unavailable, never mutable-theme fallback. Genuine verified no-release legacy state keeps its existing config fallback. Live store/status lookup must also distinguish a verified missing row from a transport/database failure; no false404 on unreadable dependency. Existing verified legacy/manifest-only configuration fallback precedence remains supported; an unreadable or missing pinned release never authorizes that fallback.",
+    "dataWork": "One store/release/app-block population, fixed projections, no broad search or migration. Compact SQL selects one coalesced snapshot and required manifest/metadata rather than redundant artifact fields; REST selects snapshot and only fetches legacy release_config when needed. Record actual query fields/cardinality and response bytes; do not equate smaller response with eliminated DB IO. The live store record still includes its legacy config because legacy fallback semantics require it; do not claim all DB byte cost is removed. Internal projection cost and remaining store/config overhead must be recorded.",
+    "cache": "Load the live published site before Cache API lookup and refuse explicit published=false. Include a digest of the complete site snapshot (including release pointer/version and appearance/config) in the existing bootstrap cache key, with projection query separating shapes. This prevents in-flight pre-publish producers filling the current key after purge. Legacy rows without a stable release pointer bypass Cache API. External response no-store preserves the live check; internal content-keyed public cache retains its normal bounded TTL. Existing legacy purge paths remain; no KV eventual-consistency dependency added. Prove native default/compact HIT separation, subsequent publication values and warmed unpublished refusal.",
+    "compatibility": "Old SDK/mobile APIs and default payload continue; new SDK may receive old legacy payload from an old Gateway and app retains existing legacy mapping. Unsupported response projection fails closed. Private draft capability/resource endpoints remain full and independently verified.",
+    "verification": "Tenant-core selection/deep JSON equality/key-order/distinct fallback/nonmutation; real Worker/owned PostgreSQL both SQL and REST paths for released/no-release/draft/missing/foreign/mismatched pointer and release outage/recovery; native normal merchant publication and all10presets/variant/image/COD/account lifecycle; previous9-sample profile as baseline, matched final9 samples with bytes/count/error conditions and timing caveats."
+  },
+  "boundaries": [
+    "Single agent",
+    "No merge/push/deploy for new candidate; primary/GitHub remains118209b4",
+    "No shared DB/object mutation or real provider messages/payments",
+    "No mobile app UI changes"
+  ],
+  "worktree": "Native worktree fallback reused after managed tool Not a git repository in this workspace context; prior candidate frozen.",
+  "knownSeparateAcceptance": "Public/private theme draft capabilities stay unchanged. Password/preview_only/offline storefront API authorization across all public catalog routes is a separate existing security surface; do not claim that front-end Proxy gates alone prove direct API privacy.",
+  "sqlAuthorizationRepair": {
+    "reason": "Actual authenticator NOINHERIT transport has no direct theme table SELECT; existing raw SQL falls back with42501. Do not weaken the no-fallback assertion.",
+    "scope": [
+      "migration370 and paired guarded rollback",
+      "Existing site-by-handle ID/full readers and pinned release reader call two fixed-shape public-read routines",
+      "Existing REST public store ID lookups also reject explicit published=false; private capability lookup remains independently scoped",
+      "Owned mounted Worker no-fallback and ACL/definition/rollback tests; native bundled SQL/cache/publication journey"
+    ],
+    "authority": "Backend-only fixed public projection, not merchant authority. No app_tenant GUC from an anonymous parameter; no table grants, role membership, RLS disablement, new login or service-role connection. No public/anon/authenticated/app_tenant/service_role execute grant. Existing trusted authenticator transport receives EXECUTE only on these exact routines; normal Data API role switching cannot inherit it.",
+    "reads": "Site routine handle equality, status published/deleted null/published IS DISTINCT FROM false, fixed full projection or id-only boolean shape. Release routine matching live published site/store, exact optional pinned release ID/version, published/superseded timestamp fence or verified current legacy release; fixed legacy/render-v1 projections only. All selectors bounded to one row, no dynamic SQL/fields/ordering.",
+    "lifecycle": "Serialized atomic migration; guard name/signature, body hash, ABI, owner, search_path and exact ACL before repeat/rollback. Unknown replacement/grant/owner/overload refuses unchanged. Paired rollback retires only the exact owned routines and preserves existing grants/roles/data. Prove actual restricted-role calls and private/foreign refusals; original direct table42501 remains required."
+  }
+}

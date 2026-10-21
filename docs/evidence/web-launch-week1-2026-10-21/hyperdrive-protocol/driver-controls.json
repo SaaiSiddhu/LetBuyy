@@ -1,0 +1,36 @@
+{
+  "positive": {
+    "pass": 4,
+    "fail": 0,
+    "failures": []
+  },
+  "predecessor": {
+    "pass": 2,
+    "fail": 2,
+    "failures": [
+      "Hyperdrive constructor and actual unsafe Query objects select prepared extended protocol, including unsafe overloads",
+      "same endpoint with different transport protocols never reuses one client"
+    ]
+  },
+  "constructorOnlyNegative": {
+    "pass": 2,
+    "fail": 2,
+    "failures": [
+      "Hyperdrive constructor and actual unsafe Query objects select prepared extended protocol, including unsafe overloads",
+      "same endpoint with different transport protocols never reuses one client"
+    ]
+  },
+  "negativeRecipe": {
+    "isolation": "Disposable source copy; final tests with only module import redirected",
+    "adapterReplacement": {
+      "from": "hyperdrive ? preparedHyperdriveClient(sql) : sql",
+      "to": "sql"
+    },
+    "constructorPreparedRemains": true,
+    "sourceSha256": "96af98a1b39b49a9ed3799ef6d6cf0915f2c9c51a76e5af784c6510fee4338fd",
+    "mutantSha256": "5d0a9bfdf943a21e7d6e21fb9a80ac3ca124f455885571c8046e1e074932c75a",
+    "behavioralFailure": "unsafe Query options remain unprepared despite prepared constructor; no assertion was relaxed"
+  },
+  "excludedObservation": "First constructor-only launch lacked the postgres module resolution; no behavior executed. Corrected dependency symlink, preserved log and reran same assertions.",
+  "rawLogs": "Private audit workspace and local temporary logs; ignored .log files deliberately not forced into Git."
+}

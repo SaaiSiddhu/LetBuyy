@@ -2873,6 +2873,23 @@ export type StorefrontStorePayload = Store & JsonRecord & {
   current_theme_release?: ThemeRelease | null;
 };
 
+export type StorefrontRenderRelease = {
+  id: string;
+  theme_id: string;
+  theme_instance_id: string | null;
+  theme_package_version_id: string | null;
+  release_version: number;
+  release_manifest: JsonRecord;
+  schema_manifest_version: string;
+  engine_version: string;
+  published_at: string | null;
+};
+export type StorefrontRenderStorePayload = Omit<StorefrontStorePayload, 'current_theme_release' | 'template_config'> & {
+  projection: 'render-v1';
+  template_config: JsonRecord;
+  current_theme_release: StorefrontRenderRelease | null;
+};
+
 export type StorefrontStoreStatusPayload = Partial<StorefrontStorePayload> & {
   id: string;
   name?: string | null;
@@ -5523,6 +5540,9 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, options),
+    // Old Gateways ignore the query and return the legacy shape during rollout.
+    getRenderStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontRenderStorePayload | StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, { ...options, query: { ...options?.query, projection: 'render-v1' } }),
     checkoutExtensions: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCheckoutExtensionRegistryResponse>(`/storefront/${encodePathSegment(subdomain)}/checkout/extensions`, options),
     status: (subdomain: string, options?: LetbuyyRequestOptions) =>

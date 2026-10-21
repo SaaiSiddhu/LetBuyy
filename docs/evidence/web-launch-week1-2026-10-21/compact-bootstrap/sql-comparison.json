@@ -1,0 +1,38 @@
+{
+  "observation": "Nine local samples after SQL authorization repair; response size remains smaller. Timing medians are observations only, no hosted speed/SLA claim. Direct owned PostgreSQL is not Hyperdrive protocol/cache proof.",
+  "rows": [
+    {
+      "page": "home",
+      "samples": 3,
+      "reads": 8,
+      "bytes": 148454,
+      "usefulReadyMs": 359.37,
+      "beforeCompactBytes": 689479,
+      "beforeCompactUsefulReadyMs": 319.48,
+      "previousFallbackBytes": 148457,
+      "previousFallbackUsefulReadyMs": 380.68
+    },
+    {
+      "page": "product",
+      "samples": 3,
+      "reads": 7,
+      "bytes": 145624,
+      "usefulReadyMs": 303.91,
+      "beforeCompactBytes": 686649,
+      "beforeCompactUsefulReadyMs": 248.48,
+      "previousFallbackBytes": 145627,
+      "previousFallbackUsefulReadyMs": 282.78
+    },
+    {
+      "page": "collection-index",
+      "samples": 3,
+      "reads": 7,
+      "bytes": 145872,
+      "usefulReadyMs": 339.46,
+      "beforeCompactBytes": 686892,
+      "beforeCompactUsefulReadyMs": 274.86,
+      "previousFallbackBytes": 145870,
+      "previousFallbackUsefulReadyMs": 351.99
+    }
+  ]
+}
