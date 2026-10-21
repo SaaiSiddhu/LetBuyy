@@ -8,7 +8,7 @@ import {
   type SectionSchema,
   type ThemeSettingsSchema,
 } from './theme-registry';
-import { LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
+import { localizeThemeTemplateConfig, LiquidThemePackageBundleSchema, type LiquidThemePackageBundle } from './theme-bundle';
 
 export * from './theme-registry';
 export * from './built-in-section-schemas';
@@ -1364,4 +1364,58 @@ export interface PaginatedResult<T> {
   page: number;
   totalPages: number;
   hasMore: boolean;
+}
+
+function themeAppearanceRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+/** Existing storefront presentation precedence, shared with verified checkout.
+ * Template localization/defaults and merchant appearance remain single-sourced.
+ * Custom CSS is deliberately outside this data-only presentation result. */
+export function resolveStorefrontThemePresentation(rawTemplateConfig:Record<string,unknown>,appearanceSettings:Record<string,unknown>,themeId:string,storeLocale:string) {
+    const fallbackTemplateConfig = getDefaultStorefrontThemeTemplate(themeId);
+    const resolvedTemplateConfig: Record<string, unknown> = hasRenderableThemeTemplate(rawTemplateConfig)
+        ? {
+            ...rawTemplateConfig,
+            themeId,
+        }
+        : {
+            ...rawTemplateConfig,
+            ...fallbackTemplateConfig,
+            themeSettings: {
+                ...fallbackTemplateConfig.themeSettings,
+                ...themeAppearanceRecord(rawTemplateConfig.themeSettings),
+            },
+            themeId,
+        };
+    const templateConfig = localizeThemeTemplateConfig(resolvedTemplateConfig, storeLocale);
+    const bundleSettingsData = themeAppearanceRecord(themeAppearanceRecord(templateConfig.config).settings_data);
+    const appearanceOverrides: Record<string, unknown> = {};
+    if (typeof appearanceSettings.primary_color === 'string' && appearanceSettings.primary_color) {
+        appearanceOverrides.primaryColor = appearanceSettings.primary_color;
+    }
+    if (typeof appearanceSettings.font_family === 'string' && appearanceSettings.font_family) {
+        appearanceOverrides.fontFamily = appearanceSettings.font_family;
+        appearanceOverrides.headingFontFamily = appearanceSettings.font_family;
+    }
+    if (appearanceSettings.border_radius !== undefined && appearanceSettings.border_radius !== null && appearanceSettings.border_radius !== '') {
+        const radius = Number(appearanceSettings.border_radius);
+        if (Number.isFinite(radius)) appearanceOverrides.borderRadius = radius;
+    }
+    const themeSettingsRecord = {
+        ...themeAppearanceRecord(bundleSettingsData.current),
+        ...themeAppearanceRecord(templateConfig.themeSettings),
+        ...appearanceOverrides,
+    };
+    const themeSettings: ThemeSettings = {
+        ...DEFAULT_THEME_SETTINGS,
+        ...themeSettingsRecord,
+        primaryColor: themeSettingsRecord.primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
+        secondaryColor: themeSettingsRecord.secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
+        accentColor: themeSettingsRecord.accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
+        fontFamily: themeSettingsRecord.fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
+        borderRadius: themeSettingsRecord.borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
+    };
+
+    return { templateConfig, themeSettings };
 }

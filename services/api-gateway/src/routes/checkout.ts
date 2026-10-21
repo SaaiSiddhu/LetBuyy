@@ -1,3 +1,5 @@
+import { loadCheckoutStorePresentation } from '../lib/checkout-store-presentation';
+import { authorizeHostedStorefrontPurchase } from '../lib/storefront-visitor-access';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
@@ -29,7 +31,7 @@ import { createRazorpayPaymentProvider, fetchRazorpayOrdersByReceipt, fetchRazor
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
-import { ConflictError } from '../lib/errors';
+import { AppError, ConflictError } from '../lib/errors';
 import { checkoutDeliveryOptions } from '../lib/checkout-delivery-options';
 import { listStorefrontShippingRates } from '../lib/storefront-shipping';
 
@@ -47,6 +49,7 @@ type CartRow = {
     channel?: string | null;
     sales_origin?: 'storefront' | 'marketplace' | null;
     status?: string | null;
+    checkout_handoff?: { storefront_admission?: unknown } | null;
 };
 
 type CheckoutSessionRow = {
@@ -82,6 +85,7 @@ export type VerifiedHandoff = {
     cartToken: string;
     channel: string;
     cart: CartRow;
+    signature?: string;
 };
 
 type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'completed' | 'failed';
@@ -90,6 +94,7 @@ type StepTarget = 'contact' | 'delivery' | 'payment_intent' | 'completed' | 'fai
 type HostedCheckoutPaymentProvider = 'razorpay' | 'cod';
 
 const checkoutRouter = new Hono<{ Bindings: Env }>();
+checkoutRouter.use('*',async(c,next)=>{c.header('Cache-Control','no-store');await next();});
 export const publicStoreBrandingRouter = new Hono<{ Bindings: Env }>();
 export const storeBrandingManagementRouter = new Hono<{ Bindings: Env }>();
 
@@ -262,7 +267,7 @@ function paymentIntentId(session: CheckoutSessionRow): string | null {
     return id && id.trim().length > 0 ? id : null;
 }
 
-async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
+async function verifyCheckoutHandoff(c: AppContext, cartId: string, purchase = true): Promise<
     | { ok: true; handoff: VerifiedHandoff }
     | { ok: false; response: Response }
 > {
@@ -292,7 +297,7 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
     const db = getSupabaseAdmin(c);
     const { data: cart, error } = await db
         .from('carts')
-        .select('id, store_id, session_id, items, coupon_code, buyer_email, channel, sales_origin, status')
+        .select('id, store_id, session_id, items, coupon_code, buyer_email, channel, sales_origin, status, checkout_handoff')
         .eq('id', cartId)
         .eq('store_id', siteId)
         .eq('session_id', cartToken)
@@ -333,9 +338,12 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
         return { ok: false, response: invalidHandoff(c) };
     }
 
+    const handoff: VerifiedHandoff = { siteId, cartId, cartToken, channel, cart: cartRow, signature };
+    if (purchase) await authorizeHostedPurchase(c, handoff);
     return {
         ok: true,
         handoff: {
+            signature,
             siteId,
             cartId,
             cartToken,
@@ -343,6 +351,12 @@ async function verifyCheckoutHandoff(c: AppContext, cartId: string): Promise<
             cart: cartRow,
         },
     };
+}
+
+async function authorizeHostedPurchase(c: AppContext, handoff: VerifiedHandoff): Promise<void> {
+    if (handoff.cart.sales_origin !== 'marketplace') {
+        await authorizeHostedStorefrontPurchase(c, handoff.siteId, handoff.cart.checkout_handoff?.storefront_admission, handoff.signature || '');
+    }
 }
 
 async function emitCheckoutEvent(
@@ -373,7 +387,7 @@ async function emitCheckoutEvent(
 }
 
 async function loadSession(db: ReturnType<typeof getSupabaseAdmin>, handoff: VerifiedHandoff): Promise<CheckoutSessionRow | null> {
-    const { data } = await db
+    const { data, error } = await db
         .from('checkout_sessions')
         .select('*')
         .eq('site_id', handoff.siteId)
@@ -381,6 +395,7 @@ async function loadSession(db: ReturnType<typeof getSupabaseAdmin>, handoff: Ver
         .is('deleted_at', null)
         .maybeSingle();
 
+    if (error) throw new AppError('Checkout is temporarily unavailable', 503, 'CHECKOUT_UNAVAILABLE');
     return data as CheckoutSessionRow | null;
 }
 
@@ -516,17 +531,7 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
     if (!verified.ok) return verified.response;
 
     const lines = cartLines(verified.handoff.cart);
-    // Resolves the subdomain the checkout-origin page needs for its "back to store" links and
-    // to reuse the already-proven-reliable getStoreBySubdomain read path, deliberately not the
-    // legacy `GET /storefront/store/:storeId` route (kept for a different, older caller and not
-    // otherwise touched by this phase).
-    const db = getSupabaseAdmin(c);
-    const { data: site } = await db
-        .from('sites')
-        .select('subdomain, name')
-        .eq('id', verified.handoff.siteId)
-        .eq('status', 'published')
-        .maybeSingle();
+    const presentation = await loadCheckoutStorePresentation(c, verified.handoff.siteId);
 
     return c.json(success({
         site_id: verified.handoff.siteId,
@@ -534,7 +539,8 @@ checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
         cart_token: verified.handoff.cartToken,
         channel: verified.handoff.channel,
         coupon_code: typeof verified.handoff.cart.coupon_code === 'string' ? verified.handoff.cart.coupon_code : null,
-        subdomain: (site as { subdomain?: string } | null)?.subdomain || null,
+        subdomain: presentation.subdomain,
+        presentation,
         lines,
     }));
 });
@@ -730,13 +736,19 @@ checkoutRouter.post('/:cartId/delivery', validate('json', CheckoutDeliverySchema
 
 checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentIntentSchema), async (c) => {
     const cartId = c.req.param('cartId');
-    const verified = await verifyCheckoutHandoff(c, cartId);
+    const verified = await verifyCheckoutHandoff(c, cartId, false);
     if (!verified.ok) return verified.response;
     const body = c.get('validatedBody') as JsonRecord & { idempotency_key: string; provider: string; mode: string; tokenize: boolean; metadata: JsonRecord };
 
     if (body.provider !== 'razorpay' && body.provider !== 'cod') {
         return c.json({ success: false, error: { code: 'CHECKOUT_PAYMENT_METHOD_UNSUPPORTED', message: 'Checkout payment method is not supported.' } }, 400);
     }
+
+    const priorSetup = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    const recoveringProviderAttempt = body.provider === 'razorpay'
+        && priorSetup?.payment_intent?.provider === 'razorpay'
+        && typeof priorSetup.payment_intent.order_id === 'string';
+    if (!recoveringProviderAttempt) await authorizeHostedPurchase(c, verified.handoff);
 
     // D08 is still unresolved: marketplace provider eligibility, contracting entity and
     // seller/funds-flow terms have not been accepted. Keep this check ahead of the idempotent
@@ -927,6 +939,9 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
                 };
             }
 
+            // Recovery of an old provider attempt never authorizes a new
+            // provider order if the stored state changed while we were reading.
+            await authorizeHostedPurchase(c, verified.handoff);
             const revalidation = await revalidateConfirmInputs(c, verified.handoff, existing);
             if (!revalidation.ok) {
                 return { body: { success: false, error: { code: 'CHECKOUT_STATE_CONFLICT', message: 'Checkout details are no longer valid. Refresh checkout and try again.' } }, status: 409 };
@@ -1058,7 +1073,7 @@ checkoutRouter.post('/:cartId/payment-intent', validate('json', CheckoutPaymentI
 
 checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema), async (c) => {
     const cartId = c.req.param('cartId');
-    const verified = await verifyCheckoutHandoff(c, cartId);
+    const verified = await verifyCheckoutHandoff(c, cartId, false);
     if (!verified.ok) return verified.response;
     const body = c.get('validatedBody') as JsonRecord & {
         idempotency_key: string;
@@ -1067,6 +1082,18 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
         razorpay_payment_id?: string;
         razorpay_signature?: string;
     };
+
+    // Recover a committed acknowledgement without claiming new work or
+    // applying storefront navigation policy to an existing outcome.
+    const priorReply = await new IdempotencyExecutionAdapter(getSupabaseAdmin(c)).readCompleted({
+        siteId: verified.handoff.siteId, key: body.idempotency_key,
+        scope: `checkout.confirm:${cartId}`, requestBody: body,
+    });
+    if (priorReply) return c.json(priorReply.responseBody as never, priorReply.statusCode as never);
+    const priorSession = await loadSession(getSupabaseAdmin(c), verified.handoff);
+    const recoveringCapture = priorSession?.payment_intent?.provider === 'razorpay'
+        && typeof priorSession.payment_intent.order_id === 'string';
+    if (!recoveringCapture) await authorizeHostedPurchase(c, verified.handoff);
 
     return runIdempotentStep(c, verified.handoff, `checkout.confirm:${cartId}`, body.idempotency_key, body, async () => {
         const existing = await loadSession(getSupabaseAdmin(c), verified.handoff);
@@ -1082,6 +1109,10 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
                 status: 400,
                 resourceId: existing.id,
             };
+        }
+
+        if (orderPlan.provider === 'cod' && recoveringCapture) {
+            await authorizeHostedPurchase(c, verified.handoff);
         }
 
         const requestedPaymentIntentId = stringValue(body.payment_intent_id);

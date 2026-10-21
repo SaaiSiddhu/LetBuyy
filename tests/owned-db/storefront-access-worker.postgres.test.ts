@@ -86,3 +86,14 @@ test('native storefront cart admission uses current policy and refuses stale pas
  const allowed=await send('/cart/'+cartToken,'GET',token);assert.equal(allowed.status,200);assert.equal(allowed.cache,'no-store');
  owned.psql(`UPDATE sites SET access_password_hash=${q(await hashStoreAccessPassword(crypto.randomUUID()))} WHERE id=${q(t.siteId)};`);assert.equal((await send('/cart/'+cartToken,'GET',token)).status,401);
 });
+
+test('native password handoff works without a tenant cookie and retires after current password rotation',async()=>{
+ const t=newSyntheticTenant('native-hosted-pass');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID(),hash=await hashStoreAccessPassword(crypto.randomUUID());
+ owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic native hosted cart','synthetic-native-hosted-cart',100,5,true,'active');UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),gate=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
+ const response=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json','X-LetBuyy-Storefront-Gate':gate},body:JSON.stringify({lines:[{product_id:productId,quantity:1}]})});assert.equal(response.status,201);const cart=await response.json() as {data:{id:string;cart_token:string}};
+ const issued=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart/'+cart.data.cart_token+'/checkout-url',{headers:{'X-LetBuyy-Storefront-Gate':gate}});assert.equal(issued.status,200);const payload=await issued.json() as {data:{checkout_url:string}};
+ const path='/v1/checkout/'+cart.data.id+'/verify-handoff?'+new URL(payload.data.checkout_url).searchParams.toString();
+ const read=await gateway.dispatch(path);assert.equal(read.status,200);assert.equal(read.headers.get('Cache-Control'),'no-store');const display=await read.json() as {data:{presentation:{id:string;themeSettings:{primaryColor:string}}}};assert.equal(display.data.presentation.id,t.siteId);assert.ok(display.data.presentation.themeSettings.primaryColor);
+ owned.psql(`UPDATE sites SET access_password_hash=${q(await hashStoreAccessPassword(crypto.randomUUID()))} WHERE id=${q(t.siteId)};`);const denied=await gateway.dispatch(path);assert.equal(denied.status,401);await denied.arrayBuffer();
+});

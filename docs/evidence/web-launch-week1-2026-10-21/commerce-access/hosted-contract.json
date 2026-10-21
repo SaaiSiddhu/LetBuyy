@@ -9,7 +9,8 @@
     "No preview-read proof may grant purchase authority",
     "Current publication/mode/password revision and host status retire stale handoff purchase access",
     "Separate cryptographic recovery verification from fresh-purchase admission before any new order/provider intent; valid already-bound provider capture and committed idempotent order replies remain recoverable",
-    "Compatible wire fields and shared SDK/mobile APIs; no new auth issuer/runtime/role/schema/dependency planned"
+    "Compatible wire fields and shared SDK/mobile APIs; no new auth issuer/runtime/role/schema/dependency planned",
+    "Required UI wiring: bounded service-local checkout-store-presentation read planner, canonical tenant-core CheckoutStorePresentation type, existing StoreService theme presentation formula extracted into theme-engine; checkout-origin Page uses verified display payload. No full private catalogue/template emitted to marketplace checkout."
   ],
   "verification": [
     "Actual mounted Gateway stale public handoff baseline across password/preview/offline/unpublish; assert data exposure/session/idempotency effects",

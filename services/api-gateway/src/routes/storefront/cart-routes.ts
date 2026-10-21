@@ -1,4 +1,4 @@
-import { authorizeFreshStorefrontPurchase } from '../../lib/storefront-visitor-access';
+import { authorizeFreshStorefrontPurchase, issueHostedStorefrontAdmission } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
@@ -6,7 +6,7 @@ import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { hmacSha256Hex, sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
-import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
+import { normalizeStorefrontHandle, type PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
 import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
@@ -443,11 +443,15 @@ async function createCheckoutHandoff(
         }
     }
 
+    const accessAdmission = cart.sales_origin === 'storefront'
+        ? await issueHostedStorefrontAdmission(c, store.id, signature, Math.floor(Date.parse(expiresAt) / 1000))
+        : null;
     const db = getSupabaseAdmin(c);
-    const { error } = await db
+    const { data: persistedHandoff, error } = await db
         .from('carts')
         .update({
             checkout_handoff: {
+                storefront_admission: accessAdmission,
                 checkout_url: checkoutUrl.toString(),
                 expires_at: expiresAt,
                 signed_at: new Date().toISOString(),
@@ -456,8 +460,10 @@ async function createCheckoutHandoff(
             },
         })
         .eq('store_id', store.id)
-        .eq('id', cart.id);
-    if (error) return c.json(dbFailureBody(), 500);
+        .eq('id', cart.id)
+        .select('id')
+        .maybeSingle();
+    if (error || !persistedHandoff) return c.json({ success: false, error: { code: 'CHECKOUT_UNAVAILABLE', message: 'Secure checkout is temporarily unavailable.' } }, 503);
 
     return c.json(success({
         checkout_url: checkoutUrl.toString(),
@@ -751,7 +757,15 @@ export function registerStorefrontCartRoutes(
     // The marketplace mobile app uses it after resume to distinguish an unsubmitted cart from an
     // order that committed just before the app was closed or lost its response.
     router.get('/:subdomain/cart/:cartToken/checkout-status', async (c) => {
-        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        const handle = normalizeStorefrontHandle(c.req.param('subdomain'));
+        if (!handle) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+        // Recovery returns only the already committed cart/order receipt below.
+        // Store publication/navigation mode cannot erase that independent capability.
+        const resolved = await getSupabaseAdmin(c).from('sites').select('id')
+            .eq('subdomain', handle).is('deleted_at', null).maybeSingle();
+        if (resolved.error) return c.json(dbFailureBody(), 503);
+        const store = resolved.data as PublishedStoreRecord | null;
+        c.header('Cache-Control', 'no-store');
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));

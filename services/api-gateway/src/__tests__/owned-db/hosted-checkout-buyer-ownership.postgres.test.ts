@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { afterEach, before } from 'node:test';
-import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
+import { LETBUYY_BUYER_SESSION_HEADER, LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { normalizeIdempotencyKey, type PaymentCreateIntentInput, type PaymentIntentResult } from '@letbuyy/payments';
 import { hmacSha256Hex } from '../../lib/crypto';
 import { Gateway, gatewayEnv, mintSession, newIdentityKeys, seedBuyerAccount, type IdentityKeys } from './gateway-harness';
@@ -50,7 +50,7 @@ before(async () => {
     `);
     gateway = new Gateway(gatewayEnv(owned, keys, { CHECKOUT_SIGNING_SECRET: SIGNING_SECRET, CHECKOUT_ORIGIN: 'https://checkout.letbuyy.com' }));
 });
-afterEach(async () => { await gateway.settle(); });
+afterEach(async () => { await gateway.settle(); psql(`UPDATE sites SET access_mode='public',published=true WHERE id='${site.siteId}';`); });
 
 function seedCart() {
     const id = crypto.randomUUID();
@@ -202,6 +202,7 @@ test('hosted Razorpay binds a canonical buyer order, waits for capture, and retr
     assert.equal(lostResponse.json?.error?.code, 'CHECKOUT_PROVIDER_ORDER_RECONCILIATION_REQUIRED');
     assert.equal(createCalls, 1);
 
+    psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);
     const mismatched = await hostedCheckoutPost(cart, checkoutUrl, 'payment-intent', {
         idempotency_key: `hosted-razorpay-intent-mismatch-${cart.id}`, provider: 'razorpay', mode: 'sandbox', tokenize: false, metadata: {},
     }, razorpayGateway);
@@ -331,6 +332,7 @@ test('hosted checkout records a late capture once, refuses fulfillment, and pres
     assert.equal(psql(`SELECT available || '|' || reserved || '|' || committed_quantity || '|' || available_quantity || '|' || reserved_quantity
       FROM inventory_levels WHERE store_id='${site.siteId}' AND product_id='${productId}';`), [availableBefore + 1, reservedBefore, committedBefore - 1, availableQuantityBefore, reservedQuantityBefore].join('|'));
 
+    psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);
     const paymentIdempotencyKey = `late-confirm-${cart.id}`;
     const confirmBody = {
         idempotency_key: paymentIdempotencyKey,
@@ -421,12 +423,20 @@ test('an authenticated store-host handoff remains private across the redirect an
     const orderId = await completeCodCheckout(cart, checkoutUrl);
     assert.ok(orderId);
     assert.deepEqual(ownership(orderId), [{ buyer_account_id: buyer.id, site_id: site.siteId, link_basis: 'authenticated_checkout' }]);
+    psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);
     const replay = await gateway.request(`/v1/checkout/${cart.id}/confirm?${new URL(checkoutUrl).searchParams}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idempotency_key: `hosted-confirm-${cart.id}` }),
     });
     assert.equal(replay.status, 200, replay.text);
     assert.equal(replay.json?.data?.order?.id, orderId);
     assert.equal(ownership(orderId).length, 1);
+    const buyerHeaders={[LETBUYY_BUYER_SESSION_HEADER]:await mintSession(keys,buyer.id,{epoch:1})};
+    const history=await gateway.request('/v1/storefront/buyer/orders/'+orderId,{headers:buyerHeaders});assert.equal(history.status,200,history.text);
+    const stranger=seedBuyerAccount(psql,'hosted-history-other');assert.equal((await gateway.request('/v1/storefront/buyer/orders/'+orderId,{headers:{[LETBUYY_BUYER_SESSION_HEADER]:await mintSession(keys,stranger.id,{epoch:1})}})).status,404);
+    const recovery=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}/checkout-status`);
+    assert.equal(recovery.status,200,recovery.text);assert.doesNotMatch(recovery.text,/syn-hosted@|Synthetic Hosted Buyer|Fixture Road|razorpay_signature/);
+    assert.equal((await gateway.request(`/v1/storefront/${otherSite.subdomain}/cart/${cart.token}/checkout-status`)).status,404);
+
 });
 
 test('guest hosted checkout stays unlinked and another store cannot bind the buyer session', async () => {
@@ -503,4 +513,17 @@ test('buyer binding is backend-only and its rollback/reapply preserves checkout 
     assert.equal(psql(`SELECT to_regprocedure('${signature}') IS NOT NULL;`), 't');
     assert.equal(psql(`SELECT count(*) FROM checkout_sessions WHERE site_id='${site.siteId}' AND cart_id='${cart.id}';`), '1');
     assert.deepEqual(ownership(orderId), [{ buyer_account_id: buyer.id, site_id: site.siteId, link_basis: 'authenticated_checkout' }]);
+});
+
+test('current offline policy refuses every new hosted step before claims while public recovery preserves the same checkout intent',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);const url=issued.json!.data.checkout_url;
+ const contact={email:'synthetic-step-access@example.invalid',name:'Synthetic hosted step shopper'};
+ const delivery={shipping_method:'standard',cod_requested:true,shipping_address:{line1:'Fixture Road',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'},shipping_quote:{shipping_rate_id:shippingRateId,expected_shipping_amount:20}};
+ const intent={provider:'cod',mode:'sandbox',tokenize:false,metadata:{}};
+ for(const[step,payload]of [['contact',contact],['delivery',delivery],['payment-intent',intent]] as const){const result=await hostedCheckoutPost(cart,url,step,{...payload,idempotency_key:crypto.randomUUID()});assert.ok(result.status===200||result.status===201,result.text);}
+ const counts=()=>psql(`SELECT jsonb_build_object('claims',(SELECT count(*) FROM idempotency_keys WHERE site_id='${site.siteId}'),'orders',(SELECT count(*) FROM orders WHERE store_id='${site.siteId}'),'sessions',(SELECT count(*) FROM checkout_sessions WHERE site_id='${site.siteId}'))::text;`);
+ const before=counts(),confirmKey=crypto.randomUUID();psql(`UPDATE sites SET access_mode='offline' WHERE id='${site.siteId}';`);
+ for(const[step,payload]of [['contact',contact],['delivery',delivery],['payment-intent',intent],['confirm',{}]] as const){const result=await hostedCheckoutPost(cart,url,step,{...payload,idempotency_key:step==='confirm'?confirmKey:crypto.randomUUID()});assert.equal(result.status,503,result.text);}
+ assert.equal(counts(),before);assert.equal(psql(`SELECT checkout_state FROM checkout_sessions WHERE cart_id='${cart.id}';`),'payment_intent');
+ psql(`UPDATE sites SET access_mode='public' WHERE id='${site.siteId}';`);const recovered=await hostedCheckoutPost(cart,url,'confirm',{idempotency_key:confirmKey});assert.equal(recovered.status,200,recovered.text);
 });

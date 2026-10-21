@@ -12,11 +12,11 @@ import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();let gateways:Record<'sql'|'rest',Gateway>,proxy:OwnedPooledSqlProxy,tap:RestTap;
 const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const key='synthetic-visitor-shared-key-fixture';
-let faultResource='',faultCode='';
+let faultResource='',faultCode='',faultMethod='GET';
 before(async()=>{
  proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();const env={NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,FEATURE_GRAPHQL:'true',STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key};
  gateways={rest:new Gateway(gatewayEnv(owned,keys,env)),sql:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env()}))};
- tap=tapRest(owned.restUrl,async(call,forward)=>call.method==='GET'&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
+ tap=tapRest(owned.restUrl,async(call,forward)=>call.method===faultMethod&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
 });
 after(async()=>{await Promise.all(Object.values(gateways??{}).map(g=>g.settle()));tap?.restore();await closePooledSqlClients();await proxy?.stop();});
 for(const lane of ['sql','rest'] as const){
@@ -189,4 +189,51 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: a valid read-preview li
   assert.equal((await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers,body:JSON.stringify({lines:[]})})).status,401,'read capability cannot create even an empty purchase cart');
  }
  assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)};`),'0');
+});
+
+for(const mode of ['password','preview_only','offline','unpublished'] as const)test(`hosted: issued public handoff stops new access after ${mode}`,async()=>{
+ const gateway=gateways.rest,t=newSyntheticTenant('hosted-'+mode.replace('_','-'));seedSyntheticTenant(owned.psql,t);const id=crypto.randomUUID(),marker='Synthetic hosted private line';
+ owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'synthetic-hosted-private',100,5,true,'active');`);
+ const cart=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:id,quantity:1}]})});assert.equal(cart.status,201,cart.text);
+ const token=cart.json!.data.cart_token,cartId=cart.json!.data.id;
+ const issued=await gateway.request('/v1/storefront/'+t.subdomain+'/cart/'+token+'/checkout-url');assert.equal(issued.status,200,issued.text);
+ const query=new URL(issued.json!.data.checkout_url).searchParams.toString(),base='/v1/checkout/'+cartId;
+ assert.equal((await gateway.request(base+'/verify-handoff?'+query)).status,200);
+ owned.psql(mode==='unpublished'?`UPDATE sites SET published=false WHERE id=${q(t.siteId)};`:`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);
+ const before=owned.psql(`SELECT jsonb_build_object('sessions',(SELECT count(*) FROM checkout_sessions WHERE site_id=${q(t.siteId)}),'claims',(SELECT count(*) FROM idempotency_keys WHERE site_id=${q(t.siteId)}))::text;`);
+ const read=await gateway.request(base+'/verify-handoff?'+query);
+ const contact=await gateway.request(base+'/contact?'+query,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idempotency_key:crypto.randomUUID(),email:'synthetic-hosted-access@example.invalid',name:'Synthetic hosted shopper'})});
+ const after=owned.psql(`SELECT jsonb_build_object('sessions',(SELECT count(*) FROM checkout_sessions WHERE site_id=${q(t.siteId)}),'claims',(SELECT count(*) FROM idempotency_keys WHERE site_id=${q(t.siteId)}))::text;`);
+ const expected=mode==='offline'?503:mode==='unpublished'?404:401;
+ console.info('OWNED_HOSTED_ACCESS_BASELINE '+JSON.stringify({mode,expected,read:read.status,privateLineReturned:read.text.includes(marker),contact:contact.status,before:JSON.parse(before),after:JSON.parse(after)}));
+ assert.equal(read.status,expected,'signed checkout read must honor current store policy');assert.equal(contact.status,expected,'no new session/claim may begin after store refusal');assert.equal(before,after);
+});
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: password handoff carries only server-issued admission and stops after rotation, expiry, mismatch and dependency failure`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-hosted-proof');seedSyntheticTenant(owned.psql,t);const id=crypto.randomUUID();
+ owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},'Synthetic password checkout','synthetic-password-checkout',100,5,true,'active');`);
+ const cart=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:id,quantity:1}]})});assert.equal(cart.status,201,cart.text);
+ const cartId=cart.json!.data.id,cartPath='/v1/storefront/'+t.subdomain+'/cart/'+cart.json!.data.cart_token+'/checkout-url';
+ const publicLink=await gateway.request(cartPath);assert.equal(publicLink.status,200);const oldQuery=new URL(publicLink.json!.data.checkout_url).searchParams.toString();
+ const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),gate=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
+ const issue=()=>gateway.request(cartPath,{headers:{'X-LetBuyy-Storefront-Gate':gate}});
+ const issued=await issue();assert.equal(issued.status,200,issued.text);const query=new URL(issued.json!.data.checkout_url).searchParams.toString();
+ const read=(input=query)=>gateway.request('/v1/checkout/'+cartId+'/verify-handoff?'+input);
+ const display=await read();assert.equal(display.status,200,'hosted origin needs no forwarded tenant cookie');
+ assert.equal(display.json!.data.presentation.id,t.siteId);assert.equal(display.json!.data.presentation.subdomain,t.subdomain);
+ assert.equal('template_config' in display.json!.data.presentation,false);assert.equal('site_settings' in display.json!.data.presentation,false);assert.equal('sections' in display.json!.data.presentation,false);
+ assert.ok(display.json!.data.presentation.themeSettings.primaryColor);
+ assert.equal((await read(oldQuery)).status,401,'old public URL cannot borrow admission from newly issued private URL');
+ const metadata=owned.psql(`SELECT checkout_handoff::text FROM carts WHERE id=${q(cartId)};`);assert.equal(metadata.includes(gate),false);assert.equal(metadata.includes(hash),false);
+ const changed=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_password_hash=${q(changed)} WHERE id=${q(t.siteId)};`);assert.equal((await read()).status,401);owned.psql(`UPDATE sites SET access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ for(const patch of [{signature:'invalid-issued-signature'},{expires_at:Math.floor(Date.now()/1000)-1},{host:'foreign.example.invalid'}]){
+  const value=JSON.parse(metadata);Object.assign(value.storefront_admission,patch);owned.psql(`UPDATE carts SET checkout_handoff=${q(JSON.stringify(value))}::jsonb WHERE id=${q(cartId)};`);assert.equal((await read()).status,401);
+ }
+ owned.psql(`UPDATE carts SET checkout_handoff=${q(metadata)}::jsonb WHERE id=${q(cartId)};`);
+ try{faultResource='sites';faultMethod='GET';assert.equal((await read()).status,503);}finally{faultResource='';faultMethod='GET';}
+ assert.equal((await read()).status,200);
+ try{faultResource='carts';faultMethod='PATCH';assert.equal((await issue()).status,503,'unpersisted admission must never be acknowledged');}finally{faultResource='';faultMethod='GET';}
+ assert.equal(owned.psql(`SELECT checkout_handoff::text FROM carts WHERE id=${q(cartId)};`),metadata);
+ owned.psql(`UPDATE carts SET checkout_handoff='{}'::jsonb WHERE id=${q(cartId)};`);assert.equal((await read()).status,401,'legacy unbound link is not password authority');owned.psql(`UPDATE sites SET access_mode='public' WHERE id=${q(t.siteId)};`);assert.equal((await read()).status,200,'public legacy link remains compatible only while currently public');
 });
