@@ -5,7 +5,7 @@
     "announcement-default": {
       "type": "announcement-bar",
       "settings": {
-        "text": "Free shipping on fresh drops this week.",
+        "text": "Discover our latest products.",
         "linkLabel": "Shop now",
         "linkHref": "/products"
       },

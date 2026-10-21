@@ -13,7 +13,7 @@ import {
   type LiquidThemePackageBundle,
   type ThemeBundleJson,
 } from './theme-bundle';
-import { createLetbuyyCoreLiquidThemeBundleFixture } from './theme-bundle-core';
+import { createLetbuyyCoreLiquidThemeBundleFixture, LETBUYY_CORE_STARTER_ANNOUNCEMENT } from './theme-bundle-core';
 import { BLOCKED_DROP_KEYS } from './theme-renderer';
 
 export interface PortableSectionInstance {
@@ -396,8 +396,20 @@ function projectExistingLiquidBundle(
   if (base.package.slug === 'letbuyy-core-liquid') {
     const global = templates.header?.sections['announcement-default'];
     const index = templates.index, duplicate = index?.sections['announcement-default'];
+    // The frozen portable registry still emits the former Core default. Retire
+    // only that complete unchanged instance when the new header owns the message;
+    // a merchant-edited text/link/style must remain visible and editable.
+    const oldDefault: Record<string, unknown> = {
+      text: 'Free shipping on fresh drops this week.', linkLabel: 'Shop now', linkHref: '/products',
+      alignment: 'center', backgroundColor: '#0F172A', textColor: '#FFFFFF', visibleOnMobile: true,
+    };
+    const unchangedOldDefault = duplicate && global?.settings.text === LETBUYY_CORE_STARTER_ANNOUNCEMENT
+      && Object.keys(duplicate.settings).length === Object.keys(oldDefault).length
+      && Object.entries(oldDefault).every(([key, value]) => duplicate.settings[key] === value)
+      && !duplicate.disabled && Object.keys(duplicate.blocks || {}).length === 0;
     if (global?.type === 'announcement-bar' && duplicate?.type === 'announcement-bar'
-        && global.settings.text === duplicate.settings.text && global.settings.linkHref === duplicate.settings.linkHref) {
+        && ((global.settings.text === duplicate.settings.text && global.settings.linkHref === duplicate.settings.linkHref)
+          || unchangedOldDefault)) {
       const sections = { ...index.sections }; delete sections['announcement-default'];
       templates.index = { ...index, sections, order: index.order.filter(id => id !== 'announcement-default') };
     }

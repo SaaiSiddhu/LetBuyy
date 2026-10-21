@@ -26,6 +26,8 @@ test('explicit Core web creation stores a validated Liquid document and replays 
  const config=JSON.parse(owned.psql(`SELECT template_config::text FROM sites WHERE id='${siteId}';`));
  assert.equal(config.liquidBundle?.package?.slug,'letbuyy-core-liquid','the new store must use the actual catalog Liquid package');
  assert.equal(Object.keys(config.liquidBundle.config.settings_data.presets).length,10);
+ assert.equal(config.liquidBundle.templates.header.sections['announcement-default'].settings.text,'Discover our latest products.');
+ assert.doesNotMatch(JSON.stringify(config.liquidBundle),/Free shipping on fresh drops this week\./);
  assert.equal(config.survey.industry,'food');assert.equal(config.themeId,'letbuyy-core');
  assert.equal(owned.psql(`SELECT status FROM sites WHERE id='${siteId}';`),'draft');
  const replay=await r.replay();assert.equal(replay.status,201);assert.equal(replay.json?.data?.id,siteId);
@@ -138,4 +140,28 @@ test('public catalog and canonical cart retain option names, variant identity an
  const foreignVariant=owned.psql(`SELECT id FROM product_variants WHERE product_id='${foreignProduct.json?.data?.id}';`);
  assert.equal((await cart(foreignVariant)).status,400,'an existing variant from another tenant cannot be attached to this product');
  }finally{await f.gateway.settle();}
+});
+
+
+test('Core starter copy patch is catalog-only, owner-safe, idempotent and reversible',()=>{
+ const forward=readFileSync('database/supabase/migrations/367_core_starter_announcement.sql','utf8');
+ const rollback=readFileSync('database/supabase/rollback/367_core_starter_announcement.rollback.sql','utf8');
+ const core=()=>owned.psql("SELECT default_template::text FROM themes WHERE slug='letbuyy-core';");
+ const sites=()=>owned.psql("SELECT coalesce(json_agg(to_jsonb(s) ORDER BY id),'[]'::json)::text FROM sites s;");
+ const releases=()=>owned.psql("SELECT coalesce(json_agg(to_jsonb(r) ORDER BY id),'[]'::json)::text FROM theme_releases r;");
+ const before=core(),oldSites=sites(),oldReleases=releases();
+ try{
+  owned.psql(rollback);assert.match(core(),/Free shipping on fresh drops this week\./);
+  const legacy=core();owned.psql(rollback);assert.equal(core(),legacy);
+  owned.psql("UPDATE themes SET is_site_private=true WHERE slug='letbuyy-core';");
+  owned.psql(forward);assert.equal(core(),legacy,'private catalog is not rewritten');
+  owned.psql("UPDATE themes SET is_site_private=false WHERE slug='letbuyy-core';");
+  owned.psql(forward);assert.equal(core(),before,'only intended copy changes, exact bundle is conserved');
+  owned.psql(forward);assert.equal(core(),before,'repeated application is harmless');
+  assert.equal(sites(),oldSites,'existing merchant drafts are unchanged');
+  assert.equal(releases(),oldReleases,'published snapshots are unchanged');
+  const custom=before.replaceAll('Discover our latest products.','Merchant-defined announcement');
+  owned.psql(`UPDATE themes SET default_template='${custom.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);
+  owned.psql(rollback);owned.psql(forward);assert.equal(core(),custom,'unrecognized custom copy is retained');
+ }finally{owned.psql(`UPDATE themes SET is_site_private=false,default_template='${before.replaceAll("'","''")}'::jsonb WHERE slug='letbuyy-core';`);}
 });

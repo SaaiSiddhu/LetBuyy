@@ -254,7 +254,7 @@
         "announcement-default": {
           "type": "announcement-bar",
           "settings": {
-            "text": "Free shipping on fresh drops this week.",
+            "text": "Discover our latest products.",
             "linkLabel": "Shop now",
             "linkHref": "/products"
           },
@@ -1393,7 +1393,7 @@
     },
     "announcement-bar": {
       "path": "sections/announcement-bar.liquid",
-      "source": "<section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-announcement-bar__inner\">\n    <span>{{ section.settings.text }}</span>\n    {% if section.settings.linkLabel %}<a href=\"{{ section.settings.linkHref | store_url }}\">{{ section.settings.linkLabel }}</a>{% endif %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Announcement Bar\",\n  \"settings\": [\n    { \"id\": \"text\", \"type\": \"text\", \"label\": \"Message\", \"default\": \"Free shipping on fresh drops this week.\" },\n    { \"id\": \"linkLabel\", \"type\": \"text\", \"label\": \"Link label\", \"default\": \"Shop now\" },\n    { \"id\": \"linkHref\", \"type\": \"url\", \"label\": \"Link URL\", \"default\": \"/products\" }\n  ],\n  \"presets\": [{ \"name\": \"Announcement Bar\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-announcement-bar__inner\">\n    <span>{{ section.settings.text }}</span>\n    {% if section.settings.linkLabel %}<a href=\"{{ section.settings.linkHref | store_url }}\">{{ section.settings.linkLabel }}</a>{% endif %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Announcement Bar\",\n  \"settings\": [\n    { \"id\": \"text\", \"type\": \"text\", \"label\": \"Message\", \"default\": \"Discover our latest products.\" },\n    { \"id\": \"linkLabel\", \"type\": \"text\", \"label\": \"Link label\", \"default\": \"Shop now\" },\n    { \"id\": \"linkHref\", \"type\": \"url\", \"label\": \"Link URL\", \"default\": \"/products\" }\n  ],\n  \"presets\": [{ \"name\": \"Announcement Bar\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Announcement Bar",
         "tag": "section",
@@ -1401,7 +1401,7 @@
           {
             "type": "text",
             "label": "Message",
-            "default": "Free shipping on fresh drops this week.",
+            "default": "Discover our latest products.",
             "id": "text"
           },
           {

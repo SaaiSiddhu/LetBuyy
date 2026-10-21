@@ -58,3 +58,15 @@ test('older captured Core instances obtain omitted CTA defaults from their own s
  assert.equal(result.bundle.templates.index.sections['featured-collection-default'].settings.viewAllLabel,'View collection');
  assert.equal(result.bundle.templates.index.sections['featured-collection-default'].settings.viewAllHref,'/products');
 });
+
+
+test('new Core announcement retires only the unchanged frozen duplicate, preserving merchant copy and styles',()=>{
+ for(const [key,value] of [['text','Merchant delivery offer'],['linkHref','/shipping'],['backgroundColor','#123456']]){
+  const input=getDefaultStorefrontThemeTemplate('letbuyy-core',{});
+  const announcement=input.sections.template.find(section=>section.id==='announcement-default')!;
+  announcement.settings[key]=value;
+  const result=compilePortableToLiquidBundle(input,{baseBundle:base});
+  assert.equal(result.bundle.templates.index.sections['announcement-default'].settings[key],value);
+  assert.equal(announcement.settings[key],value,'input is never rewritten');
+ }
+});

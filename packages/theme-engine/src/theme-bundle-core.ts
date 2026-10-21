@@ -3,7 +3,7 @@
 // ----------------------------------------------------------------------------
 // LetBuyy ships ONE first-party Core theme. Internally it was authored as
 // "Urban Kicks". This module introduces the canonical `letbuyy-core` identity
-// and a neutral-branded bundle fixture, WITHOUT renaming or removing the Urban
+// and a neutral-branded bundle fixture with honest starter copy, WITHOUT renaming or removing the Urban
 // Kicks fixture (which existing stores, the persisted `themes` row with
 // slug='urban-kicks', and the first-party-liquid-portability governance test all
 // still depend on). It is purely ADDITIVE:
@@ -30,6 +30,7 @@ import {
 
 /** Canonical first-party theme catalog slug (merchant-never-sees-this; "Experience" is the UX term). */
 export const LETBUYY_CORE_THEME_SLUG = 'letbuyy-core';
+export const LETBUYY_CORE_STARTER_ANNOUNCEMENT = 'Discover our latest products.';
 /** Canonical Liquid bundle slug for the Core theme (parallels 'urban-kicks-liquid'). */
 export const LETBUYY_CORE_BUNDLE_SLUG = 'letbuyy-core-liquid';
 /** Retained legacy alias — existing stores persist sites.theme_id='urban-kicks'; never break them. */
@@ -66,7 +67,7 @@ export function isLetbuyyCoreThemeSlug(slug: string): boolean {
  */
 export function createLetbuyyCoreLiquidThemeBundleFixture(): LiquidThemePackageBundle {
   const base = createUrbanKicksLiquidThemeBundleFixture();
-  // Branding-only token replacement on a structural clone. Order matters: the more specific
+  // Branding and starter-copy replacements on a structural clone. Order matters: the more specific
   // 'urban-kicks-liquid' first, then 'urban-kicks', then the display name. These tokens only
   // appear in branding strings (slug, package name, <title> suffix, body class, storeName
   // defaults), never in structural keys or Liquid control flow.
@@ -77,10 +78,13 @@ export function createLetbuyyCoreLiquidThemeBundleFixture(): LiquidThemePackageB
       // The spotlight app-block's extension_handle is 'urban-offer', not 'urban-kicks', so it survived
       // the slug replacements above and shipped demo branding into the neutral Core bundle.
       .split('urban-offer').join('letbuyy-core-offer')
-      .split('Urban Kicks').join('LetBuyy Core'),
+      .split('Urban Kicks').join('LetBuyy Core')
+      // The starter theme cannot promise a shipping offer the merchant has not configured.
+      // Keep schema defaults, embedded Liquid schema and header instance consistent.
+      .split('Free shipping on fresh drops this week.').join(LETBUYY_CORE_STARTER_ANNOUNCEMENT),
   ) as LiquidThemePackageBundle;
   cloned.package.slug = LETBUYY_CORE_BUNDLE_SLUG;
   cloned.package.name = 'LetBuyy Core';
-  // Re-validate: a branding-only transform must still produce a schema-valid bundle.
+  // Re-validate: branding and copy changes must still produce a schema-valid bundle.
   return LiquidThemePackageBundleSchema.parse(cloned);
 }
