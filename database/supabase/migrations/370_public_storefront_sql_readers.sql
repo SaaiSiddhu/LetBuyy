@@ -6,8 +6,8 @@ SELECT pg_advisory_xact_lock(hashtextextended('migration370:public-storefront-sq
 DO $guard$
 DECLARE target oid := to_regprocedure('public.read_published_storefront_site_v1(text,boolean)');
 BEGIN
- IF (SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-     WHERE n.nspname='public' AND p.proname='read_published_storefront_site_v1') > CASE WHEN target IS NULL THEN 0 ELSE 1 END THEN
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+     WHERE n.nspname='public' AND p.proname='read_published_storefront_site_v1' AND p.oid IS DISTINCT FROM target) THEN
   RAISE EXCEPTION 'Migration370 refuses an unexpected public reader overload';
  END IF;
  IF target IS NULL THEN RETURN; END IF;
@@ -31,8 +31,8 @@ END $guard$;
 DO $guard$
 DECLARE target oid := to_regprocedure('public.read_published_storefront_release_v1(uuid,uuid,integer,text)');
 BEGIN
- IF (SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-     WHERE n.nspname='public' AND p.proname='read_published_storefront_release_v1') > CASE WHEN target IS NULL THEN 0 ELSE 1 END THEN
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+     WHERE n.nspname='public' AND p.proname='read_published_storefront_release_v1' AND p.oid IS DISTINCT FROM target) THEN
   RAISE EXCEPTION 'Migration370 refuses an unexpected public reader overload';
  END IF;
  IF target IS NULL THEN RETURN; END IF;
@@ -92,8 +92,8 @@ GRANT EXECUTE ON FUNCTION public.read_published_storefront_release_v1(uuid,uuid,
 DO $guard$
 DECLARE target oid := to_regprocedure('public.read_published_storefront_site_v1(text,boolean)');
 BEGIN
- IF (SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-     WHERE n.nspname='public' AND p.proname='read_published_storefront_site_v1') > CASE WHEN target IS NULL THEN 0 ELSE 1 END THEN
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+     WHERE n.nspname='public' AND p.proname='read_published_storefront_site_v1' AND p.oid IS DISTINCT FROM target) THEN
   RAISE EXCEPTION 'Migration370 refuses an unexpected public reader overload';
  END IF;
  IF target IS NULL THEN RAISE EXCEPTION 'Migration370 reader is missing'; END IF;
@@ -117,8 +117,8 @@ END $guard$;
 DO $guard$
 DECLARE target oid := to_regprocedure('public.read_published_storefront_release_v1(uuid,uuid,integer,text)');
 BEGIN
- IF (SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-     WHERE n.nspname='public' AND p.proname='read_published_storefront_release_v1') > CASE WHEN target IS NULL THEN 0 ELSE 1 END THEN
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+     WHERE n.nspname='public' AND p.proname='read_published_storefront_release_v1' AND p.oid IS DISTINCT FROM target) THEN
   RAISE EXCEPTION 'Migration370 refuses an unexpected public reader overload';
  END IF;
  IF target IS NULL THEN RAISE EXCEPTION 'Migration370 reader is missing'; END IF;

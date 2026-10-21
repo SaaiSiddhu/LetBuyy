@@ -55,6 +55,8 @@ function matchesExpression(row: Row, column: string, expression: string): { ok: 
         return { ok: String(value) === operand };
     }
     if (operator === 'is') return { ok: operand === 'null' ? value === null || value === undefined : false };
+    // Exact PostgREST boolean predicate: NULL also satisfies IS NOT FALSE.
+    if (operator === 'not' && operand === 'is.false') return { ok: value !== false };
     if (operator === 'ilike') {
         const pattern = operand
             .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
