@@ -23,5 +23,6 @@
     "No merge/push/deploy beyond completed prior handoff",
     "Preserve mobile/shared API response shapes and canonical buyer/merchant/operator realms"
   ],
-  "next": "After resource acceptance, audit/fix fresh cart/order eligibility and independent marketplace/buyer-history channels; whole Week1/programme remains active."
+  "next": "After resource acceptance, audit/fix fresh cart/order eligibility and independent marketplace/buyer-history channels; whole Week1/programme remains active.",
+  "sourceSyncAuthorization": "Owner explicitly authorized committing all current work, merging develop and pushing GitHub in the current request. Source sync only; no deployment, hosted migration or provider effects."
 }

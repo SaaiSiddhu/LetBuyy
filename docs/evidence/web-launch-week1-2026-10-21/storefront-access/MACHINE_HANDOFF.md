@@ -21,3 +21,7 @@ Auth-core tests passed30. Gateway/Commerce types passed before the latest small 
 371 and its paired rollback are source only. Do not apply them to a restored or hosted database as a side effect of pulling this branch. Older untyped storefront cookies/links require deliberate re-unlock/reissue during a coordinated rollout; no identity JWT issuer changed. Week1 and the four-week programme remain open. Razorpay account login is owner-deferred.
 
 Pull this branch in a separate checkout with `git fetch origin` then `git switch --track origin/letbuyy/week1-storefront-access`. Never reset another machine's local work. Keep environment files, backups, uploaded objects and sessions out of Git.
+
+## Superseding source-sync continuation
+
+The earlier unfinished-state description above is historical. Catalogue/normal visitor lifecycle now has local acceptance at b49e7b3a, recorded in acceptance.json and CONTINUITY.md. Password admission is implemented at b27a9838 with31 owned and1620 Gateway checks passing; see ../password-admission. The owner renewed commit/merge/push authorization for the current machine transfer. Read the latest github-sync handoff for the integrated SHA and actual final checks; no hosted acceptance is implied.

@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Catalogue read/current visitor lifecycle locally verified onb49e7b3a: final full native browser527d4c97b786PASS, current backend/native23PASS, compatible migration/media54PASS, Gateway1614/AuthCore30/Commerce1263, real artifact check and canonical114PASS0advisories. Native password incompatibility and gate rendering repaired with unchanged pinned algorithm/cost; retained failures documented. Primary/GitHubdevelopd6cd8f37 unchanged after source handoff. Next repair pre-KDF password admission, then fresh cart/order/channel eligibility; continue remaining legacy media/Core visual/editor/performance, commerce/operator/provider/hosted launch gates.",
+  "currentFocus": "Catalogue/normal visitor lifecycle locally verified at b49e7b3a. Password admission implemented at b27a9838; final owned31 and Gateway1620 pass. Current owner-authorized source sync checks full production browser and disposable-clone governance before merging develop/pushing for new machine; see github-sync/NEW_MACHINE_2026_10_21.md and latest receipt. Week1 remains open: fresh cart/order/channel eligibility, managed Hyperdrive freshness, remaining Core/editor/media/performance, wider commerce/operator/provider/hosted gates.",
   "weeks": [
     {
       "week": 1,
@@ -57,7 +57,7 @@
     }
   ],
   "standingBoundaries": [
-    "No push/merge/deploy or hosted cutover under current instruction",
+    "Current owner explicitly authorizes source commit/merge to develop/push for machine transfer; deployment, staging/main promotion and hosted cutover remain excluded",
     "No real customer messages or transactions",
     "Mobile app UI handled by friend;preserve shared contracts"
   ],
