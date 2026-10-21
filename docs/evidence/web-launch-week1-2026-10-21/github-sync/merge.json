@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-21",
+  "developBefore": "610074d2bce4c14978637dffa861d85691c9bd1a",
+  "phaseTip": "d4f2129d37344365d88bd84b2257833fe1485fb1",
+  "mergeCommit": "6cc279fe90ced56eef36f821f8e22a71b8fd786f",
+  "method": "reviewed --no-ff merge in primary develop checkout",
+  "codeOverlapWithDevelop": 0,
+  "branchHeadsIncluded": {
+    "letbuyy/week1-launch-blockers": "508ee2aa68012f7bb9eafd7fcd63a86b746121b0",
+    "letbuyy/week2-shipping-tax": "18b8c504228699dcadfb9fe22aae04c5c83b2a17",
+    "letbuyy/week2-billing-activation": "f5f7fccb8d2b154516953da1fd079dabe493f32f",
+    "letbuyy/week2-public-signup": "994d8e28a93249811e909a34af15334fae155d4f",
+    "letbuyy/week2-core-storefront": "d9a987dc79bdac26a6c5ae95b9595c678c9215d5",
+    "letbuyy/week1-core-copy": "85588ec7acb9adee132cde4c859e43f8480e6694",
+    "letbuyy/week1-core-catalog": "2753c63a365272d366aac40164507cf12a438a48",
+    "letbuyy/week1-core-discovery": "27abd93744f49787045609c37f94b114c29f75ff",
+    "letbuyy/week1-core-usability": "d4f2129d37344365d88bd84b2257833fe1485fb1"
+  },
+  "pushAuthorized": true,
+  "target": "origin/develop",
+  "deployment": false,
+  "preservedWorktrees": "Historical worktrees and the live audit preview remain preserved; no reset, cleanup, branch deletion or shared-data mutation performed."
+}

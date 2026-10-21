@@ -40,3 +40,7 @@ The nine historical coordinated N1–N9 source candidates are already preserved 
 - No claim of whole-platform production readiness, complete Week1 or deployment follows from these tests or this push.
 
 Continue using owned disposable databases for tests. Do not run migrations or fixture mutations against the restored stack merely to reproduce a test environment.
+
+Merge receipt: `merge.json` in this directory identifies the exact merge and included phase tips. Final scoped acceptance is `../core-usability/acceptance.json`; final gate receipt is `gate-final.json`.
+
+Migrations365–369 and paired rollbacks are committed. Owned test databases replayed them; this source sync does not apply them to the restored stack or any hosted target. Check the target schema and supported migration process before running the new source against privately transferred data.
