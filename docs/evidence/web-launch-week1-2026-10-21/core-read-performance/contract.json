@@ -8,7 +8,9 @@
     "Affected existing cache/runtime source-contract tests only when their concrete interface changes",
     "Phase/evidence/programme and branch ledger",
     "apps/commerce/web/src/app/store/[subdomain]/layout.tsx: move existing render-plan resolution before optional legacy React header catalog preload and omit unused preload for Liquid plans",
-    "apps/commerce/web/src/lib/product-service.ts getProductById: same public SKU/subdomain request-scoped deduplication when metadata/page duplicate it"
+    "apps/commerce/web/src/lib/product-service.ts getProductById: same public SKU/subdomain request-scoped deduplication when metadata/page duplicate it",
+    "apps/commerce/web/src/proxy.ts static matcher: keep reserved /_vercel/ platform asset namespace out of tenant rewriting; business/preview/internal store paths retain the existing gate",
+    "tests/launch/lb1-storefront-middleware.test.mjs: execute installed Next matcher helper on exact reserved paths and protected near-matches"
   ],
   "readContract": {
     "population": "Anonymous published tenant home, product and collection index; normal synthetic store26 collections/product2variants; existing private preview remains capability-gated",
@@ -29,6 +31,16 @@
       "url": "https://nextjs.org/docs/app/api-reference/functions/fetch",
       "verified": "2026-10-21",
       "consequence": "Keep persistent data cache separate from request memoization. Test production build; dev behavior is not acceptance."
+    },
+    {
+      "url": "https://nextjs.org/docs/app/api-reference/file-conventions/proxy",
+      "verified": "2026-10-21",
+      "consequence": "Use static matcher and test via installed16.1.6 helper (unstable_doesMiddlewareMatch in installed package; latest docs renamed helper). Do not rely on Proxy globals for render caching."
+    },
+    {
+      "url": "https://vercel.com/docs/speed-insights/troubleshooting",
+      "verified": "2026-10-21",
+      "consequence": "Preserve vendor-owned insights paths; do not rewrite platform instrumentation into merchant content."
     }
   ],
   "boundaries": [
@@ -36,5 +48,6 @@
     "No merge/push/deploy for this newly claimed candidate",
     "No shared database/object writes, real provider effects or mobile app UI edits"
   ],
-  "worktree": "Native git worktree fallback after managed create_worktree returned Not a git repository; prior attached artifacts empty."
+  "worktree": "Native git worktree fallback after managed create_worktree returned Not a git repository; prior attached artifacts empty.",
+  "discovery": "Baseline production browser passed with21 navigation reads,3 store/status bootstraps and about2MB upstream responses on each measured page. Root layout includes SpeedInsights; /_vercel/ is missing from tenant Proxy exclusions and native request logs show its script being aborted. Verify exact matcher and actual no-business-read resource behavior rather than assuming all32 requests are one RSC render."
 }
