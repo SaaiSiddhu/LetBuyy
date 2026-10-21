@@ -175,8 +175,8 @@ test('delayed committed receipt cannot erase another tab cart or later draft and
 
 for(const completed of [true,false])test('React cart bootstrap is read-only and '+(completed?'retires confirmed state before a fresh add':'preserves an unavailable checkout draft'),async()=>{
  await ready();reset();const originalFetch=globalThis.fetch;Object.assign(globalThis,{localStorage:window.localStorage,IS_REACT_ACT_ENVIRONMENT:true});
- const{createRoot}=await import('react-dom/client'),{createElement,act}=await import('react'),{CartProvider,useCart}=await import('../../context/cart-context');
- let view:ReturnType<typeof useCart>|undefined;function Probe(){view=useCart();return null;}
+ const{createRoot}=await import('react-dom/client'),{createElement,act,useEffect}=await import('react'),{CartProvider,useCart}=await import('../../context/cart-context');
+ let view:ReturnType<typeof useCart>|undefined;function Probe(){const cart=useCart();useEffect(()=>{view=cart;},[cart]);return null;}
  const oldItem={id:'old-product',name:'Old draft',price:99,quantity:1,currency:'INR',images:[]};window.localStorage.setItem('lb_cart_token','ct_react_previous');window.localStorage.setItem('lb_cart',JSON.stringify([oldItem]));window.localStorage.setItem('lb_cart_server','{}');let writes=0;
  globalThis.fetch=(async(input)=>{
   if(String(input).endsWith('/checkout-status'))return new Response(JSON.stringify({success:true,data:{cart_status:'converted',checkout_state:'completed',order:{id:crypto.randomUUID()}}}),{status:completed?200:503});

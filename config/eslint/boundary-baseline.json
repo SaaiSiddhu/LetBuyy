@@ -60,6 +60,7 @@
     "apps/merchant/web/src/app/api/auth/logout/route.ts",
     "apps/merchant/web/src/app/api/employees/accept-invite/route.ts",
     "apps/merchant/web/src/app/api/plans/route.ts",
+    "apps/merchant/web/src/app/api/stores/[store]/access/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/ai/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/analytics/route.ts",
     "apps/merchant/web/src/app/api/stores/[store]/billing/route.ts",
