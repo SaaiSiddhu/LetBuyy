@@ -65,6 +65,16 @@ export default function CenterPanel({
         return () => { active = false; observer.disconnect() }
     }, [])
 
+    // Viewport measurements are runtime geometry, carried through scoped CSS variables.
+    useEffect(() => {
+        const body = previewBodyRef.current
+        if (!body) return
+        body.style.setProperty('--lb-preview-viewport-width', `${viewportFit.width}px`)
+        body.style.setProperty('--lb-preview-viewport-height', `${viewportFit.height}px`)
+        body.style.setProperty('--lb-preview-viewport-scale', String(viewportFit.scale))
+        body.style.setProperty('--lb-preview-viewport-visibility', availableSize.width > 0 ? 'visible' : 'hidden')
+    }, [viewportFit.width, viewportFit.height, viewportFit.scale, availableSize.width])
+
     const iframeLoadedRef = useRef(false)
     const storefrontBaseUrl = getStorefrontBaseUrl()
 
@@ -218,7 +228,6 @@ export default function CenterPanel({
                             src={previewUrl}
                             onLoad={handlePreviewLoad}
                             className="te-preview-iframe"
-                            style={{ width: viewportFit.width, height: viewportFit.height, transform: `scale(${viewportFit.scale})`, transformOrigin: 'top left', visibility: availableSize.width > 0 ? 'visible' : 'hidden' }}
                             sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
                         />
                     ) : (
