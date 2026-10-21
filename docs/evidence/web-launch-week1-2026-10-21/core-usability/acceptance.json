@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-21",
+  "status": "LOCAL_SCOPED_USABILITY_VERIFIED",
+  "implementationCommit": "676d432b2d68a0c0543bc01bfb5f07a3365c2e02",
+  "contentIdentity": "source-manifest.json in sibling github-sync directory; runtime source frozen during final owned run",
+  "owned": {
+    "runId": "729beafd0cc5",
+    "suites": 2,
+    "passed": 5,
+    "failed": 0,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "boundaries": "real disposable PostgreSQL/PostgREST, native Workerd/R2, production Identity/Merchant/Commerce browser builds; provider fixture only",
+    "coverage": [
+      "normal signup/store/product/image/variants/26 merchant-created collections",
+      "first24/next2/previous/detail and 53-row backend traversal",
+      "published/private preview tenant/is_active/deleted/cursor/token/fault controls",
+      "actual Liquid draft, single header/footer, fitted 1440/820/390 viewports",
+      "ten preset apply/publish/render",
+      "search submission/filter placement and mobile address hit targets/keyboard focus",
+      "COD order/merchant readback, profile/address CRUD, cross-tab stale identity refusal and unrelated order privacy"
+    ]
+  },
+  "unit": {
+    "commerce": {
+      "passed": 1263,
+      "failed": 0
+    },
+    "merchant": {
+      "passed": 923,
+      "failed": 0
+    },
+    "gatewayPriorCompatible": {
+      "passed": 1608,
+      "failed": 0,
+      "note": "same Gateway runtime changes; recorded in local gateway-tests.log before final Commerce-only flat DOM adjustment"
+    }
+  },
+  "types": [
+    "Commerce PASS",
+    "Merchant PASS",
+    "SDK PASS (prior compatible inputs)",
+    "Gateway PASS (prior compatible inputs)"
+  ],
+  "security": {
+    "environmentTrackedFiles": 9908,
+    "reviewedExceptions": 89,
+    "unapprovedHistoryCredentialFindings": 0,
+    "uniqueIntroducedPathBlobs": 364
+  },
+  "priorFailuresRetained": [
+    "First native run refused ambiguous Create collection locator; scoped to the actual New collection form.",
+    "Second native run incorrectly assumed Delete immediately follows Edit; optional Set default is a legitimate intervening keyboard stop. Final test traverses it and verifies Delete focus and2px outline.",
+    "Static source assertions were updated for preserved flat assembly and typed control slots; meaningful escaping/DOM-order tests retained.",
+    "A --help probe of a runner without help support selected all suites in a sandbox with Docker unavailable; no tests executed and this is not acceptance evidence.",
+    "Offline disposable-clone install missed a cached tarball; locked network install succeeded."
+  ],
+  "remaining": [
+    "Core full visual/section/editor acceptance and useful-page performance",
+    "Audit-only old existing-store preview reviews allowlist and intermittent old Gateway product cancellation",
+    "real provider sandbox/hosted release/remaining merchant operator commerce gates"
+  ],
+  "deployment": false,
+  "week1Complete": false
+}

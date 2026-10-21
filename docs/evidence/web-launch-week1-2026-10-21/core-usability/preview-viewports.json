@@ -1,0 +1,34 @@
+{
+  "actualLiquid": true,
+  "singleHeaderFooter": true,
+  "editorViewportMeasurements": [
+    {
+      "device": "Desktop",
+      "expectedWidth": 1440,
+      "displayWidth": 568,
+      "cssWidth": "1440px",
+      "transform": "matrix(0.394444, 0, 0, 0.394444, 0, 0)"
+    },
+    {
+      "device": "Tablet",
+      "expectedWidth": 820,
+      "displayWidth": 568,
+      "cssWidth": "820px",
+      "transform": "matrix(0.692683, 0, 0, 0.692683, 0, 0)"
+    },
+    {
+      "device": "Mobile",
+      "expectedWidth": 390,
+      "displayWidth": 388,
+      "cssWidth": "390px",
+      "transform": "matrix(0.994872, 0, 0, 0.994872, 0, 0)"
+    },
+    {
+      "device": "Desktop",
+      "expectedWidth": 1440,
+      "displayWidth": 568,
+      "cssWidth": "1440px",
+      "transform": "matrix(0.394444, 0, 0, 0.394444, 0, 0)"
+    }
+  ]
+}

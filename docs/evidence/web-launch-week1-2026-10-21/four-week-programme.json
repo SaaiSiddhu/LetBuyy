@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Core bounded manual collection discovery is now locally verified through normal homepage/index/detail browser journeys, preview capability and outage/retry. Next complete pagination/honest browse-all, action/filter/private-editor usability and measured useful-page performance; then inventory/discount/order/refund/customer/operator reconciliation.",
+  "currentFocus": "Core collection pagination, flat Liquid filter/pagination placement, mobile address controls and actual Liquid preview viewports are locally verified. Owner requested develop merge/GitHub source sync for new machine. Continue Core full visual/section acceptance and measured useful-page performance, then remaining commerce/operator/provider/hosted gates.",
   "weeks": [
     {
       "week": 1,
