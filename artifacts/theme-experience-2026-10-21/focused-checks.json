@@ -1,0 +1,56 @@
+{
+  "gatewayThemeAndPassword": {
+    "tests": 99,
+    "pass": 99,
+    "fail": 0,
+    "skipped": 0
+  },
+  "merchantDraftAndLibrary": {
+    "tests": 41,
+    "pass": 41,
+    "fail": 0,
+    "skipped": 0
+  },
+  "liquidInspector": {
+    "tests": 3,
+    "pass": 3,
+    "fail": 0,
+    "skipped": 0
+  },
+  "editorBridge": {
+    "tests": 39,
+    "pass": 39,
+    "fail": 0,
+    "skipped": 0
+  },
+  "coreCompatibility": {
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "skipped": 0
+  },
+  "isolatedBenchmark": {
+    "tests": 5,
+    "pass": 5,
+    "fail": 0,
+    "skipped": 0
+  },
+  "typechecks": {
+    "merchant": {
+      "passed": true,
+      "logBytes": 144
+    },
+    "commerce": {
+      "passed": true,
+      "logBytes": 144
+    },
+    "gateway": {
+      "passed": true,
+      "logBytes": 146
+    },
+    "frozenMarketplace": {
+      "passed": true,
+      "logBytes": 155
+    }
+  }
+}

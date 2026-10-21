@@ -1,0 +1,81 @@
+{
+  "runId": "8c534b17093a",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-39663-mvi618x9-488e6e"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 1,
+  "assertionsPassed": 1,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 89.4,
+  "suiteSeconds": 85.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "theme-catalog-install.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/theme-catalog-install.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-39663-mvi618x9-488e6e",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 85.5,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_theme_catalog_install_postgres",
+      "templateSeconds": 74.2,
+      "provisionSeconds": 2.2,
+      "rest": {
+        "container": "letbuyy-exec-8c534b17093a-rest-1",
+        "upstreamPort": 53057,
+        "proxyPort": 53058
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 668,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

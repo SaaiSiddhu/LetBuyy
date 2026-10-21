@@ -13626,3 +13626,6 @@ body {
 .lb-shadow-overlay {
   box-shadow: var(--lb-shadow-overlay);
 }
+
+.theme-current-storefront-frame { width: 100%; height: 100%; border: 0; pointer-events: none; }
+.theme-library-thumbnail { width: 100%; aspect-ratio: 2; object-fit: cover; object-position: top; border-radius: var(--lb-radius-md); border: 1px solid var(--lb-color-border); }

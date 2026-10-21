@@ -83,7 +83,7 @@ export class ThemeDraftClient {
             throw error
         }
     }
-    save(config: JsonRecord, replacementVersion?: number): Promise<DraftAck> {
+    save(config: JsonRecord, replacementVersion?: number, ensurePreviewDraft = false): Promise<DraftAck> {
         const snapshot = JSON.parse(JSON.stringify(config)) as JsonRecord
         return this.enqueue(async () => {
             this.assertAlive()
@@ -98,7 +98,7 @@ export class ThemeDraftClient {
             }
             if (this.paused) throw new ThemeDraftConflictError()
             if (this.pending) await this.sendPending()
-            if (JSON.stringify(snapshot) === this.savedSignature) return this.lastAck
+            if (JSON.stringify(snapshot) === this.savedSignature && (!ensurePreviewDraft || this.hasDraft)) return this.lastAck
             this.pending = { draftConfig: snapshot, baseVersion: this.version, idempotencyKey: this.keyFactory() }
             return this.sendPending()
         })

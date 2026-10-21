@@ -18,7 +18,7 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import type { StoreModel } from '@letbuyy/tenant-core';
-import { DEFAULT_THEME_SETTINGS, type SectionModel, type ThemeSettings } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS, type SectionModel, type ThemeSettings, type StoreTemplateConfig } from '@letbuyy/theme-engine';
 import { EmptyState, Package } from '@letbuyy/ui';
 import StorefrontPreviewBridge from './storefront-preview-bridge';
 
@@ -358,9 +358,11 @@ function PreviewUnavailable() {
 }
 
 export default async function PreviewPage({
-    searchParams,
+    searchParams, catalogTemplate, catalogName,
 }: {
     searchParams?: Promise<PreviewSearchParams>;
+    catalogTemplate?: StoreTemplateConfig;
+    catalogName?: string;
 }) {
     const query = await searchParams;
     const isDemoPreview = isUrbanKicksDemoPreview(query);
@@ -378,6 +380,7 @@ export default async function PreviewPage({
 
     const draftThemeSettings = extractDraftThemeSettings(decodeSettingsPayload(query || {}));
     let previewStore = applyDraftThemeSettings(store, draftThemeSettings);
+    if (isDemoPreview && catalogTemplate) previewStore = StoreService.getCatalogThemePreview(catalogTemplate as unknown as Record<string, unknown>, catalogName || previewStore.name);
     // S6/W2 — demo-only engine override for the concurrent-load harness (see resolveEngineOverride).
     // Gated on isDemoPreview: a real merchant's ?subdomain= preview never reaches this branch, so its
     // store's own liquidRenderingCanary resolution is never touched by this query param.
@@ -456,7 +459,7 @@ export default async function PreviewPage({
             store: previewStore,
             sections: renderPlan.template.sections,
             route: renderPlan.route,
-            preloadedProducts: previewCatalog,
+            preloadedProducts: isDemoPreview ? products : previewCatalog,
         });
     }
     const headerSections = renderPlan.sectionGroups.header;
@@ -476,14 +479,14 @@ export default async function PreviewPage({
                 plan={renderPlan}
                 groupKey="header"
                 sectionData={sectionGroupData}
-                editorMode
+                editorMode={!catalogTemplate}
             />}
             <main className="flex-grow">
                 <StorefrontCompositionEngine
                     store={previewStore}
                     plan={renderPlan}
                     sectionData={sectionData}
-                    editorMode
+                    editorMode={!catalogTemplate}
                     collectionSummaries={previewCollections}
                 />
             </main>
@@ -492,7 +495,7 @@ export default async function PreviewPage({
                 plan={renderPlan}
                 groupKey="footer"
                 sectionData={sectionGroupData}
-                editorMode
+                editorMode={!catalogTemplate}
             />}
         </div>
     );
@@ -500,7 +503,7 @@ export default async function PreviewPage({
     return (
         <>
             <style>{buildThemeCss(previewStore.templateConfig.themeSettings)}</style>
-            <StorefrontPreviewBridge initialViewport={viewport} sectionIds={sectionIds} />
+            {!catalogTemplate && <StorefrontPreviewBridge initialViewport={viewport} sectionIds={sectionIds} sectionTypes={Object.fromEntries([...headerSections, ...renderPlan.template.sections, ...footerSections].map(section => [section.id, section.type]))} />}
             <div
                 className={`storefront-preview-route storefront-preview-route--${viewport}`}
                 data-letbuyy-preview-route="true"

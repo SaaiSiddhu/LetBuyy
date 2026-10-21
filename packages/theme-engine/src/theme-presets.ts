@@ -1,9 +1,9 @@
 // ============================================================================
 // THEME PRESET ENGINE + EXPERIENCE REGISTRY  (Phase-2 Streams B + C)
 // ----------------------------------------------------------------------------
-// LetBuyy ships ONE first-party Core theme. Merchants never see "themes" — they
-// see "Experiences": named, industry-tuned presets that overlay the Core theme's
-// design tokens and section layout. An Experience is a validated preset document.
+// The ten original Experiences now back independently discoverable catalog themes.
+// Existing Core installations keep their saved experience selections. These validated
+// presets remain the single source for each design's original visual defaults.
 //
 // This module is the preset engine (schema · registry · loader · resolver ·
 // validation · metadata · preview · export · import) and the 10 Experience

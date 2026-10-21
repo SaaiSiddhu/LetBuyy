@@ -6,6 +6,7 @@ import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import ComingSoonRouter from '@/components/coming-soon';
+import StorefrontAccessGate from '@/components/StorefrontAccessGate';
 import type { SiteType } from '@/components/coming-soon';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
@@ -86,6 +87,7 @@ export default async function StoreLayout({ children, params }: Props) {
 
     // Show the gated storefront page for draft/suspended stores
     if (!previewStore && store.status !== 'published') {
+        if (store.siteType === 'store') return <StorefrontAccessGate storeName={store.name} message={store.tagline} />;
         return (
             <ComingSoonRouter
                 siteType={(store.siteType as SiteType) || 'store'}

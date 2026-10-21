@@ -1,3 +1,4 @@
+import { isFirstPartyCoreBundleSlug } from './theme-bundle-core';
 // L3 — Theme Compiler (Full Liquid V1): portable JSON template_config -> Liquid bundle.
 //
 // Translator ONLY (no plugin/extension/remote runtime, no second renderer). It maps a store's portable
@@ -324,7 +325,7 @@ function projectExistingLiquidBundle(
     // Older first-party Core defaults retained three fabricated category cards
     // after the Liquid section switched to real collections. Only those exact
     // untouched defaults are retired; arbitrary merchant blocks still fail validation.
-    if (base.package.slug === 'letbuyy-core-liquid' && type === 'category-grid' && isUnchangedCoreDemoCategoryBlocks(row.blocks, row.block_order)) {
+    if (isFirstPartyCoreBundleSlug(base.package.slug) && type === 'category-grid' && isUnchangedCoreDemoCategoryBlocks(row.blocks, row.block_order)) {
       row.blocks={}; row.block_order=[];
       warnings.push('Retired unchanged legacy Core demo-category defaults; this section renders actual collections.');
     }
@@ -337,8 +338,8 @@ function projectExistingLiquidBundle(
         ? { footerLink: 'link', 'footer-link': 'link' } : {};
     const nested = own(row, 'blocks') ? blocks(row.blocks, row.block_order, previous?.blocks || {}, allowed, 0, aliases) :
       { blocks: previous?.blocks || {}, block_order: row.block_order === undefined ? previous?.block_order || [] : ordered(row.block_order, previous?.blocks || {}) };
-    const settings = own(row, 'settings') ? { ...(base.package.slug === 'letbuyy-core-liquid' ? previous?.settings : {}), ...plainSettings(row.settings) } : previous?.settings || {};
-    if (base.package.slug === 'letbuyy-core-liquid' && type === 'featured-products') {
+    const settings = own(row, 'settings') ? { ...(isFirstPartyCoreBundleSlug(base.package.slug) ? previous?.settings : {}), ...plainSettings(row.settings) } : previous?.settings || {};
+    if (isFirstPartyCoreBundleSlug(base.package.slug) && type === 'featured-products') {
       // Persisted Core packages can predate the captured instance defaults. Use
       // their declared schema defaults only for omitted fields, preserving edits.
       for (const key of ['viewAllLabel', 'viewAllHref']) {
@@ -397,7 +398,7 @@ function projectExistingLiquidBundle(
   }
   // Old Core portable slots placed the same announcement into index as well
   // as the captured header group. Retire only the exact duplicate default.
-  if (base.package.slug === 'letbuyy-core-liquid') {
+  if (isFirstPartyCoreBundleSlug(base.package.slug)) {
     const global = templates.header?.sections['announcement-default'];
     const index = templates.index, duplicate = index?.sections['announcement-default'];
     // The frozen portable registry still emits the former Core default. Retire

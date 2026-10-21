@@ -60,9 +60,12 @@ export const ThemeService = {
             sort: filters.sort || 'popular',
         });
 
-        appendIfPresent(query, 'category', filters.category);
+        // Marketplace category navigation names site types, while the catalog's
+        // category field describes a design's industry. Keep both filters useful.
+        const categorySiteType = ['store', 'portfolio', 'resume', 'landing', 'blog', 'saas'].includes(filters.category || '') ? filters.category : undefined;
+        if (!categorySiteType) appendIfPresent(query, 'category', filters.category);
         appendIfPresent(query, 'pricing', filters.pricingType);
-        appendIfPresent(query, 'site_type', filters.siteType);
+        appendIfPresent(query, 'site_type', filters.siteType || categorySiteType);
         appendIfPresent(query, 'industry', filters.industry);
         appendIfPresent(query, 'search', filters.search);
         appendIfPresent(query, 'layout', filters.layout);
