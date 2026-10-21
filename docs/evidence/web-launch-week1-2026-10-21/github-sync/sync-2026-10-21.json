@@ -1,0 +1,23 @@
+{
+  "applicationCheckpoint": "5e9c7aaa5b3520732c5a17cfcbc237a70cf04700",
+  "priorDevelop": "8f415c0f6244dbef4f8e284d9152e509f35b0a30",
+  "freshChecks": {
+    "gatewayUnit": {
+      "pass": 1613,
+      "fail": 0
+    },
+    "apiClientExactText": {
+      "pass": 3,
+      "fail": 0
+    },
+    "sourceContractsAndInventory": {
+      "pass": 18,
+      "fail": 0
+    }
+  },
+  "protocolManifestMatches": true,
+  "sourceOnly": true,
+  "deployed": false,
+  "week1Complete": false,
+  "unfinishedBranch": "letbuyy/week1-storefront-access"
+}
