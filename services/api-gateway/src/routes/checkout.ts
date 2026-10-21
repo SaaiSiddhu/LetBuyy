@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
     CheckoutConfirmSchema,
+    CheckoutStateReadSchema,
     CheckoutContactSchema,
     CheckoutDeliverySchema,
     CheckoutPaymentIntentSchema,
@@ -1381,20 +1382,17 @@ checkoutRouter.post('/:cartId/confirm', validate('json', CheckoutConfirmSchema),
 });
 
 checkoutRouter.get('/:id', async (c) => {
-    const checkoutId = c.req.param('id');
-    const siteId = c.req.query('site_id');
-    const cartToken = c.req.query('cart_token');
-    if (!siteId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'site_id required' } }, 400);
-
-    const db = getSupabaseAdmin(c);
-    let query = db
-        .from('checkout_sessions')
-        .select('*')
-        .eq('site_id', siteId)
-        .eq('id', checkoutId)
-        .is('deleted_at', null);
-    if (cartToken) query = query.eq('cart_token', cartToken);
-    const { data } = await query.maybeSingle();
+    const siteIds = c.req.queries('site_id') || [];
+    const tokens = c.req.queries('cart_token') || [];
+    if (siteIds.length !== 1 || tokens.length > 1) return c.json({ success: false, error: { code: 'VALIDATION', message: 'One site and cart capability are required.' } }, 400);
+    if (!tokens[0]) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A checkout cart capability is required.' } }, 401);
+    const parsed = CheckoutStateReadSchema.safeParse({id: c.req.param('id'), site_id: siteIds[0], cart_token: tokens[0]});
+    if (!parsed.success) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Checkout reference is invalid.' } }, 400);
+    const { data, error } = await getSupabaseAdmin(c).from('checkout_sessions')
+        .select('id,site_id,cart_id,channel,sales_origin,checkout_state,status,customer_email,buyer_name,buyer_phone,shipping_address,delivery_quote,payment_intent,confirmed_at,failed_at')
+        .eq('site_id', parsed.data.site_id).eq('id', parsed.data.id)
+        .eq('cart_token', parsed.data.cart_token).is('deleted_at', null).maybeSingle();
+    if (error) throw new AppError('Checkout is temporarily unavailable', 503, 'CHECKOUT_UNAVAILABLE');
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Checkout session not found' } }, 404);
     return c.json(success({ checkout: sessionPayload(data as CheckoutSessionRow) }));
 });

@@ -237,3 +237,18 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: password handoff carrie
  assert.equal(owned.psql(`SELECT checkout_handoff::text FROM carts WHERE id=${q(cartId)};`),metadata);
  owned.psql(`UPDATE carts SET checkout_handoff='{}'::jsonb WHERE id=${q(cartId)};`);assert.equal((await read()).status,401,'legacy unbound link is not password authority');owned.psql(`UPDATE sites SET access_mode='public' WHERE id=${q(t.siteId)};`);assert.equal((await read()).status,200,'public legacy link remains compatible only while currently public');
 });
+
+for(const mode of ['password','preview_only','offline'] as const)test(`delete: current ${mode} storefront policy refuses clearing a cart without authority`,async()=>{
+ const t=newSyntheticTenant('delete-'+mode.replace('_','-'));seedSyntheticTenant(owned.psql,t);const gateway=gateways.rest;
+ const created=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[],buyer_email:'synthetic-delete@example.invalid'})});assert.equal(created.status,201);const cart=created.json!.data;
+ owned.psql(`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);
+ const before=owned.psql(`SELECT row_to_json(c)::text FROM carts c WHERE id=${q(cart.id)};`);const result=await gateway.request('/v1/storefront/'+t.subdomain+'/cart/'+cart.cart_token,{method:'DELETE'});const after=owned.psql(`SELECT row_to_json(c)::text FROM carts c WHERE id=${q(cart.id)};`);
+ console.info('OWNED_PRIVATE_CART_DELETE_BASELINE '+JSON.stringify({mode,status:result.status,contactReturned:result.text.includes('synthetic-delete@example.invalid'),rowChanged:before!==after}));assert.equal(result.status,mode==='offline'?503:401);assert.equal(after,before);
+});
+
+test('a current password grant permits active storefront cart clearing and retains its origin',async()=>{
+ const t=newSyntheticTenant('delete-password-ok');seedSyntheticTenant(owned.psql,t);const gateway=gateways.rest;
+ const created=await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[]})});assert.equal(created.status,201);const cart=created.json!.data;
+ const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);const proof=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
+ const cleared=await gateway.request('/v1/storefront/'+t.subdomain+'/cart/'+cart.cart_token,{method:'DELETE',headers:{'X-LetBuyy-Storefront-Gate':proof}});assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.status,'active');assert.equal(cleared.json!.data.sales_origin,'storefront');
+});

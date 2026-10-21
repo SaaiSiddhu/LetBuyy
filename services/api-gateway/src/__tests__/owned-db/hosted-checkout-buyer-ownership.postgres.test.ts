@@ -527,3 +527,52 @@ test('current offline policy refuses every new hosted step before claims while p
  assert.equal(counts(),before);assert.equal(psql(`SELECT checkout_state FROM checkout_sessions WHERE cart_id='${cart.id}';`),'payment_intent');
  psql(`UPDATE sites SET access_mode='public' WHERE id='${site.siteId}';`);const recovered=await hostedCheckoutPost(cart,url,'confirm',{idempotency_key:confirmKey});assert.equal(recovered.status,200,recovered.text);
 });
+
+test('checkout state never returns shopper contact from session and site ids without its cart capability',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);
+ const contact=await hostedCheckoutPost(cart,issued.json!.data.checkout_url,'contact',{idempotency_key:crypto.randomUUID(),email:'synthetic-private-state@example.invalid',name:'Synthetic Private State'});assert.equal(contact.status,200);
+ const id=contact.json!.data.checkout.id,path='/v1/checkout/'+id+'?site_id='+site.siteId;
+ const exposed=await gateway.request(path);console.info('OWNED_SESSION_PRIVACY_BASELINE '+JSON.stringify({status:exposed.status,contactReturned:exposed.text.includes('synthetic-private-state@example.invalid')}));
+ assert.equal(exposed.status,401);assert.equal(exposed.text.includes('synthetic-private-state@example.invalid'),false);
+});
+test('deleting a completed cart cannot reactivate it or erase its retained items',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);await completeCodCheckout(cart,issued.json!.data.checkout_url);
+ const before=psql(`SELECT jsonb_build_object('status',status,'items',items,'coupon',coupon_code)::text FROM carts WHERE id='${cart.id}';`);
+ const removed=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}`,{method:'DELETE'});
+ const after=psql(`SELECT jsonb_build_object('status',status,'items',items,'coupon',coupon_code)::text FROM carts WHERE id='${cart.id}';`);
+ console.info('OWNED_CART_DELETE_BASELINE '+JSON.stringify({status:removed.status,beforeStatus:JSON.parse(before).status,afterStatus:JSON.parse(after).status,itemsBefore:JSON.parse(before).items.length,itemsAfter:JSON.parse(after).items.length}));
+ assert.equal(removed.status,409);assert.equal(after,before);
+});
+
+test('matching checkout cart capability permits its state, while duplicate/foreign/wrong input and dependency faults remain distinct',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);
+ const contact=await hostedCheckoutPost(cart,issued.json!.data.checkout_url,'contact',{idempotency_key:crypto.randomUUID(),email:'synthetic-state-owner@example.invalid',name:'Synthetic state owner'});assert.equal(contact.status,200);
+ const id=contact.json!.data.checkout.id,base='/v1/checkout/'+id+'?site_id='+site.siteId;
+ const {tapRest,restJson}=await import('./gateway-harness');let down=false;const tap=tapRest(owned.restUrl,(call,forward)=>down&&call.resource==='checkout_sessions'&&call.method==='GET'?Promise.resolve(restJson(503,{message:'Synthetic private state dependency'})):forward());
+ try{
+  const start=tap.calls.length;assert.equal((await gateway.request(base)).status,401);assert.equal(tap.calls.slice(start).filter(c=>c.resource==='checkout_sessions').length,0);
+  const valid=await gateway.request(base+'&cart_token='+cart.token);assert.equal(valid.status,200,valid.text);assert.equal(valid.headers.get('Cache-Control'),'no-store');assert.equal(valid.json!.data.checkout.customer_email,'synthetic-state-owner@example.invalid');
+  assert.equal((await gateway.request(base+'&cart_token=ct_'+crypto.randomUUID().replace(/-/g,''))).status,404);
+  assert.equal((await gateway.request('/v1/checkout/'+id+'?site_id='+otherSite.siteId+'&cart_token='+cart.token)).status,404);
+  assert.equal((await gateway.request(base+'&cart_token='+cart.token+'&cart_token='+cart.token)).status,400);
+  assert.equal((await gateway.request(base+'&site_id='+site.siteId+'&cart_token='+cart.token)).status,400);
+  assert.equal((await gateway.request('/v1/checkout/not-a-uuid?site_id='+site.siteId+'&cart_token='+cart.token)).status,400);
+  down=true;const failed=await gateway.request(base+'&cart_token='+cart.token);assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private state|SQLSTATE/);down=false;
+  psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);assert.equal((await gateway.request(base+'&cart_token='+cart.token)).status,200,'a known checkout capability retains independent own-state recovery');
+ }finally{tap.restore();}
+});
+test('active cart clearing preserves shape, while a real checkout conversion between read and update cannot be overwritten',async()=>{
+ const active=seedCart();const cleared=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${active.token}`,{method:'DELETE'});assert.equal(cleared.status,200,cleared.text);assert.equal(cleared.json!.data.id,active.id);assert.deepEqual(cleared.json!.data.lines,[]);assert.equal(cleared.json!.data.status,'active');assert.equal(cleared.json!.data.sales_origin,'storefront');
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);const url=issued.json!.data.checkout_url;
+ const steps=[['contact',{email:'synthetic-delete-race@example.invalid',name:'Synthetic delete race'}],['delivery',{shipping_method:'standard',cod_requested:true,shipping_address:{line1:'Fixture Road',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'},shipping_quote:{shipping_rate_id:shippingRateId,expected_shipping_amount:20}}],['payment-intent',{provider:'cod',mode:'sandbox',tokenize:false,metadata:{}}]] as const;
+ for(const[step,body]of steps){const r=await hostedCheckoutPost(cart,url,step,{...body,idempotency_key:crypto.randomUUID()});assert.ok(r.status===200||r.status===201,r.text);}
+ const {tapRest}=await import('./gateway-harness');let converted=false,orderId='',committedRow='';
+ const tap=tapRest(owned.restUrl,async(call,forward)=>{
+  if(!converted&&call.resource==='carts'&&call.method==='GET'&&call.search.get('session_id')==='eq.'+cart.token){
+   converted=true;const snapshot=await forward();const committed=await hostedCheckoutPost(cart,url,'confirm',{idempotency_key:crypto.randomUUID()});assert.equal(committed.status,200,committed.text);orderId=committed.json!.data.order.id;committedRow=psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`);return snapshot;
+  }return forward();
+ });
+ try{
+  const deleted=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}`,{method:'DELETE'});assert.equal(deleted.status,409,deleted.text);assert.equal(deleted.json!.error.code,'CART_STATE_CONFLICT');assert.ok(converted&&orderId);assert.equal(psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`),committedRow);assert.equal(psql(`SELECT count(*) FROM orders WHERE id='${orderId}' AND store_id='${site.siteId}';`),'1');
+ }finally{tap.restore();}
+});

@@ -204,17 +204,13 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
     };
 }
 
-async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
+async function loadCartByToken(c: AppContext, storeId: string, cartToken: string, includeClosed = false): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
     c.header('Cache-Control', 'no-store');
     const db = getSupabaseAdmin(c);
-    const { data, error } = await db
-        .from('carts')
-        .select(CART_SELECT)
-        .eq('store_id', storeId)
-        .eq('session_id', cartToken)
-        .eq('status', 'active')
-        .is('deleted_at', null)
-        .maybeSingle();
+    let query = db.from('carts').select(CART_SELECT)
+        .eq('store_id', storeId).eq('session_id', cartToken).is('deleted_at', null);
+    if (!includeClosed) query = query.eq('status', 'active');
+    const { data, error } = await query.maybeSingle();
 
     if (error) return { cart: null, error };
     const cart = data ? cartFromRow(data as unknown as DbRecord) : null;
@@ -832,20 +828,19 @@ export function registerStorefrontCartRoutes(
         const cartToken = normalizePublicRouteToken(c.req.param('cartToken'));
         if (!cartToken) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid cart token' } }, 400);
 
-        const db = getSupabaseAdmin(c);
-        const { data, error } = await db
-            .from('carts')
-            .update({
-                items: [],
-                coupon_code: null,
-                status: 'active',
-            })
-            .eq('store_id', store.id)
-            .eq('session_id', cartToken)
-            .select(CART_SELECT)
-            .single();
-
-        if (error || !data) return c.json(dbFailureBody(), 500);
+        const existing = await loadCartByToken(c, store.id, cartToken, true);
+        if (existing.error) return c.json(dbFailureBody(), 503);
+        if (!existing.cart) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Cart not found' } }, 404);
+        if (existing.cart.status !== 'active') return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be cleared.' } }, 409);
+        // A conversion can commit after the read. Only an active matching row
+        // may be cleared; never write status=active or acknowledge a lost race.
+        const { data, error } = await getSupabaseAdmin(c).from('carts')
+            .update({ items: [], coupon_code: null })
+            .eq('store_id', store.id).eq('id', existing.cart.id)
+            .eq('session_id', cartToken).eq('status', 'active').is('deleted_at', null)
+            .select(CART_SELECT).maybeSingle();
+        if (error) return c.json(dbFailureBody(), 503);
+        if (!data) return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be cleared.' } }, 409);
         return c.json(success(cartFromRow(data as unknown as DbRecord)));
     });
 }

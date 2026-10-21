@@ -108,6 +108,14 @@ export const StorefrontCreateOrderSchema = z.object({
   idempotencyKey: z.string().min(8).max(200),
 });
 
+/** Existing guest checkout state read is authorized by its exact cart
+ * capability, never by session/site identifiers alone. */
+export const CheckoutStateReadSchema = z.object({
+  id: UuidSchema,
+  site_id: UuidSchema,
+  cart_token: z.string().min(1).max(121).regex(/^[A-Za-z0-9][A-Za-z0-9_-]*$/),
+}).strict();
+
 export const CheckoutSessionStateSchema = z.enum([
   'contact',
   'delivery',
