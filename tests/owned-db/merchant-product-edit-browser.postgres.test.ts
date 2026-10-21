@@ -176,11 +176,12 @@ test('production AI and operations pages settle complete large-history values',{
             } else {
                 await expect(page.getByText('Total transfers',{exact:true}).locator('..').getByText('1103',{exact:true})).toBeVisible();
                 await expect(page.getByText('In-transit transfers',{exact:true}).locator('..').getByText('1100',{exact:true})).toBeVisible();
-                await expect(page.getByRole('row').filter({hasText:'In transit'}).getByRole('cell').last()).toHaveText('1,100');
+                await expect(page.getByRole('row').filter({hasText:'In transit'}).getByRole('cell').last()).toHaveText('1100');
             }
             readProfiles.push({route,sample:1,usefulMilliseconds:Math.round((performance.now()-started)*10)/10,gatewayReads:reads.length,gatewayBytes:reads.reduce((total,read)=>total+read.bytes,0)});
             profileReads=null;
         }
+        checkpoints.push('production_complete_ai_credit_and_transfer_metrics_beyond_rest_cap');
     } finally {profileReads=null;await page.close()}
 });
 
