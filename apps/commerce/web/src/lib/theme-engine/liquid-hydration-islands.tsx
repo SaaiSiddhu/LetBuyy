@@ -1674,6 +1674,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
     private buyerMode = false;
     private addresses: Array<Record<string, unknown>> = [];
     private editingId: string | null = null;
+    private buyerId: string | null = null;
+    private loadVersion = 0;
+    private loadController: AbortController | null = null;
 
     connectedCallback() {
         this.basePath = this.dataset.basePath || inferBasePath();
@@ -1682,18 +1685,52 @@ class LbAddressManagerElement extends LiquidIslandBase {
         void this.loadAddresses();
     }
 
+    disconnectedCallback() {
+        this.loadVersion++;
+        this.loadController?.abort();
+        this.buyerId = null;
+        this.addresses = [];
+        this.editingId = null;
+        this.removeEventListener('click', this.handleClick);
+    }
+
     private async loadAddresses() {
+        const version = ++this.loadVersion;
+        this.loadController?.abort();
+        const controller = this.loadController = new AbortController();
+        this.buyerId = null;
+        this.addresses = [];
+        this.editingId = null;
         this.innerHTML = '<p class="lb-addresses__loading">Loading addresses…</p>';
         try {
-            const res = await fetch(this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store' });
+            let buyerId: string | null = null;
+            if (this.buyerMode) {
+                const profile = await fetch('/api/buyer/profile', { cache: 'no-store', signal: controller.signal });
+                const data = await profile.json() as { buyer?: { id?: unknown } };
+                if (!profile.ok || typeof data.buyer?.id !== 'string' || !data.buyer.id.trim()) throw new Error('buyer_identity_unavailable');
+                buyerId = data.buyer.id;
+            }
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
+            const res = await fetch(this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store', signal: controller.signal });
             if (!res.ok) throw new Error('address_load_failed');
             const data = await res.json() as { addresses?: Array<Record<string, unknown>> };
-            this.addresses = Array.isArray(data.addresses) ? data.addresses : [];
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
+            if (!Array.isArray(data.addresses)) throw new Error('address_load_failed');
+            this.addresses = data.addresses;
+            this.buyerId = buyerId;
         } catch {
+            if (controller.signal.aborted || version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not load your addresses. <button type="button" data-lb-addr-retry>Try again</button></p>';
             return;
         }
         this.renderList();
+    }
+
+    private writeHeaders(): Record<string, string> | null {
+        // Bind edits to the identity this view loaded. This is a stale-form
+        // comparison only; the server's signed session remains the authority.
+        if (this.buyerMode && !this.buyerId) return null;
+        return { 'Content-Type': 'application/json', ...(this.buyerMode ? { 'x-letbuyy-expected-buyer-id': this.buyerId! } : {}) };
     }
 
     private renderList() {
@@ -1782,6 +1819,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
 
     private async saveAddress(form: HTMLFormElement) {
         const msg = this.querySelector<HTMLElement>('.lb-address-form__msg');
+        const headers = this.writeHeaders();
+        if (!headers) { if (msg) msg.textContent = 'Reload your account before changing saved addresses.'; return; }
+        const version = this.loadVersion;
         if (msg) msg.textContent = 'Saving…';
         const fd = new FormData(form);
         const body: Record<string, unknown> = {
@@ -1803,39 +1843,51 @@ class LbAddressManagerElement extends LiquidIslandBase {
             const itemUrl = this.editingId && this.buyerMode ? `/api/buyer/addresses/${encodeURIComponent(this.editingId)}` : collectionUrl;
             const res = await fetch(this.buyerMode ? itemUrl : collectionUrl, {
                 method: this.buyerMode ? (this.editingId ? 'PATCH' : 'POST') : (this.editingId ? 'PUT' : 'POST'),
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify(body),
             });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (res.ok) {
                 await this.loadAddresses();
             } else {
-                if (msg) msg.textContent = 'Failed to save address.';
+                if (msg) msg.textContent = res.status === 409 ? 'Your account changed. Reload before saving.' : 'Failed to save address.';
             }
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (msg) msg.textContent = 'Network error. Try again.';
         }
     }
 
     private async setDefault(id: string) {
+        const headers = this.writeHeaders();
+        if (!headers) return;
+        const version = this.loadVersion;
         try {
             const res = this.buyerMode
-                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_default: true }) })
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'PATCH', headers, body: JSON.stringify({ is_default: true }) })
                 : await fetch('/api/customer/addresses', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, is_default: true }) });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (!res.ok) throw new Error('address_update_failed');
             await this.loadAddresses();
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not update the default address. <button type="button" data-lb-addr-retry>Reload</button></p>';
         }
     }
 
     private async deleteAddress(id: string) {
+        const headers = this.writeHeaders();
+        if (!headers) return;
+        const version = this.loadVersion;
         try {
             const res = this.buyerMode
-                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE', headers })
                 : await fetch('/api/customer/addresses', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+            if (version !== this.loadVersion || !this.isConnected) return;
             if (!res.ok) throw new Error('address_delete_failed');
             await this.loadAddresses();
         } catch {
+            if (version !== this.loadVersion || !this.isConnected) return;
             this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not delete this address. <button type="button" data-lb-addr-retry>Reload</button></p>';
         }
     }
