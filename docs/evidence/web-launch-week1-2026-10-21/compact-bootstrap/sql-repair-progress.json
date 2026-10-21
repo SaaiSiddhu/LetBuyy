@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-21",
+  "status": "SQL_AUTHORIZATION_REPAIR_BACKEND_VERIFIED_NATIVE_AND_FINAL_GATE_PENDING",
+  "source": "6e94590c application repair;efbfce80 guard correction;22883883 final owned typing; later route comment only",
+  "backend": {
+    "run": "24527bda11ec",
+    "cases": 13,
+    "pass": 13,
+    "fail": 0,
+    "projectionAndLifecycle": 9,
+    "collectionRegression": 4,
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    }
+  },
+  "unit": {
+    "gateway": 1609,
+    "inventory": 14,
+    "pooledSourceContracts": 4,
+    "types": "PASS"
+  },
+  "boundary": "Existing authenticator login gets EXECUTE on two fixed public-reader functions only. Direct table SELECT remains denied42501; no table grants/role membership/RLS/GUC changes. Data API roles cannot execute the functions.",
+  "rollback": "Exact definition/owner/ABI/ACL guards; body/owner/ACL tampering refuses; remove/reapply preserves old authority and real REST compatibility. Migration370 is source-only outside owned fixtures.",
+  "retainedFailures": [
+    "Initial migration guard syntax rejected before any suite ran; fixed and full owned replay passes.",
+    "Initial unit run1596/12 exposed missing not.is.false semantics in the existing fake PostgREST; exact boolean support and real unpublished refusal added; final1609/0.",
+    "Data API response unknown typing fixed; final typecheck passes.",
+    "Earlier42501 no-fallback failure remains historical evidence, not the current backend result."
+  ],
+  "remaining": [
+    "Combined native and security suites currently running; no final result claimed here.",
+    "Final source gate after all owned processes terminal.",
+    "Hyperdrive protocol/freshness is a new separate observed production-path issue; see hyperdrive-follow-up.json.",
+    "Unknown response-projection refusal is implemented; dedicated native altered-response proof remains pending.",
+    "Broader password/offline catalog API privacy, legacy media, Core visual/editor and remaining full launch/provider/hosted gates remain open."
+  ],
+  "merged": false,
+  "pushedAfterHandoff": false,
+  "deployed": false,
+  "week1Complete": false
+}
