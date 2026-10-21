@@ -1,0 +1,8 @@
+{
+  "browserSource": "c4c121dab9d80b57c1ab715a788cffaf0fa60909",
+  "candidate": "ff6dcc78d0abbd656283fa284548dcd3120471ea",
+  "changedRuntimeFilesSinceBrowser": [],
+  "publisherBodyUnchanged": true,
+  "publisherBodyMd5": "8a1479af8ced3bbdb3cd6cc21d957f42",
+  "scope": "Final changes after browser acceptance are strict DDL preconditions and their finite static verification/tests; actual publication function body and all application/service/package/config/lock inputs are unchanged. Current owned DB acceptance and final full gate must separately pass."
+}

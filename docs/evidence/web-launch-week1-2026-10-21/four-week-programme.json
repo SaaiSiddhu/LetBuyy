@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Week2: public merchant signup verified locally with captured email; next native Core first-store adoption and canonical .store links, then fresh product/image/variant/publish/customer journey",
+  "currentFocus": "Core integration locally verified; correct starter copy and measure navigation demand next, then inventory/discount/order/refund/customer journeys. Provider/hosted acceptance remains open.",
   "weeks": [
     {
       "week": 1,
@@ -70,5 +70,7 @@
   "week1LocalReceipt": "Week1 source gate f9a16538, docs-only receipt head508ee2aa; 114 canonical validators passed; raw individual sweep retains stale-artifact method red; no hosted release",
   "week2ShippingTaxReceipt": "72e352e5 source; runtime551f4b4f unchanged; 16 owned acceptance cases pass, 37 source controls pass, final canonical114/114. No hosted/provider release.",
   "week2BillingReceipt": "84cbe1e9 source;72 owned acceptance cases pass;919 merchant and1249 commerce package tests pass; canonical114/114. Raw pre-cleanup sweep method red retained. Actual supplier profile, Razorpay sandbox and hosted launch are not verified.",
-  "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance."
+  "week2PublicSignupReceipt": "b619ad5f final source/config; runtime6fb6ef12 unchanged. Five owned cases pass, Identity56 baseline regressions and canonical114/114 pass. Raw stale-artifact method red retained. No real email, hosted or Razorpay acceptance.",
+  "week2CoreReceipt": "ff6dcc78 final source; browser c4c121da runtime inputs and publisher body unchanged. Core6 + CAS35 + full native browser1 =42 selected passing cases; canonical114/114, governance799/799. Raw gate1 solely pre-cleanup stale-artifact method red; attribution and owned cleanup pass. No provider or hosted release.",
+  "week1Closure": "Technical foundation locally verified; Core launch-copy and broader theme acceptance remain open. Not public-production acceptance."
 }

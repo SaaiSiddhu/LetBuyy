@@ -1,0 +1,251 @@
+{
+  "phase": "WEB-LAUNCH-W2-CORE-STOREFRONT",
+  "status": "LOCAL_CORE_COMMERCE_VERIFIED_PROVIDER_FIXTURE_ONLY",
+  "candidate": "ff6dcc78d0abbd656283fa284548dcd3120471ea",
+  "owned": [
+    {
+      "suite": "theme-draft-cas.postgres",
+      "pass": 35,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "guard-acceptance-final.json"
+    },
+    {
+      "suite": "core-store-bootstrap.postgres",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "guard-acceptance-final.json"
+    },
+    {
+      "suite": "native-core-storefront-browser.postgres",
+      "pass": 1,
+      "fail": 0,
+      "skip": 0,
+      "receipt": "final-scope.json"
+    }
+  ],
+  "canonical": {
+    "pass": 114,
+    "fail": 0,
+    "blocked": 0,
+    "skip": 0,
+    "notApplicable": 1
+  },
+  "regressions": [
+    {
+      "lane": "Merchant",
+      "group": 1,
+      "tests": 114,
+      "passed": 114,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "merchant-release-tests.log"
+    },
+    {
+      "lane": "Merchant",
+      "group": 2,
+      "tests": 806,
+      "passed": 806,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "merchant-release-tests.log"
+    },
+    {
+      "lane": "Commerce",
+      "group": 1,
+      "tests": 132,
+      "passed": 132,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "commerce-release-tests.log"
+    },
+    {
+      "lane": "Commerce",
+      "group": 2,
+      "tests": 144,
+      "passed": 144,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "commerce-release-tests.log"
+    },
+    {
+      "lane": "Commerce",
+      "group": 3,
+      "tests": 977,
+      "passed": 977,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "commerce-release-tests.log"
+    },
+    {
+      "lane": "Catalog/cart",
+      "group": 1,
+      "tests": 25,
+      "passed": 25,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "catalog-cart-regressions.log"
+    },
+    {
+      "lane": "Observability",
+      "group": 1,
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "observability-final-tests.log"
+    },
+    {
+      "lane": "Contracts",
+      "group": 1,
+      "tests": 338,
+      "passed": 338,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/test_contracts.log"
+    },
+    {
+      "lane": "Gateway units",
+      "group": 1,
+      "tests": 1608,
+      "passed": 1608,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/test_unit_gateway.log"
+    },
+    {
+      "lane": "Governance",
+      "group": 1,
+      "tests": 799,
+      "passed": 799,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/tests_governance.log"
+    },
+    {
+      "lane": "CI",
+      "group": 1,
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/tests_ci.log"
+    },
+    {
+      "lane": "Security/auth",
+      "group": 1,
+      "tests": 64,
+      "passed": 64,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/tests_security+auth.log"
+    },
+    {
+      "lane": "Sessions",
+      "group": 1,
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "receipt": "verified-gate/tests_wave4-session.log"
+    }
+  ],
+  "checks": [
+    {
+      "check": "typecheck",
+      "exit": 0,
+      "seconds": 3
+    },
+    {
+      "check": "lint",
+      "exit": 0,
+      "seconds": 2
+    },
+    {
+      "check": "governance:plan",
+      "exit": 0,
+      "seconds": 0
+    },
+    {
+      "check": "validators:sweep (113/114 pass)",
+      "exit": 1,
+      "seconds": 36
+    },
+    {
+      "check": "test:contracts",
+      "exit": 0,
+      "seconds": 6
+    },
+    {
+      "check": "test:unit:gateway",
+      "exit": 0,
+      "seconds": 17
+    },
+    {
+      "check": "tests:governance",
+      "exit": 0,
+      "seconds": 400
+    },
+    {
+      "check": "tests:ci",
+      "exit": 0,
+      "seconds": 0
+    },
+    {
+      "check": "tests:security+auth",
+      "exit": 0,
+      "seconds": 30
+    },
+    {
+      "check": "tests:wave4-session",
+      "exit": 0,
+      "seconds": 1
+    },
+    {
+      "check": "governance:REAL-LANE",
+      "exit": 0,
+      "seconds": 39
+    }
+  ],
+  "rawGateExit": 1,
+  "staleArtifactMethodOnly": true,
+  "ownedCleanup": true,
+  "gateCleanup": true,
+  "sourceUnchanged": true,
+  "runtimeEquivalent": true,
+  "providerSandboxVerified": false,
+  "hostedVerified": false,
+  "deployed": false,
+  "countsAreAdditiveToDatedAudit": false,
+  "base": "994d8e28",
+  "browserRuntimeSource": "c4c121dab9d80b57c1ab715a788cffaf0fa60909",
+  "report": "Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-core-storefront/core-repairs.html",
+  "externalEvidenceRoot": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week2-core-storefront",
+  "normalJourney": "Fresh public signup through actual production-built Identity/Merchant/Commerce and native workerd/R2; merchant uploads PNG and two variants, edits private Core iframe, applies/reloads/publishes all ten presets; separate buyer selects Large and places one COD order; merchant sees order.",
+  "durableOrder": {
+    "totalMinor": 26900,
+    "shippingMinor": 2000,
+    "variant": "Large; actual selected variant ID persisted",
+    "paidEventEmitted": false
+  },
+  "boundaries": [
+    "No real email/provider payment, hosted deployment, merge or push",
+    "Local PG16 full-schema proof does not certify managed pg_proc lock privileges",
+    "Preserved earlier failed raw runs and nonzero standalone sweep result"
+  ],
+  "week1Status": "Main technical foundation locally verified; final closure still requires honest starter copy and theme acceptance. Four-week production goal remains active."
+}

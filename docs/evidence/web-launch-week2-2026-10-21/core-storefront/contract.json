@@ -25,8 +25,10 @@
     "Razorpay login explicitly deferred"
   ],
   "remainingProgramme": [
-    "Hosted domains/TLS/cookies, actual email deliverability and Razorpay sandbox acceptance remain separate",
-    "Product/variant/images and canonical customer COD order must be verified through actual UI before this full journey is marked complete"
+    "Core starter-copy correction and full theme visual/section acceptance remain open.",
+    "Console/marketing storefront labels and measured navigation demand remain open.",
+    "Inventory, discounts, order/refund lifecycle and customer reconciliation continue in Week2.",
+    "Hosted domains/TLS/cookies, email deliverability and real Razorpay sandbox remain separate unverified acceptance."
   ],
   "observedExpansion": [
     "Fresh real merchant publication returned200/status published, while public .store page401. Owned PG reproduced published|false|offline after successful live publication.",
