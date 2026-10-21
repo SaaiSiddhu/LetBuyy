@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Checkout state privacy and terminal cart deletion locally verified: applicationa9c36553, test encoding15596f64. Actual five failures repaired;76 owned cases including10 native Worker pass; affected13-case rerun, Gateway1620, CheckoutCore12, Gateway types, actual Wrangler dry-run and canonical114 pass. Real COD conversion race preserves full row and one order; missing cart credential401, real DB outage503. No new browser run claimed. New source remains local; completed GitHub handoff9c4ae605 unchanged. Next reproduce repeat-shopping token retirement, broader marketplace cart read freshness and managed catalogue/Hyperdrive revocation freshness. Week1 and full programme remain open.",
+  "currentFocus": "Repeat shopping locally verified: application28bcc71d; full actual native/three-app browsera50768272742 passes original26900paise COD, distinct Small21900paise repeat purchase, first cart/receipt preservation and second cart retirement, plus Core/signup/accounts/private visitor controls. Backend68/native10/UI19/Gateway1620/Commerce1273/types/actual Wrangler/canonical114 pass with overlapping coverage and retained transport/startup/type-fixture failures. Later source remains local; completed GitHub handoff9c4ae605 unchanged. Next reproduce and repair current catalogue authority against stale SQL metadata; broader marketplace/transaction/token/performance/operator/provider/hosted gates remain open. Week1 and launch are not complete.",
   "weeks": [
     {
       "week": 1,
@@ -77,5 +77,6 @@
   "week1CoreCatalogReceipt": "336d508e9857033437ad606dcd91771aaee4027c source; selected owned14, theme1891, Gateway1608, queue75, Commerce1261, governance802 and canonical114 pass; cleanup verified. Scope and runtime-compatible receipts in core-catalog/acceptance.json. No provider/hosted release.",
   "week1CoreDiscoveryReceipt": "dcd9b9f47325adaff75fe6208ede19f131956110; backend3 plus production-built native browser1 across compatible receipts, Commerce1261, reviewed inventory14, types and canonical114 pass. core-discovery/acceptance.json records bounded scope, retained failures, cleanup and limitations; no deployment.",
   "week1StorefrontAccessReceipt": "storefront-access/acceptance.json \u2014 local scoped read/visitor lifecycle verified; broader writes/resource/provider/hosted and full Week1 remain open.",
-  "week1SessionCartPrivacyReceipt": "session-cart-privacy/acceptance.json \u2014 required checkout capability and terminal cart clear guard locally verified; full token lifetime, opposite mutation ordering, repeat shopping, marketplace and managed freshness remain open."
+  "week1SessionCartPrivacyReceipt": "session-cart-privacy/acceptance.json \u2014 required checkout capability and terminal cart clear guard locally verified; full token lifetime, opposite mutation ordering, repeat shopping, marketplace and managed freshness remain open.",
+  "week1RepeatShoppingReceipt": "repeat-shopping/acceptance.json \u2014 distinct normal second purchase and converted-cart preservation locally verified; full token/transaction/multi-tab/hosted/provider scope remains open."
 }

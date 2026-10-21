@@ -1,0 +1,19 @@
+{
+  "method": "Offline HTMLParser links/doctype/duplicate-ID QA; no rendered HTML visual QA claim. Actual second-order confirmation PNG separately viewed.",
+  "results": [
+    {
+      "file": "launch-audit.html",
+      "localReferences": 180,
+      "missing": [],
+      "doctypeFirst": true,
+      "duplicateIds": false
+    },
+    {
+      "file": "week1-repeat-shopping/repeat-shopping.html",
+      "localReferences": 17,
+      "missing": [],
+      "doctypeFirst": true,
+      "duplicateIds": false
+    }
+  ]
+}
