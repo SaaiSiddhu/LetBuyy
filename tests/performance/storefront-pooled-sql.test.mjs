@@ -29,7 +29,9 @@ test('infrastructure owns the postgres-backed pooled SQL adapter', () => {
     'STOREFRONT_POOLED_SQL?: string',
     "normalizedFlag(env.STOREFRONT_POOLED_SQL) !== 'off'",
     'env.HYPERDRIVE?.connectionString || env.DATABASE_URL || env.SUPABASE_DB_URL',
-    'prepare: false',
+    'prepare: hyperdrive',
+    "hyperdrive ? 'prepared-hyperdrive' : 'direct'",
+    'prepare: true, simple: false',
     'onnotice: () => undefined',
     'const pooledClients = new Map',
   ], 'pooled SQL adapter');

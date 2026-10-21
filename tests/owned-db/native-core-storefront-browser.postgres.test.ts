@@ -40,7 +40,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
   return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});};
  let gateway:NativeGateway|undefined,tls:HttpsServer|undefined,commerce:OwnedClientProcess|undefined,stage='build';console.info('OWNED_NATIVE_STAGE build');
- let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false,storeReadUnavailable=false,productReadUnavailable=false,legacyBootstrapResponse=false;
+ let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false,storeReadUnavailable=false,productReadUnavailable=false,legacyBootstrapResponse=false,unsupportedBootstrapResponse=false,unsupportedProjectionReplies=0;
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined,buyerDiagnostic:Page|undefined;
  const calls:{path:string;status:number;key?:string;bytes:number;ms:number;navigationLocation?:string}[]=[],errors:string[]=[];
@@ -53,7 +53,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
    if(legacyBootstrapResponse&&requestUrl.pathname===`/v1/storefront/${subdomain}`)requestUrl.searchParams.delete('projection');
    try{const result=await gateway!.dispatch(requestUrl.pathname+requestUrl.search,{method:req.method,headers,...(body.length?{body}:{})});
-    if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}const responseBytes=Buffer.from(await result.arrayBuffer());calls.push({path:requestUrl.pathname,status:result.status,key:headers.get('X-Idempotency-Key')||undefined,bytes:responseBytes.length,ms:Math.round((performance.now()-began)*100)/100,...(requestUrl.pathname.endsWith('/navigation')?{navigationLocation:requestUrl.searchParams.get('location')??''}:{})});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(responseBytes);
+    if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}let responseBytes=Buffer.from(await result.arrayBuffer());if(unsupportedBootstrapResponse&&result.ok&&requestUrl.pathname===`/v1/storefront/${subdomain}`){const payload=JSON.parse(responseBytes.toString());assert.ok(payload.data);payload.data.projection='synthetic-future-version';responseBytes=Buffer.from(JSON.stringify(payload));unsupportedProjectionReplies++;}calls.push({path:requestUrl.pathname,status:result.status,key:headers.get('X-Idempotency-Key')||undefined,bytes:responseBytes.length,ms:Math.round((performance.now()-began)*100)/100,...(requestUrl.pathname.endsWith('/navigation')?{navigationLocation:requestUrl.searchParams.get('location')??''}:{})});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(responseBytes);
    }catch{res.writeHead(500);res.end('{}');}
   });
   await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
@@ -68,7 +68,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await new Promise<void>(r=>tls!.listen(0,'127.0.0.1',r));const tlsPort=(tls.address() as {port:number}).port;
   commerceOrigin=`https://${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`;checkoutOrigin=`https://checkout.localhost:${tlsPort}`;
   const env={...gatewayEnv(owned,keys,{...pooled.env(),ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,
-   RESEND_API_KEY:'synthetic-owned-resend-capture',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:crypto.randomUUID()+crypto.randomUUID(),UPLOAD_PUBLIC_BASE_URL:`https://api.localhost:${tlsPort}/assets`}),DATABASE_URL:pooled.env().HYPERDRIVE.connectionString};delete (env as Record<string,unknown>).HYPERDRIVE;
+   RESEND_API_KEY:'synthetic-owned-resend-capture',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:crypto.randomUUID()+crypto.randomUUID(),UPLOAD_PUBLIC_BASE_URL:`https://api.localhost:${tlsPort}/assets`})};
+  console.info('OWNED_SQL_PROTOCOL_TARGET '+JSON.stringify({binding:'HYPERDRIVE-shaped',origin:'owned PostgreSQL wire',managedHyperdrive:false}));
   gateway=await NativeGateway.create(env,capture);
   const shared={CHECKOUT_ORIGIN:checkoutOrigin,NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
   identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
@@ -265,6 +266,15 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   legacyBootstrapResponse=true;await buyer.goto(`${tenantOrigin}/product/${productId}`,{waitUntil:'networkidle'});await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
   await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();legacyBootstrapResponse=false;
   console.info('OWNED_COMPACT_BOOTSTRAP_CACHE '+JSON.stringify({nativeCacheHits:true,legacyAndCompactSeparated:true,warmUnpublished404:true,legacyResponseConsumer:true}));
+  // Named response-version fault after a real successful API read. It is not a
+  // transport failure: the consumer must reject the unknown model, then recover.
+  unsupportedBootstrapResponse=true;await buyer.goto(`${tenantOrigin}/product/${productId}`);
+  await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
+  assert.ok(unsupportedProjectionReplies>0,'the successful HTTP body must actually carry the unsupported version');
+  unsupportedBootstrapResponse=false;await buyer.getByRole('button',{name:'Try again',exact:true}).click();
+  await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
+  console.info('OWNED_COMPACT_VERSION_REFUSAL '+JSON.stringify({altered200Responses:unsupportedProjectionReplies,unknownVersionUnavailable:true,nextRequestRecovers:true}));
+
   await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Experiences',exact:true})).toBeVisible();
   stage='ten-core-presets';console.info('OWNED_NATIVE_STAGE ten-core-presets');const presets=[];
   for(const name of ['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit']){

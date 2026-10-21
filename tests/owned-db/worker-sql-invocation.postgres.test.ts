@@ -61,13 +61,13 @@ class NativeGateway {
  }
  async settle() { await this.mf.dispose(); }
 }
-test('Gateway SQL belongs to each native Worker invocation; exact predecessor reproduces warm-request failure',{timeout:120000},async()=>{
+for(const transport of ['direct','hyperdrive-shaped'] as const)test(`Gateway ${transport} SQL belongs to each native Worker invocation; exact predecessor reproduces warm-request failure`,{timeout:120000},async()=>{
  const tenants=[newSyntheticTenant('native-sql-a'),newSyntheticTenant('native-sql-b')];
  const actors=[randomUUID(),randomUUID()]; const products=[randomUUID(),randomUUID()];
  for(let i=0;i<2;i++) {const tenant=tenants[i];seedSyntheticTenant(owned.psql,tenant);owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actors[i]}','syn-native-${actors[i]}@example.invalid',true);UPDATE sites SET custom_user_id='${actors[i]}' WHERE id='${tenant.siteId}';INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES('${products[i]}','${tenant.siteId}','${tenant.siteId}','Native SQL original','native-${products[i]}',100,5,true,'active');`);}
  const proxy=await startOwnedPooledSqlProxy(owned);
  const base=gatewayEnv(owned,await newIdentityKeys(),{...proxy.env(),ASSET_PUBLIC_BASE_URL:'https://cdn.letbuyy.com',UPLOAD_PUBLIC_BASE_URL:'https://gateway.test/assets'});
- const env={...base,DATABASE_URL:proxy.env().HYPERDRIVE.connectionString};delete (env as any).HYPERDRIVE;
+ const env={...base,...(transport==='direct'?{DATABASE_URL:proxy.env().HYPERDRIVE.connectionString}:{})};if(transport==='direct')delete (env as Partial<typeof base>).HYPERDRIVE;
  const mutate=async(g:NativeGateway,i:number,label:string,extra:Record<string,unknown>={})=>{
   const version=Number(owned.psql(`SELECT version FROM products WHERE id='${products[i]}';`));const key=randomUUID();
   return g.request('/v1/products/'+products[i],{method:'PATCH',headers:{...await signedIdentityHeaders(actors[i],`syn-native-${actors[i]}@example.invalid`,tenants[i].siteId),'X-Store-ID':tenants[i].siteId},body:JSON.stringify({name:label,...extra,version,idempotency_key:key})});
@@ -114,6 +114,6 @@ test('Gateway SQL belongs to each native Worker invocation; exact predecessor re
   const fixed=await Promise.all(Array.from({length:4},()=>limiter.fetch('https://coordinator.internal/fixed-window',{method:'POST',body:JSON.stringify({windowMs:3600000,max:1})}).then(r=>r.json()) as Promise<{allowed:boolean}>));
   assert.equal(fixed.filter(x=>x.allowed).length,1,'native authentication-window concurrent check admits only one permit');
   console.log('WEEK1_NATIVE_ADMISSION_PASS',JSON.stringify({sharedProxy,parallelLastPermit:parallel.map(x=>x.status),spoofedIdentityStatus:spoofed.status,atomicAuthWindow:true,backend:'native SQLite Durable Object',budget:'synthetic2points at0.001points/second; production default unchanged',hosted:false}));
-  console.log('WEEK1_NATIVE_SQL_PASS',JSON.stringify({sequentialWrites:6,concurrentIndependentTenants:2,crossTenantDenied:true,predecessorStatuses:statuses,runtime:'local workerd',database:'owned PostgreSQL16',hosted:false}));
+  console.log('WEEK1_NATIVE_SQL_PASS',JSON.stringify({transport,managedHyperdrive:false,sequentialWrites:6,concurrentIndependentTenants:2,crossTenantDenied:true,predecessorStatuses:statuses,runtime:'local workerd',database:'owned PostgreSQL16',hosted:false}));
  }finally {await g?.settle();await negative?.settle();await admission?.settle();await proxy.stop();}
 });
