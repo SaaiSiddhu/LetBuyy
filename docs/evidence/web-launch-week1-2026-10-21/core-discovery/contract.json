@@ -8,7 +8,8 @@
     "apps/commerce/web/src/lib/theme-engine/composition-engine.tsx public collection discovery drop",
     "apps/commerce/web/src/lib/theme-engine/collection-discovery.ts helper if needed",
     "Existing owned collection/browser tests and affected unit/package scripts",
-    "Programme, evidence and branch records"
+    "Programme, evidence and branch records",
+    "tests/governance/gateway-db-lane.test.mjs reviewed service-suite inventory pin"
   ],
   "contracts": [
     "Public published-store resolution before tenant-scoped collection read; no IDs from another store.",
