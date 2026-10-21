@@ -177,3 +177,16 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: fresh cart proof surviv
  try{faultResource='sites';faultCode='';const failed=await create(token);assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private/);}finally{faultResource='';faultCode='';}
  assert.equal((await create()).status,201,'public recovery admits again');
 });
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: a valid read-preview link never becomes storefront purchase authority`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-preview-cart');seedSyntheticTenant(owned.psql,t);const host=t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,jti=crypto.randomUUID(),exp=Math.floor(Date.now()/1000)+600;
+ owned.psql(`INSERT INTO site_preview_links(site_id,jti,scope,expires_at)VALUES(${q(t.siteId)},${q(jti)},'share-link',to_timestamp(${exp}));`);
+ const token=await createStorefrontPreviewToken({sid:t.siteId,host,jti,scope:'share-link',exp},key);
+ for(const mode of ['preview_only','password']){
+  owned.psql(`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);
+  const headers={'X-LetBuyy-Storefront-Preview':token,'Content-Type':'application/json'};
+  assert.equal((await gateway.request('/v1/storefront/'+t.subdomain,{headers})).status,200,'preview read remains valid');
+  assert.equal((await gateway.request('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers,body:JSON.stringify({lines:[]})})).status,401,'read capability cannot create even an empty purchase cart');
+ }
+ assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)};`),'0');
+});

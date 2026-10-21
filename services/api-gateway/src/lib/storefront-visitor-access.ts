@@ -107,6 +107,9 @@ export async function authorizeFreshStorefrontPurchase(c:C,siteId:string):Promis
  const site=await restMetadata(c,{id:siteId.toLowerCase()},false);
  if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
  const grant=await authorizeVisitorSite(c,site);
+ // A share/theme preview is a read capability, never purchase authority.
+ if(site.access_mode==='preview_only'||site.access_mode==='password'&&!grant.password)
+  throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
  c.set('storefrontPurchaseGrant',grant);
  return grant;
 }

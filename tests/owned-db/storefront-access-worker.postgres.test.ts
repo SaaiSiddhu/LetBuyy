@@ -77,6 +77,10 @@ test('native storefront cart admission uses current policy and refuses stale pas
   owned.psql(`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);const expected=mode==='offline'?503:401;
   assert.equal((await send('/cart','POST')).status,expected);assert.equal((await send('/cart/'+cartToken)).status,expected);assert.equal((await send('/cart/'+cartToken+'/checkout-url')).status,expected);assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)};`),'1');
  }
+ const jti=crypto.randomUUID(),previewExp=Math.floor(Date.now()/1000)+600;
+ owned.psql(`UPDATE sites SET access_mode='preview_only' WHERE id=${q(t.siteId)};INSERT INTO site_preview_links(site_id,jti,scope,expires_at)VALUES(${q(t.siteId)},${q(jti)},'share-link',to_timestamp(${previewExp}));`);
+ const preview=await createStorefrontPreviewToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,jti,scope:'share-link',exp:previewExp},key);
+ const previewCart=await gateway.dispatch(path+'/cart',{method:'POST',headers:{'Content-Type':'application/json','X-LetBuyy-Storefront-Preview':preview},body:JSON.stringify({lines:[]})});assert.equal(previewCart.status,401);await previewCart.arrayBuffer();
  const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
  const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),token=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
  const allowed=await send('/cart/'+cartToken,'GET',token);assert.equal(allowed.status,200);assert.equal(allowed.cache,'no-store');
