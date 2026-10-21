@@ -149,7 +149,7 @@ test('ten catalog themes install independently, atomically and without publishin
     assert.equal(installedState(),conserved,'unknown function profile refusal is atomic');
     for(const role of ['anon','authenticated','app_tenant','service_role'])
         assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.read_published_storefront_site_v1('${a.subdomain}',true);`),/permission denied/);
-    assert.equal(owned.psql(`SET ROLE authenticator;SELECT public.read_published_storefront_site_v1('${a.subdomain}',true)->>'id';`),a.siteId,'the dedicated backend reader retains its exact capability');
+    assert.equal(owned.psql(`SET ROLE authenticator;SELECT public.read_published_storefront_site_v1('${a.subdomain}',true)->>'id';`).split('\n').at(-1),a.siteId,'the dedicated backend reader retains its exact capability');
     for (const role of ['anon', 'authenticated', 'app_tenant'])
         assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.install_owned_theme_v1(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`), /permission denied/);
 });
