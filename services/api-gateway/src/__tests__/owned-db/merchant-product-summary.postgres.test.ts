@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test, { afterEach, before } from 'node:test';
 import { performance } from 'node:perf_hooks';
+import { readFileSync } from 'node:fs';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, passThrough } from './gateway-harness';
 
@@ -22,6 +23,41 @@ before(async () => {
       INSERT INTO product_variants (id,product_id,title,price,inventory_qty,position)
       SELECT gen_random_uuid(),p.id,'Synthetic variant '||n,p.price+n,3,n
       FROM products p CROSS JOIN generate_series(1,12) n WHERE p.store_id='${store}';`);
+});
+
+test('transfer metric failures stay unavailable and the invoker reader retires without changing inventory', async () => {
+    const tap=tapRest(owned.restUrl,(call,forward)=>call.resource==='rpc/read_merchant_transfer_metrics'
+        ? Promise.resolve(new Response('{"code":"XX000","message":"private-transfer-database-detail"}',{status:500,headers:{'content-type':'application/json'}}))
+        : forward());
+    try {
+        const failed=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,ownerEmail)});
+        assert.equal(failed.status,500,failed.text);
+        assert.doesNotMatch(failed.text,/private-transfer-database-detail/);
+        assert.equal(failed.json?.data,undefined);
+    } finally { tap.restore(); }
+    const empty=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,ownerEmail)});
+    assert.equal(empty.status,200,empty.text);
+    assert.deepEqual(empty.json?.data,{by_status:{},in_transit_count:0,total_count:0});
+    assert.equal(owned.psql("SELECT prosecdef FROM pg_proc WHERE oid='public.read_merchant_transfer_metrics(uuid)'::regprocedure"),'f');
+    for(const role of ['anon','authenticated','app_tenant']) {
+        assert.match(owned.psqlExpectError(`SET ROLE ${role}; SELECT public.read_merchant_transfer_metrics('${store}');`),/permission denied/);
+    }
+    const source=crypto.randomUUID(),destination=crypto.randomUUID();
+    owned.psql(`INSERT INTO inventory_locations(id,store_id,name) VALUES
+      ('${source}','${store}','Synthetic retired transfer source'),('${destination}','${store}','Synthetic retired transfer destination');
+      INSERT INTO inventory_transfers(site_id,transfer_number,source_location_id,destination_location_id,status,idempotency_key,deleted_at)
+      VALUES('${store}','SYN-RETAINED','${source}','${destination}','cancelled','syn-retained-${store}',now());`);
+    const snapshot=()=>owned.psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(t) ORDER BY id)::text,'')) FROM public.inventory_transfers t`);
+    const before=snapshot();
+    const rollback=readFileSync(new URL('../../../../../database/supabase/rollback/380_merchant_transfer_metrics.rollback.sql',import.meta.url),'utf8');
+    owned.psql('ALTER FUNCTION public.read_merchant_transfer_metrics(uuid) SECURITY DEFINER');
+    assert.match(owned.psqlScriptExpectError(rollback),/refuses a changed reader/);
+    owned.psql('ALTER FUNCTION public.read_merchant_transfer_metrics(uuid) SECURITY INVOKER');
+    owned.script(rollback);
+    assert.equal(owned.psql("SELECT to_regprocedure('public.read_merchant_transfer_metrics(uuid)') IS NULL"),'t');
+    assert.equal(snapshot(),before);
+    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/380_merchant_transfer_metrics.sql',import.meta.url),'utf8'));
+    assert.equal(snapshot(),before);
 });
 afterEach(async () => { await gateway.settle(); });
 
@@ -85,6 +121,7 @@ test('AI Studio reads the canonical credit schema without inventing a future res
 
 test('operations uses bounded count responses beyond REST row caps with real persisted status names', async () => {
     const source = crypto.randomUUID(), destination = crypto.randomUUID();
+    const foreignStore=crypto.randomUUID(),foreignSource=crypto.randomUUID(),foreignDestination=crypto.randomUUID();
     owned.psql(`INSERT INTO inventory_locations (id,store_id,name,is_default) VALUES
       ('${source}','${store}','Synthetic source',true),('${destination}','${store}','Synthetic destination',false);
       INSERT INTO products (id,store_id,name,price,stock,is_active,status)
@@ -96,7 +133,13 @@ test('operations uses bounded count responses beyond REST row caps with real per
       'syn-po-'||gen_random_uuid(),CASE WHEN n>1103 THEN now() END FROM generate_series(1,1105) n;
       INSERT INTO inventory_transfers (site_id,transfer_number,source_location_id,destination_location_id,status,idempotency_key,deleted_at)
       SELECT '${store}','SYN-TR-'||n,'${source}','${destination}',CASE WHEN n<=1100 THEN 'shipped' ELSE 'received' END,
-      'syn-tr-'||gen_random_uuid(),CASE WHEN n>1103 THEN now() END FROM generate_series(1,1105) n;`);
+      'syn-tr-'||gen_random_uuid(),CASE WHEN n>1103 THEN now() END FROM generate_series(1,1105) n;
+      INSERT INTO sites(id,name,store_name,site_type,subdomain,custom_user_id) VALUES
+      ('${foreignStore}','Synthetic foreign metrics','Synthetic foreign metrics','store','syn-metrics-${foreignStore.slice(0,8)}','${stranger}');
+      INSERT INTO inventory_locations(id,store_id,name) VALUES
+      ('${foreignSource}','${foreignStore}','Synthetic foreign source'),('${foreignDestination}','${foreignStore}','Synthetic foreign destination');
+      INSERT INTO inventory_transfers(site_id,transfer_number,source_location_id,destination_location_id,status,idempotency_key)
+      VALUES('${foreignStore}','SYN-FOREIGN','${foreignSource}','${foreignDestination}','reserved','syn-foreign-${foreignStore}');`);
     const counts = new Set(['orders','purchase_orders','inventory_transfers','inventory_levels','products']);
     const arrived = new Set<string>();
     let release!: () => void;
@@ -136,4 +179,28 @@ test('operations uses bounded count responses beyond REST row caps with real per
         assert.equal(empty.json?.meta.total,1108);
 
     } finally { release(); tap.restore(); }
+
+    let transferBytes=0, transferRows=0;
+    const detailTap=tapRest(owned.restUrl,async(call,forward)=>{
+        const response=await forward();
+        if(call.resource==='inventory_transfers'||call.resource==='rpc/read_merchant_transfer_metrics') {
+            const text=await response.clone().text();
+            const data:unknown=JSON.parse(text);
+            transferBytes+=Buffer.byteLength(text);
+            transferRows+=Array.isArray(data)?data.length:1;
+        }
+        return response;
+    });
+    try {
+        const detail=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(owner,ownerEmail)});
+        console.log('MERCHANT_TRANSFER_READ_EVIDENCE',JSON.stringify({liveTransfers:1103,transferRows,transferBytes,result:detail.json?.data}));
+        assert.equal(detail.status,200,detail.text);
+        assert.deepEqual(detail.json?.data,{by_status:{shipped:1100,received:3},in_transit_count:1100,total_count:1103});
+        assert.equal(transferRows,1);
+        assert.ok(transferBytes<250);
+        const beforeDenied=detailTap.calls.length;
+        const denied=await gateway.request(`/v1/commerce-analytics/transfer-metrics?store_id=${store}`,{headers:await signedIdentityHeaders(stranger,strangerEmail)});
+        assert.equal(denied.status,403,denied.text);
+        assert.equal(detailTap.calls.slice(beforeDenied).some(call=>call.resource==='rpc/read_merchant_transfer_metrics'),false);
+    } finally { detailTap.restore(); }
 });

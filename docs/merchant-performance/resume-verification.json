@@ -1,0 +1,270 @@
+{
+  "date": "2026-10-21",
+  "status": "IN_PROGRESS",
+  "baseSource": "045a77003a019588a3878b80b9de43e1ce2dc84a",
+  "ownedRuns": {
+    "baseline": {
+      "runId": "036a6cac339c",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 31.7,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ai-before": {
+      "runId": "78a5eaca8908",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 2,
+      "assertionsPassed": 1,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 19.3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "ai-after": {
+      "runId": "3525ad0d0375",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 8,
+      "assertionsPassed": 8,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 27.8,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfers-before": {
+      "runId": "e78bb5636845",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 4,
+      "assertionsPassed": 3,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 25.4,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "read-final": {
+      "runId": "ee849e3016cc",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 9,
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 30.3,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "read-final-retention": {
+      "runId": "cd9ff8a703d5",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 2,
+      "tests": 9,
+      "assertionsPassed": 9,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 34.6,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfer-tenant-final": {
+      "runId": "cb14b65e34a5",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 5,
+      "assertionsPassed": 4,
+      "assertionsFailed": 1,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 21.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    },
+    "transfer-tenant-corrected": {
+      "runId": "6408e3224ef8",
+      "image": "postgres:16-alpine",
+      "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+      "jobs": 1,
+      "suites": 1,
+      "tests": 5,
+      "assertionsPassed": 5,
+      "assertionsFailed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "wallSeconds": 26.2,
+      "cleanup": {
+        "failures": [],
+        "remaining": {
+          "containers": [],
+          "networks": [],
+          "volumes": []
+        }
+      }
+    }
+  },
+  "measurements": {
+    "ai": {
+      "populationCompleted": 1103,
+      "before": {
+        "usageRows": 1000,
+        "usageBytes": 42998,
+        "totalUsed": 2000
+      },
+      "after": {
+        "usageRows": 1,
+        "usageBytes": 4,
+        "totalUsed": 2206
+      }
+    },
+    "transfers": {
+      "populationLive": 1103,
+      "before": {
+        "rows": 1000,
+        "bytes": 24001,
+        "total": 1000,
+        "inTransit": 0
+      },
+      "after": {
+        "rows": 1,
+        "bytes": 94,
+        "total": 1103,
+        "inTransit": 1100
+      }
+    }
+  },
+  "limits": [
+    "Same synthetic logical fixture recipes and local PostgreSQL/PostgREST modes; separate disposable runs.",
+    "Transfer sizes measure the affected gateway-to-REST response bodies only.",
+    "No hosted p95, browser improvement or total SQL-work reduction is inferred."
+  ],
+  "diagnosticHistory": {
+    "transfer-tenant-final": "Synthetic fixture incorrectly used draft. PostgreSQL rejected it before the metric assertion; the real status is reserved. Fixture corrected; later owned result passes.",
+    "ai-ui-before": "Two actual component regressions fail: 794 instead of 824; omitted purchased/bonus credits; NaN usage tokens; unknown timestamp fabricated; missing authority shown as zero.",
+    "ai-ui-after": "Both targeted component regressions pass."
+  },
+  "checks": {
+    "gatewayUnit": {
+      "passed": 1628,
+      "failed": 0,
+      "skipped": 0
+    },
+    "merchantTests": {
+      "lanes": [
+        {
+          "passed": 203,
+          "failed": 0
+        },
+        {
+          "passed": 810,
+          "failed": 0
+        }
+      ],
+      "overlap": "Do not sum with other lanes as a unique test total"
+    },
+    "focusedGovernance": {
+      "passed": 101,
+      "failed": 0
+    },
+    "gatewayTypecheck": "pass",
+    "merchantTypecheck": "pass",
+    "affectedEslint": {
+      "errors": 0,
+      "warnings": 1,
+      "note": "Existing synchronous state-in-effect warning on operations dashboard; status label correction adds no effect."
+    },
+    "productionBrowser": "pending",
+    "fullGovernance": "pending disposable clone"
+  },
+  "sourceManifest": {
+    "services/api-gateway/src/routes/ai.ts": "60f0e7c4472e5a11e2499e4f2d3b0d8f81267e93069a4abaaf4116b711d87999",
+    "services/api-gateway/src/routes/commerce-analytics.ts": "ee5fc8e0c447d000c6d5eceed5f1763152ce3421b9aba179bd7ce5f80a5468aa",
+    "apps/merchant/web/src/app/[store]/ai/page.tsx": "311e5d19a009ea0cac95a6c0dbeaf775bac06c0ba8e6a9731cd2a2f252f09c06",
+    "apps/merchant/web/src/app/[store]/products/operations-dashboard/page.tsx": "5282f84467ee3cf0beeddb579786306be404f137388a6a0b9db12a39c1964f3d",
+    "database/supabase/migrations/379_merchant_ai_usage_total.sql": "f91f86279c8099e2e13b7240811e4c4851b9994716f13ebe8aee0a3acf2e2f85",
+    "database/supabase/migrations/380_merchant_transfer_metrics.sql": "68c459182e10aad886d333d778f5d379ef3bf5e0cb97b06d5fa31fc5b0ae2363",
+    "database/supabase/rollback/379_merchant_ai_usage_total.rollback.sql": "42b1c5f805405a2dfb2648cb2fb604c8687061296053f53c5783821df182e66c",
+    "database/supabase/rollback/380_merchant_transfer_metrics.rollback.sql": "53346adaa0839596b9de899e2eca17e3cc6d7fb19990968427a4980831295c09",
+    "services/api-gateway/src/__tests__/owned-db/merchant-ai-credit-read.postgres.test.ts": "c6995d3fc7268a897218ca46af4e10205b458afc802ec035054ee5ebed723d65",
+    "services/api-gateway/src/__tests__/owned-db/merchant-product-summary.postgres.test.ts": "e4e049fc9fdef2f010cdb050690278049fb99ec61ee6dd75d7b4b1c4d70c3d90",
+    "apps/merchant/web/tests/read-lifecycle.test.tsx": "9f397bb03fcbde8baf87eff8500812184d3bca99b4ca258ed3fbcb162244bb44",
+    "tests/owned-db/merchant-product-edit-browser.postgres.test.ts": "9bde68c0deb1235db9721a14f1934e8063d397b0c22e941fb36b4b3d102ce275"
+  }
+}

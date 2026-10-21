@@ -72,6 +72,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "marketplace-cart-origin.postgres.test.ts",
         "marketplace-origin-filter.postgres.test.ts",
         "marketplace-seller-feed.postgres.test.ts",
+        "merchant-ai-credit-read.postgres.test.ts",
         "merchant-challenge-authority.postgres.test.ts",
         "merchant-challenge-rollback.postgres.test.ts",
         "merchant-challenge-source-corruption.postgres.test.ts",

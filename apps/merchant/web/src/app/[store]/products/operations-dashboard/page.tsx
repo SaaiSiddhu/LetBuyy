@@ -55,9 +55,10 @@ function KpiCard({ label, value, subtext, variant }: KpiCardProps) {
 
 function transferStatusVariant(status: string): StatusVariant {
     switch (status) {
-        case 'completed': return 'success'
-        case 'in_transit': return 'info'
-        case 'draft': return 'default'
+        case 'received': return 'success'
+        case 'shipped':
+        case 'partially_received': return 'info'
+        case 'reserved': return 'default'
         case 'cancelled': return 'critical'
         default: return 'default'
     }
@@ -65,9 +66,10 @@ function transferStatusVariant(status: string): StatusVariant {
 
 function transferStatusLabel(status: string): string {
     switch (status) {
-        case 'draft': return 'Draft'
-        case 'in_transit': return 'In transit'
-        case 'completed': return 'Completed'
+        case 'reserved': return 'Reserved'
+        case 'shipped': return 'In transit'
+        case 'partially_received': return 'Partially received'
+        case 'received': return 'Received'
         case 'cancelled': return 'Cancelled'
         default: return status
     }

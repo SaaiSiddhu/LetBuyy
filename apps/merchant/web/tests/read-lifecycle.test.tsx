@@ -27,6 +27,7 @@ const contentPages = {
 }
 const readPages = {
     ...contentPages,
+    aiStudio: () => import('../src/app/[store]/ai/page'),
     exportPage: () => import('../src/app/[store]/export/page'),
     generalSettings: () => import('../src/app/[store]/settings/general/page'),
     checkoutSettings: () => import('../src/app/[store]/settings/checkout/page'),
@@ -40,6 +41,24 @@ const readPages = {
     themeUpdate: () => import('../src/app/[store]/online-store/themes/update/UpdatePageClient'),
 
 }
+
+test('AI Studio renders the authoritative balance, all credit sources and canonical usage fields', async () => {
+    const h=await mount('aiStudio',async()=>json({credits:{store_id:'11111111-1111-4111-8111-111111111111',
+        plan_credits:3000,bonus_credits:10,total_purchased:20,total_used:2206,balance:824},
+        usage:[{id:'22222222-2222-4222-8222-222222222222',feature:'custom',tokens_input:10,tokens_output:7,credits_used:2,created_at:null}]}));
+    try {
+        assert.match(h.text(),/Credits remaining824/);
+        assert.match(h.text(),/3,030 total credits/);
+        assert.match(h.text(),/Latest 20 AI usage events/);
+        assert.doesNotMatch(h.text(),/NaN|Invalid Date/);
+        assert.match(h.text(),/custom17/);
+    } finally {await h.close()}
+});
+
+test('AI Studio treats missing credit authority as unavailable instead of a zero-credit success', async () => {
+    const h=await mount('aiStudio',async()=>json({usage:[]}));
+    try {assert.match(h.text(),/AI credit information is unavailable/)} finally {await h.close()}
+});
 type ContentPage = keyof typeof readPages
 type Transport = (url: string, init?: RequestInit) => Promise<Response>
 

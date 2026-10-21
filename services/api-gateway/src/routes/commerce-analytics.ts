@@ -279,43 +279,10 @@ router.get('/transfer-metrics', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const buildQuery = (includeDeletedAt: boolean) => {
-        let q = db
-            .from('inventory_transfers')
-            .select('status')
-            .eq('site_id', storeId);
-        if (includeDeletedAt) q = q.is('deleted_at', null);
-        return q;
-    };
-
-    let { data: rows, error } = await buildQuery(true);
-
-    if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data: rows, error } = await buildQuery(false));
-    }
-
-    if (isMissingTableError(error, 'inventory_transfers')) {
-        return c.json(success({ by_status: {}, in_transit_count: 0, total_count: 0, schema_missing: true }));
-    }
-    if (error) return c.json(dbFailureBody(), 500);
-
-    const byStatus: Record<string, number> = {};
-    let totalCount = 0;
-
-    for (const row of rows || []) {
-        const s = String(row.status ?? 'unknown');
-        byStatus[s] = (byStatus[s] || 0) + 1;
-        totalCount += 1;
-    }
-
-    // 'in_transit' is a canonical status for shipped-but-not-received transfers
-    const inTransitCount = byStatus['in_transit'] ?? 0;
-
-    return c.json(success({
-        by_status: byStatus,
-        in_transit_count: inTransitCount,
-        total_count: totalCount,
-    }));
+    const { data, error } = await db.rpc('read_merchant_transfer_metrics', { p_site_id: storeId });
+    // Missing schema and failed dependencies are unavailable, never empty success.
+    if (error || !data) return c.json(dbFailureBody(), 500);
+    return c.json(success(data));
 });
 
 // ── GET /commerce-analytics/operations-summary?store_id= ────

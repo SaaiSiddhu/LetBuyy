@@ -4,7 +4,8 @@ import { createAiCreditPurchaseAdapter } from '@letbuyy/infrastructure/ai-credit
 import { createAiCapabilitySeam, createAiGenerationAdapter } from '@letbuyy/infrastructure/ai-generation-adapter';
 import type { AIHomepageGenerationResult } from '@letbuyy/shared-types';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { AppError } from '../lib/errors';
+import { dbErrorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { AiHomepageGenerationSchema, AiOperatorCommandSchema, GenerateContentSchema } from '../schemas/ai.schema';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -497,32 +498,30 @@ async function loadAiCreditProjection(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string
 ): Promise<Record<string, unknown>> {
-    const [{ data: creditConfig, error: creditError }, { data: usageRows, error: usageError }] = await Promise.all([
+    const [{ data: creditConfig, error: creditError }, { data: usageTotal, error: usageError }] = await Promise.all([
         db
             .from('ai_credits')
             .select('id,plan_credits,bonus_credits,total_purchased,reset_period,updated_at')
             .eq('store_id', storeId)
             .maybeSingle(),
-        db
-            .from('ai_usage')
-            .select('credits_used,status')
-            .eq('store_id', storeId),
+        db.rpc('read_merchant_ai_usage_total', { p_store_id: storeId }),
     ]);
 
     if (creditError && creditError.code !== 'PGRST116') {
-        throw new Error(`AI credit projection config lookup failed: ${creditError.message}`);
+        throw new AppError('AI credit information is temporarily unavailable.', 500, 'DB_ERROR');
     }
     if (usageError) {
-        throw new Error(`AI credit usage projection lookup failed: ${usageError.message}`);
+        throw new AppError('AI credit information is temporarily unavailable.', 500, 'DB_ERROR');
     }
 
     const config = (creditConfig || {}) as Record<string, unknown>;
     const planCredits = Number(config.plan_credits ?? 100);
     const bonusCredits = Number(config.bonus_credits ?? 0);
     const totalPurchased = Number(config.total_purchased ?? 0);
-    const totalUsed = ((usageRows || []) as Array<{ credits_used?: number | string | null; status?: string | null }>)
-        .filter((row) => row.status === 'completed')
-        .reduce((sum, row) => sum + Number(row.credits_used || 0), 0);
+    const totalUsed = typeof usageTotal === 'number' || typeof usageTotal === 'string' ? Number(usageTotal) : NaN;
+    if (!Number.isSafeInteger(totalUsed)) {
+        throw new AppError('AI credit information is temporarily unavailable.', 500, 'DB_ERROR');
+    }
     const available = Math.max(0, planCredits + bonusCredits + totalPurchased - totalUsed);
 
     return {
@@ -571,8 +570,8 @@ router.get('/credits', async (c) => {
     let credits;
     try {
         credits = await loadAiCreditProjection(db, storeId);
-    } catch (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    } catch {
+        return c.json(dbErrorBody('AI credit information is temporarily unavailable.'), 500);
     }
 
     return c.json(success(decorateCredits(credits, storeId, createCreditPurchaseAdapter(c.env))));
@@ -642,8 +641,8 @@ router.post('/generate', async (c) => {
     let creditProjection;
     try {
         creditProjection = await loadAiCreditProjection(db, body.store_id);
-    } catch (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    } catch {
+        return c.json(dbErrorBody('AI credit information is temporarily unavailable.'), 500);
     }
 
     const balance = Number(creditProjection.balance || 0);
@@ -755,8 +754,8 @@ router.post('/generate', async (c) => {
     let updatedCredits;
     try {
         updatedCredits = await loadAiCreditProjection(db, body.store_id);
-    } catch (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    } catch {
+        return c.json(dbErrorBody('AI credit information is temporarily unavailable.'), 500);
     }
 
     return c.json(success({
@@ -790,8 +789,8 @@ router.post('/homepage', async (c) => {
             loadAiCreditProjection(db, body.store_id),
             loadOperatorStore(db, body.store_id),
         ]);
-    } catch (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error instanceof Error ? error.message : 'AI credit projection failed' } }, 500);
+    } catch {
+        return c.json(dbErrorBody('AI credit information is temporarily unavailable.'), 500);
     }
     const balance = Number(creditProjection.balance || 0);
     if (balance <= 0) {

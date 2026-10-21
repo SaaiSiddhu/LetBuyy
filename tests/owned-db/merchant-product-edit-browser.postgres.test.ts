@@ -153,6 +153,37 @@ test('production navigation preserves the shell and settles useful nonzero catal
     }finally{profileReads=null;await page.close();}
 });
 
+test('production AI and operations pages settle complete large-history values',{timeout:150000},async()=>{
+    const source=crypto.randomUUID(),destination=crypto.randomUUID();
+    owned.psql(`INSERT INTO ai_credits(store_id,plan_credits,bonus_credits,total_purchased) VALUES('${site.siteId}',3000,10,20);
+      INSERT INTO ai_usage(store_id,feature,credits_used,status,tokens_input,tokens_output)
+      SELECT '${site.siteId}','custom',2,'completed',10,7 FROM generate_series(1,1103);
+      INSERT INTO inventory_locations(id,store_id,name) VALUES
+      ('${source}','${site.siteId}','Synthetic browser source'),('${destination}','${site.siteId}','Synthetic browser destination');
+      INSERT INTO inventory_transfers(site_id,transfer_number,source_location_id,destination_location_id,status,idempotency_key)
+      SELECT '${site.siteId}','SYN-BROWSER-TR-'||n,'${source}','${destination}',CASE WHEN n<=1100 THEN 'shipped' ELSE 'received' END,
+      'syn-browser-tr-'||gen_random_uuid() FROM generate_series(1,1103)n;`);
+    const page=await ownerA.newPage();
+    try {
+        for(const route of ['ai','products/operations-dashboard']) {
+            const reads:{bytes:number}[]=[];profileReads=reads;const started=performance.now();
+            await page.goto(`${merchantOrigin}/${site.subdomain}/${route}`);
+            if(route==='ai') {
+                await expect(page.getByText('824',{exact:true})).toBeVisible();
+                await expect(page.getByText('3,030 total credits',{exact:true})).toBeVisible();
+                await expect(page.getByText('Latest 20 AI usage events',{exact:true})).toBeVisible();
+                await expect(page.locator('main')).not.toContainText('NaN');
+            } else {
+                await expect(page.getByText('1103',{exact:true})).toBeVisible();
+                await expect(page.getByText('1100',{exact:true})).toBeVisible();
+                await expect(page.getByText('In transit',{exact:true}).last()).toBeVisible();
+            }
+            readProfiles.push({route,sample:1,usefulMilliseconds:Math.round((performance.now()-started)*10)/10,gatewayReads:reads.length,gatewayBytes:reads.reduce((total,read)=>total+read.bytes,0)});
+            profileReads=null;
+        }
+    } finally {profileReads=null;await page.close()}
+});
+
 test('production export UI prepares the complete file through the canonical job and downloads without leaving the page',{timeout:150000},async()=>{
     const page=await ownerA.newPage(),styles:Promise<string>[]=[];
     page.on('response',response=>{if(response.url().includes('/_next/static/css/'))styles.push(response.text());});
