@@ -9,7 +9,8 @@
     "Commerce liquid-theme.css and preview route stylesheet/preview metadata consumer",
     "Merchant CenterPanel and existing preview CSS: actual desktop/tablet/mobile iframe viewport presented at fit scale",
     "Existing owned collection discovery and native Core browser suites, assembly/contract/viewport unit tests and relevant package registration",
-    "Evidence, programme and branch registry"
+    "Evidence, programme and branch registry",
+    "Merchant editor page PREVIEW_DEVICES widths and new shared local preview-viewport helper/unit cases so device label and actual iframe use one width map"
   ],
   "contracts": [
     "No new runtime, renderer, React theme section, identity issuer or database authority. Existing Liquid fragments stay sanitized; existing theme files and published snapshots remain untouched.",
