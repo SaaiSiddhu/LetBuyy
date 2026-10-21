@@ -359,12 +359,21 @@ test('SIGKILL leaves the run\'s labeled orphans, the suite ends itself when its 
 test('two runs at once are isolated from each other, and an immediate repeat is as clean as the first', { skip: needsDocker }, async () => {
     const suite = 'services/api-gateway/src/__tests__/owned-db/verification-token-redemption.postgres.test.ts';
     const out = mkdtempSync(join(tmpdir(), 'letbuyy-gateway-concurrent-'));
-    const before = allFixtureResources();
+    let neighbour;
     const launch = (label) => new Promise((resolveRun) => {
         const child = spawn(process.execPath, [runner, '--suite', suite, '--jobs', '1', '--json-out', join(out, `${label}.json`), '--timeout', '240'], { cwd: repoRoot, stdio: 'ignore' });
         child.on('close', (code) => resolveRun({ code, report: JSON.parse(readFileSync(join(out, `${label}.json`), 'utf8')) }));
     });
     try {
+        // A machine-wide before/after inventory races legitimate neighbours
+        // finishing and cleaning themselves up. Hold a real, known live run
+        // instead: it must survive both concurrent runners, then may end before
+        // the repeat. Each tested run must still leave zero resources of its own.
+        neighbour = await startSleeper(join(out, 'neighbour.pid'), ['--no-reap']);
+        const neighbourResources = resourcesOfOwner(neighbour.child.pid);
+        assert.equal(neighbourResources.containers.length, 2);
+        assert.equal(neighbourResources.networks.length, 1);
+        assert.equal(neighbourResources.volumes.length, 1);
         const [first, second] = await Promise.all([launch('first'), launch('second')]);
         for (const finished of [first, second]) {
             assert.equal(finished.code, 0, JSON.stringify(finished.report.results.map((entry) => entry.failures)));
@@ -381,14 +390,24 @@ test('two runs at once are isolated from each other, and an immediate repeat is 
         for (const [mine, theirs] of [[first, second], [second, first]]) {
             assert.deepEqual(mine.report.reaped.filter((name) => theirs.report.containers.includes(name) || name.includes(theirs.report.runId)), [], 'a run never reaps another live run\'s resources');
         }
+        assert.ok(processAlive(neighbour.suitePid), 'the unrelated suite remains alive');
+        assert.deepEqual(resourcesOfOwner(neighbour.child.pid), neighbourResources, 'neither concurrent runner removes a live neighbour');
+        neighbour.child.kill('SIGTERM');
+        assert.equal((await neighbour.closed).code, 143);
+        assert.deepEqual(everything(resourcesOfOwner(neighbour.child.pid)), [], 'the neighbour may finish and clean up before the repeat');
 
         const repeat = await launch('repeat');
         assert.equal(repeat.code, 0);
         assert.equal(repeat.report.tests, 2);
         assert.equal(repeat.report.skipped, 0);
+        assert.equal(repeat.report.cleanup.failures.length, 0);
         assert.deepEqual(everything(resourcesOfRun(repeat.report.runId)), []);
-        assert.deepEqual(allFixtureResources(), before, 'three runs later the machine holds exactly what it did before');
     } finally {
+        if (neighbour) {
+            neighbour.child.kill('SIGTERM');
+            await neighbour.closed;
+            rmSync(neighbour.dir, { recursive: true, force: true });
+        }
         rmSync(out, { recursive: true, force: true });
     }
 });

@@ -340,21 +340,21 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     }
     const samplePages = buyer.getByRole('navigation', { name: 'Sample preview pages', exact: true });
     await samplePages.getByRole('link', { name: 'Product', exact: true }).click();
-    await expect(buyer.getByRole('heading', { name: 'Aero Runner 90', exact: true })).toBeVisible();
+    await expect(buyer.getByRole('heading', { level: 1, name: 'Aero Runner 90', exact: true })).toBeVisible();
     await expect(liquid).toBeVisible();
     await buyer.waitForFunction(() => Boolean(customElements.get('lb-add-to-cart')));
     await buyer.getByRole('spinbutton', { name: 'Quantity', exact: true }).fill('2');
     await expect(buyer.getByRole('spinbutton', { name: 'Quantity', exact: true })).toHaveValue('2');
     await samplePages.getByRole('link', { name: 'Collection', exact: true }).click();
     await expect(liquid).toBeVisible();
-    await expect(buyer.getByText('Aero Runner 90', { exact: true }).first()).toBeVisible();
+    await expect(buyer.getByText('Aero Runner 90', { exact: true }).filter({visible:true}).first()).toBeVisible();
     assert.equal(await buyer.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth + 1), true);
     catalogCoverage.push({slug,width,routes:['home','product','collection'],quantity:true,mobileMenu:width===390});
    }
   }
   await buyer.setViewportSize({width:1280,height:900});
   await buyer.goto(`${commerceOrigin}/preview?demo=urban-kicks&engine=react&route_type=product`, { waitUntil: 'domcontentloaded' });
-  await expect(buyer.getByRole('heading', { name: 'Aero Runner 90', exact: true })).toBeVisible();
+  await expect(buyer.getByRole('heading', { level: 1, name: 'Aero Runner 90', exact: true })).toBeVisible();
   await expect(buyer.locator('[data-section-id="product-detail-default"][data-renderer-key="productDetail"]')).toBeVisible();
   await expect(buyer.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
   await buyer.getByRole('button', { name: 'Increase quantity', exact: true }).click();
