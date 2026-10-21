@@ -40,7 +40,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
   return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});};
  let gateway:NativeGateway|undefined,tls:HttpsServer|undefined,commerce:OwnedClientProcess|undefined,stage='build';console.info('OWNED_NATIVE_STAGE build');
- let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false,storeReadUnavailable=false,productReadUnavailable=false;
+ let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false,storeReadUnavailable=false,productReadUnavailable=false,legacyBootstrapResponse=false;
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined,buyerDiagnostic:Page|undefined;
  const calls:{path:string;status:number;key?:string;bytes:number;ms:number;navigationLocation?:string}[]=[],errors:string[]=[];
@@ -51,7 +51,8 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    if(collectionListUnavailable && req.url?.split('?')[0]===`/v1/storefront/${subdomain}/collections`){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_COLLECTION_OUTAGE',message:'Synthetic collection transport unavailable'}}));return;}
    const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks),headers=new Headers();
    for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
-   try{const result=await gateway!.dispatch(req.url??'/',{method:req.method,headers,...(body.length?{body}:{})});
+   if(legacyBootstrapResponse&&requestUrl.pathname===`/v1/storefront/${subdomain}`)requestUrl.searchParams.delete('projection');
+   try{const result=await gateway!.dispatch(requestUrl.pathname+requestUrl.search,{method:req.method,headers,...(body.length?{body}:{})});
     if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}const responseBytes=Buffer.from(await result.arrayBuffer());calls.push({path:requestUrl.pathname,status:result.status,key:headers.get('X-Idempotency-Key')||undefined,bytes:responseBytes.length,ms:Math.round((performance.now()-began)*100)/100,...(requestUrl.pathname.endsWith('/navigation')?{navigationLocation:requestUrl.searchParams.get('location')??''}:{})});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(responseBytes);
    }catch{res.writeHead(500);res.end('{}');}
   });
@@ -236,6 +237,34 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    storeReadUnavailable=false;productReadUnavailable=false;await buyer.getByRole('button',{name:'Try again',exact:true}).click();await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await buyer.waitForLoadState('networkidle');
   }
   console.info('OWNED_CORE_READ_RECOVERY '+JSON.stringify({bootstrap503Unavailable:true,sku503Unavailable:true,nextRequestRecovers:true,falseNotFound:false}));
+  // Real Cache API proof uses the native Worker, not an in-memory fake. Cache
+  // puts are waitUntil work: poll for an actual HIT before changing publication.
+  async function bootstrap(compact:boolean){
+   const reply=await gateway!.dispatch(`/v1/storefront/${subdomain}${compact?'?projection=render-v1':''}`,{});
+   const body=await reply.json() as {data?:Record<string,any>};
+   return {status:reply.status,cache:reply.headers.get('x-storefront-cache'),control:reply.headers.get('cache-control'),data:body.data};
+  }
+  async function assertCurrentBootstrapCache(){
+   const expected=JSON.parse(owned.psql(`SELECT current_theme_release_id AS id,storefront_release_version AS version FROM sites WHERE id='${siteId}';`));
+   for(const compact of [false,true]){
+    let result=await bootstrap(compact);assert.equal(result.status,200);
+    await expect.poll(async()=>{result=await bootstrap(compact);return result.cache;},{timeout:10_000,intervals:[50,100,250]}).toBe('HIT');
+    assert.equal(result.control,'no-store');assert.equal(result.data!.current_theme_release.id,expected.id);assert.equal(result.data!.current_theme_release.release_version,expected.version);
+    assert.equal(result.data!.projection,compact?'render-v1':undefined);
+    assert.equal('release_config'in result.data!.current_theme_release,!compact);
+    const canonical=JSON.parse(owned.psql(`SELECT template_snapshot FROM theme_releases WHERE id='${expected.id}';`));
+    assert.deepEqual(result.data!.template_config,canonical);
+   }
+  }
+  await assertCurrentBootstrapCache();
+  // The owned-only visibility mutation tests warm cache retirement independently
+  // of the normal merchant publication journey below; no restored store is used.
+  owned.psql(`UPDATE sites SET published=false WHERE id='${siteId}';`);
+  for(const compact of [false,true])assert.equal((await bootstrap(compact)).status,404);
+  owned.psql(`UPDATE sites SET published=true WHERE id='${siteId}';`);await assertCurrentBootstrapCache();
+  legacyBootstrapResponse=true;await buyer.goto(`${tenantOrigin}/product/${productId}`,{waitUntil:'networkidle'});await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
+  await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();legacyBootstrapResponse=false;
+  console.info('OWNED_COMPACT_BOOTSTRAP_CACHE '+JSON.stringify({nativeCacheHits:true,legacyAndCompactSeparated:true,warmUnpublished404:true,legacyResponseConsumer:true}));
   await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Experiences',exact:true})).toBeVisible();
   stage='ten-core-presets';console.info('OWNED_NATIVE_STAGE ten-core-presets');const presets=[];
   for(const name of ['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit']){
@@ -248,6 +277,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    const reference=JSON.parse(owned.psql(`SELECT default_template->'liquidBundle'->'config'->'settings_data'->'presets'->'${name}' FROM themes WHERE slug='letbuyy-core';`));
    const release=JSON.parse(owned.psql(`SELECT r.template_snapshot->'themeSettings' FROM theme_releases r JOIN sites s ON s.current_theme_release_id=r.id WHERE s.id='${siteId}';`));
    for(const[key,value]of Object.entries(reference))assert.deepEqual(release[key],value,'published preset '+name+'/'+key);
+   await assertCurrentBootstrapCache();
    for(const width of [1280,360]){
     await buyer.setViewportSize({width,height:900});const document=await buyer.goto(tenantOrigin,{waitUntil:'networkidle'});assert.equal(document?.status(),200);assert.match(document!.headers()['cache-control']||'',/no-store/);
     const rendered=buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]');await expect(rendered).toBeVisible();assert.equal(await rendered.evaluate(el=>getComputedStyle(el).getPropertyValue('--primary').trim()),reference.primaryColor);

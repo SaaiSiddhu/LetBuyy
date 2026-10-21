@@ -3,7 +3,7 @@
 // acknowledgement exercise failure and publication races without replacing data.
 import assert from 'node:assert/strict';
 import test,{before,after,afterEach} from 'node:test';
-import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import {closePooledSqlClients,getPooledSql} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {Gateway,gatewayEnv,newIdentityKeys,tapRest,restJson,type RestTap} from './gateway-harness';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant,type SyntheticTenant} from './synthetic-tenant';
@@ -15,6 +15,12 @@ let fault='',advance:undefined|(()=>void);
 before(async()=>{
  proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();
  sql=new Gateway(gatewayEnv(owned,keys,proxy.env()));rest=new Gateway(gatewayEnv(owned,keys));
+ // Diagnose the real transport principal without changing grants or substituting
+ // a privileged connection. Keep the no-REST-fallback assertion below decisive.
+ const direct=getPooledSql(proxy.env())!;
+ const principal=await direct.unsafe("SELECT current_user AS principal,has_table_privilege(current_user,'public.theme_releases','SELECT') AS release_select");
+ let releaseReadCode='OK';try{await direct.unsafe('SELECT id FROM public.theme_releases LIMIT 1');}catch(error){releaseReadCode=String((error as {code?:string}).code??'UNKNOWN');}
+ console.info('OWNED_BOOTSTRAP_SQL_PRINCIPAL',JSON.stringify({principal:principal[0].principal,releaseSelect:principal[0].release_select,releaseReadCode}));
  tap=tapRest(owned.restUrl,async(call,forward)=>{
   if(call.method==='GET'&&call.resource===fault)return restJson(503,{message:'Synthetic private dependency failure'});
   const response=await forward();
