@@ -122,6 +122,24 @@ test('operational readers validate pages, deny foreign callers and report failed
     }} finally {fault.restore()}
 });
 
+test('supplier lead time preserves per-order rounding, earliest receipt and negative-duration exclusion',async()=>{
+    const supplier=crypto.randomUUID();
+    owned.psql(`INSERT INTO suppliers(id,site_id,name) VALUES('${supplier}','${store}','Synthetic rounding supplier');
+      INSERT INTO purchase_orders(site_id,po_number,supplier_id,status,idempotency_key,created_at,expected_at)
+      SELECT '${store}','SYN-ROUND-'||n,'${supplier}','received','syn-round-po-'||gen_random_uuid(),'2026-10-06','2026-10-10' FROM generate_series(1,4)n;
+      INSERT INTO purchase_order_receipts(site_id,purchase_order_id,product_id,quantity_received,idempotency_key,created_at)
+      SELECT '${store}',id,'${product}',1,'syn-round-receipt-'||gen_random_uuid(),CASE
+       WHEN po_number IN('SYN-ROUND-1','SYN-ROUND-2') THEN '2026-10-06 11:45:36+00'::timestamptz
+       WHEN po_number='SYN-ROUND-3' THEN '2026-10-07 11:45:36+00'::timestamptz ELSE '2026-10-05'::timestamptz END
+      FROM purchase_orders WHERE supplier_id='${supplier}';
+      INSERT INTO purchase_order_receipts(site_id,purchase_order_id,product_id,quantity_received,idempotency_key,created_at)
+      SELECT '${store}',id,'${product}',1,'syn-round-later-'||gen_random_uuid(),'2026-10-12' FROM purchase_orders WHERE supplier_id='${supplier}' AND po_number='SYN-ROUND-1';`);
+    const response=await gateway.request(`/v1/commerce-analytics/supplier-metrics?store_id=${store}&limit=100`,{headers:await signedIdentityHeaders(owner,email(owner))});
+    assert.equal(response.status,200,response.text);
+    const actual=response.json!.data.suppliers.find((row:{supplier_id:string})=>row.supplier_id===supplier);
+    assert.deepEqual(actual,{supplier_id:supplier,supplier_name:'Synthetic rounding supplier',po_count:4,on_time_rate:1,avg_lead_time_days:0});
+});
+
 test('operational reader rollback is guarded, backend-only and preserves populated source records',()=>{
     const signatures=['read_merchant_supplier_metrics(uuid,integer,integer)','read_merchant_warehouse_metrics(uuid,integer,integer)','read_merchant_inventory_receipts(uuid[],integer,integer,uuid,uuid)'];
     for(const signature of signatures) {
@@ -143,22 +161,4 @@ test('operational reader rollback is guarded, backend-only and preserves populat
     assert.equal(snapshot(),before);
     owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/381_bounded_merchant_operations_reads.sql',import.meta.url),'utf8'));
     assert.equal(snapshot(),before);
-});
-
-test('supplier lead time preserves per-order rounding, earliest receipt and negative-duration exclusion',async()=>{
-    const supplier=crypto.randomUUID();
-    owned.psql(`INSERT INTO suppliers(id,site_id,name) VALUES('${supplier}','${store}','Synthetic rounding supplier');
-      INSERT INTO purchase_orders(site_id,po_number,supplier_id,status,idempotency_key,created_at,expected_at)
-      SELECT '${store}','SYN-ROUND-'||n,'${supplier}','received','syn-round-po-'||gen_random_uuid(),'2026-10-06','2026-10-10' FROM generate_series(1,4)n;
-      INSERT INTO purchase_order_receipts(site_id,purchase_order_id,product_id,quantity_received,idempotency_key,created_at)
-      SELECT '${store}',id,'${product}',1,'syn-round-receipt-'||gen_random_uuid(),CASE
-       WHEN po_number IN('SYN-ROUND-1','SYN-ROUND-2') THEN '2026-10-06 11:45:36+00'::timestamptz
-       WHEN po_number='SYN-ROUND-3' THEN '2026-10-07 11:45:36+00'::timestamptz ELSE '2026-10-05'::timestamptz END
-      FROM purchase_orders WHERE supplier_id='${supplier}';
-      INSERT INTO purchase_order_receipts(site_id,purchase_order_id,product_id,quantity_received,idempotency_key,created_at)
-      SELECT '${store}',id,'${product}',1,'syn-round-later-'||gen_random_uuid(),'2026-10-12' FROM purchase_orders WHERE supplier_id='${supplier}' AND po_number='SYN-ROUND-1';`);
-    const response=await gateway.request(`/v1/commerce-analytics/supplier-metrics?store_id=${store}&limit=100`,{headers:await signedIdentityHeaders(owner,email(owner))});
-    assert.equal(response.status,200,response.text);
-    const actual=response.json!.data.suppliers.find((row:{supplier_id:string})=>row.supplier_id===supplier);
-    assert.deepEqual(actual,{supplier_id:supplier,supplier_name:'Synthetic rounding supplier',po_count:4,on_time_rate:1,avg_lead_time_days:0});
 });
