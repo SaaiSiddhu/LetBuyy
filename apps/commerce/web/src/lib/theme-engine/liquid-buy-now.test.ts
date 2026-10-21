@@ -108,3 +108,14 @@ test('variant purchases require a choice and retain durable variant identity thr
         assert.deepEqual(requests.at(-1)!.lines.map(line => [line.variant_id, line.quantity]), [['small',2]]);
     } finally { globalThis.fetch = originalFetch; reset(); }
 });
+
+test('variant quick-add cards open the product picker without writing an unspecified cart line', async () => {
+    await ready(); reset(); const originalFetch = globalThis.fetch; let calls = 0;
+    globalThis.fetch = (async () => { calls++; throw new Error('no cart write expected'); }) as typeof fetch;
+    try {
+        const { island, button } = purchase(); island.dataset.productUrl = '/product/product-1';
+        const module = await import('./liquid-hydration-islands'); module.bindVariantPurchaseControls(document.body, ['product-1']);
+        assert.equal(button.textContent, 'Choose options'); button.click(); await tick();
+        assert.deepEqual(navigations, ['/product/product-1']); assert.equal(calls, 0); assert.equal(dom.window.localStorage.getItem('lb_cart'), null);
+    } finally { globalThis.fetch = originalFetch; reset(); }
+});

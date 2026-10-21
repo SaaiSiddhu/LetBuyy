@@ -53,6 +53,7 @@ type LiquidServerCart = {
 interface LiquidHydrationIslandsProps {
     basePath: string;
     storeId: string;
+    variantProductIds?: string[];
 }
 
 function escapeHtml(value: unknown): string {
@@ -289,6 +290,10 @@ class LbAddToCartElement extends LiquidIslandBase {
 
     private async addCurrentProduct(options: { redirectToCheckout?: boolean } = {}) {
         if (this.checkoutPending) return;
+        if (this.dataset.productRequiresOptions === 'true') {
+            if (this.dataset.productUrl) window.location.assign(this.dataset.productUrl);
+            return;
+        }
         const item = cartItemFromElement(this);
         const status = this.querySelector<HTMLElement>('[data-lb-add-to-cart-status]');
         if (!item) {
@@ -2237,13 +2242,24 @@ function bindHeaderControls(root: HTMLElement): () => void {
     };
 }
 
-export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydrationIslandsProps) {
+export function bindVariantPurchaseControls(root: HTMLElement, productIds: string[]) {
+    const required = new Set(productIds);
+    root.querySelectorAll<HTMLElement>('lb-add-to-cart').forEach(element => {
+        const picker = element.closest('[data-section-id],section')?.querySelector<HTMLElement>('lb-variant-picker');
+        if (!required.has(element.dataset.productId || '') || picker?.dataset.productId === element.dataset.productId) return;
+        element.dataset.productRequiresOptions = 'true';
+        element.querySelectorAll<HTMLButtonElement>('[data-lb-add-to-cart],[data-lb-buy-now]').forEach(button => { button.textContent = 'Choose options'; });
+    });
+}
+
+export default function LiquidHydrationIslands({ basePath, storeId, variantProductIds = [] }: LiquidHydrationIslandsProps) {
     useEffect(() => {
         registerLiquidHydrationIslands();
         const root = document.querySelector<HTMLElement>('[data-theme-renderer="liquid"]');
         if (!root) return;
 
         root.dataset.storeId = storeId;
+        bindVariantPurchaseControls(root, variantProductIds);
         root.querySelectorAll<HTMLElement>('lb-cart-drawer').forEach((drawer) => {
             drawer.dataset.basePath = drawer.dataset.basePath || basePath;
         });
@@ -2258,7 +2274,7 @@ export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydr
             window.removeEventListener('storage', syncHeaderCartCount);
             unbindHeaderControls();
         };
-    }, [basePath, storeId]);
+    }, [basePath, storeId, variantProductIds]);
 
     return null;
 }

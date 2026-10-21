@@ -84,12 +84,14 @@ function LiquidRenderedHtml({
     editorMode,
     basePath,
     storeId,
+    variantProductIds,
 }: {
     html: string;
     headStyleText?: string;
     editorMode: boolean;
     basePath: string;
     storeId: string;
+    variantProductIds: string[];
 }) {
     return (
         <>
@@ -114,7 +116,7 @@ function LiquidRenderedHtml({
                 data-editor-mode={editorMode ? 'true' : 'false'}
                 dangerouslySetInnerHTML={{ __html: html }}
             />
-            <LiquidHydrationIslands basePath={basePath} storeId={storeId} />
+            <LiquidHydrationIslands basePath={basePath} storeId={storeId} variantProductIds={variantProductIds} />
         </>
     );
 }
@@ -779,6 +781,7 @@ export default async function StorefrontCompositionEngine({
                     editorMode={editorMode}
                     basePath={`/store/${plan.route.subdomain}`}
                     storeId={store.id}
+                    variantProductIds={Array.from(new Set(Array.from(sectionData.values()).flatMap(data => [...(data.products || []), ...(data.product ? [data.product] : [])]).filter(product => Boolean(product.variants?.length)).map(product => product.id)))}
                 />
             </>
         );
