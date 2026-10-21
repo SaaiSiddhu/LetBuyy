@@ -47,6 +47,7 @@ test('preview reads require a current matching link and stop immediately after r
  const token=await createStorefrontPreviewToken({sid:t.siteId,host,jti,scope:'share-link',exp},key);
  const read=()=>gateway.request(`/v1/storefront/${t.subdomain}?projection=render-v1`,{headers:{'X-LetBuyy-Storefront-Preview':token}});
  assert.equal((await read()).status,200,'legitimate unpublished preview remains available');
+ owned.psql(`UPDATE sites SET status='published',published=true WHERE id=${q(t.siteId)};`);
  for(const mutation of ["revoked_at=now()","expires_at=now()-interval '1 second'","deleted_at=now()"]){
   owned.psql(`UPDATE site_preview_links SET revoked_at=NULL,deleted_at=NULL,expires_at=to_timestamp(${exp}) WHERE jti=${q(jti)};UPDATE site_preview_links SET ${mutation} WHERE jti=${q(jti)};`);
   assert.equal((await read()).status,401);

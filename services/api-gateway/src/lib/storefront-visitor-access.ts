@@ -20,9 +20,10 @@ function proof(c:C,name:string,cookie:string){
  const value=(c.req.header('Cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(cookie+'='))?.slice(cookie.length+1);
  return value&&value.length<=4096?value:null;
 }
-async function restMetadata(c:C,selector:{id?:string;handle?:string}):Promise<VisitorSite|null>{
+async function restMetadata(c:C,selector:{id?:string;handle?:string},preview:boolean):Promise<VisitorSite|null>{
  let query=getSupabaseAdmin(c).from('sites').select(metadataFields).is('deleted_at',null);
  query=selector.id?query.eq('id',selector.id):query.eq('subdomain',selector.handle!);
+ if(!preview)query=query.eq('status','published').not('published','is',false);
  const {data,error}=await query.maybeSingle();if(error)throw unavailable();if(!data)return null;
  const {access_password_hash,...row}=data as unknown as VisitorSite&{access_password_hash?:string|null};
  return {...row,access_revision:access_password_hash?await sha256Hex(access_password_hash):null};
@@ -43,7 +44,8 @@ export async function loadVisitorSite(c:C,selector:{id?:string;handle?:string}):
    }
   }catch{/* bounded independent REST compatibility path; never assume public */}
  }
- return restMetadata(c,selector);
+ const preview=await verifyStorefrontPreviewToken(proof(c,'X-LetBuyy-Storefront-Preview','__Host-lb_preview'),c.env.PREVIEW_SIGNING_KEY);
+ return restMetadata(c,selector,preview.valid);
 }
 async function hostBelongs(c:C,host:string,site:VisitorSite){
  const parsed=resolveStorefrontHost(host,c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
@@ -78,10 +80,12 @@ export async function authorizeVisitorSite(c:C,site:VisitorSite):Promise<Visitor
  if(!['public','password','preview_only','offline'].includes(mode))throw unavailable();
  if(mode==='offline')throw new AppError('Store is offline',503,'STOREFRONT_OFFLINE');
  const grants=mode==='public'&&site.status==='published'&&site.published!==false?{preview:false,password:false}:await visitorGrants(c,site);
- if(!grants.preview&&(site.status!=='published'||site.published===false||mode==='preview_only'||mode==='password'&&!grants.password))throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
+ if(!grants.preview&&(site.status!=='published'||site.published===false))throw new AppError('Store not found',404,'NOT_FOUND');
+ if(!grants.preview&&(mode==='preview_only'||mode==='password'&&!grants.password))throw new AppError('Store access required',401,'STOREFRONT_ACCESS_REQUIRED');
  const result={site,...grants};c.set('storefrontVisitorGrant',result);return result;
 }
 export async function authorizeVisitor(c:C,selector:{id?:string;handle?:string}):Promise<VisitorGrant>{
+ selector=selector.id?{id:selector.id.toLowerCase()}:{handle:normalizeStorefrontHandle(selector.handle||'')||selector.handle};
  const prior=c.get('storefrontVisitorGrant');
  if(prior&&(selector.id===prior.site.id||selector.handle===prior.site.subdomain))return prior;
  const site=await loadVisitorSite(c,selector);if(!site)throw new AppError('Store not found',404,'NOT_FOUND');

@@ -272,6 +272,9 @@ export function registerStorefrontPublicRoutes(
     };
     const catalogueGuard = async (c:AppContext,next:()=>Promise<void>) => {
         if(!['GET','HEAD'].includes(c.req.method)){await next();return;}
+        // This exact global taxonomy route has independent marketplace authority;
+        // a merchant handle named marketplace does not exempt any other path.
+        if(c.req.param('subdomain')==='marketplace'&&/(?:^|\/)marketplace\/categories\/?$/.test(c.req.path)){await next();return;}
         await authorizeVisitor(c,{handle:c.req.param('subdomain')});
         await next();c.header('Cache-Control','no-store');
     };
