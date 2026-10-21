@@ -1,0 +1,288 @@
+{
+  "name": "baseline",
+  "boundary": "production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture",
+  "sampleCount": 9,
+  "groups": {
+    "home": {
+      "samples": 3,
+      "usefulReadyMs": {
+        "values": [
+          361.6,
+          346.58,
+          349.58
+        ],
+        "median": 349.58,
+        "min": 346.58,
+        "max": 361.6
+      },
+      "ttfbMs": {
+        "values": [
+          235.80000001192093,
+          232,
+          238
+        ],
+        "median": 235.8,
+        "min": 232,
+        "max": 238
+      },
+      "responseEndMs": {
+        "values": [
+          238.19999998807907,
+          234.60000002384186,
+          240.5
+        ],
+        "median": 238.2,
+        "min": 234.6,
+        "max": 240.5
+      },
+      "decodedDocumentBytes": {
+        "values": [
+          288598,
+          288598,
+          288598
+        ],
+        "median": 288598,
+        "min": 288598,
+        "max": 288598
+      },
+      "upstreamReads": {
+        "values": [
+          32,
+          32,
+          32
+        ],
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "upstreamResponseBytes": {
+        "values": [
+          2063623,
+          2063623,
+          2063623
+        ],
+        "median": 2063623,
+        "min": 2063623,
+        "max": 2063623
+      },
+      "navigationReads": {
+        "values": [
+          21,
+          21,
+          21
+        ],
+        "median": 21,
+        "min": 21,
+        "max": 21
+      },
+      "skuReads": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "catalogReads": {
+        "values": [
+          3,
+          3,
+          3
+        ],
+        "median": 3,
+        "min": 3,
+        "max": 3
+      }
+    },
+    "product": {
+      "samples": 3,
+      "usefulReadyMs": {
+        "values": [
+          330.89,
+          277.41,
+          250.68
+        ],
+        "median": 277.41,
+        "min": 250.68,
+        "max": 330.89
+      },
+      "ttfbMs": {
+        "values": [
+          204,
+          160.0999999642372,
+          140.0999999642372
+        ],
+        "median": 160.1,
+        "min": 140.1,
+        "max": 204
+      },
+      "responseEndMs": {
+        "values": [
+          206.89999997615814,
+          162.5999999642372,
+          142.69999998807907
+        ],
+        "median": 162.6,
+        "min": 142.7,
+        "max": 206.9
+      },
+      "decodedDocumentBytes": {
+        "values": [
+          290071,
+          290071,
+          290028
+        ],
+        "median": 290071,
+        "min": 290028,
+        "max": 290071
+      },
+      "upstreamReads": {
+        "values": [
+          32,
+          32,
+          32
+        ],
+        "median": 32,
+        "min": 32,
+        "max": 32
+      },
+      "upstreamResponseBytes": {
+        "values": [
+          2063447,
+          2063447,
+          2063447
+        ],
+        "median": 2063447,
+        "min": 2063447,
+        "max": 2063447
+      },
+      "navigationReads": {
+        "values": [
+          21,
+          21,
+          21
+        ],
+        "median": 21,
+        "min": 21,
+        "max": 21
+      },
+      "skuReads": {
+        "values": [
+          2,
+          2,
+          2
+        ],
+        "median": 2,
+        "min": 2,
+        "max": 2
+      },
+      "catalogReads": {
+        "values": [
+          2,
+          2,
+          2
+        ],
+        "median": 2,
+        "min": 2,
+        "max": 2
+      }
+    },
+    "collection-index": {
+      "samples": 3,
+      "usefulReadyMs": {
+        "values": [
+          300.71,
+          293.72,
+          296.55
+        ],
+        "median": 296.55,
+        "min": 293.72,
+        "max": 300.71
+      },
+      "ttfbMs": {
+        "values": [
+          169.4000000357628,
+          182.10000002384186,
+          191.39999997615814
+        ],
+        "median": 182.1,
+        "min": 169.4,
+        "max": 191.4
+      },
+      "responseEndMs": {
+        "values": [
+          179,
+          184.80000001192093,
+          193.69999998807907
+        ],
+        "median": 184.8,
+        "min": 179,
+        "max": 193.7
+      },
+      "decodedDocumentBytes": {
+        "values": [
+          279205,
+          279205,
+          279205
+        ],
+        "median": 279205,
+        "min": 279205,
+        "max": 279205
+      },
+      "upstreamReads": {
+        "values": [
+          31,
+          31,
+          31
+        ],
+        "median": 31,
+        "min": 31,
+        "max": 31
+      },
+      "upstreamResponseBytes": {
+        "values": [
+          2061036,
+          2061036,
+          2061036
+        ],
+        "median": 2061036,
+        "min": 2061036,
+        "max": 2061036
+      },
+      "navigationReads": {
+        "values": [
+          21,
+          21,
+          21
+        ],
+        "median": 21,
+        "min": 21,
+        "max": 21
+      },
+      "skuReads": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "min": 0,
+        "max": 0
+      },
+      "catalogReads": {
+        "values": [
+          2,
+          2,
+          2
+        ],
+        "median": 2,
+        "min": 2,
+        "max": 2
+      }
+    }
+  },
+  "failureCount": 0,
+  "timingLabel": "Observed matched local samples; not field percentiles or a production SLA"
+}

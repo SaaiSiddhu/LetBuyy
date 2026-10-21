@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Core collection pagination, flat Liquid filter/pagination placement, mobile address controls and actual Liquid preview viewports are locally verified. Owner requested develop merge/GitHub source sync for new machine. Continue Core full visual/section acceptance and measured useful-page performance, then remaining commerce/operator/provider/hosted gates.",
+  "currentFocus": "Local Core read-performance candidate reduces measured upstream calls31\u201332 to7\u20138, menus21 to3 and bytes~2.06MB to~0.69MB, with native behavior and fault recovery verified. Latency gate remains open; next inspect duplicated published theme payload and compatible compact projection, broader Core visual/editor/public-review/media gates, then remaining commerce/operator/provider/hosted requirements. GitHub develop remains118209b4.",
   "weeks": [
     {
       "week": 1,
