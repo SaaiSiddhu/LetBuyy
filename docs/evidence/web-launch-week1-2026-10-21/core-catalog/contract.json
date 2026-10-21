@@ -22,7 +22,8 @@
     "scope": [
       "services/api-gateway/src/index.ts scheduled preflight",
       "services/api-gateway/src/execution/queue-execution.adapter.ts claimed-site search source lookups",
-      "Bounded backend-only pending-work RPC, forward/rollback369 and role/tenant/native/idle proof"
+      "Bounded backend-only pending-work RPC, forward/rollback369 and role/tenant/native/idle proof",
+      "services/queue-workers/src/platform-queue-consumer.ts existing matching product/order search consumer; same claimed-site scope and isolation controls"
     ],
     "invariants": [
       "No general unguarded client or guard weakening",
