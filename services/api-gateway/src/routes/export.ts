@@ -190,8 +190,8 @@ function toCsvRow(values: (string | number | boolean | null | undefined)[]): str
 }
 
 class CsvInputError extends Error {
-    constructor(message: string, readonly code = 'INVALID_CSV', readonly status: 400 | 413 = 400) {
-        super(message);
+    constructor(readonly publicMessage: string, readonly code = 'INVALID_CSV', readonly status: 400 | 413 = 400) {
+        super(publicMessage);
         this.name = 'CsvInputError';
     }
 }
@@ -406,7 +406,9 @@ async function serializeJob(c: ExportContext, job: ExportJobRecord) {
         row_count: job.rowCount,
         filename: job.filename,
         error_code: job.errorCode || null,
-        error_message: job.errorMessage || null,
+        error_message: job.status === 'failed'
+            ? job.type === 'product_import' ? 'Import failed. Retry the import.' : 'Export failed. Retry the export.'
+            : null,
         created_at: job.createdAt,
         updated_at: job.updatedAt,
         started_at: job.startedAt || null,
@@ -555,11 +557,11 @@ async function processProductsExport(c: ExportContext, jobId: string): Promise<v
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch (error) {
+    } catch {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: error instanceof Error ? error.message : 'Export failed',
+            errorMessage: 'Export failed. Retry the export.',
             completedAt: nowIso(),
         });
     }
@@ -621,11 +623,11 @@ async function processOrdersExport(c: ExportContext, jobId: string): Promise<voi
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch (error) {
+    } catch {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: error instanceof Error ? error.message : 'Export failed',
+            errorMessage: 'Export failed. Retry the export.',
             completedAt: nowIso(),
         });
     }
@@ -682,11 +684,11 @@ async function processCustomersExport(c: ExportContext, jobId: string): Promise<
 
         job = await updateJob(c, job, { status: 'completed', rowCount, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch (error) {
+    } catch {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'EXPORT_FAILED',
-            errorMessage: error instanceof Error ? error.message : 'Export failed',
+            errorMessage: 'Export failed. Retry the export.',
             completedAt: nowIso(),
         });
     }
@@ -712,11 +714,11 @@ async function processProductImport(c: ExportContext, jobId: string): Promise<vo
 
         job = await updateJob(c, job, { status: 'completed', rowCount: imported, completedAt: nowIso() });
         await writeJob(c, job);
-    } catch (error) {
+    } catch {
         await updateJob(c, job, {
             status: 'failed',
             errorCode: 'IMPORT_FAILED',
-            errorMessage: error instanceof Error ? error.message : 'Import failed',
+            errorMessage: 'Import failed. Retry the import.',
             completedAt: nowIso(),
         });
     }
@@ -868,7 +870,7 @@ router.post('/import-products', async (c) => {
         c.executionCtx.waitUntil(processProductImport(c, job.id));
         return c.json(success({ job: await serializeJob(c, job) }), 202);
     } catch (error) {
-        if (error instanceof CsvInputError) return c.json({ error: { code: error.code, message: error.message } }, error.status);
+        if (error instanceof CsvInputError) return c.json({ error: { code: error.code, message: error.publicMessage } }, error.status);
         return c.json({ error: { code: 'IMPORT_UNAVAILABLE', message: 'Import unavailable' } }, 503);
     }
 });

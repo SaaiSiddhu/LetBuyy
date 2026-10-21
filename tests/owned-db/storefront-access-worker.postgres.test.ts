@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import test,{before,after} from 'node:test';
 import {expect} from '@playwright/test';
 import {createStorefrontGateToken,createStorefrontPreviewToken} from '@letbuyy/auth-core';
-import {holdOwnedStorefrontSqlSnapshot} from '../helpers/owned-storefront-snapshot';
+import {holdOwnedStorefrontSqlSnapshot} from '../../services/api-gateway/src/__tests__/owned-db/owned-storefront-snapshot';
 import {NativeGateway} from '../helpers/native-owned-gateway';
 import {requireOwnedDatabase,startOwnedPooledSqlProxy} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import {gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';

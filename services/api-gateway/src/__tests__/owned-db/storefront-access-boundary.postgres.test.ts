@@ -1,4 +1,4 @@
-import {holdOwnedStorefrontSqlSnapshot} from '../../../../../tests/helpers/owned-storefront-snapshot';
+import {holdOwnedStorefrontSqlSnapshot} from './owned-storefront-snapshot';
 import {DEFAULT_STOREFRONT_DOMAIN} from '@letbuyy/shared-types';
 // Mounted Gateway -> real owned PostgreSQL/PostgREST. Public catalogue scope;
 // independent buyer-history/marketplace channel authority is not substituted.

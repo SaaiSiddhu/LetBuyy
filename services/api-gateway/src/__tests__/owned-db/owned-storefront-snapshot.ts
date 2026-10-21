@@ -2,7 +2,7 @@
 // Hold only the existing site reader's result for one exact selector. Real
 // Gateway, PostgreSQL wire, REST policy rows and native Cache API remain live.
 import assert from 'node:assert/strict';
-import type { OwnedDatabase } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import type { OwnedDatabase } from './owned-db-support';
 
 const quote = (value: string) => "'" + value.replaceAll("'", "''") + "'";
 const identifier = (value: string) => '"' + value.replaceAll('"', '""') + '"';
