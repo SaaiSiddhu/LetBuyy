@@ -245,7 +245,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    return {status:reply.status,cache:reply.headers.get('x-storefront-cache'),control:reply.headers.get('cache-control'),data:body.data};
   }
   async function assertCurrentBootstrapCache(){
-   const expected=JSON.parse(owned.psql(`SELECT current_theme_release_id AS id,storefront_release_version AS version FROM sites WHERE id='${siteId}';`));
+   const expected=JSON.parse(owned.psql(`SELECT row_to_json(r) FROM (SELECT current_theme_release_id AS id,storefront_release_version AS version FROM sites WHERE id='${siteId}') r;`));
    for(const compact of [false,true]){
     let result=await bootstrap(compact);assert.equal(result.status,200);
     await expect.poll(async()=>{result=await bootstrap(compact);return result.cache;},{timeout:10_000,intervals:[50,100,250]}).toBe('HIT');
