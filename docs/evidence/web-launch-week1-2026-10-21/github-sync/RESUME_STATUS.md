@@ -103,3 +103,7 @@ coverage remain explicit work. A read-only probe confirms plain PostgreSQL lower
 differs from JavaScript for dotted I and final sigma; ICU handles those cases,
 but its Unicode version differs from Node's. A customer optimization must prove
 the existing normalization/search contract rather than silently substituting it.
+
+## Production authorization and hosted rehearsal — 22 October 2026
+
+The owner supplied the isolated CLI activation and authorized all-current-work production release, explicitly deferring GitHub CI billing. Provider targets are verified and the encrypted production backup is restore-verified. The hosted-role rehearsal blocks on financial migrations 347/360, not on missing release approval. No hosted migration or deployment occurred. See [the concrete preflight and required architecture decision](PRODUCTION_PREFLIGHT_2026_10_22.md) and its JSON receipt; this supersedes the earlier waiting-for-credentials and CI-only boundary above.
