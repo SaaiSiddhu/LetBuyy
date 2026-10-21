@@ -1,0 +1,21 @@
+{
+  "scope": "Isolated actual workerd crypto prototype; not integrated Gateway acceptance",
+  "hashWasm": "4.12.0",
+  "originalSourceSha256": "2d6333a619d7f64adc313a38732425fc0c6f0baaa36c1419cf05672bcd89340d",
+  "compilerCallOnlyReplaced": true,
+  "legacyNodeHashAccepted": true,
+  "wrongPasswordRefused": true,
+  "workerHashVerifiedByOriginal": true,
+  "workerThreeOperationsMs": 129,
+  "binaries": {
+    "argon2": {
+      "bytes": 6660,
+      "sha256": "83b5829d20b4312aca1a56819f95eef20492e058c70f282c9ed6929f579b20ed"
+    },
+    "blake2b": {
+      "bytes": 7442,
+      "sha256": "b478c0d889d97d7a8db4d10501457ad78dd406d02dcb4c892c0d844805ef05bb"
+    }
+  },
+  "bundleBytes": 42093
+}

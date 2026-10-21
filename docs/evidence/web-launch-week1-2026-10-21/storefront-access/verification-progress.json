@@ -1,7 +1,7 @@
 {
   "phase": "WEB-LAUNCH-W1-STOREFRONT-ACCESS",
-  "status": "BACKEND_LOCALLY_VERIFIED_NATIVE_AND_FINAL_GATE_IN_PROGRESS",
-  "sourceCheckpoint": "8ac9d54d",
+  "status": "STATIC_WORKER_PASSWORD_AND_CACHE_VERIFIED_FULL_BROWSER_RUNNING",
+  "sourceCheckpoint": "24eaecb0",
   "baseDevelop": "d6cd8f3748147c9ab4dd4d5e251888eb89c6ae15",
   "backend": {
     "sqlAndRestMigrationRun": {
@@ -19,11 +19,16 @@
       "pass": 16,
       "fail": 0
     },
-    "cleanup": "all three runs have empty failures/remaining containers/networks/volumes"
+    "cleanup": "all three runs have empty failures/remaining containers/networks/volumes",
+    "domainAndProofRefusalRun": {
+      "pass": 20,
+      "fail": 0,
+      "scope": "Primary/secondary domain status/deletion/current ownership, foreign/malformed/expired credentials, alias/preview DB unavailable and recovery; SQL+REST"
+    }
   },
   "regressions": {
     "gatewayUnit": {
-      "pass": 1613,
+      "pass": 1614,
       "fail": 0
     },
     "authCore": {
@@ -84,9 +89,9 @@
     "repair": "Server page resolves rewritten searchParams and passes explicit props to client view; actual shopper gate has no demo switcher; canonical UI tokens and truthful invalid/throttled/unavailable feedback. Added actual verifier503/retry proof.",
     "currentRun": {
       "status": "RUNNING_NOT_ACCEPTED",
-      "session": 14599,
-      "source": "8ac9d54d",
-      "directory": "native-access-repaired"
+      "session": 87464,
+      "source": "24eaecb0",
+      "directory": "native-access-static-final"
     },
     "references": [
       {
@@ -101,7 +106,27 @@
         "reviewed": "2026-10-21",
         "use": "Maintainer clarification corroborates that client hook follows unchanged browser URL, while Page receives destination search parameters."
       }
-    ]
+    ],
+    "secondRun": {
+      "pass": 0,
+      "fail": 1,
+      "stage": "storefront-visitor-access",
+      "observed": "Form present; wrong password and named verifier503/retry UI observed. Correct password still401 in actual workerd.",
+      "cleanup": "empty"
+    },
+    "passwordBaseline": {
+      "pass": 1,
+      "fail": 2,
+      "actualFailure": "WebAssembly.compile(): Wasm code generation disallowed by embedder",
+      "effect": "Password creation500; verifier caught runtime exception and mislabeled valid credential401; real warm CacheAPI authorization/revocation case passed."
+    },
+    "staticLoaderRun": {
+      "pass": 5,
+      "fail": 0,
+      "scope": "Three actual native password-create/legacy-verify/warm-cache cases plus both SQL/media/admission modes",
+      "cleanup": "empty"
+    },
+    "staticLoader": "Preserved pinned hash-wasm4.12.0 algorithm/options/PHC and original Node path; only Worker loader uses reproducible static compiled modules. No new dependency, algorithm weakening, global monkeypatch or identity issuer. Unexpected crypto failure now sanitized503."
   },
   "remaining": [
     "Complete normal production-browser unlock, first-link SSR forwarding, revocation/offline/public-cookie recovery on final serving code",
@@ -110,7 +135,9 @@
     "Final native CacheAPI warm protected reads and before-cache revocation proof",
     "Run final canonical gate in disposable clone after owned suites are terminal",
     "Fresh cart/order and independent marketplace/buyer-history eligibility remains parent launch work",
-    "Core/editor/legacy media/performance and wider commerce/operator/provider/hosted gates remain open"
+    "Core/editor/legacy media/performance and wider commerce/operator/provider/hosted gates remain open",
+    "Review password-attempt admission before the expensive KDF: current internal verify computes the password check before its limiter; fresh resource/negative proof remains required.",
+    "Redirect-alias preview browser behavior remains unaccepted even though raw current-domain capability checks pass."
   ],
   "merged": false,
   "pushedAfterHandoff": false,
