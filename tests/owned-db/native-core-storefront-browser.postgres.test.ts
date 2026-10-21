@@ -223,8 +223,12 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    }
   }
   console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture',samples:readProfiles}));
-  const resourceStart=calls.length;const resourceDocument=await buyer.goto(`${tenantOrigin}/_vercel/speed-insights/script.js`,{waitUntil:'networkidle'});
-  assert.equal(resourceDocument?.status(),404,'owned Next server has no Vercel platform script');
+  // Fetch the script as a resource, not a document: rendering the generic404
+  // document legitimately prefetches its Continue shopping Link into a new RSC request.
+  const resourceStart=calls.length;const resourceStatus=await buyer.evaluate(async()=>{
+   const result=await fetch('/_vercel/speed-insights/script.js',{cache:'no-store'});await result.arrayBuffer();return result.status;
+  });
+  assert.equal(resourceStatus,404,'owned Next server has no Vercel platform script');
   assert.equal(calls.slice(resourceStart).filter(call=>call.path.includes(`/storefront/${subdomain}`)).length,0,'missing platform assets must not render a tenant or load its catalog');
   console.info('OWNED_PLATFORM_RESOURCE '+JSON.stringify({missingPlatformAsset404:true,tenantBusinessReads:0}));
   for(const resource of ['store','product'] as const){
