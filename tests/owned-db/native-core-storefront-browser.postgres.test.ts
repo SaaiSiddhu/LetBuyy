@@ -40,17 +40,19 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
   return new Response(JSON.stringify({id:'synthetic-mail-'+crypto.randomUUID()}),{status:200,headers:{'Content-Type':'application/json'}});};
  let gateway:NativeGateway|undefined,tls:HttpsServer|undefined,commerce:OwnedClientProcess|undefined,stage='build';console.info('OWNED_NATIVE_STAGE build');
- let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false;
+ let commerceOrigin='',checkoutOrigin='',tlsSpki='',collectionListUnavailable=false,storeReadUnavailable=false,productReadUnavailable=false;
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined;
  let browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined,buyerDiagnostic:Page|undefined;
- const calls:{path:string;status:number;key?:string}[]=[],errors:string[]=[];
+ const calls:{path:string;status:number;key?:string;bytes:number;ms:number;navigationLocation?:string}[]=[],errors:string[]=[];
  try{
   bridge=createServer(async(req,res)=>{
+   const began=performance.now(),requestUrl=new URL(req.url??'/', 'http://owned.test');
+   if(storeReadUnavailable&&requestUrl.pathname===`/v1/storefront/${subdomain}`||productReadUnavailable&&requestUrl.pathname.startsWith(`/v1/storefront/${subdomain}/products/`)){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_READ_OUTAGE',message:'Synthetic mandatory reader unavailable'}}));return;}
    if(collectionListUnavailable && req.url?.split('?')[0]===`/v1/storefront/${subdomain}/collections`){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_COLLECTION_OUTAGE',message:'Synthetic collection transport unavailable'}}));return;}
    const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks),headers=new Headers();
    for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
    try{const result=await gateway!.dispatch(req.url??'/',{method:req.method,headers,...(body.length?{body}:{})});
-    if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}calls.push({path:(req.url??'/').split('?')[0],status:result.status,key:headers.get('X-Idempotency-Key')||undefined});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(Buffer.from(await result.arrayBuffer()));
+    if(new URL(req.url??'/', 'http://owned.test').searchParams.has('search')){const data=await result.clone().json() as {data?:unknown[]};console.info('OWNED_SEARCH_RESPONSE '+JSON.stringify({status:result.status,count:Array.isArray(data.data)?data.data.length:null}));}const responseBytes=Buffer.from(await result.arrayBuffer());calls.push({path:requestUrl.pathname,status:result.status,key:headers.get('X-Idempotency-Key')||undefined,bytes:responseBytes.length,ms:Math.round((performance.now()-began)*100)/100,...(requestUrl.pathname.endsWith('/navigation')?{navigationLocation:requestUrl.searchParams.get('location')??''}:{})});res.writeHead(result.status,Object.fromEntries(result.headers.entries()));res.end(responseBytes);
    }catch{res.writeHead(500);res.end('{}');}
   });
   await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
@@ -191,6 +193,50 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   const tenantOrigin=`https://${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`;const home=await buyer.goto(tenantOrigin);assert.equal(home?.status(),200);await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();await expect(buyer.getByRole('heading',{level:1}).first()).toHaveText(marker);await expect(buyer.getByText('Discover our latest products.',{exact:true})).toBeVisible();await expect(buyer.getByText('Free shipping on fresh drops this week.',{exact:true})).toHaveCount(0);
   assert.equal(await buyer.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--primary').trim()),previewPrimary,'private and published Core use the same resolved primary token');
   const publicScreenshot=`${tmpdir()}/letbuyy-native-core-store-${owned.runId}.png`;await buyer.screenshot({path:publicScreenshot,fullPage:true});
+  stage='public-read-profile';console.info('OWNED_NATIVE_STAGE public-read-profile');
+  const profileEditorUrl=page.url();await page.goto('about:blank');await buyer.waitForLoadState('networkidle');
+  const readProfiles=[];
+  for(const [kind,path]of [['home',''],['product',`/product/${productId}`],['collection-index','/collections']] as const){
+   for(let sample=0;sample<3;sample++){
+    await buyer.waitForLoadState('networkidle');const startIndex=calls.length,began=performance.now();
+    const document=await buyer.goto(`${tenantOrigin}${path}`,{waitUntil:'domcontentloaded'});assert.equal(document?.status(),200);
+    await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
+    if(kind==='home')await expect(buyer.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
+    if(kind==='product'){await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await expect(buyer.getByRole('button',{name:'Add to cart',exact:true})).toBeDisabled();}
+    if(kind==='collection-index')await expect(buyer.locator('.lb-category-grid a').filter({visible:true})).toHaveCount(24);
+    const usefulReadyMs=Math.round((performance.now()-began)*100)/100;
+    const timing=await buyer.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;return{ttfbMs:n.responseStart-n.startTime,responseEndMs:n.responseEnd-n.startTime,domContentLoadedMs:n.domContentLoadedEventEnd-n.startTime,decodedDocumentBytes:n.decodedBodySize};});
+    await buyer.waitForLoadState('networkidle');
+    const reads=calls.slice(startIndex).filter(call=>call.path===`/v1/storefront/${subdomain}`||call.path.startsWith(`/v1/storefront/${subdomain}/`));
+    const counts:Record<string,number>={};for(const call of reads){const key=call.path.replace(subdomain,':store').replace(productId,':product')+(call.navigationLocation?'?location='+call.navigationLocation:'');counts[key]=(counts[key]??0)+1;}
+    const navigationReads=reads.filter(call=>call.path.endsWith('/navigation')).length;
+    const skuReads=reads.filter(call=>call.path===`/v1/storefront/${subdomain}/products/${productId}`).length;
+    const catalogReads=reads.filter(call=>call.path===`/v1/storefront/${subdomain}/products`).length;
+    const failures=reads.filter(call=>call.status>=400).map(call=>({status:call.status,path:call.path.replace(subdomain,':store').replace(productId,':product')}));
+    assert.deepEqual(failures,[]);
+    assert.ok(navigationReads<=3,`${kind} repeats public menu readers: ${JSON.stringify(counts)}`);
+    assert.equal(counts['/v1/storefront/:store'],1,`${kind} needs one current public bootstrap per new document`);
+    assert.equal(counts['/v1/storefront/:store/status'],1,`${kind} needs one current status read per new document`);
+    if(kind==='product')assert.equal(skuReads,1,'metadata/page share one public SKU read in this render');
+    if(kind==='product'||kind==='collection-index')assert.equal(catalogReads,0,'Liquid chrome must not fetch an unused catalog');
+    readProfiles.push({kind,sample,usefulReadyMs,...timing,upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
+   }
+  }
+  console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture',samples:readProfiles}));
+  // Fetch the script as a resource, not a document: rendering the generic404
+  // document legitimately prefetches its Continue shopping Link into a new RSC request.
+  const resourceStart=calls.length;const resourceStatus=await buyer.evaluate(async()=>{
+   const result=await fetch('/_vercel/speed-insights/script.js',{cache:'no-store'});await result.arrayBuffer();return result.status;
+  });
+  assert.equal(resourceStatus,404,'owned Next server has no Vercel platform script');
+  assert.equal(calls.slice(resourceStart).filter(call=>call.path.includes(`/storefront/${subdomain}`)).length,0,'missing platform assets must not render a tenant or load its catalog');
+  console.info('OWNED_PLATFORM_RESOURCE '+JSON.stringify({missingPlatformAsset404:true,tenantBusinessReads:0}));
+  for(const resource of ['store','product'] as const){
+   storeReadUnavailable=resource==='store';productReadUnavailable=resource==='product';await buyer.goto(`${tenantOrigin}/product/${productId}`);await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
+   storeReadUnavailable=false;productReadUnavailable=false;await buyer.getByRole('button',{name:'Try again',exact:true}).click();await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await buyer.waitForLoadState('networkidle');
+  }
+  console.info('OWNED_CORE_READ_RECOVERY '+JSON.stringify({bootstrap503Unavailable:true,sku503Unavailable:true,nextRequestRecovers:true,falseNotFound:false}));
+  await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Experiences',exact:true})).toBeVisible();
   stage='ten-core-presets';console.info('OWNED_NATIVE_STAGE ten-core-presets');const presets=[];
   for(const name of ['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit']){
    await page.getByRole('button',{name:'Experiences',exact:true}).click();const apply=page.getByRole('button',{name:'Apply '+name,exact:true});

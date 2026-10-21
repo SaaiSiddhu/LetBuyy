@@ -60,7 +60,7 @@ function isStorefrontAccessMode(value: unknown): value is StorefrontAccessMode {
 }
 
 export const config = {
-  matcher: ['/((?!api/|_next/|_static/|[\\w-]+\\.\\w+).*)'],
+  matcher: ['/((?!api/|_next/|_static/|_vercel/|[\\w-]+\\.\\w+).*)'],
 };
 
 function gatewayBaseUrl(): string | null {

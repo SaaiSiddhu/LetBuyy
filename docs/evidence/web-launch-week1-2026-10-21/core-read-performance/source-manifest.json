@@ -1,0 +1,8 @@
+{
+  "apps/commerce/web/src/lib/store-service.ts": "e81fb06f5aadf1417c4929be80dfef6056dd2886a19601254c17eb3ae8ddee94",
+  "apps/commerce/web/src/lib/product-service.ts": "3622280ae0e91489c1184a028f8c992797e5e74373a148decb46d5c60cc61105",
+  "apps/commerce/web/src/app/store/[subdomain]/layout.tsx": "34982c008e2547cff6def35bb3c5ed5478fc49001c543ffebd25d325a503e455",
+  "apps/commerce/web/src/proxy.ts": "2e33d1e717207200629e9f73c339fd3955eb174a0cd423ce5d5c4583f69bbcd6",
+  "tests/owned-db/native-core-storefront-browser.postgres.test.ts": "4db7b7e6cca732b16af35e50de147939ecff6966771d533215e75ea7146ecc28",
+  "tests/launch/lb1-storefront-middleware.test.mjs": "f9ee630889481a546ea951b81cb85c1afaad24fe510c4d621135ee47b276aace"
+}

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import type { Product as SharedProduct } from '@letbuyy/shared-types';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
@@ -128,7 +129,7 @@ export const ProductService = {
     },
 
     // Get a single product by ID
-    async getProductById(productId: string, subdomain?: string): Promise<ProductModel | null> {
+    getProductById: cache(async (productId: string, subdomain?: string): Promise<ProductModel | null> => {
         if (!subdomain) return null;
 
         try {
@@ -147,7 +148,7 @@ export const ProductService = {
             console.error('[ProductService] Worker product fetch failed:', error);
             throw new StorefrontCatalogueError('getProductById', error);
         }
-    },
+    }),
 
     // Get all products for a seller (via their sites)
     async getProductsBySellerId(sellerId: string): Promise<ProductModel[]> {
