@@ -9,9 +9,10 @@ import {createServer,request as forwardHttpRequest,type Server} from 'node:http'
 import {createServer as createHttpsServer,type Server as HttpsServer} from 'node:https';
 import {NativeGateway} from '../helpers/native-owned-gateway';
 import {DEFAULT_STOREFRONT_DOMAIN} from '@letbuyy/shared-types';
+import {hashStoreAccessPassword} from '../../services/api-gateway/src/lib/store-access-password';
 import {exportJWK} from 'jose';
 import {chromium,expect,type Page} from '@playwright/test';
-import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import {gatewayEnv,newIdentityKeys,INTERNAL_SECRET,signedIdentityHeaders} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
 import {requireOwnedDatabase,startOwnedClientRuntime,stopOwnedClientRuntime,startOwnedPooledSqlProxy,createOwnedCheckoutTlsCertificate,type OwnedClientProcess} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 const owned=requireOwnedDatabase();
 async function freePort() {
@@ -34,7 +35,7 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
  assert.equal(owned.psql(`SELECT count(*) FROM users_custom WHERE email='${email}';`),'0');
  const identityPort=await freePort(),merchantPort=await freePort(),commercePort=await freePort();
  const identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`,commerceHttpOrigin=`http://localhost:${commercePort}`;
- const keys=await newIdentityKeys(),pooled=await startOwnedPooledSqlProxy(owned);
+ const keys=await newIdentityKeys(),pooled=await startOwnedPooledSqlProxy(owned),visitorSigningKey=crypto.randomUUID()+crypto.randomUUID();
  const mail:{to:string[];subject:string;html:string}[]=[];let failFirstMail=true;
  const capture=async(request:Request)=>{assert.equal(new URL(request.url).pathname,'/emails');assert.equal(request.method,'POST');mail.push(await request.json() as typeof mail[number]);
   if(failFirstMail){failFirstMail=false;return new Response(JSON.stringify({name:'application_error',message:'Synthetic email transport unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
@@ -67,11 +68,11 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   });
   await new Promise<void>(r=>tls!.listen(0,'127.0.0.1',r));const tlsPort=(tls.address() as {port:number}).port;
   commerceOrigin=`https://${DEFAULT_STOREFRONT_DOMAIN}:${tlsPort}`;checkoutOrigin=`https://checkout.localhost:${tlsPort}`;
-  const env={...gatewayEnv(owned,keys,{...pooled.env(),ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,
+  const env={...gatewayEnv(owned,keys,{...pooled.env(),STORE_ACCESS_SIGNING_KEY:visitorSigningKey,PREVIEW_SIGNING_KEY:visitorSigningKey,ENVIRONMENT:'test',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,
    RESEND_API_KEY:'synthetic-owned-resend-capture',CHECKOUT_ORIGIN:checkoutOrigin,CHECKOUT_SIGNING_SECRET:crypto.randomUUID()+crypto.randomUUID(),UPLOAD_PUBLIC_BASE_URL:`https://api.localhost:${tlsPort}/assets`})};
   console.info('OWNED_SQL_PROTOCOL_TARGET '+JSON.stringify({binding:'HYPERDRIVE-shaped',origin:'owned PostgreSQL wire',managedHyperdrive:false}));
   gateway=await NativeGateway.create(env,capture);
-  const shared={CHECKOUT_ORIGIN:checkoutOrigin,NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
+  const shared={STORE_ACCESS_SIGNING_KEY:visitorSigningKey,PREVIEW_SIGNING_KEY:visitorSigningKey,CHECKOUT_ORIGIN:checkoutOrigin,NEXT_PUBLIC_STOREFRONT_URL:commerceOrigin,NEXT_PUBLIC_STORE_ROOT_DOMAIN:DEFAULT_STOREFRONT_DOMAIN,LETBUYY_INTERNAL_API_SECRET:INTERNAL_SECRET,INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
   identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
    LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
    NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
@@ -373,6 +374,33 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await page.goto(`${merchantOrigin}/${subdomain}/online-store/preferences`);await expect(page.getByLabel('Homepage title',{exact:true})).toBeVisible();await expect(page.locator('p').filter({hasText:new RegExp(`^${subdomain}\\.${DEFAULT_STOREFRONT_DOMAIN.replaceAll('.','\\.')}$`)})).toBeVisible();
   await page.getByLabel('Homepage title',{exact:true}).fill('Synthetic Core Search Listing');const [seoSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/settings')&&r.request().method()==='PATCH'),page.getByRole('button',{name:'Save changes',exact:true}).click()]);assert.equal(seoSaved.status(),200);
   await page.goto(`${merchantOrigin}/${subdomain}/settings/general`);await expect(page.locator('.settings-general-seo-preview-url')).toHaveText(`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`);await expect(page.locator('.settings-general-seo-preview-title')).toHaveText('Synthetic Core Search Listing');
+  stage='storefront-visitor-access';console.info('OWNED_NATIVE_STAGE storefront-visitor-access');
+  const visitorContext=await browser.newContext(),visitor=await visitorContext.newPage();buyerDiagnostic=visitor;visitor.setDefaultTimeout(30_000);visitor.setDefaultNavigationTimeout(60_000);
+  const storePassword='Synthetic-Visitor-Password-42!',rotatedPassword='Synthetic-Rotated-Visitor-Password-42!';
+  const accessHash=await hashStoreAccessPassword(storePassword),rotatedHash=await hashStoreAccessPassword(rotatedPassword);
+  owned.psql(`UPDATE sites SET access_mode='password',access_password_hash='${accessHash}' WHERE id='${siteId}';`);
+  assert.equal((await visitor.goto(tenantOrigin))?.status(),401);await expect(visitor.getByLabel('Store password',{exact:true})).toBeVisible();
+  await visitor.getByLabel('Store password',{exact:true}).fill('Synthetic-wrong-password');
+  const [wrongPassword]=await Promise.all([visitor.waitForResponse(r=>new URL(r.url()).pathname==='/store-access/password'),visitor.getByRole('button',{name:'Enter store',exact:true}).click()]);assert.equal(wrongPassword.status(),401);await expect(visitor.getByText('That password did not match.',{exact:true})).toBeVisible();
+  const unlock=async(value:string)=>{await visitor.getByLabel('Store password',{exact:true}).fill(value);const [response]=await Promise.all([visitor.waitForResponse(r=>new URL(r.url()).pathname==='/store-access/password'),visitor.getByRole('button',{name:'Enter store',exact:true}).click()]);assert.equal(response.status(),200);await expect(visitor.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();};
+  await unlock(storePassword);
+  const gateCookie=(await visitorContext.cookies()).find(c=>c.name==='__Host-lb_store_gate');assert.ok(gateCookie?.httpOnly&&gateCookie.secure);
+  assert.equal((await visitor.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(visitor.getByRole('heading',{name:productName,exact:true})).toBeVisible();
+  assert.equal((await visitor.goto(`${tenantOrigin}/collections`))?.status(),200);await expect(visitor.locator('[data-theme-renderer="liquid"]')).toBeVisible();
+  owned.psql(`UPDATE sites SET access_password_hash='${rotatedHash}' WHERE id='${siteId}';`);assert.equal((await visitor.goto(tenantOrigin))?.status(),401);await unlock(rotatedPassword);
+  owned.psql(`UPDATE sites SET access_mode='preview_only' WHERE id='${siteId}';`);assert.equal((await visitor.goto(tenantOrigin))?.status(),401);
+  const ownerId=owned.psql(`SELECT custom_user_id FROM sites WHERE id='${siteId}';`);
+  const issued=await gateway.dispatch('/v1/store-access/preview-links',{method:'POST',headers:{...await signedIdentityHeaders(ownerId,email,siteId),'X-Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({site_id:siteId,scope:'share-link',host:`${subdomain}.${DEFAULT_STOREFRONT_DOMAIN}`})});assert.equal(issued.status,200);const issuedPreview=await issued.json() as {data:{token:string;jti:string}};
+  const shareContext=await browser.newContext(),share=await shareContext.newPage();share.setDefaultNavigationTimeout(60_000);buyerDiagnostic=share;
+  assert.equal((await share.goto(tenantOrigin+'?lb_preview='+encodeURIComponent(issuedPreview.data.token)))?.status(),200,'first preview request forwards its verified capability before response cookie exists');await expect(share.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();
+  const previewCookie=(await shareContext.cookies()).find(c=>c.name==='__Host-lb_preview');assert.ok(previewCookie?.httpOnly&&previewCookie.secure);
+  assert.equal((await share.goto(`${tenantOrigin}/product/${productId}`))?.status(),200);await expect(share.getByRole('heading',{name:productName,exact:true})).toBeVisible();
+  const revoked=await gateway.dispatch('/v1/store-access/preview-links/'+issuedPreview.data.jti+'?site_id='+siteId,{method:'DELETE',headers:{...await signedIdentityHeaders(ownerId,email,siteId),'X-Idempotency-Key':crypto.randomUUID()}});assert.equal(revoked.status,200);
+  assert.equal((await share.goto(tenantOrigin))?.status(),401);await expect(share.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
+  owned.psql(`UPDATE sites SET access_mode='offline' WHERE id='${siteId}';`);assert.equal((await share.goto(tenantOrigin))?.status(),503);
+  owned.psql(`UPDATE sites SET access_mode='public',access_password_hash=NULL WHERE id='${siteId}';`);assert.equal((await share.goto(tenantOrigin))?.status(),200);await expect(share.getByRole('heading',{level:1,name:marker,exact:true})).toBeVisible();assert.equal((await shareContext.cookies()).some(c=>c.name==='__Host-lb_preview'),false,'public recovery clears revoked preview cookie so normal checkout can resume');
+  const visitorScreenshot=`${tmpdir()}/letbuyy-native-visitor-access-${owned.runId}.png`;await share.screenshot({path:visitorScreenshot,fullPage:true});
+  console.info('OWNED_NATIVE_VISITOR_ACCESS '+JSON.stringify({nativeWorkerd:true,productionApps:3,passwordForm:true,wrongPasswordRefused:true,secureHttpOnlyGate:true,productAndCollectionsUnlocked:true,passwordRotationRevoked:true,modeChangeRevoked:true,normalPreviewIssue:true,firstPreviewRequest:true,previewProduct:true,normalPreviewRevoke:true,offlineRefused:true,publicRecovery:true,retiredPreviewCookieCleared:true,visitorScreenshot}));
   console.info('OWNED_NATIVE_CORE '+JSON.stringify({nativeWorkerd:true,nativeR2:true,seededAccount:false,seededStore:false,seededProduct:false,productionApps:3,providerFixtureOnly:true,store,productVariants:2,uploadedExactPng:true,imageDimensions:[320,320],normalEditorPublish:true,unpublishedPreviewVerified:true,merchantDomainLabelsVerified:true,preferencesSeoReadback:true,anonymousDraftDenied:true,presets,realTenantTlsHost:true,actualScheduledSearchIndex:true,manualCollectionShopperVerified:true,searchSubmissionVerified:true,canonicalBuyerProfileAddressVerified:true,buyerAddressCrudVerified:true,staleAccountWriteDenied:true,canonicalBuyers:2,unrelatedOrderDenied:true,searchScreenshot,accountScreenshot,addressScreenshot,customerOrders:orders.length,codTotalMinor:orders[0].total,screenshot,publicScreenshot,orderScreenshot}));
   assert.doesNotMatch(signupCopy,/₹20|14 days free/);
  }catch(error){console.info('OWNED_NATIVE_CORE_FAILURE '+JSON.stringify({stage,path:page?new URL(page.url()).pathname:null,buyer:buyerDiagnostic?{host:new URL(buyerDiagnostic.url()).host,path:new URL(buyerDiagnostic.url()).pathname}:null,storeState:owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('status',status,'published',published,'accessMode',access_mode,'theme',theme_id))::text,'[]') FROM sites WHERE subdomain='${subdomain}';`),calls:calls.slice(-15).map(({path,status})=>({path:path.replace(/ct_[A-Za-z0-9_-]+/g,'[redacted-cart-token]'),status})),errors:errors.slice(-3).map(s=>s.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'))}));throw new Error((error instanceof Error?error.message:String(error)).replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]'));
