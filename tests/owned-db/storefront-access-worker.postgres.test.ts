@@ -97,3 +97,11 @@ test('native password handoff works without a tenant cookie and retires after cu
  const read=await gateway.dispatch(path,{});assert.equal(read.status,200);assert.equal(read.headers.get('Cache-Control'),'no-store');const display=await read.json() as {data:{presentation:{id:string;themeSettings:{primaryColor:string}}}};assert.equal(display.data.presentation.id,t.siteId);assert.ok(display.data.presentation.themeSettings.primaryColor);
  owned.psql(`UPDATE sites SET access_password_hash=${q(await hashStoreAccessPassword(crypto.randomUUID()))} WHERE id=${q(t.siteId)};`);const denied=await gateway.dispatch(path,{});assert.equal(denied.status,401);await denied.arrayBuffer();
 });
+
+test('native receipt capability survives closed navigation without exposing contact data or accepting a wrong cart',async()=>{
+ const t=newSyntheticTenant('native-receipt');seedSyntheticTenant(owned.psql,t);
+ const created=await gateway.dispatch('/v1/storefront/'+t.subdomain+'/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[],buyer_email:'syn-native-receipt@example.invalid'})});assert.equal(created.status,201);const payload=await created.json() as {data:{cart_token:string}};
+ owned.psql(`UPDATE sites SET access_mode='offline',published=false WHERE id=${q(t.siteId)};`);
+ const base='/v1/storefront/'+t.subdomain+'/cart/';const receipt=await gateway.dispatch(base+payload.data.cart_token+'/checkout-status',{});assert.equal(receipt.status,200);assert.equal(receipt.headers.get('Cache-Control'),'no-store');const text=await receipt.text();assert.doesNotMatch(text,/syn-native-receipt|buyer_email|shipping_address|payment_intent/);
+ const wrong=await gateway.dispatch(base+'ct_'+crypto.randomUUID().replace(/-/g,'')+'/checkout-status',{});assert.equal(wrong.status,404);await wrong.arrayBuffer();
+});

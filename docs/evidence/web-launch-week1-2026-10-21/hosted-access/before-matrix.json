@@ -1,0 +1,62 @@
+[
+  {
+    "mode": "password",
+    "expected": 401,
+    "read": 200,
+    "privateLineReturned": true,
+    "contact": 200,
+    "before": {
+      "claims": 0,
+      "sessions": 0
+    },
+    "after": {
+      "claims": 1,
+      "sessions": 1
+    }
+  },
+  {
+    "mode": "preview_only",
+    "expected": 401,
+    "read": 200,
+    "privateLineReturned": true,
+    "contact": 200,
+    "before": {
+      "claims": 0,
+      "sessions": 0
+    },
+    "after": {
+      "claims": 1,
+      "sessions": 1
+    }
+  },
+  {
+    "mode": "offline",
+    "expected": 503,
+    "read": 200,
+    "privateLineReturned": true,
+    "contact": 200,
+    "before": {
+      "claims": 0,
+      "sessions": 0
+    },
+    "after": {
+      "claims": 1,
+      "sessions": 1
+    }
+  },
+  {
+    "mode": "unpublished",
+    "expected": 404,
+    "read": 200,
+    "privateLineReturned": true,
+    "contact": 200,
+    "before": {
+      "claims": 0,
+      "sessions": 0
+    },
+    "after": {
+      "claims": 1,
+      "sessions": 1
+    }
+  }
+]

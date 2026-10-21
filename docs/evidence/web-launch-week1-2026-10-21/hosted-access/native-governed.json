@@ -1,0 +1,81 @@
+{
+  "runId": "9822be8c30b1",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-47137-mvi5b3jz-f8a8a1"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 8,
+  "assertionsPassed": 8,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 71.6,
+  "suiteSeconds": 66.8,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-access-worker.postgres",
+      "path": "tests/owned-db/storefront-access-worker.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-47137-mvi5b3jz-f8a8a1",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 66.8,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_access_worker_postgres",
+      "templateSeconds": 42.3,
+      "provisionSeconds": 2.7,
+      "rest": {
+        "container": "letbuyy-exec-9822be8c30b1-rest-1",
+        "upstreamPort": 64123,
+        "proxyPort": 64124
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 474,
+        "refused": 0,
+        "upstreamErrors": 3
+      }
+    }
+  ]
+}

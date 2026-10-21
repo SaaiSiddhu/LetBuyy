@@ -1,0 +1,119 @@
+{
+  "runId": "6201def53466",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-91829-mvi55lu2-d170dc"
+  ],
+  "reaped": [],
+  "suites": 2,
+  "gatewayDbSuites": 2,
+  "failedSuites": 0,
+  "tests": 24,
+  "assertionsPassed": 24,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 113.6,
+  "suiteSeconds": 105.1,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "hosted-checkout-buyer-ownership.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/hosted-checkout-buyer-ownership.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-91829-mvi55lu2-d170dc",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 90.4,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_hosted_checkout_buyer_ownership_postgres",
+      "templateSeconds": 73.1,
+      "provisionSeconds": 2,
+      "rest": {
+        "container": "letbuyy-exec-6201def53466-rest-1",
+        "upstreamPort": 63371,
+        "proxyPort": 63376
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 571,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    },
+    {
+      "name": "marketplace-cart-origin.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-91829-mvi55lu2-d170dc",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 15,
+      "pass": 15,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 14.7,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_marketplace_cart_origin_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1.7,
+      "rest": {
+        "container": "letbuyy-exec-6201def53466-rest-2",
+        "upstreamPort": 63472,
+        "proxyPort": 63473
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 596,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}
