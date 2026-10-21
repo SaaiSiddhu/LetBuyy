@@ -754,7 +754,7 @@ async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: stri
     if (!sql) return undefined;
     const fields = options.projection === 'render-v1'
         ? `id, theme_id, theme_instance_id, theme_package_version_id, release_version, NULL::jsonb AS release_config, release_manifest,
-           CASE WHEN template_snapshot IS NULL OR template_snapshot IN ('null'::jsonb, 'false'::jsonb, '0'::jsonb, '\"\"'::jsonb)
+           CASE WHEN template_snapshot IS NULL OR template_snapshot IN ('null'::jsonb, 'false'::jsonb, '0'::jsonb, to_jsonb(''::text))
                 THEN release_config ELSE template_snapshot END AS template_snapshot,
            schema_manifest_version, engine_version, published_at`
         : `id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
