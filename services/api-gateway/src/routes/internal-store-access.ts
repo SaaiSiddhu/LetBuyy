@@ -1,3 +1,4 @@
+import {loadVisitorSite,visitorGrants} from '../lib/storefront-visitor-access';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
@@ -10,7 +11,7 @@ import { verifyInternalAppRequest } from '../lib/internal-auth';
 import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { verifyStoreAccessPassword } from '../lib/store-access-password';
 import { checkRateLimitKey } from '../middleware/rateLimit';
-import { timingSafeEqualText } from '../lib/crypto';
+import { timingSafeEqualText,sha256Hex } from '../lib/crypto';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -45,7 +46,12 @@ router.get('/resolve', async (c) => {
         return c.json({ success: false, error: { code: 'STORE_NOT_FOUND', message: 'Store not found' }, host, host_type: parsed.kind }, 404);
     }
 
+    const accessSite=(resolved.access_mode==='password'&&c.req.header('X-LetBuyy-Storefront-Gate')?await loadVisitorSite(c,{id:resolved.id}):null)||{...resolved,status:resolved.status||'draft',access_revision:null};
+    const grants=await visitorGrants(c,accessSite);
+    c.header('Cache-Control','no-store');
     return c.json(success({
+        access_revision:accessSite.access_revision||null,
+        visitor_access:grants,
         host,
         site_id: resolved.id,
         subdomain: resolved.subdomain,
@@ -125,7 +131,8 @@ router.post('/verify', async (c) => {
         return c.json({ success: false, error: { code: 'INVALID_PASSWORD', message: 'Invalid store password' } }, 401);
     }
 
-    return c.json(success({ site_id: siteId, ok: true }));
+    c.header('Cache-Control','no-store');
+    return c.json(success({ site_id: siteId, ok: true,access_revision:await sha256Hex(site!.access_password_hash) }));
 });
 
 export default router;

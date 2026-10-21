@@ -29,6 +29,8 @@ interface StorefrontAccessContext {
   custom_domain_status: string;
   access_mode: StorefrontAccessMode;
   access_message: string | null;
+  access_revision?: string | null;
+  visitor_access?: {preview:boolean;password:boolean};
   published: boolean;
   status: string;
   // Multi-domain (migration 185): set when the request host is a connected
@@ -110,14 +112,16 @@ function signingKey(name: 'PREVIEW_SIGNING_KEY' | 'STORE_ACCESS_SIGNING_KEY'): s
 // abort surfaces as a rejected fetch, which takes the existing fail-closed path (SEC-R1).
 const STORE_ACCESS_TIMEOUT_MS = 3000;
 
-async function resolveAccess(host: string): Promise<StorefrontAccessResolution> {
+async function resolveAccess(host: string, req: NextRequest): Promise<StorefrontAccessResolution> {
   const config = backendConfig();
   if (!config) return { status: 'unavailable' };
 
   let response: Response;
   try {
     response = await fetch(`${config.baseUrl}/v1/internal/store-access/resolve?host=${encodeURIComponent(host)}`, {
-      headers: config.headers,
+      headers: {...config.headers,
+        ...(req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)?.value?{'X-LetBuyy-Storefront-Gate':req.cookies.get(LETBUYY_STOREFRONT_GATE_COOKIE)!.value}:{}),
+        ...((req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value)?{'X-LetBuyy-Storefront-Preview':(req.nextUrl.searchParams.get(LETBUYY_STOREFRONT_PREVIEW_QUERY)||req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)!.value)}:{})},
       cache: 'no-store',
       signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
     });
@@ -142,9 +146,9 @@ async function resolveAccess(host: string): Promise<StorefrontAccessResolution> 
   return { status: 'ok', site: body.data };
 }
 
-async function verifyStorePassword(input: { siteId: string; host: string; password: string; ip: string | null }): Promise<boolean> {
+async function verifyStorePassword(input: { siteId: string; host: string; password: string; ip: string | null }): Promise<{ok:boolean;revision?:string;status:number}> {
   const config = backendConfig();
-  if (!config) return false;
+  if (!config) return {ok:false,status:503};
   try {
     const response = await fetch(`${config.baseUrl}/v1/internal/store-access/verify`, {
       method: 'POST',
@@ -161,10 +165,12 @@ async function verifyStorePassword(input: { siteId: string; host: string; passwo
       cache: 'no-store',
       signal: AbortSignal.timeout(STORE_ACCESS_TIMEOUT_MS),
     });
-    return response.ok;
+    const body=await response.json().catch(()=>null);
+    const revision=body?.data?.access_revision;
+    return {ok:response.ok&&typeof revision==='string'&&/^[a-f0-9]{64}$/.test(revision),revision,status:response.status};
   } catch (error) {
     warnOnce('store-access-verify', `storefront password verification request failed: ${errorMessage(error)}`);
-    return false;
+    return {ok:false,status:503};
   }
 }
 
@@ -244,9 +250,10 @@ function applyThemePreviewCookie(response: NextResponse, subdomain: string, toke
 // renderer — so it reported 'react' on every response including genuine Liquid renders. A fabricated
 // telemetry value is worse than none (ANTI-R9); the composition engine's `lb:canary:render` event
 // already carries the real per-render engine.
-function rewriteToStore(req: NextRequest, subdomain: string, previewMode: boolean): NextResponse {
+function rewriteToStore(req: NextRequest, subdomain: string, previewMode: boolean, previewToken?:string): NextResponse {
   const requestHeaders = new Headers(req.headers);
-  if (previewMode) requestHeaders.set('x-letbuyy-preview-checkout-mode', 'test');
+  requestHeaders.delete('X-LetBuyy-Storefront-Preview');
+  if (previewMode) {requestHeaders.set('x-letbuyy-preview-checkout-mode', 'test');if(previewToken)requestHeaders.set('X-LetBuyy-Storefront-Preview',previewToken);}
   const destination = req.nextUrl.clone();
   // Prefix unless the path already is this store's own tree. The match has to land on a path segment
   // boundary: a bare startsWith also accepts `/store/<subdomain>x`, a *different* tenant's tree, and
@@ -271,7 +278,7 @@ async function validPreview(req: NextRequest, site: StorefrontAccessContext, hos
     || req.cookies.get(LETBUYY_STOREFRONT_PREVIEW_COOKIE)?.value;
   const result = await verifyStorefrontPreviewToken(token, signingKey('PREVIEW_SIGNING_KEY'), { expectedHost: host });
   return {
-    valid: Boolean(result.valid && result.payload?.sid === site.site_id),
+    valid: Boolean(result.valid && result.payload?.sid === site.site_id && site.visitor_access?.preview === true),
     token: token || undefined,
   };
 }
@@ -286,7 +293,7 @@ async function validGateCookie(req: NextRequest, site: StorefrontAccessContext, 
   // gate cookie. resolveAccess is already cache:no-store on every request, so this check adds no
   // extra latency; it simply validates that the current resolved access_mode is still 'password'
   // before honouring the stored gate.
-  return site.access_mode === 'password';
+  return site.access_mode === 'password' && site.visitor_access?.password === true && Boolean(site.access_revision) && result.payload.revision === site.access_revision;
 }
 
 // The Liquid contact-form.liquid section is a plain HTML form posting to this exact pathname (see
@@ -364,15 +371,15 @@ async function handlePasswordSubmit(req: NextRequest, site: StorefrontAccessCont
   if (!password) return NextResponse.json({ ok: false, error: 'PASSWORD_REQUIRED' }, { status: 400 });
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
-  const ok = await verifyStorePassword({ siteId: site.site_id, host, password, ip });
-  if (!ok) return NextResponse.json({ ok: false, error: 'INVALID_PASSWORD' }, { status: 401 });
+  const verification = await verifyStorePassword({ siteId: site.site_id, host, password, ip });
+  if (!verification.ok) return NextResponse.json({ ok: false, error: verification.status===429?'STORE_ACCESS_THROTTLED':verification.status>=500||verification.status===200?'STORE_ACCESS_UNAVAILABLE':'INVALID_PASSWORD' }, { status: verification.status===429?429:verification.status>=500||verification.status===200?503:401 });
 
   const accessKey = signingKey('STORE_ACCESS_SIGNING_KEY');
   if (!accessKey) {
     return NextResponse.json({ ok: false, error: 'STORE_ACCESS_UNAVAILABLE' }, { status: 503 });
   }
   const exp = Math.floor(Date.now() / 1000) + LETBUYY_STOREFRONT_GATE_TTL_SECONDS;
-  const token = await createStorefrontGateToken({ sid: site.site_id, host, exp }, accessKey);
+  const token = await createStorefrontGateToken({ sid: site.site_id, host, exp,revision:verification.revision }, accessKey);
   const response = NextResponse.json({ ok: true });
   response.cookies.set(LETBUYY_STOREFRONT_GATE_COOKIE, token, {
     httpOnly: true,
@@ -456,7 +463,7 @@ export async function proxy(req: NextRequest) {
     accessHost = `${requestedSubdomain}.${parsed.rootDomain || host}`;
   }
 
-  const resolution = await resolveAccess(accessHost);
+  const resolution = await resolveAccess(accessHost,req);
   if (resolution.status === 'unavailable') {
     // SEC-R1 / ART-08: resolution IS the access gate. "Unavailable" (missing INTERNAL_API_SECRET or
     // API base URL, gateway error, timeout) means we do not know whether this store is public,
@@ -502,6 +509,7 @@ export async function proxy(req: NextRequest) {
   }
 
   const preview = await validPreview(req, site, accessHost);
+  if(req.nextUrl.searchParams.has(LETBUYY_STOREFRONT_PREVIEW_QUERY)&&!preview.valid)return holdingPage(req,401,'preview-required',site);
   if ((site.access_mode === 'preview_only' || !site.published || site.status !== 'published') && !preview.valid) {
     return holdingPage(req, 401, 'preview-required', site);
   }
@@ -518,7 +526,7 @@ export async function proxy(req: NextRequest) {
     return handleContactSubmit(req, site);
   }
 
-  const response = rewriteToStore(req, site.subdomain, preview.valid);
+  const response = rewriteToStore(req, site.subdomain, preview.valid,preview.token);
   if (preview.valid && preview.token) {
     response.cookies.set(LETBUYY_STOREFRONT_PREVIEW_COOKIE, preview.token, {
       httpOnly: true,
@@ -534,12 +542,13 @@ export async function proxy(req: NextRequest) {
   return applyThemePreviewCookie(response, site.subdomain, themePreviewToken);
 }
 
-export async function createGateCookie(siteId: string, host: string): Promise<{ name: string; value: string; maxAge: number }> {
+export async function createGateCookie(siteId: string, host: string, revision?:string): Promise<{ name: string; value: string; maxAge: number }> {
   const accessKey = signingKey('STORE_ACCESS_SIGNING_KEY');
   if (!accessKey) {
     throw new Error('STORE_ACCESS_SIGNING_KEY is required to create a storefront gate cookie');
   }
   const exp = Math.floor(Date.now() / 1000) + LETBUYY_STOREFRONT_GATE_TTL_SECONDS;
-  const value = await createStorefrontGateToken({ sid: siteId, host, exp }, accessKey);
+  if(!revision||!/^[a-f0-9]{64}$/.test(revision))throw new Error('Current password revision is required for a storefront gate cookie');
+  const value = await createStorefrontGateToken({ sid: siteId, host, exp,revision }, accessKey);
   return { name: LETBUYY_STOREFRONT_GATE_COOKIE, value, maxAge: LETBUYY_STOREFRONT_GATE_TTL_SECONDS };
 }

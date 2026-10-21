@@ -60,9 +60,9 @@ export async function visitorGrants(c:C,site:VisitorSite):Promise<{preview:boole
  if(previewToken){
   const checked=await verifyStorefrontPreviewToken(previewToken,c.env.PREVIEW_SIGNING_KEY);
   if(checked.valid&&checked.payload?.sid===site.id&&await hostBelongs(c,checked.payload.host,site)){
-   const {data,error}=await getSupabaseAdmin(c).from('site_preview_links').select('jti,scope,expires_at,revoked_at').eq('site_id',site.id).eq('jti',checked.payload.jti).maybeSingle();
+   const {data,error}=await getSupabaseAdmin(c).from('site_preview_links').select('jti,scope,theme_id,expires_at,revoked_at').eq('site_id',site.id).eq('jti',checked.payload.jti).is('deleted_at',null).maybeSingle();
    if(error)throw unavailable();
-   preview=Boolean(data&&!data.revoked_at&&data.scope===checked.payload.scope&&new Date(data.expires_at).getTime()>Date.now());
+   preview=Boolean(data&&!data.revoked_at&&data.scope===checked.payload.scope&&(data.theme_id??null)===(checked.payload.theme_id??null)&&new Date(data.expires_at).getTime()>Date.now());
   }
  }
  if(gateToken&&site.access_mode==='password'){
