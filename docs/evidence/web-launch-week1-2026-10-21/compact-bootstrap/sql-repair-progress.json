@@ -87,5 +87,7 @@
     },
     "advisories": [],
     "scope": "Isolated clone after owned runs terminal. Does not verify managed Hyperdrive or close the four-week launch."
-  }
+  },
+  "followUpVerification": "../hyperdrive-protocol/verification-progress.json",
+  "currentCorrection": "The subsequent local protocol phase verifies prepared Hyperdrive-target execution, scoped clients and future-response projection refusal/retry. Its local fixtures do not prove managed Hyperdrive origin/cache/freshness; wider launch gates remain open."
 }

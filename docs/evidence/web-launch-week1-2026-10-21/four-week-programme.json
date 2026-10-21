@@ -3,7 +3,7 @@
   "startDate": "2026-10-21",
   "fourWeekTarget": "2026-11-18",
   "targetIsConditional": true,
-  "currentFocus": "Compact published payload and restricted-role SQL authorization now verified locally: migration370 fixed-shape backend readers, direct table access still denied; SQL9/database authority14/native1 pass, Gateway1609 and inventory14 pass. Develop/GitHub8f415c0f stays frozen. Next repair actual Hyperdrive prepared-protocol usage (constructor and unsafe queries), verify fresh managed routing/cache configuration and altered response-version denial, then broader public catalog password/offline authorization, legacy media/Core visual/editor and remaining commerce/operator/provider/hosted launch gates. No production readiness or Week1 closure is implied.",
+  "currentFocus": "Prepared protocol repair now verified locally at constructor/unsafe/transaction/savepoint/reserved boundaries. Actual PostgreSQL named statements, RLS/GUC rollback/concurrency/reconnect, both native SQL/media/admission modes and full Core signup/publication/COD/account browser pass; future-response version refusal/retry now proved. Gateway1613, source/inventory18, backend16 and native1 pass. Managed Hyperdrive origin/protocol/cache/freshness still needs account authentication/actual traffic; no hosted change or develop8f415c0f advance. Next local priority is the broader public catalog password/offline authorization boundary, then remaining legacy media/Core visual/editor, commerce/operator and real-provider/hosted launch gates.",
   "weeks": [
     {
       "week": 1,

@@ -1,6 +1,6 @@
 {
   "phase": "WEB-LAUNCH-W1-HYPERDRIVE-PROTOCOL",
-  "status": "BACKEND_VERIFIED_NATIVE_BROWSER_RUNNING",
+  "status": "LOCAL_PROTOCOL_AND_NATIVE_JOURNEY_VERIFIED_HOSTED_GATE_OPEN",
   "source": "0573f3dd adapter;69c10d67 fixture framing;02f20997 fixture names",
   "actualDriverObjects": {
     "before": {
@@ -183,7 +183,26 @@
     "fail": 0
   },
   "gatewayTypes": "PASS",
-  "nativeBrowser": "running under owned runner30572; no final result claimed",
+  "nativeBrowser": {
+    "run": "1345f04aa873",
+    "pass": 1,
+    "fail": 0,
+    "versionFault": {
+      "altered200Responses": 2,
+      "unknownVersionUnavailable": true,
+      "nextRequestRecovers": true
+    },
+    "journey": "Normal merchant signup/store/product/exact image/variants/private preview/ten presets/publication/search/COD/buyer CRUD and stale-account/order privacy/merchant readback",
+    "cleanup": {
+      "failures": [],
+      "remaining": {
+        "containers": [],
+        "networks": [],
+        "volumes": []
+      }
+    },
+    "unknownResponseProofComplete": true
+  },
   "hosted": "No managed Hyperdrive protocol/cache test. Last noninteractive metadata read requires account API authentication; configuration unchanged. Direct owned wire with a binding-shaped input is the local proof.",
   "retainedFailures": [
     "First native transport pair reused one unique synthetic store_name; second case could not start. Names isolated, complete pair and backend rerun pass.",
@@ -194,5 +213,22 @@
   "pushed": false,
   "deployed": false,
   "week1Complete": false,
-  "fourWeekGoal": "ACTIVE"
+  "fourWeekGoal": "ACTIVE",
+  "remaining": [
+    "Managed Hyperdrive metadata/authentication, supported fresh-read configuration and actual provider traffic verification remain unavailable.",
+    "Broader public catalog password/offline authorization, legacy media reconciliation, Core visual/editor and remaining commerce/operator/provider/hosted launch gates remain open."
+  ],
+  "canonical": {
+    "source": "9de5c2c6",
+    "counts": {
+      "PASS": 114,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "SKIP": 0,
+      "NOT_APPLICABLE": 1
+    },
+    "advisories": [],
+    "scope": "Disposable clone after owned database/browser runners terminal; final documentation-only changes do not alter the tested code."
+  },
+  "localVerificationComplete": true
 }
