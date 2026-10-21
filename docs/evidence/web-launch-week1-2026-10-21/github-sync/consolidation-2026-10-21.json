@@ -1,8 +1,8 @@
 {
   "date": "2026-10-21",
-  "status": "INTEGRATION_VERIFICATION_IN_PROGRESS",
+  "status": "FINAL_GOVERNANCE_PENDING",
   "baseDevelop": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b",
-  "sourceCheckpoint": "d1b86f19d9bc5f63ea9b0259b52119e4cc209abc",
+  "sourceCheckpoint": "956978a7273f1ed6614ca44f01f179c726bd06fb",
   "execution": "SINGLE AGENT; no subagents or other-chat messages",
   "referencedConversations": [
     {
@@ -212,7 +212,9 @@
     373,
     374,
     375,
-    376
+    376,
+    377,
+    378
   ],
   "notAcceptedAsComplete": [
     "Week1/four-week launch programme",
@@ -222,5 +224,17 @@
     "Hosted domains/TLS and production release"
   ],
   "cloudCi": "Previous develop checks were blocked before runner execution by account billing/spending; final pushed-head checks must be read separately.",
-  "privateTransfer": "Fresh read-only dumps of both identified development databases, original dirty worktree snapshots and local environment/media/signing inputs are preserved outside Git. Secrets and data require private transfer; source synchronization is not a deployment or database restore."
+  "privateTransfer": "Fresh read-only dumps of both identified development databases, original dirty worktree snapshots and local environment/media/signing inputs are preserved outside Git. Secrets and data require private transfer; source synchronization is not a deployment or database restore.",
+  "repairNotes": [
+    "Real held pooled-SQL probes reproduced8 stale current-authority failures; fresh bounded REST policy gates content reads.",
+    "Real persisted theme.installed row rejected by canonical schema before377; required package/version/installation IDs now emitted atomically, with bound published version validation.",
+    "378 explicitly closes current metadata reader by signature, preserving authenticator-only execution.",
+    "Source guards updated for extracted canonical helpers and atomic coordinator rate limits; URL-safe TypeScript comment parsing retains real SQL references; finite rollback recognizers retain mutation controls."
+  ],
+  "originalPreservationRecheck": {
+    "worktrees": 30,
+    "headPatchStatusUntrackedCountsUnchanged": true
+  },
+  "verification": "consolidation-verification.json",
+  "productionManifest": "consolidation-source-manifest.json"
 }

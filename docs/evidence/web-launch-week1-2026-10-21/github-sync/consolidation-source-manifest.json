@@ -1,6 +1,7 @@
 {
-  "sourceCheckpoint": "d1b86f19d9bc5f63ea9b0259b52119e4cc209abc",
-  "productionFingerprint": "c93af46939f3bddc03ef18d64d78e319577eb8b13907c47cdedf45db4329a736",
+  "sourceCheckpoint": "956978a7273f1ed6614ca44f01f179c726bd06fb",
+  "productionFingerprint": "a6e3c92534b817201f24ae1b9b90d7b13b03c3b9f859540c0e696bbf86f2e08f",
+  "fingerprintMethod": "SHA256 of sorted compact JSON path-to-file-SHA256 map",
   "files": {
     "apps/commerce/web/package.json": "5478b1c2f0d9623562e522028abc376a562a84e99afb8eb554c95c53159b05a4",
     "apps/commerce/web/public/theme-previews/aura.svg": "1226570ad797382af8d05c4991161559cddaa7c9c0c3ab90e58d2fe8159af281",
@@ -176,11 +177,16 @@
     "database/supabase/migrations/374_owned_storefront_visibility.sql": "d7c0ed99b6480ede94fd7c59a5b9cc65d291b2985bc7e8bf3e5e4fdd23cde54a",
     "database/supabase/migrations/375_private_theme_editability.sql": "bcc70368a81a85ae6a33e42c9208d6d80e077ee6e98f3c9d66977f4c12e07e27",
     "database/supabase/migrations/376_atomic_theme_instance_switch.sql": "d53975f48aca7311bd4bbdd1c8c723d80f3e6ce1c6bb525a518b08cc4fbb3a13",
+    "database/supabase/migrations/377_theme_install_event_contract.sql": "0c922b906b1d122a0620ab34b08701f9af4bcc16714f83dd9254c27c41f176c8",
+    "database/supabase/migrations/378_storefront_metadata_role_closure.sql": "c44cc5407b4e460c5dde0b8359f0f043cc024e64ea6e7e1cde732c82cc6214d0",
+    "database/supabase/rollback/371_storefront_access_metadata.rollback.sql": "b56919908f76d1da8c4ca54f878be2bf22f982980474d1780a45ab51b874dc51",
     "database/supabase/rollback/372_first_party_theme_catalog.rollback.sql": "789caaeb0a8ec81b3cb97e9674ffd0599c9ee5b19b96f5ef8701a2f5f0e25cd7",
     "database/supabase/rollback/373_theme_library_install.rollback.sql": "36cddf04439b8356ea68b9bf7ede79fefa5b5a91e1c93a8103be1f5bd3ee2494",
     "database/supabase/rollback/374_owned_storefront_visibility.rollback.sql": "3566dc91ac3f29e745cc23943c43f1c0797369ed55c076ac3ffa4b423ae2e6a1",
     "database/supabase/rollback/375_private_theme_editability.rollback.sql": "6ae3ed905c146196d0705ef3278a59e6d1006ede85635b5ce10b9162f3f06484",
     "database/supabase/rollback/376_atomic_theme_instance_switch.rollback.sql": "6db0c3a7b137741f9a17587fe3c7b97bf4f7e9bb1eeec23caa60658c7668eb42",
+    "database/supabase/rollback/377_theme_install_event_contract.rollback.sql": "824e26ad5d69b968e10bb2470ac14db07f25455aa6122037b23e72301b9b84c9",
+    "database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql": "5344522a05dc362b005306fabc23d8aae4c479c3fb57947b0c24133467009fa3",
     "packages/checkout-core/src/index.ts": "14a4902f18f950246b87123890ff8c7759ed6d1ce6c404fde3471526e24ab26f",
     "packages/commerce-core/src/index.ts": "4540f579a4375c7871ce49eca2d3030321fde9bbb3d0426017674a0f7dd324ab",
     "packages/shared-types/src/index.ts": "d050c4e49249332f6026fc8fdfabf62021c7659bbbdd4070a944f04d41384362",
@@ -198,11 +204,6 @@
     "packages/typescript/ui/src/index.ts": "e66c20e10f0991093a4806b862bb853c01bd3e7a065afd956dc62ff50a8e07b2",
     "packages/typescript/ui/src/navigation/app-navigation.tsx": "c12eead50af1519758c74fee5b5fdd570259da1a248881caa54984b9442862a5",
     "packages/typescript/ui/src/navigation/link-provider.tsx": "0d46cd81ef9273a45f925aadd8a9d1c44f4bed3d4575e88536eec4627bda7829",
-    "scripts/governance/run-executable-suites.mjs": "a4940a3bd9dfe78bb6036f1904e76072178b928c4ec0c25b2e9d151b0cb555f3",
-    "scripts/governance/test-suite-catalog.mjs": "23b481855a7fe3e8818da654057a37a5d8ab0efdb313f6dbc282484ef614e665",
-    "scripts/liquid-parity/README.md": "a4a31bf76da8a9e2bac603b773a18d1d107964b349e4b085560027271f6fe58f",
-    "scripts/liquid-parity/build-first-party-catalog.mjs": "4af9b9720b9314460bbb26779fe622e94888f977c1ab679f22b5dbf074f9f472",
-    "scripts/validators/app-api-route-inventory.mjs": "f6d7889c3b1d5274cfc3cda9b1584f5c8da55883259cf86ea16a7c2b694e218c",
     "services/api-gateway/src/execution/idempotency-execution.adapter.ts": "1d494b15052b9337f95aa69cc71ca2de6581654981b823a38cc3f2b5cbb3859f",
     "services/api-gateway/src/execution/theme-execution.adapter.ts": "13fb51d862f2a7ce90879fe102bcf3bf9cf9a4f351fa305a9158842b73f0beae",
     "services/api-gateway/src/lib/checkout-store-presentation.ts": "1b5e4379a756c56499e8d3a5cbc843204d149f7fa0fe61e01dc98b30a8ec933b",
@@ -220,8 +221,17 @@
     "services/api-gateway/src/routes/storefront/cart-routes.ts": "2c18fa503468d8642438e4b349078d5a6afc014ae1409f77483b4bf844c3a82d",
     "services/api-gateway/src/routes/storefront/checkout-payment-routes.ts": "106ca4e6fd660cdbe2b7f95cbbc33172b59b10373ecf12fd51e4382d40775352",
     "services/api-gateway/src/routes/themes.ts": "217573a7a4fecc5c91e64354b8d5096ddf629366b4787ea9f70cd0fd51151e25",
-    "services/api-gateway/src/routes/themes/theme-library-routes.ts": "b8fb88e0d9f029bac7b0cfec746b37d5fc5a7e344396acb68e580853f9bcbee2"
+    "services/api-gateway/src/routes/themes/theme-library-routes.ts": "b8fb88e0d9f029bac7b0cfec746b37d5fc5a7e344396acb68e580853f9bcbee2",
+    "services/api-gateway/src/tenant/tenant-tables.registry.ts": "01b52a18ea999d0be335d6f90657c7a3c1215c7a8797238edcf79387680f19a2"
   },
-  "productionMatchesFirstOwnedCandidate": "259f7a9f",
-  "productionDifferences": []
+  "firstOwnedRuntimeCandidate": "259f7a9f",
+  "productionDifferencesFromFirstOwnedCandidate": [
+    "database/supabase/migrations/377_theme_install_event_contract.sql",
+    "database/supabase/migrations/378_storefront_metadata_role_closure.sql",
+    "database/supabase/rollback/371_storefront_access_metadata.rollback.sql",
+    "database/supabase/rollback/377_theme_install_event_contract.rollback.sql",
+    "database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql",
+    "services/api-gateway/src/tenant/tenant-tables.registry.ts"
+  ],
+  "runtimeApplicationsUnchangedFromFirstOwnedCandidate": true
 }

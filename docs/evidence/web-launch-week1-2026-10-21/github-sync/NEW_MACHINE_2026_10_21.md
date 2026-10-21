@@ -50,7 +50,7 @@ pnpm dev:all
 
 The maintained local apps use storefront 9000, merchant 9001, identity 9002, marketing 9006 and internal console 9007; Gateway 9010. Templates contain placeholder values. Generated local configuration is untracked and is not live provider acceptance. Use the committed workflow/toolchain pins for mobile work on the other machine.
 
-The source contains migrations through 376. Pulling or installing does not apply them. Inspect the target schema and migration history, preserve its data, and follow the migration/paired rollback process before any separately authorized database update. This consolidation did not migrate restored/hosted databases. The retirement tests keep successor 376 and predecessor 366/354/344 ordering explicit; private theme data is retained during downgrade.
+The source contains migrations through 378. Pulling or installing does not apply them. Inspect the target schema and migration history, preserve its data, and follow the migration/paired rollback process before any separately authorized database update. This consolidation did not migrate restored/hosted databases. Migrations377/378 repair the registered theme-install event and explicitly retain private backend metadata-reader privileges; paired rollbacks preserve these safety repairs. The retirement tests keep successor 376 and predecessor 366/354/344 ordering explicit; private theme data is retained during downgrade.
 
 ## Transfer private state separately
 
