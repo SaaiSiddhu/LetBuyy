@@ -67,7 +67,7 @@ test('publication visibility commits with its release; failures and private acce
 
 test('visibility migration and rollback preserve the publisher ABI/profile and refuse unexpected reapplication',()=>{
  const signature="'public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)'::regprocedure";
- const profile=()=>owned.psql(`SELECT jsonb_build_object('owner',proowner,'acl',proacl::text,'args',proargnames,'defaults',pronargdefaults,'default_expressions',pg_catalog.pg_get_expr(proargdefaults,0),'all_types',proallargtypes,'modes',proargmodes,'result',pg_catalog.pg_get_function_result(oid),'definer',prosecdef,'config',proconfig)::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
+ const profile=()=>owned.psql(`SELECT jsonb_build_object('owner',proowner,'acl',proacl::text,'args',proargnames,'defaults',pronargdefaults,'default_expressions',pg_catalog.pg_get_expr(proargdefaults,0),'all_types',proallargtypes,'modes',proargmodes,'result',pg_catalog.pg_get_function_result(oid),'definer',prosecdef,'config',proconfig,'volatile',provolatile,'strict',proisstrict,'leakproof',proleakproof,'parallel',proparallel,'cost',procost,'rows',prorows,'support',prosupport,'binary',probin,'sql_body',prosqlbody,'transforms',protrftypes)::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
  const body=()=>owned.psql(`SELECT md5(prosrc) FROM pg_catalog.pg_proc WHERE oid=${signature};`);
  const before=profile(),forward=readFileSync('database/supabase/migrations/366_theme_publication_visibility.sql','utf8'),rollback=readFileSync('database/supabase/rollback/366_theme_publication_visibility.rollback.sql','utf8');
  try{
@@ -87,6 +87,12 @@ test('visibility migration and rollback preserve the publisher ABI/profile and r
   owned.psql(`UPDATE pg_catalog.pg_proc SET proallargtypes=proallargtypes[1:12]||ARRAY['text'::regtype::oid] WHERE oid=${signature};`);
   try { assert.throws(()=>owned.psql(forward),'a changed output ABI must refuse the repair');assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84'); }
   finally { owned.psql(`UPDATE pg_catalog.pg_proc SET proallargtypes='${allTypes}'::oid[] WHERE oid=${signature};`); }
+  for(const [field,expression,cast]of [['provolatile',"'i'",'"char"'],['proisstrict','true','boolean'],['proparallel',"'s'",'"char"'],['procost','101','real'],['prorows','2','real']]){
+   const original=owned.psql(`SELECT ${field}::text FROM pg_catalog.pg_proc WHERE oid=${signature};`);
+   owned.psql(`UPDATE pg_catalog.pg_proc SET ${field}=${expression} WHERE oid=${signature};`);
+   try { assert.throws(()=>owned.psql(forward),'changed execution profile '+field+' must refuse before replacement'); }
+   finally { owned.psql(`UPDATE pg_catalog.pg_proc SET ${field}='${original}'::${cast} WHERE oid=${signature};`); }
+  }
   assert.equal(profile(),before);
   owned.psql(`GRANT EXECUTE ON FUNCTION public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid) TO anon;`);
   assert.throws(()=>owned.psql(forward),'unexpected public actor execution must be rejected before the repair');assert.equal(body(),'fa4fae1749dc226ed066e5bf27020c84');

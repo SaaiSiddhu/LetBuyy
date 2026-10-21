@@ -8,6 +8,9 @@ BEGIN
  SELECT * INTO p FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure('public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)');
  IF p.oid IS NULL OR p.prokind<>'f' OR NOT p.prosecdef OR p.pronargdefaults<>7
   OR p.provariadic<>0
+  OR p.provolatile<>'v' OR p.proisstrict OR p.proleakproof OR p.proparallel<>'u'
+  OR p.procost IS DISTINCT FROM 100::real OR p.prorows IS DISTINCT FROM 1000::real
+  OR p.prosupport<>0 OR p.probin IS NOT NULL OR p.prosqlbody IS NOT NULL OR p.protrftypes IS NOT NULL
   OR (SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1
   OR p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]
  OR p.proowner IS DISTINCT FROM (SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.theme_instances'::regclass)

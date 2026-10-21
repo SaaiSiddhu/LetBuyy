@@ -793,6 +793,8 @@ test('visibility rollback earns full typed profile proof; stripped and forged gu
     assert.deepEqual(guardedRestorations(sql,{forwardSql}),['publish_theme_release']);
     const terms=[
         'p.oid IS NULL', "p.prokind<>'f'", 'NOT p.proretset', 'NOT p.prosecdef', 'p.pronargdefaults<>7', 'p.provariadic<>0',
+        "p.provolatile<>'v'", 'p.proisstrict', 'p.proleakproof', "p.proparallel<>'u'", 'p.procost IS DISTINCT FROM 100::real', 'p.prorows IS DISTINCT FROM 1000::real',
+        'p.prosupport<>0', 'p.probin IS NOT NULL', 'p.prosqlbody IS NOT NULL', 'p.protrftypes IS NOT NULL',
         '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
         "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
         "pg_catalog.has_function_privilege('anon',p.oid,'EXECUTE')", "pg_catalog.has_function_privilege('authenticated',p.oid,'EXECUTE')",

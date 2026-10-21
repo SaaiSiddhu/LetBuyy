@@ -520,6 +520,9 @@ function publicationVisibilityGuard(body, definitions) {
     const array=values=>'ARRAY['+values.map(value=>`'${value}'`).join(',')+']';
     const conditions=[
         'p.oid IS NULL',"p.prokind<>'f'",'NOT p.prosecdef','p.pronargdefaults<>7','p.provariadic<>0',
+        "p.provolatile<>'v'",'p.proisstrict','p.proleakproof',"p.proparallel<>'u'",
+        'p.procost IS DISTINCT FROM 100::real','p.prorows IS DISTINCT FROM 1000::real',
+        'p.prosupport<>0','p.probin IS NOT NULL','p.prosqlbody IS NOT NULL','p.protrftypes IS NOT NULL',
         '(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=p.pronamespace AND q.proname=p.proname)<>1',
         "p.proconfig IS DISTINCT FROM ARRAY['search_path=public']::text[]",
         "p.proowner IS DISTINCT FROM (SELECT relowner FROM pg_catalog.pg_class WHERE oid='public.theme_instances'::regclass)",
