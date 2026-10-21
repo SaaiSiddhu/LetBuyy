@@ -23,7 +23,8 @@
       "services/api-gateway/src/index.ts scheduled preflight",
       "services/api-gateway/src/execution/queue-execution.adapter.ts claimed-site search source lookups",
       "Bounded backend-only pending-work RPC, forward/rollback369 and role/tenant/native/idle proof",
-      "services/queue-workers/src/platform-queue-consumer.ts existing matching product/order search consumer; same claimed-site scope and isolation controls"
+      "services/queue-workers/src/platform-queue-consumer.ts existing matching product/order search consumer; same claimed-site scope and isolation controls",
+      "Commerce Liquid address manager: canonical loaded buyer identity in existing required stale-account headers for create/edit/default/delete, retired-load/disconnect protection, unit and native regression"
     ],
     "invariants": [
       "No general unguarded client or guard weakening",
@@ -31,7 +32,8 @@
       "Ordinary roles denied; schema drift refuses; rollback is paired",
       "Source product/order reads scope to the backend-claimed job site; wrong-site identifiers reveal no source data",
       "Actual nonzero product outbox, queue and search document required before browser search passes",
-      "No new runtime, hosted scheduler change or real provider effect"
+      "No new runtime, hosted scheduler change or real provider effect",
+      "Never relax existing expected-buyer guard or derive buyer authority from DOM/headers; captured ID only protects stale forms, signed server session authorizes writes."
     ]
   }
 }
