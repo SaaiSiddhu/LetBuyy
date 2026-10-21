@@ -287,14 +287,14 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();
   console.info('OWNED_COMPACT_VERSION_REFUSAL '+JSON.stringify({altered200Responses:unsupportedProjectionReplies,unknownVersionUnavailable:true,nextRequestRecovers:true}));
 
-  await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Experiences',exact:true})).toBeVisible();
+  await page.goto(profileEditorUrl);await expect(page.getByRole('button',{name:'Theme styles',exact:true})).toBeVisible();
   stage='ten-core-presets';console.info('OWNED_NATIVE_STAGE ten-core-presets');const presets=[];
   for(const name of ['Forge','Sense','Aura','Craft','Refresh','Ride','Dawn','Bloom','Nova','Summit']){
-   await page.getByRole('button',{name:'Experiences',exact:true}).click();const apply=page.getByRole('button',{name:'Apply '+name,exact:true});
+   await page.getByRole('button',{name:'Theme styles',exact:true}).click();const apply=page.getByRole('button',{name:'Apply '+name,exact:true});
    if(await apply.count()){
     const [savedPreset]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'),apply.click()]);assert.equal(savedPreset.status(),200);await expect(page.getByRole('button',{name:'Save',exact:true}).first()).toBeDisabled();
    }
-   await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Experiences',exact:true}).click();await expect(page.getByRole('button',{name:'Applied',exact:true})).toHaveCount(1);
+   await page.reload({waitUntil:'domcontentloaded'});await page.getByRole('button',{name:'Theme styles',exact:true}).click();await expect(page.getByRole('button',{name:'Applied',exact:true})).toHaveCount(1);
    const [presetPublish]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/themes/letbuyy-core/editor'&&r.request().method()==='PUT'),page.getByRole('button',{name:'Publish',exact:true}).click()]);assert.equal(presetPublish.status(),200);
    const reference=JSON.parse(owned.psql(`SELECT default_template->'liquidBundle'->'config'->'settings_data'->'presets'->'${name}' FROM themes WHERE slug='letbuyy-core';`));
    const release=JSON.parse(owned.psql(`SELECT r.template_snapshot->'themeSettings' FROM theme_releases r JOIN sites s ON s.current_theme_release_id=r.id WHERE s.id='${siteId}';`));
