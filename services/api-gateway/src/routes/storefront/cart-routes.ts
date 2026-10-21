@@ -1,3 +1,4 @@
+import { authorizeFreshStorefrontPurchase } from '../../lib/storefront-visitor-access';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../../index';
@@ -204,6 +205,7 @@ function cartFromRow(row: DbRecord): StorefrontServerCart {
 }
 
 async function loadCartByToken(c: AppContext, storeId: string, cartToken: string): Promise<{ cart: StorefrontServerCart | null; error: unknown }> {
+    c.header('Cache-Control', 'no-store');
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('carts')
@@ -215,7 +217,11 @@ async function loadCartByToken(c: AppContext, storeId: string, cartToken: string
         .maybeSingle();
 
     if (error) return { cart: null, error };
-    return { cart: data ? cartFromRow(data as unknown as DbRecord) : null, error: null };
+    const cart = data ? cartFromRow(data as unknown as DbRecord) : null;
+    // The random token identifies a cart; it cannot retire current storefront
+    // policy. Marketplace origin comes from the stored row, never body.channel.
+    if (cart && cart.sales_origin === 'storefront') await authorizeFreshStorefrontPurchase(c, storeId);
+    return { cart, error: null };
 }
 
 async function hydrateCartLines(
@@ -542,6 +548,7 @@ async function persistCart(
     salesOrigin: SalesOrigin,
     queryPublicProducts: StorefrontCartRouteDependencies['queryPublicProducts'],
 ): Promise<Response> {
+    if (salesOrigin === 'storefront') await authorizeFreshStorefrontPurchase(c, store.id);
     const hydrated = await hydrateCartLines(c, store, input.lines, salesOrigin, queryPublicProducts);
     if (hydrated.error) return hydrated.error;
 

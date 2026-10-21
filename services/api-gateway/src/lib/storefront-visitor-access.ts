@@ -11,7 +11,7 @@ import {sha256Hex,timingSafeEqualText} from './crypto';
 type C=Context<{Bindings:Env}>;
 export type VisitorSite={id:string;subdomain:string|null;custom_domain?:string|null;custom_domain_status?:string|null;access_mode?:string|null;published?:boolean|null;status:string;access_revision?:string|null};
 export type VisitorGrant={site:VisitorSite;preview:boolean;password:boolean};
-declare module 'hono'{interface ContextVariableMap{storefrontVisitorGrant:VisitorGrant|undefined}}
+declare module 'hono'{interface ContextVariableMap{storefrontVisitorGrant:VisitorGrant|undefined;storefrontPurchaseGrant:VisitorGrant|undefined}}
 const metadataFields='id,subdomain,custom_domain,custom_domain_status,access_mode,published,status,access_password_hash';
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const unavailable=()=>new AppError('Store access is unavailable',503,'STOREFRONT_ACCESS_UNAVAILABLE');
@@ -93,4 +93,20 @@ export async function authorizeVisitor(c:C,selector:{id?:string;handle?:string})
  if(prior&&(selector.id===prior.site.id||selector.handle===prior.site.subdomain))return prior;
  const site=await loadVisitorSite(c,selector);if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
  return authorizeVisitorSite(c,site);
+}
+
+/** Commands must not admit against a potentially cached SQL/Hyperdrive policy.
+ * One current bounded REST metadata read precedes storefront cart/order work.
+ * This is a request admission snapshot, not a claim of transaction-wide locking.
+ */
+export async function authorizeFreshStorefrontPurchase(c:C,siteId:string):Promise<VisitorGrant>{
+ c.header('Cache-Control','no-store');
+ if(!uuid.test(siteId))throw new AppError('Invalid store id',400,'VALIDATION');
+ const prior=c.get('storefrontPurchaseGrant');
+ if(prior?.site.id===siteId.toLowerCase())return prior;
+ const site=await restMetadata(c,{id:siteId.toLowerCase()},false);
+ if(!site)throw new AppError('Store not found',404,'NOT_FOUND');
+ const grant=await authorizeVisitorSite(c,site);
+ c.set('storefrontPurchaseGrant',grant);
+ return grant;
 }

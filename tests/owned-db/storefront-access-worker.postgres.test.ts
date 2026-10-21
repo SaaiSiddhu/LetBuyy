@@ -66,3 +66,19 @@ test('four actual native requests race for the last quota slot; correct credenti
  const results=await Promise.all(Array.from({length:4},()=>gateVerify(t)));assert.deepEqual(results.map(r=>r.status).sort(),[200,429,429,429]);assert.equal(owned.psql(`SELECT count(*) FROM site_gate_attempts WHERE site_id=${q(t.siteId)};`),'30');
  console.info('OWNED_NATIVE_GATE_ADMISSION '+JSON.stringify({race:4,admitted:1,refused:3,correctPasswordCannotBypass:true}));
 });
+
+test('native storefront cart admission uses current policy and refuses stale password proof without changing carts',async()=>{
+ const t=newSyntheticTenant('native-cart-access');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID();
+ owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic native gated cart','synthetic-native-gated-cart',100,5,true,'active');`);
+ const path='/v1/storefront/'+t.subdomain;
+ const send=async(suffix:string,method='GET',proof?:string)=>{const response=await gateway.dispatch(path+suffix,{method,headers:{'Content-Type':'application/json',...(proof?{'X-LetBuyy-Storefront-Gate':proof}:{})},...(method==='POST'?{body:JSON.stringify({lines:[{product_id:productId,quantity:1}]})}:{})});const status=response.status,cache=response.headers.get('Cache-Control');const payload=await response.json() as {data?:{cart_token?:string}};return{status,cache,payload};};
+ const initial=await send('/cart','POST');assert.equal(initial.status,201);const cartToken=initial.payload.data!.cart_token!;
+ for(const mode of ['password','preview_only','offline']){
+  owned.psql(`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);const expected=mode==='offline'?503:401;
+  assert.equal((await send('/cart','POST')).status,expected);assert.equal((await send('/cart/'+cartToken)).status,expected);assert.equal((await send('/cart/'+cartToken+'/checkout-url')).status,expected);assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)};`),'1');
+ }
+ const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),token=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN,revision,exp:Math.floor(Date.now()/1000)+600},key);
+ const allowed=await send('/cart/'+cartToken,'GET',token);assert.equal(allowed.status,200);assert.equal(allowed.cache,'no-store');
+ owned.psql(`UPDATE sites SET access_password_hash=${q(await hashStoreAccessPassword(crypto.randomUUID()))} WHERE id=${q(t.siteId)};`);assert.equal((await send('/cart/'+cartToken,'GET',token)).status,401);
+});

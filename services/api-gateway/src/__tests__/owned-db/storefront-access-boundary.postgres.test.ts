@@ -141,3 +141,39 @@ for(const lane of ['sql','rest'] as const)test(`${lane}: malformed foreign and e
  const previewRead=()=>gateway.request('/v1/storefront/'+t.subdomain+'/products',{headers:{'X-LetBuyy-Storefront-Preview':preview}});
  assert.equal((await previewRead()).status,200);try{faultResource='site_preview_links';const failed=await previewRead();assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private/);}finally{faultResource='';}assert.equal((await previewRead()).status,200);
 });
+
+for(const mode of ['password','preview_only','offline'] as const)test(`commerce: current ${mode} policy refuses new and recovered storefront cart data before effects`,async()=>{
+ const gateway=gateways.rest,t=newSyntheticTenant('cart-'+mode.replace('_','-'));seedSyntheticTenant(owned.psql,t);
+ const productId=crypto.randomUUID(),marker='Synthetic cart access product';
+ owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'synthetic-cart-access',100,5,true,'active');`);
+ const path='/v1/storefront/'+t.subdomain;
+ const send=(suffix:string,method='GET',body?:unknown)=>gateway.request(path+suffix,{method,headers:{'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})});
+ const initial=await send('/cart','POST',{lines:[{product_id:productId,quantity:1}]});assert.equal(initial.status,201,initial.text);
+ const token=initial.json!.data.cart_token;assert.equal(typeof token,'string');
+ owned.psql(`UPDATE sites SET access_mode=${q(mode)} WHERE id=${q(t.siteId)};`);
+ const before=owned.psql(`SELECT jsonb_build_object('carts',(SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)}),'events',(SELECT count(*) FROM outbox_events WHERE site_id=${q(t.siteId)}))::text;`);
+ const cases:[string,string,unknown?][]=[['/cart','POST',{lines:[{product_id:productId,quantity:1}]}],[`/cart/${token}`,'GET'],[`/cart/${token}`,'PATCH',{lines:[{product_id:productId,quantity:2}]}],[`/cart/${token}/buyer-identity`,'PUT',{buyer_email:'synthetic-cart@example.invalid'}],[`/cart/${token}/discount-codes`,'POST',{coupon_codes:[]}],[`/cart/${token}/checkout-url`,'GET'],[`/cart/${token}/checkout-url`,'POST']];
+ const results=[];for(const[suffix,method,body]of cases){const r=await send(suffix,method,body);results.push({route:suffix.replace(token,':cart'),method,status:r.status,productReturned:r.text.includes(marker)});}
+ const after=owned.psql(`SELECT jsonb_build_object('carts',(SELECT count(*) FROM carts WHERE store_id=${q(t.siteId)}),'events',(SELECT count(*) FROM outbox_events WHERE site_id=${q(t.siteId)}))::text;`);
+ console.info('OWNED_COMMERCE_ACCESS_BASELINE '+JSON.stringify({mode,expected:mode==='offline'?503:401,before:JSON.parse(before),after:JSON.parse(after),results}));
+ assert.deepEqual(results.map(r=>r.status),cases.map(()=>mode==='offline'?503:401),'every storefront cart path must honor live visitor policy');assert.equal(after,before,'denied cart requests must not add carts or events');
+});
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: fresh cart proof survives normal unlock but stops after rotation, unpublish and metadata outage`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-cart-proof');seedSyntheticTenant(owned.psql,t);const productId=crypto.randomUUID();
+ const hash=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(productId)},${q(t.siteId)},${q(t.siteId)},'Synthetic gated cart','synthetic-gated-cart',100,5,true,'active');UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`),host=t.subdomain+'.'+DEFAULT_STOREFRONT_DOMAIN;
+ const token=await createStorefrontGateToken({sid:t.siteId,host,revision,exp:Math.floor(Date.now()/1000)+600},key);
+ const path='/v1/storefront/'+t.subdomain;
+ const create=(proof?:string)=>gateway.request(path+'/cart',{method:'POST',headers:{'Content-Type':'application/json',...(proof?{'X-LetBuyy-Storefront-Gate':proof}:{})},body:JSON.stringify({channel:'api',lines:[{product_id:productId,quantity:1}]})});
+ const start=tap.calls.length;assert.equal((await create()).status,401,'client acquisition channel never bypasses storefront policy');const good=await create(token);assert.equal(good.status,201,good.text);
+ assert.ok(tap.calls.slice(start).some(c=>c.resource==='sites'),'even successful pooled SQL cannot replace current REST policy admission');
+ const cartToken=good.json!.data.cart_token;
+ const read=()=>gateway.request(path+'/cart/'+cartToken,{headers:{'X-LetBuyy-Storefront-Gate':token}});
+ assert.equal((await read()).status,200);
+ const changed=await hashStoreAccessPassword(crypto.randomUUID());owned.psql(`UPDATE sites SET access_password_hash=${q(changed)} WHERE id=${q(t.siteId)};`);assert.equal((await read()).status,401);assert.equal((await create(token)).status,401);
+ owned.psql(`UPDATE sites SET access_mode='public',published=false WHERE id=${q(t.siteId)};`);assert.equal((await create(token)).status,404);
+ owned.psql(`UPDATE sites SET access_mode='public',published=true WHERE id=${q(t.siteId)};`);
+ try{faultResource='sites';faultCode='';const failed=await create(token);assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private/);}finally{faultResource='';faultCode='';}
+ assert.equal((await create()).status,201,'public recovery admits again');
+});
