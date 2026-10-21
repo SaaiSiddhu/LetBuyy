@@ -1,0 +1,100 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-CATALOG",
+  "status": "LOCAL_SCOPED_END_TO_END_AND_GOVERNANCE_VERIFIED",
+  "candidate": "336d508e9857033437ad606dcd91771aaee4027c",
+  "scope": "Fresh Core installations and canonical background search. Existing merchant drafts/releases are conserved. Original primary runtime and shared database remain unchanged.",
+  "uniqueOwnedCasesPassed": 14,
+  "ownedCaseComposition": {
+    "catalog": 3,
+    "scheduledSearch": 3,
+    "coreBootstrap": 7,
+    "fullNativeBrowser": 1
+  },
+  "receiptCompositionNote": "Latest compatible scoped receipts; earlier combined runner failures remain recorded. App/package/service source bytes equal successful browser inputs;369 runtime function body is unchanged and its explicit DDL is separately verified on the faithful full-migration baseline. Not whole-platform acceptance.",
+  "packageTests": {
+    "themeEngine": 1891,
+    "apiGatewayUnit": 1608,
+    "queueWorkers": 75,
+    "commerce": 1261,
+    "governanceUnit": 802,
+    "targetedTooling": 34
+  },
+  "canonicalPassed": 114,
+  "cleanupVerified": true,
+  "browser": {
+    "normalPublicSignup": true,
+    "nativeWorkerd": true,
+    "nativeR2": true,
+    "seededAccountStoreProductOrSession": false,
+    "tenPresets": true,
+    "viewports": [
+      1280,
+      360
+    ],
+    "realImageDimensions": [
+      320,
+      320
+    ],
+    "manualCollectionAndShopperSearch": true,
+    "codTotalMinor": 26900,
+    "canonicalBuyerProfileAndAddressCrud": true,
+    "normalTwoTabBuyerSwitchRefused": 409,
+    "unrelatedGuestOrderDenied": true
+  },
+  "categoryRepair": "595b78798381a0c98983fc7b8e6f47df759d5029",
+  "externalReport": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-core-catalog/catalog-repairs.html",
+  "evidenceRoot": "/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Web-Launch-Audit-2026-10-20/week1-core-catalog",
+  "receipts": {
+    "catalogAndBootstrap": "complete-browser.json",
+    "scheduled": "scheduled-explicit-ddl.json",
+    "gatewayUnit": "gateway-unit-node.log",
+    "queueUnit": "queue-unit-node.log",
+    "themePackage": "theme-jsonb-tests.log",
+    "tooling": "tooling-sorted.log",
+    "commercePackage": "commerce-address-package.log",
+    "addressIsland": "address-island-unit-typed.log",
+    "finalBrowser": "address-durable-id-browser.json",
+    "browserDetails": "browser-receipt.json",
+    "ddlEquivalence": "preflight-ddl-equivalence.json",
+    "firstGovernanceFailures": "governance-first-failures.json",
+    "canonicalGovernance": "canonical-governance.json",
+    "governanceUnit": "governance-unit-exclusive.log",
+    "gateAttribution": "gate-attribution.json"
+  },
+  "providerSandboxVerified": false,
+  "hostedVerified": false,
+  "deployed": false,
+  "fullThemeAcceptance": false,
+  "formalHumanAcceptance": "Not claimed",
+  "remaining": [
+    "No hosted/provider acceptance or deployment. Real Razorpay login remains owner-deferred.",
+    "Search visibility depends on scheduled indexing; production15-minute cadence has not been changed or accepted as final freshness.",
+    "Frozen replay-lag metric still logs a guard refusal; successful outbox/index work is separately proven.",
+    "Full Core section/visual acceptance, useful-page performance, inventory/discount/fulfillment/refund/customer/operator journeys remain open.",
+    "EXISTS response shape is bounded; no large-backlog query-plan or production-capacity claim has been made.",
+    "Native scheduled proof uses real database outbox/jobs; hosted Cloudflare queue bindings/scheduled activation remain unverified.",
+    "Homepage collection discovery, address-action styling and search filter placement remain explicit visual/wiring findings; newsletter/contact are not newly accepted."
+  ],
+  "visualFindings": [
+    {
+      "finding": "Homepage category-grid shows only All Products although the manual collection detail route works.",
+      "proof": "core-storefront.png; composition-engine.tsx exposes collections as only the synthesized/current collection.",
+      "disposition": "Open: wire actual collection discovery before full Core-theme acceptance."
+    },
+    {
+      "finding": "Address Edit/Delete controls are visually adjacent and lack clear button treatment.",
+      "proof": "core-addresses.png",
+      "disposition": "Open: Core action styling and mobile tap-target acceptance."
+    },
+    {
+      "finding": "Country-of-origin filter appears above the theme header on mobile search.",
+      "proof": "core-search-mobile.png",
+      "disposition": "Open: integrated theme layout/accessibility review."
+    },
+    {
+      "finding": "Private editor capture does not establish the labelled1440px viewport or full hero visibility/parity with the public page.",
+      "proof": "core-private-editor.png; current iframe test proves the marker exists and starter copy is visible.",
+      "disposition": "Open: measure actual iframe viewport/scroll/scale and complete visual parity acceptance."
+    }
+  ]
+}
