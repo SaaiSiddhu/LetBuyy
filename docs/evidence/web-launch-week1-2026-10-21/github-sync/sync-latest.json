@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "status": "VERIFIED_MACHINE_CONSOLIDATION_READY_FOR_MERGE",
+  "status": "MERGED_DEVELOP",
   "current": "consolidation-2026-10-21.json",
   "handoff": "NEW_MACHINE_2026_10_21.md",
   "sourceCheckpoint": "e9a3681edad23f228d2013119884fefa39c74e9b",
@@ -8,5 +8,7 @@
     "commit": "9c4ae60548e1e9260aad0bd4011becbf4ebdca4b",
     "path": "docs/evidence/web-launch-week1-2026-10-21/github-sync/sync-latest.json"
   },
-  "scope": "Source merge/push authorized; private transfer separate; no deployment or restored/hosted migration."
+  "scope": "Source merge/push authorized; private transfer separate; no deployment or restored/hosted migration.",
+  "mergeCommit": "f24275c557127934658128cb6883f55f5293e2ec",
+  "phaseTip": "bf396de670318841bcf0ef236c3b27bea51d2e37"
 }

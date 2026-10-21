@@ -1,6 +1,6 @@
 # Current source handoff — 21 October 2026
 
-This consolidation supersedes the earlier 21 October source handoff at `9c4ae605`. The owner expressly authorized integrating all machine work, merging develop and pushing GitHub for another machine. The final source/merge/push identities and observed verification state are recorded in [consolidation-2026-10-21.json](consolidation-2026-10-21.json). This is source synchronization; the launch programme and merchant audit remain paused/open.
+This consolidation supersedes the earlier 21 October source handoff at `9c4ae605`. The owner expressly authorized integrating all machine work, merging develop and pushing GitHub for another machine. The verified source/merge identities and local verification state are recorded in [consolidation-2026-10-21.json](consolidation-2026-10-21.json). Use the current origin/develop head and its GitHub Actions page for the latest pushed commit and cloud check status. This is source synchronization; the launch programme and merchant audit remain paused/open.
 
 ## Get the current source
 
