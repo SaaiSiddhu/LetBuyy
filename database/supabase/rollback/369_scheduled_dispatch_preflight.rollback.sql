@@ -1,6 +1,8 @@
 -- 369: Backend-only scheduled existence preflight. No tenant rows or counts leave this RPC.
--- Ordinary tenant query guards stay enabled. Eligibility follows existing120-second claim leases.
-DO $migration$
+-- Explicit DDL/privileges remain statically auditable and commit atomically.
+-- Ordinary tenant query guards stay enabled; eligibility follows120-second claim leases.
+BEGIN;
+DO $guard$
 DECLARE
   expected_body text := $body$
 DECLARE
@@ -35,11 +37,12 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended('migration369:scheduled-dispatch-preflight',0));
   target := to_regprocedure('public.scheduled_dispatch_has_pending_work(text[],boolean)');
   IF target IS NULL THEN RETURN; END IF;
-
   IF EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid=target AND(
     p.prosrc IS DISTINCT FROM expected_body OR p.prorettype<>'jsonb'::regtype
     OR p.proretset OR NOT p.prosecdef OR p.provolatile<>'s' OR p.prokind<>'f'
     OR p.proleakproof OR p.proparallel<>'u' OR p.pronargdefaults<>0
+    OR p.proisstrict OR p.procost<>100 OR p.prorows<>0 OR p.prosupport<>0
+    OR p.proallargtypes IS NOT NULL OR p.proargmodes IS NOT NULL OR p.probin IS NOT NULL
     OR p.proargnames IS DISTINCT FROM ARRAY['p_queue_names','p_include_webhook_deliveries']::text[]
     OR p.proconfig IS DISTINCT FROM ARRAY['search_path=pg_catalog, public']::text[]
     OR p.proowner<>(SELECT oid FROM pg_roles WHERE rolname=current_user)
@@ -52,5 +55,6 @@ BEGIN
   END IF;
   DROP FUNCTION public.scheduled_dispatch_has_pending_work(text[],boolean);
 END
-$migration$;
+$guard$;
+COMMIT;
 NOTIFY pgrst,'reload schema';
