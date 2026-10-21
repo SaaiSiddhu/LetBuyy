@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { MarketingEmailAudience } from '@letbuyy/shared-types'
-import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
+import { createMerchantApiClient, merchantApiErrorResponse, merchantApiReadSignal } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type RouteParams = { params: Promise<{ store: string }> }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         const result = await createMerchantApiClient().marketing.emailCampaigns.previewAudience({
             store_id: resolved.storeId,
             audience,
-        })
+        }, { signal: merchantApiReadSignal(request.signal) })
         return NextResponse.json({ data: result })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to preview audience')

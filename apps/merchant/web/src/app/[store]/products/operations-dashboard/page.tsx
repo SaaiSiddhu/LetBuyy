@@ -88,8 +88,9 @@ function useFetch<T>(url: string | null): FetchState<T> {
         if (!url) return
         setState({ status: 'loading' })
         let cancelled = false
+        const controller = new AbortController()
 
-        fetch(url)
+        fetch(url, { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]) })
             .then(async (res) => {
                 const body = await res.json() as { data?: T; error?: unknown }
                 if (cancelled) return
@@ -106,7 +107,7 @@ function useFetch<T>(url: string | null): FetchState<T> {
                 setState({ status: 'error', message: msg })
             })
 
-        return () => { cancelled = true }
+        return () => { cancelled = true; controller.abort() }
     }, [url])
 
     return state

@@ -14,7 +14,7 @@ export function AcceptStaffInvitation({ token, email, accountsUrl }: { token: st
     useEffect(() => {
         if (!email || !token) return
         let active = true
-        fetch('/api/employees/accept-invite', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        fetch('/api/employees/accept-invite', { method: 'POST', signal: AbortSignal.timeout(15_000), headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'preview', token }) }).then(async response => {
             const body = await response.json()
             if (!response.ok) throw new Error(body.error?.message || 'This invitation is unavailable for this account.')

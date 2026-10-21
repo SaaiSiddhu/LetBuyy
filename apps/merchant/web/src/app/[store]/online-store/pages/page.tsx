@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useParams } from 'next/navigation'
@@ -198,20 +200,23 @@ export default function PagesPage() {
         setSavedPolicySignature(createPolicySignature(EMPTY_POLICY))
     }, [])
 
+    const beginContent = useReadRequest(store)
     const loadContent = useCallback(async () => {
+        const request = beginContent()
         setLoading(true)
         setError(null)
         try {
             const [pagesResponse, policiesResponse, navigationResponse] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, { cache: 'no-store' }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/policies`, { cache: 'no-store' }),
-                fetch(`/api/stores/${encodeURIComponent(store)}/navigation?location=main`, { cache: 'no-store' }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, { cache: 'no-store', signal: request.signal }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/policies`, { cache: 'no-store', signal: request.signal }),
+                fetch(`/api/stores/${encodeURIComponent(store)}/navigation?location=main`, { cache: 'no-store', signal: request.signal }),
             ])
             const [pagesPayload, policiesPayload, navigationPayload] = await Promise.all([
                 parsePayload<PageItem[]>(pagesResponse),
                 parsePayload<PolicyItem[]>(policiesResponse),
                 parsePayload<{ items?: NavigationItem[] }>(navigationResponse),
             ])
+            if (!request.isCurrent()) return
             const nextPages = Array.isArray(pagesPayload.data) ? pagesPayload.data : []
             const nextPolicies = Array.isArray(policiesPayload.data) ? policiesPayload.data : []
             const nextNavItems = Array.isArray(navigationPayload.data?.items) ? navigationPayload.data.items : []
@@ -221,6 +226,7 @@ export default function PagesPage() {
             setSavedNavItems(nextNavItems)
             setSavedNavigationSignature(createNavigationSignature(nextNavItems))
         } catch (err) {
+            if (!request.isCurrent()) return
             const message = errorMessage(err, 'Unable to load storefront content')
             setError(message)
             notify({
@@ -229,9 +235,9 @@ export default function PagesPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginContent, notify, store])
 
     useEffect(() => {
         void loadContent()

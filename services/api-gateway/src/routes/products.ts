@@ -80,6 +80,10 @@ const PRODUCT_LIST_COLUMN_NAMES = [
     'version',
 ] as const;
 const PRODUCT_LIST_COLUMNS = PRODUCT_LIST_COLUMN_NAMES.join(',');
+const PRODUCT_SUMMARY_COLUMN_NAMES = [
+    'id', 'name', 'status', 'stock', 'price', 'compare_price', 'images', 'category',
+    'product_type', 'vendor', 'is_active', 'created_at', 'display_order', 'version',
+] as const;
 const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMN_NAMES
     .filter((column) => column !== 'variants')
     .join(',');
@@ -160,8 +164,9 @@ function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_R
     return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
 }
 
-function productListColumns(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>, omittedColumns: Set<string>): string {
-    return PRODUCT_LIST_COLUMN_NAMES
+function productListColumns(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>, omittedColumns: Set<string>, summary = false): string {
+    const columns: readonly string[] = summary ? PRODUCT_SUMMARY_COLUMN_NAMES : PRODUCT_LIST_COLUMN_NAMES;
+    return columns
         .filter((column) => !omittedColumns.has(column))
         .filter((column) => productVariantRelationalReadsEnabled(env) ? column !== 'variants' : true)
         .join(',');
@@ -217,21 +222,30 @@ async function hydrateProductVariants(
 
     if (productIds.length === 0) return products;
 
-    const { data, error } = await db
-        .from('product_variants')
-        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
-        .in('product_id', Array.from(new Set(productIds)))
-        .order('position', { ascending: true });
-
-    if (isMissingTableError(error, 'product_variants')) return products;
-    if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
-
     const variantsByProduct = new Map<string, Record<string, unknown>[]>();
-    for (const row of (data || []) as ProductVariantRelationRow[]) {
-        variantsByProduct.set(row.product_id, [
-            ...(variantsByProduct.get(row.product_id) || []),
-            productVariantView(row),
-        ]);
+    // A 100-product page can exceed PostgREST's row cap. Page the relation instead
+    // of silently returning an incomplete variant selector. The write contract
+    // permits 100 variants per product; refuse oversized legacy data explicitly.
+    const pageSize = 500, maximumRows = productIds.length * 100;
+    for (let offset = 0; offset <= maximumRows; offset += pageSize) {
+        const { data, error } = await db
+            .from('product_variants')
+            .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+            .in('product_id', Array.from(new Set(productIds)))
+            .order('product_id', { ascending: true })
+            .order('position', { ascending: true })
+            .order('id', { ascending: true })
+            .range(offset, offset + pageSize - 1);
+        if (isMissingTableError(error, 'product_variants')) return products;
+        if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
+        const rows = (data || []) as ProductVariantRelationRow[];
+        if (offset + rows.length > maximumRows) throw new Error('Product variant read exceeded its bounded row budget');
+        for (const row of rows) {
+            let variants = variantsByProduct.get(row.product_id);
+            if (!variants) { variants = []; variantsByProduct.set(row.product_id, variants); }
+            variants.push(productVariantView(row));
+        }
+        if (rows.length < pageSize) break;
     }
 
     return products.map((product) => {
@@ -477,7 +491,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select(productListColumns(c.env, omittedColumns), query.withCount ? { count: 'exact' } : undefined)
+            .select(productListColumns(c.env, omittedColumns, query.view === 'summary'), query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -529,7 +543,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const nextCursor = rows.length > query.limit
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
         : null;
-    const responseRows = productVariantRelationalReadsEnabled(c.env)
+    const responseRows = query.view !== 'summary' && productVariantRelationalReadsEnabled(c.env)
         ? await hydrateProductVariants(db, pageRows)
         : pageRows;
 

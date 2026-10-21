@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -573,19 +575,22 @@ export default function OrderDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    const beginLoadOrder = useReadRequest(JSON.stringify([store, orderId]))
     const loadOrder = useCallback(async () => {
+        const request = beginLoadOrder()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(orderId)}`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null) as {
                 data?: Record<string, unknown>
                 error?: unknown
             } | null
 
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 if (response.status === 404) {
                     setError('Order not found.')
@@ -604,11 +609,12 @@ export default function OrderDetailPage() {
                 setError('Unexpected response from server.')
             }
         } catch {
+            if (!request.isCurrent()) return
             setError('Unable to load order.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [orderId, store])
+    }, [beginLoadOrder, orderId, store])
 
     useEffect(() => {
         void loadOrder()

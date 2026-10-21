@@ -25,7 +25,7 @@ function ReelWorkspace({ store, actorId }: { store: string; actorId: string }) {
         try { if (value) sessionStorage.setItem(recoveryKey, JSON.stringify(value)); else sessionStorage.removeItem(recoveryKey) } catch { /* The mounted request still retains its exact key. */ }
     }, [recoveryKey])
     const request = useCallback(async (path: string, command?: ReelMerchantCommand) => {
-        const response = await fetch(endpoint + path, { method: command ? 'POST' : 'GET', cache: 'no-store', headers: {
+        const response = await fetch(endpoint + path, { method: command ? 'POST' : 'GET', cache: 'no-store', ...(!command ? { signal: AbortSignal.timeout(15_000) } : {}), headers: {
             'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': actorId,
             ...(command ? { 'X-Idempotency-Key': command.idempotency_key } : {}),
         }, ...(command ? { body: JSON.stringify(command) } : {}) })

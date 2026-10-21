@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import {
     Badge,
     Button,
@@ -100,6 +101,7 @@ export function ThemeLibraryCard({
     onRollback,
     busySlug,
 }: ThemeLibraryCardProps) {
+    const router = useRouter()
     const isBusy = busySlug === theme.slug
     const isPublished = theme.isCurrentlyPublished
     const lastDate = theme.last_published_at || theme.last_modified_at
@@ -115,7 +117,7 @@ export function ThemeLibraryCard({
             label: 'Customize',
             icon: <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             onSelect: () => {
-                window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
+                router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
             },
         },
         {
@@ -244,7 +246,7 @@ export function ThemeLibraryCard({
                         type="button"
                         className="inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border-strong)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-none text-[color:var(--lb-color-text-on-primary)] hover:opacity-90 focus-visible:outline focus-visible:outline-[var(--lb-color-focus-ring)] disabled:opacity-50"
                         onClick={() => {
-                            window.location.href = `/${store}/online-store/themes/${theme.slug}/editor`
+                            router.push(`/${store}/online-store/themes/${theme.slug}/editor`)
                         }}
                         disabled={isBusy}
                         aria-label={`Customize ${theme.name}`}

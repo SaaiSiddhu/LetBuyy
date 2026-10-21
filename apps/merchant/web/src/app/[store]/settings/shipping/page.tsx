@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Badge, Banner, Button, Card, ConfirmDialog, EmptyState, Globe, Input, normalizeProviderMode, Plus, ProviderModeBadge, Section, Skeleton, Truck, useToast, type ProviderMode } from '@letbuyy/ui'
@@ -141,15 +143,18 @@ export default function ShippingSettingsPage() {
     const [addRateForm, setAddRateForm] = useState<AddRateFormState | null>(null)
     const [deletingRateId, setDeletingRateId] = useState<string | null>(null)
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = (await response.json().catch(() => null)) as ShippingPayload | null
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load shipping settings'))
@@ -160,6 +165,7 @@ export default function ShippingSettingsPage() {
             setRates(normalizeRates(data.rates))
             setProviderMode(normalizeProviderMode(data.provider_mode))
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load shipping settings'
             setLoadError(message)
             notify({
@@ -168,9 +174,9 @@ export default function ShippingSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadData()

@@ -6,11 +6,17 @@ function customerCursorValue(summary: CommerceCustomerSummary): string {
     return summary.last_order_at || summary.created_at || '';
 }
 
+// Continuation uses the same code-unit comparison. Locale collation can put
+// email punctuation in a different order and silently drop equal-date rows.
+function compareCursorText(a: string, b: string): number {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
 export function orderCustomerSummaries(summaries: CommerceCustomerSummary[]): CommerceCustomerSummary[] {
     return [...summaries].sort((a, b) => {
-        const dateCompare = customerCursorValue(b).localeCompare(customerCursorValue(a));
+        const dateCompare = compareCursorText(customerCursorValue(b), customerCursorValue(a));
         if (dateCompare !== 0) return dateCompare;
-        return String(a.id || a.customer_email).localeCompare(String(b.id || b.customer_email));
+        return compareCursorText(String(a.id || a.customer_email), String(b.id || b.customer_email));
     });
 }
 

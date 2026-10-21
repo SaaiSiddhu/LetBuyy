@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { useProductPicker } from '@/lib/api/use-product-picker'
+import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import {
     Badge,
@@ -90,11 +93,15 @@ interface CreatePOModalProps {
     suppliers: Supplier[]
     locations: InventoryLocation[]
     products: PurchaseOrderProductItem[]
+    hasMoreProducts: boolean
+    loadingProducts: boolean
+    loadMoreProducts: () => void
+    productLoadError: boolean
     onClose: () => void
     onCreated: () => void
 }
 
-function CreatePOModal({ open, store, suppliers, locations, products, onClose, onCreated }: CreatePOModalProps) {
+function CreatePOModal({ open, store, suppliers, locations, products, hasMoreProducts, loadingProducts, loadMoreProducts, productLoadError, onClose, onCreated }: CreatePOModalProps) {
     const { notify } = useToast()
     const [supplierId, setSupplierId] = useState('')
     const [locationId, setLocationId] = useState('')
@@ -230,6 +237,9 @@ function CreatePOModal({ open, store, suppliers, locations, products, onClose, o
                         {error}
                     </Banner>
                 )}
+
+                {productLoadError && <Banner variant="warning" title="More products could not be loaded">Try loading the next products again.</Banner>}
+                {hasMoreProducts && <Button variant="secondary" onClick={loadMoreProducts} disabled={loadingProducts}>{loadingProducts ? 'Loading products…' : 'Load more products'}</Button>}
 
                 <div className="grid grid-cols-1 gap-[var(--lb-space-3)] sm:grid-cols-2">
                     <Select
@@ -507,8 +517,12 @@ export default function PurchaseOrdersPage() {
 
     const [pos, setPos] = useState<PurchaseOrder[]>([])
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
-    const [locations, setLocations] = useState<InventoryLocation[]>([])
-    const [products, setProducts] = useState<PurchaseOrderProductItem[]>([])
+    const locationRead = useInventoryLocations(store)
+    const locations = locationRead.items
+    const productPicker = useProductPicker<PurchaseOrderProductItem>(store)
+    const [resourcesLoading, setResourcesLoading] = useState(false)
+    const beginRead = useReadRequest(store)
+    const beginCreateRead = useReadRequest(store)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -517,22 +531,13 @@ export default function PurchaseOrdersPage() {
 
     const loadAll = useCallback(async () => {
         if (!store) return
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
         try {
-            const [poRes, supplierRes, locationRes, productRes] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders`),
-                fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`),
-                fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`),
-                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=200`),
-            ])
-
-            const [poBody, supplierBody, locationBody, productBody] = await Promise.all([
-                poRes.json() as Promise<{ data?: PurchaseOrder[]; error?: unknown }>,
-                supplierRes.json() as Promise<{ data?: Supplier[]; error?: unknown }>,
-                locationRes.json() as Promise<{ data?: InventoryLocation[]; error?: unknown }>,
-                productRes.json() as Promise<{ data?: PurchaseOrderProductItem[]; error?: unknown }>,
-            ])
+            const poRes = await fetch(`/api/stores/${encodeURIComponent(store)}/purchase-orders`, { cache: 'no-store', signal: request.signal })
+            const poBody = await poRes.json() as { data?: PurchaseOrder[]; error?: unknown }
+            if (!request.isCurrent()) return
 
             if (!poRes.ok) {
                 const msg = typeof poBody.error === 'string' ? poBody.error : 'Failed to load purchase orders'
@@ -541,17 +546,36 @@ export default function PurchaseOrdersPage() {
             }
 
             setPos(poBody.data ?? [])
-            setSuppliers(supplierBody.data ?? [])
-            setLocations(locationBody.data ?? [])
-            setProducts(productBody.data ?? [])
         } catch {
-            setLoadError('Unable to load purchase orders — check your connection.')
+            if (request.isCurrent()) setLoadError('Unable to load purchase orders — check your connection.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [store, beginRead])
 
     useEffect(() => { void loadAll() }, [loadAll])
+
+    async function openCreate() {
+        if (resourcesLoading) return
+        const request = beginCreateRead()
+        setResourcesLoading(true)
+        setLoadError(null)
+        try {
+            const [productsReady, response] = await Promise.all([
+                productPicker.load(),
+                fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, { cache: 'no-store', signal: request.signal }),
+            ])
+            const payload = await response.json()
+            if (!request.isCurrent()) return
+            if (!productsReady || !response.ok || !Array.isArray(payload.data)) throw new Error('Create form unavailable')
+            setSuppliers(payload.data)
+            setShowCreate(true)
+        } catch {
+            if (request.isCurrent()) setLoadError('The purchase order form could not be loaded. Try opening it again.')
+        } finally {
+            if (request.isCurrent()) setResourcesLoading(false)
+        }
+    }
 
     function openReceive(po: PurchaseOrder) {
         if (po.status === 'received' || po.status === 'cancelled') {
@@ -570,10 +594,10 @@ export default function PurchaseOrdersPage() {
                 description="Plan inbound stock from suppliers and receive it into inventory."
                 breadcrumbs={[{ label: 'Purchasing' }, { label: 'Purchase orders' }]}
                 primaryAction={{
-                    label: 'Create purchase order',
+                    label: resourcesLoading ? 'Loading purchase order form…' : 'Create purchase order',
                     icon: <MaterialIcon name="add" />,
-                    onClick: () => setShowCreate(true),
-                    disabled: loading || locations.length === 0,
+                    onClick: () => void openCreate(),
+                    disabled: loading || resourcesLoading || locationRead.loading || locationRead.error || locations.length === 0,
                 }}
             />
 
@@ -583,11 +607,13 @@ export default function PurchaseOrdersPage() {
                 </Banner>
             )}
 
-            {locations.length === 0 && !loading && !loadError && (
+            {locations.length === 0 && !locationRead.loading && !locationRead.error && !loadError && (
                 <Banner variant="warning" title="No inventory locations">
                     Set up at least one inventory location before creating purchase orders. Locations can be created from Inventory settings.
                 </Banner>
             )}
+
+            {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
 
             <Card>
                 <Section
@@ -606,8 +632,8 @@ export default function PurchaseOrdersPage() {
                             body="Create a purchase order to track supplier commitments, expected arrivals, and inventory receiving."
                             primaryAction={
                                 <Button
-                                    onClick={() => setShowCreate(true)}
-                                    disabled={locations.length === 0}
+                                    onClick={() => void openCreate()}
+                                    disabled={resourcesLoading || locationRead.loading || locationRead.error || locations.length === 0}
                                 >
                                     Create purchase order
                                 </Button>
@@ -707,7 +733,11 @@ export default function PurchaseOrdersPage() {
                 store={store}
                 suppliers={suppliers}
                 locations={locations}
-                products={products}
+                products={productPicker.items}
+                hasMoreProducts={productPicker.hasMore}
+                loadingProducts={productPicker.loading}
+                loadMoreProducts={() => { void productPicker.load(false) }}
+                productLoadError={productPicker.error}
                 onClose={() => setShowCreate(false)}
                 onCreated={() => void loadAll()}
             />

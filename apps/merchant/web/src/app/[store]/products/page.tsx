@@ -161,7 +161,7 @@ export default function ProductsPage() {
     const loadProducts = useCallback(async () => {
         const captured = scope.current, sequence = ++readSequence.current
         setLoading(true); setError(null)
-        const query = new URLSearchParams({ status: activeTab, limit: '100', sort: 'created_at', order: 'desc' })
+        const query = new URLSearchParams({ status: activeTab, limit: '100', sort: 'created_at', order: 'desc', view: 'summary' })
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?${query}`, {
                 cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId },

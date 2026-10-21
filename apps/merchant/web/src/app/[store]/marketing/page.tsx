@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import type {
@@ -221,15 +223,18 @@ export default function MarketingCampaignsPage() {
 
     // ─── Fetch campaigns ───────────────────────────────────────────────────────
 
+    const beginLoadCampaigns = useReadRequest(store)
     const loadCampaigns = useCallback(async () => {
+        const request = beginLoadCampaigns()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/marketing/campaigns?limit=50`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 setError(getErrorMessage(payload, 'Unable to load campaigns'))
                 setCampaigns([])
@@ -238,12 +243,13 @@ export default function MarketingCampaignsPage() {
             const rows = (Array.isArray(payload?.data) ? payload.data : []).map(mapCampaign)
             setCampaigns(rows)
         } catch {
+            if (!request.isCurrent()) return
             setError('Unable to load campaigns')
             setCampaigns([])
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [beginLoadCampaigns, store])
 
     useEffect(() => { loadCampaigns() }, [loadCampaigns])
 

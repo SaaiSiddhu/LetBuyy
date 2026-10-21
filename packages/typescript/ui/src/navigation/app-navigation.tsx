@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { AppFrame, Navigation, Sidebar, type NavigationItem, type SidebarProps } from '../app-shell';
+import { AppFrame, Navigation, Sidebar, type NavigationItem, type NavigationProps, type SidebarProps } from '../app-shell';
 import { cx } from '../utils';
 
 export interface AppNavigationSection {
@@ -28,6 +28,7 @@ export interface AppNavigationSection {
 
 export interface AppNavigationProps {
     sections: AppNavigationSection[];
+    linkComponent?: NavigationProps['linkComponent'];
     /** Brand/header node for the sidebar. */
     brand?: React.ReactNode;
     /** Footer node for the sidebar. */
@@ -73,6 +74,7 @@ export function isNavItemActive(pathname: string, href?: string, exact?: boolean
 
 export function AppNavigation({
     sections,
+    linkComponent,
     brand,
     footer,
     topBar,
@@ -102,6 +104,7 @@ export function AppNavigation({
                         </div>
                     )}
                     <Navigation
+                        linkComponent={linkComponent}
                         ariaLabel={section.ariaLabel ?? (typeof section.title === 'string' ? section.title : 'Primary navigation')}
                         items={section.items.map((item) => ({
                             ...item,

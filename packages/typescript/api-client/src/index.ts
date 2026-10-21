@@ -2194,6 +2194,11 @@ export interface ProductListQuery extends StoreScopedQuery {
   status?: ProductStatus | 'inactive' | 'all';
 }
 
+/** Table rows omit editor-only content and relational variant hydration. */
+export type ProductListSummary = Pick<Product,
+  'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' |
+  'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at' | 'version'>;
+
 export interface ProductBarcodeLookupQuery extends QueryParams {
   store_id: string;
   barcode: string;
@@ -4906,6 +4911,8 @@ export class LetbuyyApiClient {
   readonly products = {
     list: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Product>('/products', { ...options, query }),
+    listSummary: (query?: ProductListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<ProductListSummary>('/products', { ...options, query: { ...query, view: 'summary' } }),
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/products/${encodePathSegment(id)}`, options),
     create: (input: CreateProductInput, options?: LetbuyyRequestOptions) =>

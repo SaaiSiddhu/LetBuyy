@@ -70,7 +70,7 @@ export function SettingsShell({
     function renderNav() {
         return (
             <>
-                <Link
+                <Link prefetch={false}
                     href={settingsHomeHref}
                     aria-current={homeActive ? 'page' : undefined}
                     className={`settings-nav-item${homeActive ? ' active' : ''}`}
@@ -87,7 +87,7 @@ export function SettingsShell({
                             const active = pathname === href || !!pathname?.startsWith(`${href}/`)
                             const ItemIcon = item.Icon
                             return (
-                                <Link
+                                <Link prefetch={false}
                                     key={item.href}
                                     href={href}
                                     aria-current={active ? 'page' : undefined}
@@ -127,7 +127,7 @@ export function SettingsShell({
                             <span className="settings-sidebar-store-name">{storeName}</span>
                             <span className="settings-sidebar-store-domain">{subdomain}.letbuyy.com</span>
                         </span>
-                        <Link
+                        <Link prefetch={false}
                             href={`/${store}/dashboard`}
                             className="settings-sidebar-close"
                             aria-label="Close settings"

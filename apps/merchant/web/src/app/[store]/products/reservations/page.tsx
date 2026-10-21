@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -116,8 +118,10 @@ export default function InventoryReservationsPage() {
     const [productFilter, setProductFilter] = useState('')
     const [page, setPage] = useState(1)
 
+    const beginRead = useReadRequest(store)
     const fetchReservations = useCallback(
         async (currentPage: number, currentStatus: string, currentProduct: string) => {
+            const request = beginRead()
             setLoading(true)
             setError(null)
             try {
@@ -130,7 +134,7 @@ export default function InventoryReservationsPage() {
                 if (currentStatus) url.searchParams.set('status', currentStatus)
                 if (currentProduct.trim()) url.searchParams.set('product_id', currentProduct.trim())
 
-                const res = await fetch(url.toString())
+                const res = await fetch(url.toString(), { cache: 'no-store', signal: request.signal })
                 const json = (await res.json()) as {
                     data?: unknown[]
                     meta?: PageMeta
@@ -138,6 +142,7 @@ export default function InventoryReservationsPage() {
                     message?: string
                 }
 
+                if (!request.isCurrent()) return
                 if (!res.ok) {
                     const msg =
                         typeof json.error === 'string'
@@ -161,20 +166,21 @@ export default function InventoryReservationsPage() {
                     }
                 )
             } catch (err) {
+                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Unknown error'
                 setError(msg)
                 notify({ title: 'Error', description: msg })
             } finally {
-                setLoading(false)
+                if (request.isCurrent()) setLoading(false)
             }
         },
-        [store, notify]
+        [store, notify, beginRead]
     )
 
     useEffect(() => {
-        void fetchReservations(page, statusFilter, productFilter)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        setPage(1)
+        void fetchReservations(1, '', '')
+    }, [fetchReservations])
 
     function handleApply() {
         setPage(1)

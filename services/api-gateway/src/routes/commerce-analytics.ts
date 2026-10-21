@@ -348,99 +348,44 @@ router.get('/operations-summary', async (c) => {
         total_sku_count?: number;
     } = {};
 
-    // ── Orders ───────────────────────────────────────────────
-    const buildOrdersQuery = (includeDeletedAt: boolean) => {
-        let q = db
-            .from('orders')
-            .select('status')
-            .eq('store_id', storeId);
-        if (includeDeletedAt) q = q.is('deleted_at', null);
-        return q;
+    // Counts stay inside Postgres: row payloads are both unnecessary here and
+    // silently limited by PostgREST's max_rows. Launch independent metrics together.
+    const countRows = async (table: string, ownerColumn: string, statuses?: string[]) => {
+        const build = (includeDeletedAt: boolean) => {
+            let query = db.from(table).select('id', { count: 'exact', head: true }).eq(ownerColumn, storeId);
+            if (includeDeletedAt) query = query.is('deleted_at', null);
+            if (statuses) query = query.in('status', statuses);
+            return query;
+        };
+        let result = await build(true);
+        if (isMissingColumnError(result.error, 'deleted_at')) result = await build(false);
+        return result;
     };
-
-    let { data: orderRows, error: orderError } = await buildOrdersQuery(true);
-    if (isMissingColumnError(orderError, 'deleted_at')) {
-        ({ data: orderRows, error: orderError } = await buildOrdersQuery(false));
+    const [orders, openOrders, purchaseOrders, openPurchaseOrders, transfers, movingTransfers, lowStock, products] = await Promise.all([
+        countRows('orders', 'store_id'),
+        countRows('orders', 'store_id', ['pending', 'processing', 'unfulfilled']),
+        countRows('purchase_orders', 'site_id'),
+        countRows('purchase_orders', 'site_id', ['draft', 'ordered', 'partially_received']),
+        countRows('inventory_transfers', 'site_id'),
+        countRows('inventory_transfers', 'site_id', ['shipped', 'partially_received']),
+        db.from('inventory_levels').select('id, products!inner(store_id)', { count: 'exact', head: true })
+            .eq('store_id', storeId).in('products.store_id', [storeId]).lte('available', 10),
+        countRows('products', 'store_id'),
+    ]);
+    if (!orders.error && !openOrders.error) {
+        summary.order_count = orders.count ?? 0;
+        summary.open_order_count = openOrders.count ?? 0;
     }
-    if (!orderError && !isMissingTableError(orderError, 'orders')) {
-        summary.order_count = (orderRows || []).length;
-        let openOrders = 0;
-        for (const row of orderRows || []) {
-            const s = String(row.status ?? '');
-            if (s === 'pending' || s === 'processing' || s === 'unfulfilled') openOrders += 1;
-        }
-        summary.open_order_count = openOrders;
+    if (!purchaseOrders.error && !openPurchaseOrders.error) {
+        summary.po_count = purchaseOrders.count ?? 0;
+        summary.open_po_count = openPurchaseOrders.count ?? 0;
     }
-
-    // ── Purchase orders ──────────────────────────────────────
-    const { data: poRows, error: poError } = await db
-        .from('purchase_orders')
-        .select('status')
-        .eq('site_id', storeId)
-        .is('deleted_at', null);
-
-    if (!poError && !isMissingTableError(poError, 'purchase_orders')) {
-        summary.po_count = (poRows || []).length;
-        let openPos = 0;
-        for (const row of poRows || []) {
-            const s = String(row.status ?? '');
-            if (s === 'draft' || s === 'ordered' || s === 'partial') openPos += 1;
-        }
-        summary.open_po_count = openPos;
+    if (!transfers.error && !movingTransfers.error) {
+        summary.transfer_count = transfers.count ?? 0;
+        summary.in_transit_transfer_count = movingTransfers.count ?? 0;
     }
-
-    // ── Transfers ────────────────────────────────────────────
-    const buildTransfersQuery = (includeDeletedAt: boolean) => {
-        let q = db
-            .from('inventory_transfers')
-            .select('status')
-            .eq('site_id', storeId);
-        if (includeDeletedAt) q = q.is('deleted_at', null);
-        return q;
-    };
-
-    let { data: trRows, error: trError } = await buildTransfersQuery(true);
-    if (isMissingColumnError(trError, 'deleted_at')) {
-        ({ data: trRows, error: trError } = await buildTransfersQuery(false));
-    }
-    if (!trError && !isMissingTableError(trError, 'inventory_transfers')) {
-        summary.transfer_count = (trRows || []).length;
-        let inTransit = 0;
-        for (const row of trRows || []) {
-            if (String(row.status ?? '') === 'in_transit') inTransit += 1;
-        }
-        summary.in_transit_transfer_count = inTransit;
-    }
-
-    // ── Low-stock from inventory_levels ──────────────────────
-    const { data: lowStockRows, error: lowStockError } = await db
-        .from('inventory_levels')
-        .select('id, products!inner(store_id)')
-        .eq('store_id', storeId)
-        .in('products.store_id', [storeId])
-        .lte('available', 10);
-
-    if (!lowStockError && !isMissingTableError(lowStockError, 'inventory_levels')) {
-        summary.low_stock_sku_count = (lowStockRows || []).length;
-    }
-
-    // ── Total SKU count from products ────────────────────────
-    const buildSkuQuery = (includeDeletedAt: boolean) => {
-        let q = db
-            .from('products')
-            .select('id', { count: 'exact', head: true })
-            .eq('store_id', storeId);
-        if (includeDeletedAt) q = q.is('deleted_at', null);
-        return q;
-    };
-
-    let { count: skuCount, error: skuError } = await buildSkuQuery(true);
-    if (isMissingColumnError(skuError, 'deleted_at')) {
-        ({ count: skuCount, error: skuError } = await buildSkuQuery(false));
-    }
-    if (!skuError) {
-        summary.total_sku_count = skuCount ?? 0;
-    }
+    if (!lowStock.error) summary.low_stock_sku_count = lowStock.count ?? 0;
+    if (!products.error) summary.total_sku_count = products.count ?? 0;
 
     return c.json(success(summary));
 });

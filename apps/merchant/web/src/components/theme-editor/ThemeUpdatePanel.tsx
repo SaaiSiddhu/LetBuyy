@@ -55,6 +55,7 @@
  */
 
 import { useState, useCallback, useId, useEffect, useRef } from 'react'
+import { useReadRequest } from '@/lib/api/use-read-request'
 import {
     AlertTriangle,
     ArrowUp,
@@ -221,7 +222,12 @@ function friendlyError(payload: unknown, fallback: string): string {
  *  - Apply sends confirm_diff_hash (CAS guard); a stale hash returns 409.
  *  - RISK-DUAL-N01: no section_definitions mutation in this component.
  */
-export default function ThemeUpdatePanel({
+export default function ThemeUpdatePanel(props: ThemeUpdatePanelProps) {
+    const scope = JSON.stringify([props.actorId, props.storeId, props.themeSlug, props.apiBase, props.currentVersionId, props.availableVersionId, props.currentReleaseId])
+    return <ScopedThemeUpdatePanel key={scope} {...props} />
+}
+
+function ScopedThemeUpdatePanel({
     themeSlug,
     storeId,
     currentVersionId,
@@ -234,6 +240,7 @@ export default function ThemeUpdatePanel({
     onUpdateApplied,
     onRollbackApplied,
 }: ThemeUpdatePanelProps) {
+    const beginPreviewRead = useReadRequest(JSON.stringify([actorId, storeId, themeSlug, apiBase, availableVersionId]))
     const { notify } = useToast()
     const diffTableId = useId()
 
@@ -287,6 +294,7 @@ export default function ThemeUpdatePanel({
 
     const handlePreview = useCallback(async () => {
         if (panelState === 'previewing' || !availableVersionId) return
+        const request = beginPreviewRead()
 
         setPanelState('previewing')
         setDiff(null)
@@ -299,8 +307,9 @@ export default function ThemeUpdatePanel({
                 `?store_id=${encodeURIComponent(storeId)}` +
                 `&target_version_id=${encodeURIComponent(availableVersionId)}`
 
-            const res = await fetch(url, { credentials: 'same-origin' })
+            const res = await fetch(url, { credentials: 'same-origin', signal: request.signal })
             const payload = await res.json().catch(() => null) as Record<string, unknown> | null
+            if (!request.isCurrent()) return
 
             if (!res.ok) {
                 const msg = friendlyError(payload, 'Failed to preview the update. Try again.')
@@ -322,11 +331,12 @@ export default function ThemeUpdatePanel({
 
             setPanelState(previewDiff.requiresDuplicate ? 'conflicts' : 'available')
         } catch (err) {
+            if (!request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Preview request failed.'
             setErrorMessage(msg)
             setPanelState('error')
         }
-    }, [panelState, availableVersionId, apiBase, themeSlug, storeId])
+    }, [panelState, availableVersionId, apiBase, themeSlug, storeId, beginPreviewRead])
 
     // ── Apply update ─────────────────────────────────────────────────────────
 

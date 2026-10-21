@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useReadRequest } from '@/lib/api/use-read-request';
 import type { ThemeCatalogItem } from '@letbuyy/api-client';
 import { Badge, Banner, Button, Dropdown, ExternalLink, Eye, MoreHorizontal, Modal, Palette, Input, Select, Skeleton, Store, Upload, useToast } from '@letbuyy/ui';
 import { getStorefrontBaseUrl, getStorefrontStoreUrl } from '@/lib/public-urls';
@@ -27,11 +28,15 @@ export function ThemeWorkspace({ marketplace = false }: {
     const [preview, setPreview] = useState<ThemeCatalogItem | null>(null);
     const fileInput = useRef<HTMLInputElement>(null);
     const { notify } = useToast();
+    const router = useRouter();
+    const beginRead = useReadRequest(store);
     const load = useCallback(async () => {
+        const request = beginRead();
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' }), payload = await response.json();
+            const response = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal }), payload = await response.json();
+            if (!request.isCurrent()) return;
             if (!response.ok)
                 throw new Error(errorMessage(payload, 'The theme catalog could not load.'));
             setThemes(payload.themes);
@@ -40,12 +45,13 @@ export function ThemeWorkspace({ marketplace = false }: {
             setStatus(payload.storeStatus || 'draft');
         }
         catch (cause) {
+            if (!request.isCurrent()) return;
             setError(cause instanceof Error ? cause.message : 'The theme catalog could not load.');
         }
         finally {
-            setLoading(false);
+            if (request.isCurrent()) setLoading(false);
         }
-    }, [store]);
+    }, [beginRead, store]);
     useEffect(() => { void load(); }, [load]);
     const install = async (themeSlug?: string, bundle?: unknown) => {
         if (busy || !storeId)
@@ -95,8 +101,8 @@ export function ThemeWorkspace({ marketplace = false }: {
    {marketplace ? <Link href={`/${store}/online-store/themes`}>Back to themes</Link> : <StorefrontVisibility store={store} onChanged={() => setStorefrontRevision(value => value + 1)}/>}
    <a className="themes-button themes-button-secondary" href={storefront} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true"/>View store</a>
    <Dropdown align="end" trigger={<Button variant="secondary" aria-label="More online store actions"><MoreHorizontal size={16}/></Button>} items={[
-            { id: 'preferences', label: 'Storefront preferences', onSelect: () => { window.location.href = `/${store}/online-store/preferences`; } },
-            { id: 'marketplace', label: 'Browse theme marketplace', onSelect: () => { window.location.href = `/${store}/online-store/themes/marketplace`; } },
+            { id: 'preferences', label: 'Storefront preferences', onSelect: () => { router.push(`/${store}/online-store/preferences`); } },
+            { id: 'marketplace', label: 'Browse theme marketplace', onSelect: () => { router.push(`/${store}/online-store/themes/marketplace`); } },
         ]}/></div></header>
   {error && <Banner variant="critical" title="Themes could not load">{error}<Button variant="secondary" onClick={() => void load()}>Retry</Button></Banner>}
   {!marketplace && <>{loading ? <Skeleton variant="card"/> : <section className={styles.hero} aria-label="Current theme">
@@ -104,8 +110,8 @@ export function ThemeWorkspace({ marketplace = false }: {
    <div className={styles.heroFooter}><div><h2>{current?.name || 'No current theme'}{current && <Badge label={status === 'published' ? 'Current theme' : 'Unpublished'} variant={status === 'published' ? 'success' : 'default'}/>}</h2><p>{current ? `Version ${current.version || '1.0'} · ${status === 'published' ? 'Published design' : 'Your store is not live yet'}` : 'Adding a theme keeps it private until you publish.'}</p></div>
     {current && <div className={styles.actions}><Dropdown align="end" trigger={<Button variant="secondary" aria-label="More current theme actions" disabled={!!busy}><MoreHorizontal size={16}/></Button>} items={[
                         { id: 'duplicate', label: 'Duplicate', onSelect: () => void duplicateCurrent() },
-                        { id: 'editor', label: 'Customize', onSelect: () => { window.location.href = editor(current.slug); } },
-                        { id: 'preferences', label: 'Storefront visibility', onSelect: () => { window.location.href = `/${store}/online-store/preferences`; } },
+                        { id: 'editor', label: 'Customize', onSelect: () => { router.push(editor(current.slug)); } },
+                        { id: 'preferences', label: 'Storefront visibility', onSelect: () => { router.push(`/${store}/online-store/preferences`); } },
                     ]}/><Link className="themes-button themes-button-primary" href={editor(current.slug)}>Edit theme</Link></div>}
    </div></section>}
    {storeId ? <ThemeLibraryWorkspace key={revision} store={store} storeId={storeId} onChanged={() => { setStorefrontRevision(value => value + 1); void load(); }}/> : <Skeleton variant="card"/>}

@@ -21,7 +21,13 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
         redirect(getAccountsUrl('/lookup'));
     }
 
-    // Verify store ownership
+    // Both readers independently authorize this session. Start the optional
+    // switcher alongside the current store rather than adding a serial round trip.
+    // Settle its rejection immediately so a missing store cannot leave it unhandled.
+    const storesPromise = getUserStores(user.id).then(
+        (stores) => ({ stores, error: null }),
+        (error: unknown) => ({ stores: null, error }),
+    );
     const storeData = await getStoreForUser(store, user.id);
     if (!storeData) {
         notFound();
@@ -29,9 +35,10 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
 
     // The switcher list is useful but not required for the current store page.
     // If the shared query-cost bucket is draining, keep the merchant workflow open.
-    const userStores = await getUserStores(user.id).catch((error) => {
-        if (!isQueryCostRateLimited(error)) {
-            throw error;
+    const storeList = await storesPromise;
+    const userStores = storeList.stores ?? (() => {
+        if (!isQueryCostRateLimited(storeList.error)) {
+            throw storeList.error;
         }
 
         return [{
@@ -42,7 +49,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
             site_type: storeData.site_type,
             status: storeData.status,
         }];
-    });
+    })();
 
     return (
         <AdminShell

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -67,12 +69,18 @@ export default function DomainCenterPage() {
     const [searching, setSearching] = useState(false)
     const [quote, setQuote] = useState<DomainAvailabilityQuote | null>(null)
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (opts?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!opts?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const settingsRes = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store' })
+            const [settingsRes, list] = await Promise.all([
+                fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: request.signal }),
+                domainsClient.list(store, request.signal),
+            ])
             const settingsPayload = (await settingsRes.json().catch(() => null)) as ApiPayload | null
+            if (!request.isCurrent()) return
             if (!settingsRes.ok) throw new Error(payloadError(settingsPayload, 'Unable to load store'))
             const data = isRecord(settingsPayload?.data) ? settingsPayload.data : {}
             const info: StoreInfo = {
@@ -82,16 +90,16 @@ export default function DomainCenterPage() {
             }
             setStoreInfo(info)
 
-            const list = await domainsClient.list(store).catch(() => null)
             setDomains(list?.domains ?? [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load domains'
             setLoadError(message)
             notify({ title: 'Domains could not load', description: message, variant: 'critical' })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 

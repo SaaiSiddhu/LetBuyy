@@ -3,6 +3,7 @@
 import editorStyles from '@/components/theme-editor/editor-workspace.module.css'
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { isUnchangedCoreDemoCategoryBlocks, isFirstPartyCoreBundleSlug } from '@letbuyy/theme-engine'
+import { useReadRequest } from '@/lib/api/use-read-request'
 
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
@@ -217,9 +218,9 @@ function labelFromKey(key: string): string {
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-function normalizeTemplateKey(value: unknown): string {
+function normalizeTemplateKey(value: unknown, fallback = 'index'): string {
     const normalized = typeof value === 'string' ? value.trim() : ''
-    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index'
+    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : fallback
 }
 
 function templateLabel(key: string, template?: JsonRecord): string {
@@ -232,7 +233,7 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     const fromApi = Array.isArray(value)
         ? value.flatMap((entry) => {
             const record = asRecord(entry)
-            const key = normalizeTemplateKey(record.key)
+            const key = normalizeTemplateKey(record.key, '')
             return key ? [{
                 key,
                 label: stringValue(record.label, templateLabel(key, record)),
@@ -247,7 +248,8 @@ function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): T
     }
 
     for (const [key, template] of Object.entries(asRecord(templateConfig.templates))) {
-        const normalizedKey = normalizeTemplateKey(key)
+        const normalizedKey = normalizeTemplateKey(key, '')
+        if (!normalizedKey) continue
         options.set(normalizedKey, {
             key: normalizedKey,
             label: templateLabel(normalizedKey, asRecord(template)),
@@ -541,12 +543,17 @@ function normalizeEditorState(
     const fallback = getDefaultStorefrontThemeTemplate(themeId)
     const fallbackConfig = fallback as unknown as JsonRecord
     const candidate = hasRenderableThemeTemplate(templateConfig) ? asRecord(templateConfig) : fallbackConfig
+    const isLiquid = candidate.rendererEngine === 'liquid' || asRecord(asRecord(candidate.liquidBundle).renderer).engine === 'liquid'
     const root = getSectionRoot(candidate, templateKey)
     const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
     const templateEntries = Array.isArray(root.template) ? root.template : []
-
-    const header = normalizeSection(root.header || fallbackRoot.header, 'header', 'header', 0, sectionSchemas)
-    const footer = normalizeSection(root.footer || fallbackRoot.footer, 'footer', 'footer', 100, sectionSchemas)
+    const templates = asRecord(candidate.templates)
+    // Portable themes own their header/footer and setting defaults. Importing
+    // another renderer's fallback fields makes the first draft fail validation.
+    const headerSource = root.header || (isLiquid ? portableTemplateSectionsToArray(asRecord(templates.header))?.[0] : fallbackRoot.header)
+    const footerSource = root.footer || (isLiquid ? portableTemplateSectionsToArray(asRecord(templates.footer))?.[0] : fallbackRoot.footer)
+    const header = headerSource ? normalizeSection(headerSource, 'header', 'header', 0, sectionSchemas) : null
+    const footer = footerSource ? normalizeSection(footerSource, 'footer', 'footer', 100, sectionSchemas) : null
     const template = templateEntries.flatMap((section, index) => {
         const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
         if (normalized && isFirstPartyCoreBundleSlug(asRecord(asRecord(candidate.liquidBundle).package).slug)
@@ -564,7 +571,7 @@ function normalizeEditorState(
         experienceId: typeof candidate.experienceId === 'string' ? candidate.experienceId : typeof legacyExperienceId === 'string' ? legacyExperienceId : undefined,
         themeSettings: {
             ...defaultThemeSettings(settingsSchema),
-            ...asRecord(fallback.themeSettings),
+            ...(isLiquid ? {} : asRecord(fallback.themeSettings)),
             ...configSettingsData,
             ...rootSettingsData,
             ...asRecord(candidate.themeSettings),
@@ -855,7 +862,7 @@ function ThemeEditorInner() {
         const scope = draftClientScopeRef.current, generation = loadRequestCounter.current, request = ++releaseRequestCounter.current
 
         try {
-            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
+            const res = await fetch(`/api/themes/${themeId}/releases?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
             const payload = await res.json().catch(() => ({}))
             if (scope !== draftClientScopeRef.current || generation !== loadRequestCounter.current || request !== releaseRequestCounter.current) return
             if (!res.ok) { setReleases([]); setCurrentReleaseVersion(null); return }
@@ -876,23 +883,20 @@ function ThemeEditorInner() {
         }
     }, [store, themeId])
 
+    const beginEditorRead = useReadRequest(JSON.stringify([editorActorId, store, themeId, selectedTemplateKey]))
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
-
+        const read = beginEditorRead()
         const loadId = ++loadRequestCounter.current
         setIsLoading(true)
         setLoadError(null)
 
         try {
             const fallbackSectionSchemas = getSectionSchemas(themeId)
-            const [sectionsRes, editorRes] = await Promise.all([
-                fetch(`/api/themes/${themeId}/sections`, { cache: 'no-store' }).catch(() => null),
-                fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store' }),
-            ])
-
-            const sectionsPayload = sectionsRes ? await sectionsRes.json().catch(() => ({})) : {}
+            // The owned editor snapshot already includes the same runtime schemas.
+            const editorRes = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store', signal: read.signal })
             const editorPayload = await editorRes.json().catch(() => ({})) as ApiEditorResponse
-            if (loadRequestCounter.current !== loadId) return
+            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
 
             if (!editorRes.ok) {
                 const errorRecord = asRecord((editorPayload as { error?: unknown }).error)
@@ -901,7 +905,6 @@ function ThemeEditorInner() {
 
             const apiSectionSchemas = {
                 ...fallbackSectionSchemas,
-                ...asRecord(sectionsPayload.schemas),
                 ...asRecord(editorPayload.sectionSchemas),
             } as Record<string, SectionSchema>
             const nextSettingsSchema = normalizeSettingsSchema(editorPayload.themeSettingsSchema || getThemeSettingsSchema(themeId))
@@ -915,9 +918,9 @@ function ThemeEditorInner() {
                 apiSectionSchemas,
                 nextSettingsSchema,
             )
-            const sectionCatalog = Array.isArray(asRecord(sectionsPayload).sections)
-                ? (asRecord(sectionsPayload).sections as AvailableSection[])
-                : Object.entries(apiSectionSchemas).map(([type, schema]) => ({
+            const catalogSchemas = Object.keys(asRecord(editorPayload.sectionSchemas)).length > 0
+                ? editorPayload.sectionSchemas as Record<string, SectionSchema> : apiSectionSchemas
+            const sectionCatalog = Object.entries(catalogSchemas).map(([type, schema]) => ({
                     type,
                     name: schema.name,
                     description: schema.description,
@@ -979,7 +982,7 @@ function ThemeEditorInner() {
             setCurrentReleaseVersion(typeof editorPayload.release?.version === 'number' ? editorPayload.release.version : null)
             void loadReleases()
         } catch (err) {
-            if (loadRequestCounter.current !== loadId) return
+            if (!read.isCurrent() || loadRequestCounter.current !== loadId) return
             const message = err instanceof Error ? err.message : 'Failed to load theme editor'
             setLoadError(message)
             notify({
@@ -988,9 +991,9 @@ function ThemeEditorInner() {
                 variant: 'critical',
             })
         } finally {
-            if (loadRequestCounter.current === loadId) setIsLoading(false)
+            if (read.isCurrent() && loadRequestCounter.current === loadId) setIsLoading(false)
         }
-    }, [editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
+    }, [beginEditorRead, editorActorId, loadReleases, notify, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         void loadEditor()

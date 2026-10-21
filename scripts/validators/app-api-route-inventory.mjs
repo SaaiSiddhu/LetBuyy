@@ -121,7 +121,10 @@ export function classifyAppApiRoute(file) {
 // N5-PERSIST-01 (reviewed 2026-10-18): two owned-store private reel Gateway proxies.
 // Complete local integration (2026-10-18): three bounded private-upload Gateway proxies.
 // Theme experience: one owned-store storefront access proxy (GET/PUT).
-export const APP_API_ROUTE_RATCHET = 223;
+// MERCHANT-PERFORMANCE (2026-10-21): three reviewed export gateway proxies.
+// They translate session/owned-store scope and stream canonical stored bytes;
+// generation, current job access, expiry and R2 writes remain Gateway-owned.
+export const APP_API_ROUTE_RATCHET = 226;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

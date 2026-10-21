@@ -180,7 +180,7 @@ function toCsvRow(values: (string | number | boolean | null | undefined)[]): str
         .map(v => {
             if (v == null) return '';
             const s = String(v);
-            return s.includes(',') || s.includes('"') || s.includes('\n')
+            return s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')
                 ? `"${s.replace(/"/g, '""')}"`
                 : s;
         })
@@ -316,6 +316,20 @@ async function readAccessibleJob(c: ExportContext, jobId: string): Promise<Expor
     if ('error' in actor) return null;
     const job = await readJob(c, jobId);
     if (!job || job.actorId !== actor.actorId) return null;
+    if (!(Date.parse(job.expiresAt) > Date.now())) return null;
+    const requestedStore = c.req.query('store_id');
+    if (requestedStore && (job.storeIds.length !== 1 || job.storeIds[0] !== requestedStore)) return null;
+
+    // A signature and the original actor do not preserve access after ownership
+    // or the current session's store scope changes. Recheck at poll/download.
+    const db = getSupabaseAdmin(c);
+    const sessionStoreId = c.get('auth').user.storeId;
+    if (job.storeIds.length === 1) {
+        if (!(await verifySiteOwnership(db, job.storeIds[0], actor.actorId, sessionStoreId))) return null;
+    } else if (job.storeIds.length > 1) {
+        const current = new Set(await listOwnedStoreIds(db, actor.actorId, sessionStoreId));
+        if (job.storeIds.some(id => !current.has(id))) return null;
+    }
     return job;
 }
 
@@ -383,32 +397,47 @@ async function streamCsvToR2(
     filename: string,
     writeRows: (writeLine: (line: string) => Promise<void>) => Promise<number>,
 ): Promise<number> {
+    // R2 rejects a generated TransformStream whose total length is unknown.
+    // Keep one 5 MiB part in memory; upload parts serially with known lengths.
+    const partSize = 5 * 1024 * 1024;
     const encoder = new TextEncoder();
-    const stream = new TransformStream<Uint8Array, Uint8Array>();
-    const writer = stream.writable.getWriter();
-
-    const writePromise = (async () => {
-        try {
-            const rowCount = await writeRows(async (line) => {
-                await writer.write(encoder.encode(`${line}\n`));
-            });
-            await writer.close();
-            return rowCount;
-        } catch (error) {
-            await writer.abort(error);
-            throw error;
+    let buffer = new Uint8Array(partSize);
+    let used = 0;
+    let upload: R2MultipartUpload | null = null;
+    const parts: R2UploadedPart[] = [];
+    const httpMetadata = { contentType: 'text/csv; charset=utf-8', contentDisposition: `attachment; filename="${filename}"` };
+    const flush = async () => {
+        upload ||= await bucket.createMultipartUpload(key, { httpMetadata });
+        if (parts.length >= 10_000) throw new Error('Export exceeds the storage part limit');
+        parts.push(await upload.uploadPart(parts.length + 1, buffer.subarray(0, used)));
+        used = 0;
+    };
+    try {
+        const rowCount = await writeRows(async line => {
+            const bytes = encoder.encode(`${line}\n`);
+            let offset = 0;
+            while (offset < bytes.length) {
+                const length = Math.min(partSize - used, bytes.length - offset);
+                buffer.set(bytes.subarray(offset, offset + length), used);
+                used += length;
+                offset += length;
+                if (used === partSize) await flush();
+            }
+        });
+        if (upload) {
+            if (used > 0) await flush();
+            await (upload as R2MultipartUpload).complete(parts);
+        } else {
+            const object = await bucket.put(key, buffer.subarray(0, used), { httpMetadata });
+            if (!object) throw new Error('Export result was not stored');
         }
-    })();
-
-    const putPromise = bucket.put(key, stream.readable, {
-        httpMetadata: {
-            contentType: 'text/csv; charset=utf-8',
-            contentDisposition: `attachment; filename="${filename}"`,
-        },
-    });
-
-    const [rowCount] = await Promise.all([writePromise, putPromise]);
-    return rowCount;
+        return rowCount;
+    } catch (error) {
+        if (upload) await (upload as R2MultipartUpload).abort().catch(() => undefined);
+        throw error;
+    } finally {
+        buffer = new Uint8Array(0);
+    }
 }
 
 async function processProductsExport(c: ExportContext, jobId: string): Promise<void> {
@@ -430,7 +459,9 @@ async function processProductsExport(c: ExportContext, jobId: string): Promise<v
                     .from('products')
                     .select(PRODUCT_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
+                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
+                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (error) throw new Error(error.message);
@@ -489,7 +520,9 @@ async function processOrdersExport(c: ExportContext, jobId: string): Promise<voi
                     .from('orders')
                     .select(ORDER_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
+                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
+                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (status) query = query.eq('status', status);
@@ -552,7 +585,9 @@ async function processCustomersExport(c: ExportContext, jobId: string): Promise<
                     .from('store_customers')
                     .select(CUSTOMER_EXPORT_SELECT)
                     .in('store_id', job.storeIds)
+                    .is('deleted_at', null)
                     .order('created_at', { ascending: false })
+                    .order('id', { ascending: true })
                     .range(from, from + EXPORT_BATCH_SIZE - 1);
 
                 if (error) throw new Error(error.message);
@@ -649,7 +684,7 @@ router.get('/jobs/:id', async (c) => {
     if (!job) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Export job not found' } }, 404);
     }
-    return c.json(success({ job: await serializeJob(c, job) }));
+    return c.json(success({ job: await serializeJob(c, job) }), 200, { 'Cache-Control': 'private, no-store' });
 });
 
 router.get('/jobs/:id/download', async (c) => {
@@ -678,6 +713,8 @@ router.get('/jobs/:id/download', async (c) => {
             'Content-Type': 'text/csv; charset=utf-8',
             'Content-Disposition': `attachment; filename="${job.filename}"`,
             'X-LetBuyy-Export-Job-ID': job.id,
+            'Cache-Control': 'private, no-store',
+            'X-Content-Type-Options': 'nosniff',
         },
     });
 });

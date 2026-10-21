@@ -6,10 +6,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
-import NotificationsPanel from './NotificationsPanel'
+import dynamic from 'next/dynamic'
 import { Button, MaterialIcon, acquireScrollLock } from '@letbuyy/ui'
 import { resolveKeyboardShortcut } from './merchantNavigation'
 import { getAccountsUrl } from '@/lib/public-urls'
+
+const NotificationsPanel = dynamic(() => import('./NotificationsPanel'))
 
 interface HeaderBarProps {
     store: string
@@ -224,7 +226,7 @@ export default function MerchantHeaderBar({
                     className="store-switcher-link"
                     onClick={() => {
                         setSwitcherOpen(false)
-                        window.location.href = '/stores'
+                        router.push('/stores')
                     }}
                 >
                     <MaterialIcon name="apps" />

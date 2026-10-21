@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -198,6 +200,8 @@ export default function BusinessSettingsPage() {
 
     const [kyc, setKyc] = useState<KycOverview | null>(null)
     const [commission, setCommission] = useState<CommissionOverview | null>(null)
+    const [optionalLoading, setOptionalLoading] = useState(true)
+    const [optionalError, setOptionalError] = useState<string | null>(null)
 
     // Per-document evidence inputs + in-flight flags
     const [docInputs, setDocInputs] = useState<Record<string, { last4: string; file_url: string }>>({})
@@ -211,20 +215,47 @@ export default function BusinessSettingsPage() {
     }, [data, initialData])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-    // ── Load (store + kyc + commission in parallel) ───────────────────────────
+    // Optional verification and fees settle independently of the editable identity.
+    const beginBusiness = useReadRequest(store)
+    const beginOptional = useReadRequest(store)
+    const loadOptional = useCallback(async (signal?: AbortSignal) => {
+        const request = beginOptional()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
+        const current = () => !signal?.aborted && request.isCurrent()
+        setOptionalLoading(true)
+        setOptionalError(null)
+        setKyc(null)
+        setCommission(null)
+        const failed: string[] = []
+        await Promise.all([
+            { endpoint: 'kyc', label: 'Verification status', apply: (data: Record<string, unknown>) => setKyc(data as unknown as KycOverview) },
+            { endpoint: 'commission', label: 'Settlement fees', apply: (data: Record<string, unknown>) => setCommission(data as unknown as CommissionOverview) },
+        ].map(async ({ endpoint, label, apply }) => {
+            try {
+                const res = await fetch(`/api/stores/${encodeURIComponent(store)}/${endpoint}`, { cache: 'no-store', signal: readSignal })
+                const payload = await res.json().catch(() => null) as ApiPayload | null
+                if (!current()) return
+                if (!res.ok || !isRecord(payload?.data)) throw new Error(label)
+                apply(payload.data)
+            } catch {
+                if (current()) failed.push(label)
+            }
+        }))
+        if (!current()) return
+        setOptionalError(failed.length ? `${failed.join(' and ')} could not load. Retry to check the current status.` : null)
+        setOptionalLoading(false)
+    }, [beginOptional, store])
 
     const loadAll = useCallback(async (signal?: AbortSignal) => {
+        const request = beginBusiness()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
+        void loadOptional(signal)
         setLoading(true)
         setLoadError(null)
         try {
-            const enc = encodeURIComponent(store)
-            const [storeRes, kycRes, commissionRes] = await Promise.all([
-                fetch(`/api/stores/${enc}/settings`, { cache: 'no-store', signal }),
-                fetch(`/api/stores/${enc}/kyc`, { cache: 'no-store', signal }),
-                fetch(`/api/stores/${enc}/commission`, { cache: 'no-store', signal }),
-            ])
-
+            const storeRes = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, { cache: 'no-store', signal: readSignal })
             const storePayload = await storeRes.json().catch(() => null) as ApiPayload | null
+            if (signal?.aborted || !request.isCurrent()) return
             if (!storeRes.ok) throw new Error(getPayloadError(storePayload, 'Unable to load business details'))
             const d = isRecord(storePayload?.data) ? storePayload.data : null
             if (!d) throw new Error('Business details were not returned')
@@ -243,22 +274,15 @@ export default function BusinessSettingsPage() {
             setData(next)
             setInitialData(next)
             setSaveState('saved')
-
-            // KYC + commission are best-effort — a failure here must not block the page.
-            const kycPayload = await kycRes.json().catch(() => null) as ApiPayload | null
-            if (kycRes.ok && isRecord(kycPayload?.data)) setKyc(kycPayload.data as unknown as KycOverview)
-
-            const commissionPayload = await commissionRes.json().catch(() => null) as ApiPayload | null
-            if (commissionRes.ok && isRecord(commissionPayload?.data)) setCommission(commissionPayload.data as unknown as CommissionOverview)
         } catch (err) {
-            if (signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) return
+            if (signal?.aborted || !request.isCurrent()) return
             const msg = err instanceof Error ? err.message : 'Unable to load business details'
             setLoadError(msg)
             notify({ title: 'Could not load business details', description: msg, variant: 'critical' })
         } finally {
-            if (!signal?.aborted) setLoading(false)
+            if (!signal?.aborted && request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginBusiness, loadOptional, notify, store])
 
     useEffect(() => {
         const ctrl = new AbortController()
@@ -424,6 +448,13 @@ export default function BusinessSettingsPage() {
             {loadError && (
                 <Banner variant="critical" title="Business details could not load" action={<Button variant="secondary" onClick={() => void loadAll()}>Retry</Button>}>
                     {loadError}
+                </Banner>
+            )}
+
+            {optionalLoading && <Banner variant="info" title="Checking verification and settlement fees">Your business details are ready to edit.</Banner>}
+            {optionalError && (
+                <Banner variant="warning" title="Some business information is unavailable" action={<Button variant="secondary" onClick={() => void loadOptional()}>Retry status</Button>}>
+                    {optionalError}
                 </Banner>
             )}
 

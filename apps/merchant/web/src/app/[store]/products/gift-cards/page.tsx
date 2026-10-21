@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { GIFT_CARD_STATUS_PRESENTATION, presentStatus } from '@letbuyy/shared-types'
@@ -126,16 +128,19 @@ export default function GiftCardsPage() {
     const [txData, setTxData] = useState<CardTransactions | null>(null)
     const [txLoading, setTxLoading] = useState(false)
 
+    const beginLoadGiftCards = useReadRequest(store)
     const loadGiftCards = useCallback(async () => {
+        const request = beginLoadGiftCards()
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
 
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load gift cards'))
             }
@@ -145,6 +150,7 @@ export default function GiftCardsPage() {
                 : []
             setGiftCards(nextGiftCards)
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load gift cards'
             setGiftCards([])
             setLoadError(message)
@@ -154,9 +160,9 @@ export default function GiftCardsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginLoadGiftCards, notify, store])
 
     useEffect(() => {
         void loadGiftCards()
