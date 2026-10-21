@@ -2904,6 +2904,13 @@ export type StorefrontCollectionSummary = {
   image_url: string | null;
 };
 
+export type StorefrontCollectionCursorQuery = { after?: string; before?: string };
+export type StorefrontCollectionPage = {
+  items: StorefrontCollectionSummary[];
+  nextCursor: string | null;
+  previousCursor: string | null;
+};
+
 export type StorefrontCollectionPayload = {
   collection: {
     id: string;
@@ -5524,6 +5531,8 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
     themePreviewCollections: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token, resource: 'collections' } }),
+    browsePreviewCollections: (subdomain: string, token: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { after: cursor.after, before: cursor.before, token, resource: 'collections', browse: '1' } }),
     themePreviewProducts: (subdomain: string, token: string, productIds?: string[], options?: LetbuyyRequestOptions) =>
       this.requestData<Product[]>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, {
         ...options, query: { token, resource: 'products', ...(productIds ? { ids: productIds.join(',') } : {}) },
@@ -5607,6 +5616,8 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontProductReviewResult>('/storefront/reviews', { ...options, method: 'POST', body: input }),
     listCollections: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionSummary[]>(`/storefront/${encodePathSegment(subdomain)}/collections`, options),
+    browseCollections: (subdomain: string, cursor: StorefrontCollectionCursorQuery = {}, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCollectionPage>(`/storefront/${encodePathSegment(subdomain)}/collections`, { ...options, query: { after: cursor.after, before: cursor.before, browse: '1' } }),
     getCollectionWithProducts: (subdomain: string, collectionId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCollectionPayload>(`/storefront/${encodePathSegment(subdomain)}/collections/${encodePathSegment(collectionId)}`, options),
   };

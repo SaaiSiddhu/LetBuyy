@@ -60,7 +60,7 @@ export default async function StorePage({
             plan={renderPlan}
             sectionData={sectionData}
             editorMode={isEditorPreview}
-            previewCollections={previewStore ? await loadCollectionDiscovery(subdomain, previewToken) : undefined}
+            collectionSummaries={previewStore ? await loadCollectionDiscovery(subdomain, previewToken) : undefined}
         />
     );
 }

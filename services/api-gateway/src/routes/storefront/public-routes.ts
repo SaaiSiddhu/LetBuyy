@@ -1,3 +1,4 @@
+import { resolveLiquidBundleArtifact } from '../../lib/theme-release-bundle';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { sha256Hex } from '../../lib/crypto';
@@ -60,11 +61,35 @@ const STOREFRONT_BEACON_EVENT_TYPES: Record<StorefrontAnalyticsBeaconEventType, 
     checkout_started: 'storefront.checkout_started',
 };
 
-function loadCollectionSummaries(c: AppContext, storeId: string) {
-    return getSupabaseAdmin(c).from('collections')
+type CollectionBrowse = { browse: boolean; after?: string; before?: string };
+function collectionBrowseQuery(c: AppContext): CollectionBrowse | null {
+    const browse = c.req.query('browse'), after = c.req.query('after'), before = c.req.query('before');
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if ((browse !== undefined && browse !== '1') || (after !== undefined && !uuid.test(after))
+        || (before !== undefined && !uuid.test(before)) || (after !== undefined && before !== undefined)
+        || (browse !== '1' && (after !== undefined || before !== undefined))) return null;
+    return { browse: browse === '1', after, before };
+}
+function loadCollectionSummaries(c: AppContext, storeId: string, options: CollectionBrowse) {
+    let query = getSupabaseAdmin(c).from('collections')
         .select('id, title, description, image_url')
-        .eq('store_id', storeId).eq('is_active', true).is('deleted_at', null)
-        .order('title', { ascending: true }).order('id', { ascending: true }).limit(24);
+        .eq('store_id', storeId).eq('is_active', true).is('deleted_at', null);
+    if (!options.browse) return query.order('title', { ascending: true }).order('id', { ascending: true }).limit(24);
+    if (options.after) query = query.gt('id', options.after);
+    if (options.before) query = query.lt('id', options.before);
+    return query.order('id', { ascending: !options.before }).limit(25);
+}
+function collectionSummaryResult(rows: SqlRecord[] | null, options: CollectionBrowse) {
+    if (!options.browse) return rows || [];
+    const hasMore = (rows?.length || 0) > 24;
+    const items = (rows || []).slice(0, 24);
+    if (options.before) items.reverse();
+    const first = items[0]?.id ?? null, last = items.at(-1)?.id ?? null;
+    return {
+        items,
+        nextCursor: options.before || hasMore ? last : null,
+        previousCursor: options.after || (options.before && hasMore) ? first : null,
+    };
 }
 
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
@@ -617,9 +642,11 @@ export function registerStorefrontPublicRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'Unknown preview resource' } }, 400);
         }
         if (resource === 'collections') {
-            const { data, error } = await loadCollectionSummaries(c, store.id);
+            const browse = collectionBrowseQuery(c);
+            if (!browse) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection cursor' } }, 400);
+            const { data, error } = await loadCollectionSummaries(c, store.id, browse);
             if (error) return c.json(dbFailureBody(), 500);
-            return c.json(success(data || []));
+            return c.json(success(collectionSummaryResult(data, browse)));
         }
         if (resource === 'products') {
             const rawIds = c.req.query('ids');
@@ -644,6 +671,7 @@ export function registerStorefrontPublicRoutes(
             release_manifest: {
                 ...(liveRelease?.release_manifest || {}),
                 preview: true,
+                renderer_engine: resolveLiquidBundleArtifact(draftManifest) ? 'liquid' : 'json-contract',
                 preview_session_id: previewSession.id,
                 draft_id: draftId,
                 theme_instance_draft_id: previewSession.theme_instance_draft_id || null,
@@ -1072,12 +1100,13 @@ export function registerStorefrontPublicRoutes(
     // Bounded discovery summaries only. Membership/products stay on the existing detail reader.
     router.get('/:subdomain/collections', async (c) => {
         c.header('Cache-Control', 'no-store');
+        const browse = collectionBrowseQuery(c);
+        if (!browse) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid collection cursor' } }, 400);
         const store = await loadPublishedStore(c, c.req.param('subdomain'));
         if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-        const { data, error } = await loadCollectionSummaries(c, store.id);
+        const { data, error } = await loadCollectionSummaries(c, store.id, browse);
         if (error) return c.json(dbFailureBody(), 500);
-        c.header('Cache-Control', 'no-store');
-        return c.json(success(data || []));
+        return c.json(success(collectionSummaryResult(data, browse)));
     });
 
     // GET /storefront/:subdomain/collections/:slug — Public collection with assigned products.

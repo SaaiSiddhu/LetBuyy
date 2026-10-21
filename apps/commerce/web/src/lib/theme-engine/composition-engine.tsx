@@ -14,6 +14,7 @@ import {
     type LiquidCommerceDrops,
 } from '@letbuyy/theme-engine';
 import { assembleLiquidPageFromRenderResult } from './liquid-page-assembly';
+import { productOriginFilterMarkup } from './platform-control-markup';
 import type { ProductReviewItem, SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import LiquidHydrationIslands from './liquid-hydration-islands';
@@ -641,15 +642,17 @@ async function renderLiquidPlan({
     sectionData,
     editorMode,
     liquidPage,
-    previewCollections,
+    collectionSummaries,
+    afterContentHtml,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
     liquidPage?: Record<string, unknown> | null;
-    previewCollections?: StorefrontCollectionSummary[];
-}): Promise<{ html: string; headStyleText: string } | null> {
+    collectionSummaries?: StorefrontCollectionSummary[];
+    afterContentHtml?: string;
+}): Promise<ReturnType<typeof assembleLiquidPageFromRenderResult> | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
     const productBasePath = await resolveLiquidProductBasePath(plan.route.subdomain);
 
@@ -696,7 +699,7 @@ async function renderLiquidPlan({
     // become a false empty collection grid (or an unrelated legacy React page).
     const needsCollectionDiscovery = plan.template.sections.some(section => section.type === 'category-grid' && section.isVisible !== false);
     const discoveredCollections = needsCollectionDiscovery
-        ? previewCollections ?? await loadCollectionDiscovery(plan.route.subdomain)
+        ? collectionSummaries ?? await loadCollectionDiscovery(plan.route.subdomain)
         : [];
 
     const renderer = createThemeRenderer('liquid');
@@ -729,7 +732,7 @@ async function renderLiquidPlan({
 
         if (result.status !== 'rendered' || !result.liquid) return null;
 
-        return assembleLiquidPageFromRenderResult(result.liquid);
+        return assembleLiquidPageFromRenderResult(result.liquid, { beforeContentHtml: productOriginFilterMarkup(plan.route, editorMode), afterContentHtml });
     } catch (err: unknown) {
         // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
         // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render
@@ -759,17 +762,19 @@ export default async function StorefrontCompositionEngine({
     sectionData,
     editorMode = false,
     liquidPage,
-    previewCollections,
+    collectionSummaries,
+    afterContentHtml,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
     liquidPage?: Record<string, unknown> | null;
-    previewCollections?: StorefrontCollectionSummary[];
+    collectionSummaries?: StorefrontCollectionSummary[];
+    afterContentHtml?: string;
 }) {
     const renderStart = Date.now();
-    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, previewCollections });
+    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage, collectionSummaries, afterContentHtml });
     const engine = liquidResult ? 'liquid' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({
@@ -791,7 +796,6 @@ export default async function StorefrontCompositionEngine({
     if (liquidResult) {
         return (
             <>
-                <StorefrontProductOriginFilter route={plan.route} editorMode={editorMode} />
                 <LiquidRenderedHtml
                     html={liquidResult.html}
                     headStyleText={liquidResult.headStyleText}

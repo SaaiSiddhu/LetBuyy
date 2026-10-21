@@ -13,6 +13,7 @@ import {
     INSPECTOR_ADD_SECTION_INTENT,
 } from '@letbuyy/theme-engine/editor-bridge-protocol'
 import PreviewInspectorOverlay from './PreviewInspectorOverlay'
+import { fitPreviewViewport } from './preview-viewport'
 
 interface CenterPanelProps {
     storeName: string
@@ -45,6 +46,25 @@ export default function CenterPanel({
     onAddSectionIntent,
 }: CenterPanelProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
+    const previewBodyRef = useRef<HTMLDivElement>(null)
+    const [availableSize, setAvailableSize] = useState({ width: 0, height: 900 })
+    const viewportFit = fitPreviewViewport(viewport, availableSize.width, availableSize.height)
+
+    useEffect(() => {
+        const body = previewBodyRef.current
+        if (!body) return
+        let active = true
+        const update = () => {
+            if (!active) return
+            const width = body.clientWidth, height = body.clientHeight
+            setAvailableSize(previous => previous.width === width && previous.height === height ? previous : { width, height })
+        }
+        const observer = new ResizeObserver(update)
+        observer.observe(body)
+        update()
+        return () => { active = false; observer.disconnect() }
+    }, [])
+
     const iframeLoadedRef = useRef(false)
     const storefrontBaseUrl = getStorefrontBaseUrl()
 
@@ -189,7 +209,7 @@ export default function CenterPanel({
                     </div>
                 </div>
 
-                <div className="te-preview-body te-preview-body--iframe">
+                <div ref={previewBodyRef} className="te-preview-body te-preview-body--iframe">
                     {previewUrl ? (
                         <iframe
                             ref={iframeRef}
@@ -198,6 +218,7 @@ export default function CenterPanel({
                             src={previewUrl}
                             onLoad={handlePreviewLoad}
                             className="te-preview-iframe"
+                            style={{ width: viewportFit.width, height: viewportFit.height, transform: `scale(${viewportFit.scale})`, transformOrigin: 'top left', visibility: availableSize.width > 0 ? 'visible' : 'hidden' }}
                             sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
                         />
                     ) : (

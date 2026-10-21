@@ -9896,6 +9896,7 @@ body {
 
 .te-preview-body--iframe {
   position: relative;
+  overflow: hidden;
   height: calc(100vh - 156px);
   min-height: 520px;
   background: rgb(255 255 255);

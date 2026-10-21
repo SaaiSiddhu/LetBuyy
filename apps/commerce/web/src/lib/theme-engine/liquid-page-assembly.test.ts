@@ -57,3 +57,9 @@ test('assembleLiquidPageFromRenderResult tolerates missing header/footer templat
     assert.equal(result.html, '<main>body</main>');
     assert.equal(result.headStyleText, HEAD_STYLE_TEXT);
 });
+
+test('flat Liquid chrome surrounds platform slots without new sticky containing blocks',()=>{
+ const result=assembleLiquidPageFromRenderResult(fixture(), {beforeContentHtml:'<section>filter</section>',afterContentHtml:'<nav>pages</nav>'});
+ assert.equal(result.html,'<header>header</header><section>filter</section><main>body</main><nav>pages</nav><footer>footer</footer>');
+ assert.equal(result.headStyleText,HEAD_STYLE_TEXT);
+});

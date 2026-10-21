@@ -83,18 +83,19 @@ test('storefront resolver and composition engine render full Liquid documents wi
   // can be unit-tested, and made it carry the theme's headStyleText too. composition-engine hands every
   // rendered result to it; verify the delegation and the destructuring + concatenation contract there.
   const assemblySource = read(LIQUID_PAGE_ASSEMBLY_SOURCE);
-  assert.match(source, /import \{ assembleLiquidPageFromRenderResult \} from '\.\/liquid-page-assembly';/);
+  assert.match(source, /import \{[^}]*assembleLiquidPageFromRenderResult[^}]*\} from '\.\/liquid-page-assembly';/);
   assert.match(
     source,
-    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;\s*return assembleLiquidPageFromRenderResult\(result\.liquid\);/,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;\s*return assembleLiquidPageFromRenderResult\(result\.liquid, \{ beforeContentHtml: productOriginFilterMarkup\(plan\.route, editorMode\), afterContentHtml \}\);/,
   );
-  assert.match(assemblySource, /export function assembleLiquidPageFromRenderResult\(\s*liquid: LiquidRenderedTheme,?\s*\)/);
+  assert.match(assemblySource, /export function assembleLiquidPageFromRenderResult\(\s*liquid: LiquidRenderedTheme,\s*controls: LiquidPlatformControls = \{\},?\s*\)/);
   assert.match(assemblySource, /const \{ header, contentForLayout, footer(?:, \w+)* \} = liquid;/);
-  assert.match(assemblySource, /html: `\$\{header \|\| ''\}\$\{contentForLayout\}\$\{footer \|\| ''\}`/);
+  assert.ok(assemblySource.includes("html: `${header || ''}${controls.beforeContentHtml || ''}${contentForLayout}${controls.afterContentHtml || ''}${footer || ''}`"));
   assert.doesNotMatch(source, /return result\.liquid\.contentForLayout/);
   assert.doesNotMatch(assemblySource, /html: (?:liquid\.)?contentForLayout\b/);
   assert.match(source, /data-theme-renderer="liquid"/);
-  assert.match(source, /dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
+  assert.ok(source.includes('dangerouslySetInnerHTML={{ __html: html }}'));
+  assert.doesNotMatch(source, /data-lb-liquid-region/);
 });
 
 test('Liquid storefront plans bind catalog data and cart drops without fabricating server cart state', () => {
@@ -119,7 +120,8 @@ test('Liquid storefront plans bind catalog data and cart drops without fabricati
   const storefrontSelectors = cssRuleSelectors(read(STOREFRONT_LIQUID_THEME_CSS_SOURCE));
   // The theme root. composition-engine renders the Liquid page into an element carrying
   // data-theme-renderer="liquid", and liquid-theme.css styles that element itself.
-  assert.match(compositionSource, /<div\s+data-theme-renderer="liquid"[^>]*dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
+  assert.match(compositionSource, /<div\s+data-theme-renderer="liquid"/);
+  assert.match(compositionSource, /dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
   assert.ok(
     storefrontSelectors.includes('[data-theme-renderer="liquid"]'),
     'liquid-theme.css must style the Liquid render root itself',

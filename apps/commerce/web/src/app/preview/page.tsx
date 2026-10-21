@@ -1,3 +1,4 @@
+import '../store/[subdomain]/liquid-theme.css';
 import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
 import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
@@ -470,29 +471,29 @@ export default async function PreviewPage({
 
     const content = (
         <div className={`storefront-preview-route__canvas min-h-screen flex flex-col ${isDark ? 'dark' : ''}`}>
-            <StorefrontSectionGroupRenderer
+            {renderPlan.rendererEngine !== 'liquid' && <StorefrontSectionGroupRenderer
                 store={previewStore}
                 plan={renderPlan}
                 groupKey="header"
                 sectionData={sectionGroupData}
                 editorMode
-            />
+            />}
             <main className="flex-grow">
                 <StorefrontCompositionEngine
                     store={previewStore}
                     plan={renderPlan}
                     sectionData={sectionData}
                     editorMode
-                    previewCollections={previewCollections}
+                    collectionSummaries={previewCollections}
                 />
             </main>
-            <StorefrontSectionGroupRenderer
+            {renderPlan.rendererEngine !== 'liquid' && <StorefrontSectionGroupRenderer
                 store={previewStore}
                 plan={renderPlan}
                 groupKey="footer"
                 sectionData={sectionGroupData}
                 editorMode
-            />
+            />}
         </div>
     );
 

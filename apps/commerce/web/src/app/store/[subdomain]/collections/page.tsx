@@ -1,8 +1,9 @@
-import { loadCollectionDiscovery } from '@/lib/theme-engine/collection-discovery';
+import { collectionPaginationMarkup } from '@/lib/theme-engine/platform-control-markup';
+import { loadCollectionPage } from '@/lib/theme-engine/collection-discovery';
 // /store/[subdomain]/collections — All-collections index. Renders the Liquid `list-collections`
 // template with bounded, current collection summaries. Distinct from collections/[slug], a single
 // collection's product listing.
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { StoreService } from '@/lib/store-service';
 import { buildStoreMetadata } from '@/lib/seo';
@@ -13,7 +14,7 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 
 type Props = {
     params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<{ theme_preview_token?: string }>;
+    searchParams?: Promise<{ theme_preview_token?: string; after?: string; before?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -45,8 +46,12 @@ export default async function CollectionsIndexPage({ params, searchParams }: Pro
         subdomain,
     });
     if (plan.liquidTemplateMiss) return notFound();
+    const basePath = `/store/${subdomain}/collections`;
+    const collectionPage = await loadCollectionPage(subdomain, { after: query?.after, before: query?.before }, previewStore ? previewToken : undefined);
+    if (!collectionPage.items.length && (query?.after || query?.before)) redirect(basePath);
+
 
     return (
-        <StorefrontCompositionEngine store={store} plan={plan} sectionData={new Map<string, SectionRenderData>()} previewCollections={previewStore ? await loadCollectionDiscovery(subdomain, previewToken) : undefined} />
+        <StorefrontCompositionEngine store={store} plan={plan} sectionData={new Map<string, SectionRenderData>()} collectionSummaries={collectionPage.items} afterContentHtml={collectionPaginationMarkup(collectionPage, basePath)} />
     );
 }

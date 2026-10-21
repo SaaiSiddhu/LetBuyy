@@ -784,3 +784,26 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
   display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.5rem; min-height: 44px;
   background: var(--background); color: var(--primary); font-weight: 700; padding: .85rem 1.85rem; border-radius: var(--radius, 8px);
 }
+
+/* Trusted platform controls remain between the existing Liquid content/chrome regions. */
+.lb-address-card__actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem; }
+.lb-address-card { overflow-wrap:anywhere; }
+.lb-address-form { display:grid; gap:1rem; max-width:36rem; margin:1rem 0; }
+.lb-address-form label { display:grid; gap:.35rem; }
+.lb-address-form input:not([type="checkbox"]), .lb-address-form select {
+  min-height:2.75rem; width:100%; min-width:0; padding:.6rem .75rem; font:inherit;
+  color:var(--text); background:var(--card-bg); border:1px solid var(--border-color); border-radius:var(--radius,8px);
+}
+.lb-address-form .lb-address-form__default { display:flex; align-items:center; gap:.5rem; min-height:2.75rem; }
+.lb-address-card__actions button, .lb-addresses__add-btn, .lb-address-form button, .lb-addresses__error button, .lb-collection-pagination a {
+  display:inline-flex; align-items:center; justify-content:center; min-height:2.75rem; min-width:2.75rem;
+  padding:.6rem 1rem; font:inherit; font-weight:600; color:var(--text); background:var(--card-bg);
+  border:1px solid var(--border-color); border-radius:var(--radius,8px); cursor:pointer; text-decoration:none;
+}
+.lb-addresses__add-btn { margin-top:.75rem; }
+.lb-address-card__actions button:focus-visible, .lb-addresses__add-btn:focus-visible, .lb-address-form button:focus-visible,
+.lb-addresses__error button:focus-visible, .lb-collection-pagination a:focus-visible {
+  outline:2px solid var(--primary); outline-offset:3px;
+}
+.lb-address-form button:disabled, .lb-address-card__actions button:disabled { opacity:.6; cursor:wait; }
+.lb-collection-pagination { display:flex; flex-wrap:wrap; gap:.75rem; padding:1.5rem; max-width:var(--page-width,80rem); margin:0 auto; }

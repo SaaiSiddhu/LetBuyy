@@ -1,3 +1,4 @@
+import { resolveLiquidBundleArtifact } from '../lib/theme-release-bundle';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
 import {
@@ -202,11 +203,6 @@ async function sha256Hex(input: string): Promise<string> {
         .join('');
 }
 
-function resolveLiquidBundleArtifact(releaseConfig: DbRecord): DbRecord | null {
-    const candidate = asRecord(releaseConfig).liquidBundle;
-    const result = LiquidThemePackageBundleSchema.safeParse(candidate);
-    return result.success ? result.data as unknown as DbRecord : null;
-}
 
 const DEFAULT_THEME_TEMPLATE_OPTIONS = [
     { key: 'index', label: 'Home page', type: 'home' },

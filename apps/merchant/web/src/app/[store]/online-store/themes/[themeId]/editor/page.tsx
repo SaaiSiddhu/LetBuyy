@@ -45,6 +45,7 @@ import {
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
+import { PREVIEW_VIEWPORT_WIDTHS } from '@/components/theme-editor/preview-viewport'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import ExperiencePicker from '@/components/theme-editor/ExperiencePicker'
 import ConflictDialog from '@/components/theme-editor/ConflictDialog'
@@ -170,9 +171,9 @@ const EMPTY_STATE: EditorState = {
 }
 
 const PREVIEW_DEVICES: Array<{ value: PreviewDevice; label: string; icon: typeof Monitor; width: number }> = [
-    { value: 'desktop', label: 'Desktop', icon: Monitor, width: 1440 },
-    { value: 'tablet', label: 'Tablet', icon: Tablet, width: 820 },
-    { value: 'mobile', label: 'Mobile', icon: Smartphone, width: 390 },
+    { value: 'desktop', label: 'Desktop', icon: Monitor, width: PREVIEW_VIEWPORT_WIDTHS.desktop },
+    { value: 'tablet', label: 'Tablet', icon: Tablet, width: PREVIEW_VIEWPORT_WIDTHS.tablet },
+    { value: 'mobile', label: 'Mobile', icon: Smartphone, width: PREVIEW_VIEWPORT_WIDTHS.mobile },
 ]
 
 const FIELD_TYPES = new Set([
