@@ -96,10 +96,16 @@ export default async function StoreLayout({ children, params }: Props) {
         );
     }
 
-    // Fetch products for search — only for store-type sites
+    const renderPlan = resolveStorefrontTemplate(store, {
+        type: 'index',
+        path: `/store/${subdomain}`,
+        subdomain,
+    });
+    // Liquid owns its GET search form and body data plan. Only the frozen React
+    // chrome consumes this optional catalog; do not preload it for hidden chrome.
     const isStoreSite = store.siteType === 'store';
     let products: ProductModel[] = [];
-    if (isStoreSite) {
+    if (isStoreSite && renderPlan.rendererEngine !== 'liquid') {
         try {
             if (store.selectedProductIds && store.selectedProductIds.length > 0) {
                 products = await ProductService.getProductsByIds(store.selectedProductIds, subdomain);
@@ -113,11 +119,6 @@ export default async function StoreLayout({ children, params }: Props) {
 
     // Extract Theme Settings from templateConfig
     const ts = store.templateConfig.themeSettings;
-    const renderPlan = resolveStorefrontTemplate(store, {
-        type: 'index',
-        path: `/store/${subdomain}`,
-        subdomain,
-    });
     const sectionGroupData = new Map<string, SectionRenderData>();
     for (const section of [...renderPlan.sectionGroups.header, ...renderPlan.sectionGroups.footer]) {
         sectionGroupData.set(section.id, { products });

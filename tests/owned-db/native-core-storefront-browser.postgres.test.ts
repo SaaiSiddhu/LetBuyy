@@ -214,10 +214,19 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
     const catalogReads=reads.filter(call=>call.path===`/v1/storefront/${subdomain}/products`).length;
     const failures=reads.filter(call=>call.status>=400).map(call=>({status:call.status,path:call.path.replace(subdomain,':store').replace(productId,':product')}));
     assert.deepEqual(failures,[]);
+    assert.ok(navigationReads<=3,`${kind} repeats public menu readers: ${JSON.stringify(counts)}`);
+    assert.equal(counts['/v1/storefront/:store'],1,`${kind} needs one current public bootstrap per new document`);
+    assert.equal(counts['/v1/storefront/:store/status'],1,`${kind} needs one current status read per new document`);
+    if(kind==='product')assert.equal(skuReads,1,'metadata/page share one public SKU read in this render');
+    if(kind==='product'||kind==='collection-index')assert.equal(catalogReads,0,'Liquid chrome must not fetch an unused catalog');
     readProfiles.push({kind,sample,usefulReadyMs,...timing,upstreamReads:reads.length,upstreamResponseBytes:reads.reduce((sum,call)=>sum+call.bytes,0),navigationReads,skuReads,catalogReads,counts,upstreamWallDurationsMs:reads.map(call=>call.ms),failures});
    }
   }
   console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful DOM, then bounded settled request capture',samples:readProfiles}));
+  const resourceStart=calls.length;const resourceDocument=await buyer.goto(`${tenantOrigin}/_vercel/speed-insights/script.js`,{waitUntil:'networkidle'});
+  assert.equal(resourceDocument?.status(),404,'owned Next server has no Vercel platform script');
+  assert.equal(calls.slice(resourceStart).filter(call=>call.path.includes(`/storefront/${subdomain}`)).length,0,'missing platform assets must not render a tenant or load its catalog');
+  console.info('OWNED_PLATFORM_RESOURCE '+JSON.stringify({missingPlatformAsset404:true,tenantBusinessReads:0}));
   for(const resource of ['store','product'] as const){
    storeReadUnavailable=resource==='store';productReadUnavailable=resource==='product';await buyer.goto(`${tenantOrigin}/product/${productId}`);await expect(buyer.getByRole('heading',{name:'Something went wrong',exact:true})).toBeVisible();
    storeReadUnavailable=false;productReadUnavailable=false;await buyer.getByRole('button',{name:'Try again',exact:true}).click();await expect(buyer.getByRole('heading',{level:1,name:productName,exact:true})).toBeVisible();await buyer.waitForLoadState('networkidle');

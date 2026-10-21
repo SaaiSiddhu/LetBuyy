@@ -70,12 +70,15 @@ export class StorefrontStoreError extends Error {
     }
 }
 
+// Stable module-level React cache wrappers share public mapping only within an RSC
+// request. Route Handlers retain their normal uncached behavior; no module data Map
+// or cross-request permission/publication cache is introduced.
 export const StoreService = {
     getUrbanKicksDemoStore(): StoreModel {
         return buildUrbanKicksDemoStore();
     },
 
-    async getStoreBySubdomain(subdomain: string): Promise<StoreModel | null> {
+    getStoreBySubdomain: cache(async (subdomain: string): Promise<StoreModel | null> => {
         try {
             const [data, navigation] = await Promise.all([
                 fetchWorkerStore(subdomain, false),
@@ -87,7 +90,7 @@ export const StoreService = {
             console.error('[StoreService] Error fetching store through worker:', error);
             throw new StorefrontStoreError('getStoreBySubdomain', error);
         }
-    },
+    }),
 
     async getPreviewStoreBySubdomain(subdomain: string, previewToken: string): Promise<StoreModel | null> {
         if (!previewToken || previewToken.length > 200) return null;
@@ -104,7 +107,7 @@ export const StoreService = {
         }
     },
 
-    async getStoreBySubdomainAnyStatus(subdomain: string): Promise<StoreModel | null> {
+    getStoreBySubdomainAnyStatus: cache(async (subdomain: string): Promise<StoreModel | null> => {
         try {
             const data = await fetchWorkerStore(subdomain, true);
             if (!data) return null;
@@ -113,16 +116,15 @@ export const StoreService = {
                 return mapStatusOnlyStore(data);
             }
 
-            const publishedData = await fetchWorkerStore(subdomain, false);
-            const storeData = publishedData || data;
-            const navigation = await fetchWorkerNavigationBundle(subdomain);
-
-            return mapSupabaseToStore(storeData, storeData.current_theme_release || null, navigation);
+            // Share the same public projection with metadata/page in this render only.
+            // A publication withdrawn after the status read must not fall back to that
+            // older status-only snapshot as though it were a public theme release.
+            return await StoreService.getStoreBySubdomain(subdomain);
         } catch (error) {
             console.error('[StoreService] Error fetching store status through worker:', error);
             throw new StorefrontStoreError('getStoreBySubdomainAnyStatus', error);
         }
-    },
+    }),
 
     async getStoreById(storeId: string): Promise<StoreModel | null> {
         try {
@@ -500,7 +502,7 @@ async function fetchWorkerNavigation(subdomain: string, location: string): Promi
     }
 }
 
-async function fetchWorkerNavigationBundle(subdomain: string): Promise<StoreNavigation> {
+const fetchWorkerNavigationBundle = cache(async (subdomain: string): Promise<StoreNavigation> => {
     const [main, footer, policies] = await Promise.all([
         fetchWorkerNavigation(subdomain, 'main'),
         fetchWorkerNavigation(subdomain, 'footer'),
@@ -508,7 +510,7 @@ async function fetchWorkerNavigationBundle(subdomain: string): Promise<StoreNavi
     ]);
 
     return { main, footer, policies };
-}
+});
 
 function normalizeSiteType(value: unknown): SiteType {
     if (value === 'ecommerce') return 'store';
