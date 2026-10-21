@@ -1,0 +1,38 @@
+{
+  "phase": "WEB-LAUNCH-W1-CORE-READ-PERFORMANCE",
+  "base": "118209b4fde1b5a15313f4741bcac454690d15c8",
+  "outcome": "Reduce demonstrated redundant storefront reads and store/theme mapping within one React render request while preserving freshness, tenant boundaries, publication/capability authorization and honest error recovery. Establish comparable local production browser evidence, not a hosted latency claim.",
+  "scope": [
+    "apps/commerce/web/src/lib/store-service.ts canonical public StoreService/mapping/navigation readers",
+    "tests/owned-db/native-core-storefront-browser.postgres.test.ts existing production browser fixture with normal signup/store/catalog/publish/COD and fault controls",
+    "Affected existing cache/runtime source-contract tests only when their concrete interface changes",
+    "Phase/evidence/programme and branch ledger"
+  ],
+  "readContract": {
+    "population": "Anonymous published tenant home, product and collection index; normal synthetic store26 collections/product2variants; existing private preview remains capability-gated",
+    "representation": "Same StoreModel, three navigation locations and existing Liquid render; no additional fields or business authority",
+    "reuse": "React cache request-lifetime only, primitive subdomain keys; no module Map, unstable_cache, use cache directive or session-wide private reuse",
+    "freshness": "Each new server request repeats current status/published reader; ten consecutive normal preset publications must render updated values. No public fallback to a status-only snapshot after published reader says absent. Private preview token/expiry/draft verification unchanged.",
+    "budget": "Measure baseline first; target <=3 navigation reads (one per main/footer/policies) per isolated full document instead of repeated identical reads; mandatory store errors retain retry boundary, never false404/empty success. No hard millisecond SLA invented.",
+    "metric": "Three measured samples each of home/product/collection full document after code already loaded, same production fixture/resources/labels. Record document bytes, useful DOM readiness, scoped upstream counts/bytes/wall durations and errors; do not sum parallel durations or claim percentile population from few samples.",
+    "negative": "Injected bootstrap read503 must show unavailable UI and recover next request; published preset changes prove no cross-request mapped-store retention. Existing tenant, preview, image, variant, COD and buyer lifecycle controls retained."
+  },
+  "sources": [
+    {
+      "url": "https://react.dev/reference/react/cache",
+      "verified": "2026-10-21",
+      "consequence": "One stable cached function reused across Server Components; invalidated per server request, not a global object cache."
+    },
+    {
+      "url": "https://nextjs.org/docs/app/api-reference/functions/fetch",
+      "verified": "2026-10-21",
+      "consequence": "Keep persistent data cache separate from request memoization. Test production build; dev behavior is not acceptance."
+    }
+  ],
+  "boundaries": [
+    "Single agent",
+    "No merge/push/deploy for this newly claimed candidate",
+    "No shared database/object writes, real provider effects or mobile app UI edits"
+  ],
+  "worktree": "Native git worktree fallback after managed create_worktree returned Not a git repository; prior attached artifacts empty."
+}
