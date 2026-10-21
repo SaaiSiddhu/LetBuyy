@@ -31,7 +31,9 @@
       "Existing theme-preview resource branch after current store/token/expiry/draft verification; add collections resource, not a second preview authority",
       "Typed SDK themePreviewCollections",
       "apps/commerce/web/src/app/preview/page.tsx server-only capability read and data passed into existing composition",
-      "tests/theme-engine/storefront-liquid-runtime.test.mjs obsolete synthetic collection source assertion"
+      "tests/theme-engine/storefront-liquid-runtime.test.mjs obsolete synthetic collection source assertion",
+      "Storefront homepage and collections index server pages: pass verified preview collection data when those existing capability entrypoints are used.",
+      "Shared server-only collection-discovery helper sanitizes capability-bearing request errors."
     ],
     "contracts": [
       "Preserve canonical preview token/store/draft/expiry verification and private,no-store headers.",
