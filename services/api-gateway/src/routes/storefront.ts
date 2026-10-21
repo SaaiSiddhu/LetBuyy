@@ -723,7 +723,8 @@ async function querySearchDocumentProductIds(
 // store_name are each unique within their own column but never against each other, so matching
 // either column can select two different tenants for one handle and return an arbitrary row —
 // a cross-tenant read. subdomain is NOT NULL and unique, so equality is single-valued; every
-// other outcome (no row, more than one row, query error) resolves to "store not found".
+// a verified absence stays absent; transport/schema errors use the bounded REST
+// compatibility path and remain unavailable if that independent read also fails.
 async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null | undefined> {
     const sql = getPooledSql(c.env);
     if (!sql) return undefined;
