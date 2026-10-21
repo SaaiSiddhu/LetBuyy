@@ -578,3 +578,29 @@ test('active cart clearing preserves shape, while a real checkout conversion bet
   const deleted=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}`,{method:'DELETE'});assert.equal(deleted.status,409,deleted.text);assert.equal(deleted.json!.error.code,'CART_STATE_CONFLICT');assert.ok(converted&&orderId);assert.equal(psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`),committedRow);assert.equal(psql(`SELECT count(*) FROM orders WHERE id='${orderId}' AND store_id='${site.siteId}';`),'1');
  }finally{tap.restore();}
 });
+
+
+test('converted cart mutation is an explicit conflict, while a distinct new cart keeps the original receipt',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);const orderId=await completeCodCheckout(cart,issued.json!.data.checkout_url);
+ const before=psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`);
+ const patched=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:productId,quantity:2}]})});
+ console.info('OWNED_REPEAT_CART_PATCH '+JSON.stringify({status:patched.status,originalConvertedCartUnchanged:psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`)===before}));
+ assert.equal(patched.status,409,patched.text);assert.equal(patched.json!.error.code,'CART_STATE_CONFLICT');assert.equal(psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`),before);
+ const next=await gateway.request(`/v1/storefront/${site.subdomain}/cart`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:productId,quantity:2}]})});assert.equal(next.status,201,next.text);assert.notEqual(next.json!.data.cart_token,cart.token);assert.notEqual(next.json!.data.id,cart.id);assert.equal(next.json!.data.lines[0].quantity,2);
+ const receipt=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}/checkout-status`);assert.equal(receipt.status,200);assert.equal(receipt.json!.data.checkout_state,'completed');assert.equal(receipt.json!.data.order.id,orderId);assert.equal(psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`),before);
+});
+
+test('cart line mutation loses to an actual committed COD conversion after its active snapshot',async()=>{
+ const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);const url=issued.json!.data.checkout_url;
+ const steps=[['contact',{email:'synthetic-patch-race@example.invalid',name:'Synthetic patch race'}],['delivery',{shipping_method:'standard',cod_requested:true,shipping_address:{line1:'Fixture Road',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'},shipping_quote:{shipping_rate_id:shippingRateId,expected_shipping_amount:20}}],['payment-intent',{provider:'cod',mode:'sandbox',tokenize:false,metadata:{}}]] as const;
+ for(const[step,body]of steps){const r=await hostedCheckoutPost(cart,url,step,{...body,idempotency_key:crypto.randomUUID()});assert.ok(r.status===200||r.status===201,r.text);}
+ const {tapRest}=await import('./gateway-harness');let converted=false,orderId='',committedRow='';
+ const tap=tapRest(owned.restUrl,async(call,forward)=>{
+  if(!converted&&call.resource==='carts'&&call.method==='GET'&&call.search.get('session_id')==='eq.'+cart.token){converted=true;const snapshot=await forward();const committed=await hostedCheckoutPost(cart,url,'confirm',{idempotency_key:crypto.randomUUID()});assert.equal(committed.status,200,committed.text);orderId=committed.json!.data.order.id;committedRow=psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`);return snapshot;}return forward();
+ });
+ try{
+  const patched=await gateway.request(`/v1/storefront/${site.subdomain}/cart/${cart.token}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:[{product_id:productId,quantity:2}]})});
+  const unchanged=psql(`SELECT row_to_json(c)::text FROM carts c WHERE id='${cart.id}';`)===committedRow;console.info('OWNED_REPEAT_CART_PATCH_RACE '+JSON.stringify({status:patched.status,originalConvertedCartUnchanged:unchanged}));
+  assert.equal(patched.status,409,patched.text);assert.equal(patched.json!.error.code,'CART_STATE_CONFLICT');assert.ok(converted&&orderId);assert.equal(unchanged,true);assert.equal(psql(`SELECT count(*) FROM orders WHERE id='${orderId}' AND store_id='${site.siteId}';`),'1');
+ }finally{tap.restore();}
+});

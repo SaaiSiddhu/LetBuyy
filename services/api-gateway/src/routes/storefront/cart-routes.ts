@@ -563,12 +563,14 @@ async function persistCart(
         session_id: cartToken,
         items: hydrated.lines,
         coupon_code: input.coupon_codes[0] || null,
-        status: 'active',
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
 
-    const existing = await loadCartByToken(c, store.id, cartToken);
+    const existing = await loadCartByToken(c, store.id, cartToken, true);
     if (existing.error) return c.json(dbFailureBody(), 500);
+    if (existing.cart && existing.cart.status !== 'active') {
+        return c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'A completed or closed cart cannot be changed. Start a new cart for another purchase.' } }, 409);
+    }
     if (existing.cart && existing.cart.sales_origin !== salesOrigin) {
         return c.json({ success: false, error: { code: 'SALES_ORIGIN_IMMUTABLE', message: 'A cart cannot change its sales origin.' } }, 409);
     }
@@ -581,15 +583,21 @@ async function persistCart(
             .update(payload)
             .eq('store_id', store.id)
             .eq('session_id', cartToken)
+            .eq('id', existing.cart.id)
+            .eq('status', 'active')
+            .is('deleted_at', null)
             .select(CART_SELECT)
-            .single()
+            .maybeSingle()
         : await db
             .from('carts')
-            .insert({ ...payload, session_id: cartToken })
+            .insert({ ...payload, status: 'active', session_id: cartToken })
             .select(CART_SELECT)
             .single();
 
-    if (result.error || !result.data) return c.json(dbFailureBody(), 500);
+    if (result.error) return c.json(dbFailureBody(), 500);
+    if (!result.data) return existing.cart
+        ? c.json({ success: false, error: { code: 'CART_STATE_CONFLICT', message: 'Cart changed before it could be updated.' } }, 409)
+        : c.json(dbFailureBody(), 500);
     const cart = cartFromRow(result.data as unknown as DbRecord);
     if (!existing.cart) {
         await emitCartEvent(c, cart, 'cart.created', `cart.created:${store.id}:${cart.id}`);
