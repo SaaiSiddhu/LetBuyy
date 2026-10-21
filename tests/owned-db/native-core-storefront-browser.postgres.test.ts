@@ -19,17 +19,17 @@ async function freePort() {
     const s = createServer(); await new Promise<void>(r => s.listen(0,'127.0.0.1',r));
     const p = (s.address() as {port:number}).port; await new Promise<void>(r=>s.close(()=>r())); return p;
 }
-async function ready(origin:string, child:OwnedClientProcess) {
-    const deadline = Date.now()+300_000;
+async function ready(origin:string, child:OwnedClientProcess, label:string) {
+    const deadline = Date.now()+600_000;
     while(Date.now()<deadline) {
         if(child.exitCode!==null || child.signalCode!==null) throw new Error('Owned app stopped before readiness');
         try { if((await fetch(origin,{signal:AbortSignal.timeout(2000)})).status<500)return; } catch { /* owned build/start */ }
         await new Promise(r=>setTimeout(r,200));
     }
-    throw new Error('Owned app did not become ready');
+    throw new Error('Owned '+label+' production build did not become ready within the bounded cold-start allowance');
 }
 
-test('fresh merchant builds and publishes Core Liquid then a customer orders a real variant',{timeout:1000_000},async()=>{
+test('fresh merchant builds and publishes Core Liquid then a customer orders a real variant',{timeout:1500_000},async()=>{
  const email=`syn-public-${crypto.randomUUID()}@example.invalid`,password='Synthetic-Public-Signup-42!';
  const subdomain='syn-signup-'+crypto.randomUUID().slice(0,8);
  assert.equal(owned.psql(`SELECT count(*) FROM users_custom WHERE email='${email}';`),'0');
@@ -79,8 +79,13 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
    NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
   merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
   commerce=startOwnedClientRuntime(owned,'commerce-next-production',{port:commercePort,hostMode:'canonical-storefront-loopback',env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1',LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'}});
-  for(const app of [identity,merchant,commerce])app.stderr.on('data',d=>errors.push(d.toString().slice(0,600)));
-  await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant),ready(commerceHttpOrigin+'/api/buyer-auth/session',commerce)]);
+  for(const[label,app]of [['identity',identity],['merchant',merchant],['commerce',commerce]]as const){
+   app.stderr.on('data',d=>errors.push(d.toString().slice(0,600)));
+   // Production builds are distinct from serving latency. Retain only bounded
+   // compiler-stage diagnostics; never dump runtime environment or bearer URLs.
+   let stages=0;app.stdout.on('data',data=>{for(const line of data.toString().split('\n'))if(stages<20&&/Next\.js|Creating|Compiled|Collecting|Generating|Finalizing|Ready in|Starting|Failed to compile/.test(line)){stages++;console.info('OWNED_NATIVE_BUILD '+JSON.stringify({app:label,stage:line.replace(/https?:\/\/[^\s"<>]+/g,'[redacted-url]').slice(0,200)}));}});
+  }
+  await Promise.all([ready(identityOrigin+'/login',identity,'identity'),ready(merchantOrigin,merchant,'merchant'),ready(commerceHttpOrigin+'/api/buyer-auth/session',commerce,'commerce')]);
   browser=await chromium.launch({headless:true,args:[`--ignore-certificate-errors-spki-list=${tlsSpki}`,'--no-proxy-server',`--host-resolver-rules=MAP *.${DEFAULT_STOREFRONT_DOMAIN}:443 127.0.0.1:${tlsPort}, MAP *.${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP ${DEFAULT_STOREFRONT_DOMAIN} 127.0.0.1, MAP checkout.localhost 127.0.0.1, MAP api.localhost 127.0.0.1`]});const context=await browser.newContext();page=await context.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);  stage='native-signup';console.info('OWNED_NATIVE_STAGE native-signup');const signup=await page.goto(identityOrigin+'/signup');assert.equal(signup?.status(),200);
   const signupCopy=await page.locator('body').innerText();
   await expect(page.locator('input[name="cf-turnstile-response"]')).toHaveValue(/.+/,{timeout:30_000});
