@@ -68,6 +68,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/private-reel-intake.postgres.test.ts',
     'tests/owned-db/published-storefront-recovery-browser.postgres.test.ts',
     'tests/owned-db/reel-review-revisions.postgres.test.ts',
+    'tests/owned-db/storefront-access-worker.postgres.test.ts',
     'tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts',
     'tests/owned-db/subscription-tax-gross-conservation.postgres.test.ts',
     'tests/owned-db/worker-sql-invocation.postgres.test.ts',

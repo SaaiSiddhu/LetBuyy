@@ -184,6 +184,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "private-reel-intake.postgres.test.ts",
         "published-storefront-recovery-browser.postgres.test.ts",
         "reel-review-revisions.postgres.test.ts",
+        "storefront-access-worker.postgres.test.ts",
         "storefront-buyer-support-recovery-browser.postgres.test.ts",
         "subscription-tax-gross-conservation.postgres.test.ts",
         "worker-sql-invocation.postgres.test.ts"
