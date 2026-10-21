@@ -547,18 +547,20 @@ test('deleting a completed cart cannot reactivate it or erase its retained items
 test('matching checkout cart capability permits its state, while duplicate/foreign/wrong input and dependency faults remain distinct',async()=>{
  const cart=seedCart(),issued=await startHostedCheckout(cart);assert.equal(issued.status,200);
  const contact=await hostedCheckoutPost(cart,issued.json!.data.checkout_url,'contact',{idempotency_key:crypto.randomUUID(),email:'synthetic-state-owner@example.invalid',name:'Synthetic state owner'});assert.equal(contact.status,200);
- const id=contact.json!.data.checkout.id,base='/v1/checkout/'+id+'?site_id='+site.siteId;
+ const id=contact.json!.data.checkout.id,base='/v1/checkout/'+id+'?'+new URLSearchParams({site_id:site.siteId});
+ const statePath=(targetSite=site.siteId,targetToken=cart.token,sessionId=id)=>'/v1/checkout/'+sessionId+'?'+new URLSearchParams({site_id:targetSite,cart_token:targetToken});
+ const duplicate=(field:'site_id'|'cart_token')=>{const query=new URLSearchParams({site_id:site.siteId,cart_token:cart.token});query.append(field,field==='site_id'?site.siteId:cart.token);return'/v1/checkout/'+id+'?'+query;};
  const {tapRest,restJson}=await import('./gateway-harness');let down=false;const tap=tapRest(owned.restUrl,(call,forward)=>down&&call.resource==='checkout_sessions'&&call.method==='GET'?Promise.resolve(restJson(503,{message:'Synthetic private state dependency'})):forward());
  try{
   const start=tap.calls.length;assert.equal((await gateway.request(base)).status,401);assert.equal(tap.calls.slice(start).filter(c=>c.resource==='checkout_sessions').length,0);
-  const valid=await gateway.request(base+'&cart_token='+cart.token);assert.equal(valid.status,200,valid.text);assert.equal(valid.headers.get('Cache-Control'),'no-store');assert.equal(valid.json!.data.checkout.customer_email,'synthetic-state-owner@example.invalid');
-  assert.equal((await gateway.request(base+'&cart_token=ct_'+crypto.randomUUID().replace(/-/g,''))).status,404);
-  assert.equal((await gateway.request('/v1/checkout/'+id+'?site_id='+otherSite.siteId+'&cart_token='+cart.token)).status,404);
-  assert.equal((await gateway.request(base+'&cart_token='+cart.token+'&cart_token='+cart.token)).status,400);
-  assert.equal((await gateway.request(base+'&site_id='+site.siteId+'&cart_token='+cart.token)).status,400);
-  assert.equal((await gateway.request('/v1/checkout/not-a-uuid?site_id='+site.siteId+'&cart_token='+cart.token)).status,400);
-  down=true;const failed=await gateway.request(base+'&cart_token='+cart.token);assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private state|SQLSTATE/);down=false;
-  psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);assert.equal((await gateway.request(base+'&cart_token='+cart.token)).status,200,'a known checkout capability retains independent own-state recovery');
+  const valid=await gateway.request(statePath());assert.equal(valid.status,200,valid.text);assert.equal(valid.headers.get('Cache-Control'),'no-store');assert.equal(valid.json!.data.checkout.customer_email,'synthetic-state-owner@example.invalid');
+  assert.equal((await gateway.request(statePath(site.siteId,'ct_'+crypto.randomUUID().replace(/-/g,'')))).status,404);
+  assert.equal((await gateway.request(statePath(otherSite.siteId))).status,404);
+  assert.equal((await gateway.request(duplicate('cart_token'))).status,400);
+  assert.equal((await gateway.request(duplicate('site_id'))).status,400);
+  assert.equal((await gateway.request(statePath(site.siteId,cart.token,'not-a-uuid'))).status,400);
+  down=true;const failed=await gateway.request(statePath());assert.equal(failed.status,503);assert.doesNotMatch(failed.text,/Synthetic private state|SQLSTATE/);down=false;
+  psql(`UPDATE sites SET access_mode='offline',published=false WHERE id='${site.siteId}';`);assert.equal((await gateway.request(statePath())).status,200,'a known checkout capability retains independent own-state recovery');
  }finally{tap.restore();}
 });
 test('active cart clearing preserves shape, while a real checkout conversion between read and update cannot be overwritten',async()=>{
