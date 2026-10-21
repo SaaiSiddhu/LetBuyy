@@ -15,5 +15,22 @@
     "uploaded media objects",
     "signing assets",
     "raw audit workspace and browser sessions"
-  ]
+  ],
+  "verification": {
+    "testedDevelop": "fdd345df3175bfa8dcfff6b85280e031f01f9913",
+    "sourceManifestFilesMatched": 6,
+    "focused": {
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    },
+    "canonical": {
+      "pass": 114,
+      "fail": 0,
+      "blocked": 0,
+      "skip": 0,
+      "notApplicable": 1
+    },
+    "priorInvalidAttempt": "Offline frozen install lacked @vercel/speed-insights; first clone checks were dependency-blocked and excluded. Locked online install completed; focused and full gate rerun passed."
+  }
 }

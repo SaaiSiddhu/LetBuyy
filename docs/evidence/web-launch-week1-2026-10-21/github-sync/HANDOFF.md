@@ -10,7 +10,7 @@ The unfinished compact-bootstrap source is committed on `letbuyy/week1-compact-b
 
 Correction to the historical preview item below: the audit-only selected-store review proxy was repaired after the first push. Two policy test families and eight HTTP cases passed; seven product reads succeeded, but this is not universal Worker reliability proof. Archived diagnostic source and receipt are in `readonly-preview/`. Old non-public-media URLs still return404; no shared media was rewritten. This preview is separate from the performance serving fixture.
 
-The prior remote develop118209b4 receipt remains historical. The follow-up receipt identifies the merge and WIP branch. Raw audit HTML/logs/screenshots outside Git, restored database, uploaded objects, local secrets and sessions still require private transfer. CI was previously unable to start because of GitHub account billing/spending limits; no successful hosted CI or deployment is implied.
+The prior remote develop118209b4 receipt remains historical. The follow-up receipt identifies the merge and WIP branch. Final disposable-clone gate:114 passed, zero failed/blocked/skipped, one not-applicable; focused routing/preview7 passed. All six source-manifest hashes match the previously accepted browser-tested candidate. Raw audit HTML/logs/screenshots outside Git, restored database, uploaded objects, local secrets and sessions still require private transfer. CI was previously unable to start because of GitHub account billing/spending limits; no successful hosted CI or deployment is implied.
 
 ## What travels in develop
 
