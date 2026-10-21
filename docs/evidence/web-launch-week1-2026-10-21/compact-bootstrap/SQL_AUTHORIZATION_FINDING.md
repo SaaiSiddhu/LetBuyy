@@ -1,4 +1,6 @@
-# Public pooled SQL fallback — observed authorization gap
+# Public pooled SQL fallback — observed gap and local repair
+
+**Current correction,21 October:** migration370 now authorizes fixed public site/release reads for the existing restricted backend login. The no-REST-fallback test passes; direct table SELECT still fails42501 intentionally. SQL9, database authority14 and native1 pass in final rund951d521ae90. Read sql-repair-progress.json for current limits, especially Hyperdrive protocol/freshness. The discovery account below is retained history.
 
 The new mounted bootstrap suite retains a decisive requirement: a configured SQL read must succeed without silently falling back to REST. The owned PostgreSQL transport is the established non-inheriting authenticator login. A direct current_user/has_table_privilege query reports authenticator and no SELECT on theme_releases; an actual bounded SELECT fails with SQLSTATE42501. The HTTP request then succeeds through the pre-existing REST service path. This is not SQL-path acceptance.
 

@@ -32,7 +32,7 @@
     "actualReadErrorCode": "42501",
     "noRestFallbackAssertion": "FAIL \u2014 retained"
   },
-  "correction": "16538f4a simplified SQL JSON literal syntax; it did not resolve the observed fallback. The observed root cause is transport authorization, not evidence of invalid JSON syntax.",
+  "correction": "The formerly failing pooled no-REST-fallback case is now passing through migration370 fixed-shape readers; direct table42501 remains intentional. Earlier failed-run facts below are preserved.",
   "native": {
     "run": "19542a07efc6",
     "pass": 1,
@@ -76,5 +76,6 @@
     "firstFailure": "First gate113PASS/1FAIL because handoff merge retained two branch rows; duplicate removed, direct validator and entire isolated gate rerun pass.",
     "meaning": "Static/repository gate only. The separate real SQL authorization test still fails; phase not accepted."
   },
-  "next": "Extend existing contract/claim for a narrow canonical backend-only public SQL reader with guarded migration/rollback, preserving existing public/private/mobile contracts; prove restricted transport SQL success and authorization/refusal without broadening table grants. Broader password/offline API privacy remains separately unproven."
+  "next": "Extend existing contract/claim for a narrow canonical backend-only public SQL reader with guarded migration/rollback, preserving existing public/private/mobile contracts; prove restricted transport SQL success and authorization/refusal without broadening table grants. Broader password/offline API privacy remains separately unproven.",
+  "supersededBy": "sql-repair-progress.json"
 }

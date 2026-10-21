@@ -1,4 +1,6 @@
-# Compact bootstrap — unfinished source snapshot
+# Compact bootstrap — source handoff and local continuation
+
+**Latest local correction:** migration370 repairs the restricted-role public site/release SQL reads. Combined owned SQL/security/native24 cases pass, direct table42501 remains intentional, and canonical114 passes. See sql-repair-progress.json and hyperdrive-follow-up.json. Hyperdrive protocol/freshness and dedicated unknown-response native proof remain open. Develop/GitHub8f415c0f has not advanced. Earlier snapshot descriptions below are dated history.
 
 Owner requested committing all current work and pushing GitHub for a new-machine handoff on 21 October 2026. This supersedes the earlier local-only boundary for source preservation. This branch is deliberately unmerged into develop.
 
