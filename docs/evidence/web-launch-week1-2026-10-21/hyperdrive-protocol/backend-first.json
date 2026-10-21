@@ -1,0 +1,159 @@
+{
+  "runId": "e80270acbaab",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-34354-mvhv2gya-5bbe08"
+  ],
+  "reaped": [],
+  "suites": 3,
+  "gatewayDbSuites": 3,
+  "failedSuites": 1,
+  "tests": 16,
+  "assertionsPassed": 15,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 59.2,
+  "suiteSeconds": 57.2,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "pooled-tenant-context.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/pooled-tenant-context.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-34354-mvhv2gya-5bbe08",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 29.4,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_pooled_tenant_context_postgres",
+      "templateSeconds": 23.4,
+      "provisionSeconds": 1.2,
+      "rest": {
+        "container": "letbuyy-exec-e80270acbaab-rest-1",
+        "upstreamPort": 52466,
+        "proxyPort": 52467
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 4,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "storefront-bootstrap-projection.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-bootstrap-projection.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-34354-mvhv2gya-5bbe08",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 10.4,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_bootstrap_projection_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-e80270acbaab-rest-2",
+        "upstreamPort": 52490,
+        "proxyPort": 52491
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 124,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    },
+    {
+      "name": "worker-sql-invocation.postgres",
+      "path": "tests/owned-db/worker-sql-invocation.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-34354-mvhv2gya-5bbe08",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 2,
+      "pass": 1,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 17.4,
+      "firstFailure": "not ok 2 - Gateway hyperdrive-shaped SQL belongs to each native Worker invocation; exact predece",
+      "failures": [
+        "not ok 2 - Gateway hyperdrive-shaped SQL belongs to each native Worker invocation; exact predecessor reproduces warm-request failure"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_worker_sql_invocation_postgres",
+      "templateSeconds": 0,
+      "provisionSeconds": 0.9,
+      "rest": {
+        "container": "letbuyy-exec-e80270acbaab-rest-3",
+        "upstreamPort": 52546,
+        "proxyPort": 52547
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 141,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}
