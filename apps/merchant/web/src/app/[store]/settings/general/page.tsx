@@ -1,5 +1,6 @@
 'use client'
 
+import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, SUPPORTED_ADMIN_LOCALES, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
@@ -651,7 +652,7 @@ export default function GeneralSettingsPage() {
                                 <div className="settings-general-seo-preview" aria-label="Search result preview">
                                     <div className="settings-general-seo-preview-label">Search preview</div>
                                     <div className="settings-general-seo-preview-url">
-                                        {data.subdomain}.letbuyy.com
+                                        {data.subdomain}.{getStorefrontRootDomain()}
                                     </div>
                                     <div className="settings-general-seo-preview-title">
                                         {data.seo_title || data.name || data.store_name}

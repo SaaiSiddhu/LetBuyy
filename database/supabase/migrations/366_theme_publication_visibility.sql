@@ -285,4 +285,6 @@ BEGIN
     RETURN NEXT;
 END;
 $$;
+-- Reassert named API-role closure after replacement; backend grants remain unchanged.
+REVOKE ALL ON FUNCTION public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid) FROM PUBLIC,anon,authenticated;
 COMMIT;

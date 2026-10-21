@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MaterialIcon } from '@letbuyy/ui'
-import { getStorefrontBaseUrl } from '@/lib/public-urls'
+import { getStorefrontBaseUrl, getStorefrontRootDomain } from '@/lib/public-urls'
 import {
     EDITOR_LEGACY_SELECTION_MESSAGE,
     EDITOR_SELECTION_MESSAGE,
@@ -185,7 +185,7 @@ export default function CenterPanel({
                     </div>
                     <div className="te-preview-url-bar">
                         <MaterialIcon name="lock" size={14} />
-                        <span className="te-preview-url">{storeName}.letbuyy.com</span>
+                        <span className="te-preview-url">{storeName}.{getStorefrontRootDomain()}</span>
                     </div>
                 </div>
 

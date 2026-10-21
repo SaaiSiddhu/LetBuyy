@@ -121,5 +121,9 @@ test('public catalog and canonical cart retain option names, variant identity an
  const cart=(variantId:string)=>f.gateway.request(`/v1/storefront/${made.slug}/cart`,{method:'POST',body:JSON.stringify({lines:[{product_id:productId,variant_id:variantId,quantity:1,properties:{Size:'Large'}}]})});
  const accepted=await cart(large.id);assert.equal(accepted.status,201,accepted.text);assert.equal(accepted.json?.data?.lines[0].variant_id,large.id);assert.equal(accepted.json?.data?.lines[0].unit_price,249);assert.equal(accepted.json?.data?.subtotal,249);
  const rejected=await cart(crypto.randomUUID());assert.equal(rejected.status,400);assert.equal(rejected.json?.error?.code,'VARIANT_NOT_FOUND');
+ const other=await f.create();assert.equal(other.response.status,201);const otherSiteId=String(other.response.json?.data?.id);
+ const foreignProduct=await f.gateway.request('/v1/products',{method:'POST',headers:{...await signedIdentityHeaders(f.id,f.email,otherSiteId),'X-Store-ID':otherSiteId,'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({store_id:otherSiteId,name:'Synthetic foreign variant product',price:399,status:'active',product_options:[{name:'Size',position:0,values:['Foreign']}],variants:[{title:'Foreign',price:399,stock:2,options:{Size:'Foreign'}}]})});assert.equal(foreignProduct.status,201);
+ const foreignVariant=owned.psql(`SELECT id FROM product_variants WHERE product_id='${foreignProduct.json?.data?.id}';`);
+ assert.equal((await cart(foreignVariant)).status,400,'an existing variant from another tenant cannot be attached to this product');
  }finally{await f.gateway.settle();}
 });

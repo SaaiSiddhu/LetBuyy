@@ -15,6 +15,7 @@
     "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/cms-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
+    "@letbuyy/tenant-core": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "lucide-react": "^0.562.0",

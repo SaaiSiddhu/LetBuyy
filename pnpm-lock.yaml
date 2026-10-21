@@ -529,6 +529,9 @@ importers:
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../../packages/shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../../../packages/tenant-core
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../../packages/theme-engine
