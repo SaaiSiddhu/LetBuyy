@@ -323,19 +323,43 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await performanceSession.detach();await buyer.setViewportSize({width:1280,height:900});
   console.info('OWNED_CORE_READ_PROFILE '+JSON.stringify({boundary:'production builds/native Worker/owned PostgreSQL; anonymous full-document useful content plus registered shopping controls; five sequential samples per route/profile, HTTP cache retained; mobile lab is 390px viewport, 4x CPU slowdown, 80ms latency, 1.6Mbps down/750Kbps up, not a physical phone or field INP. Resource bytes may be zero for warm/cross-origin entries without Timing-Allow-Origin; upstream reads are HTTP, not SQL statements.',samples:readProfiles}));
   stage = 'catalog-and-react-preview';console.info('OWNED_NATIVE_STAGE catalog-and-react-preview');
+  const catalogCoverage = [];
   for (const slug of ['forge','sense','aura','craft','refresh','ride','dawn','bloom','nova','summit']) {
-   const preview = await buyer.goto(`${commerceOrigin}/theme-preview/letbuyy-${slug}`, { waitUntil: 'networkidle' });
-   assert.equal(preview?.status(), 200);
-   await expect(buyer.locator('[data-letbuyy-preview-route="true"]')).toBeVisible();
-   await expect(buyer.locator('div[data-theme-renderer="liquid"]')).toBeVisible();
+   for (const width of [1280,390]) {
+    await buyer.setViewportSize({width,height:900});
+    const preview = await buyer.goto(`${commerceOrigin}/theme-preview/letbuyy-${slug}`, { waitUntil: 'domcontentloaded' });
+    assert.equal(preview?.status(), 200);
+    await expect(buyer.locator('[data-letbuyy-preview-route="true"]')).toBeVisible();
+    const liquid = buyer.locator('div[data-theme-renderer="liquid"]');
+    await expect(liquid).toBeVisible();
+    assert.equal(await buyer.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth + 1), true);
+    if (width === 390) {
+     await buyer.getByRole('button', { name: 'Menu', exact: true }).click();
+     await expect(buyer.locator('[data-lb-nav-toggle]')).toHaveAttribute('aria-expanded', 'true');
+     await buyer.getByRole('button', { name: 'Close menu', exact: true }).click();
+    }
+    const samplePages = buyer.getByRole('navigation', { name: 'Sample preview pages', exact: true });
+    await samplePages.getByRole('link', { name: 'Product', exact: true }).click();
+    await expect(buyer.getByRole('heading', { name: 'Aero Runner 90', exact: true })).toBeVisible();
+    await expect(liquid).toBeVisible();
+    await buyer.waitForFunction(() => Boolean(customElements.get('lb-add-to-cart')));
+    await buyer.getByRole('spinbutton', { name: 'Quantity', exact: true }).fill('2');
+    await expect(buyer.getByRole('spinbutton', { name: 'Quantity', exact: true })).toHaveValue('2');
+    await samplePages.getByRole('link', { name: 'Collection', exact: true }).click();
+    await expect(liquid).toBeVisible();
+    await expect(buyer.getByText('Aero Runner 90', { exact: true }).first()).toBeVisible();
+    assert.equal(await buyer.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth + 1), true);
+    catalogCoverage.push({slug,width,routes:['home','product','collection'],quantity:true,mobileMenu:width===390});
+   }
   }
+  await buyer.setViewportSize({width:1280,height:900});
   await buyer.goto(`${commerceOrigin}/preview?demo=urban-kicks&engine=react&route_type=product`, { waitUntil: 'domcontentloaded' });
   await expect(buyer.getByRole('heading', { name: 'Aero Runner 90', exact: true })).toBeVisible();
   await expect(buyer.locator('[data-section-id="product-detail-default"][data-renderer-key="productDetail"]')).toBeVisible();
   await expect(buyer.locator('[data-theme-renderer="liquid"]')).toHaveCount(0);
   await buyer.getByRole('button', { name: 'Increase quantity', exact: true }).click();
   await expect(buyer.getByRole('button', { name: 'Decrease quantity', exact: true })).toBeEnabled();
-  console.info('OWNED_PREVIEW_ENTRYPOINTS '+JSON.stringify({allTenCatalogIdentities:true,reactProductSSR:true,routePropsValid:true}));
+  console.info('OWNED_PREVIEW_ENTRYPOINTS '+JSON.stringify({allTenCatalogIdentities:true,catalogCoverage,reactProductSSR:true,routePropsValid:true}));
   await buyer.goto(tenantOrigin, { waitUntil: 'networkidle' });
   // Fetch the script as a resource, not a document: rendering the generic404
   // document legitimately prefetches its Continue shopping Link into a new RSC request.
