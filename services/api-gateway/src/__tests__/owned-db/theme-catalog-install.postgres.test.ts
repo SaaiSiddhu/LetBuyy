@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { requireOwnedDatabase } from './owned-db-support';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest, INTERNAL_SECRET } from './gateway-harness';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
+import { parseDomainEventPayload } from '@letbuyy/event-core';
 import { firstPartyThemeListings } from '../../../../../packages/theme-engine/src/first-party-theme-catalog';
 const owned = requireOwnedDatabase();
 let gateway: Gateway;
@@ -30,6 +31,9 @@ test('ten catalog themes install independently, atomically and without publishin
     for (const theme of firstPartyThemeListings()) {
         const install = await request(`/v1/themes/${theme.slug}/install`, { store_id: a.siteId, config_overrides: {} });
         assert.equal(install.status, 201, install.text);
+        const emitted = JSON.parse(owned.psql(`SELECT jsonb_build_object('payload',e.payload,'package',i.theme_package_id,'version',i.theme_package_version_id,'installation',st.id) FROM outbox_events e JOIN theme_instances i ON i.id=(e.payload->>'theme_instance_id')::uuid JOIN themes t ON t.slug=i.theme_slug JOIN store_themes st ON st.store_id=i.store_id AND st.theme_id=t.id WHERE e.store_id='${a.siteId}' AND e.event_type='theme.installed' AND e.payload->>'theme_slug'='${theme.slug}';`));
+        const payload = parseDomainEventPayload('theme.installed',emitted.payload);
+        assert.deepEqual(payload,{site_id:a.siteId,theme_package_id:emitted.package,theme_version_id:emitted.version,installation_id:emitted.installation});
         const editor = await request(`/v1/themes/${theme.slug}/editor?store_id=${a.siteId}`);
         assert.equal(editor.status, 200, editor.text);
         assert.equal(editor.json!.data.template_config.themeSettings.primaryColor, theme.settings.primaryColor);
@@ -126,6 +130,26 @@ test('ten catalog themes install independently, atomically and without publishin
     assert.equal(publishPrivate.status,200,publishPrivate.text);
     assert.equal(owned.psql(`SELECT count(*) FROM theme_instances WHERE store_id='${a.siteId}' AND instance_status='active' AND deleted_at IS NULL;`),'1','publishing another theme retires the previous active instance atomically');
     assert.equal(owned.psql(`SELECT theme_slug FROM theme_instances WHERE store_id='${a.siteId}' AND instance_status='active' AND deleted_at IS NULL;`),privateSlug);
+    const migration377=readFileSync(new URL('../../../../../database/supabase/migrations/377_theme_install_event_contract.sql',import.meta.url),'utf8');
+    const migration378=readFileSync(new URL('../../../../../database/supabase/migrations/378_storefront_metadata_role_closure.sql',import.meta.url),'utf8');
+    const down377=readFileSync(new URL('../../../../../database/supabase/rollback/377_theme_install_event_contract.rollback.sql',import.meta.url),'utf8');
+    const down378=readFileSync(new URL('../../../../../database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql',import.meta.url),'utf8');
+    const signature='public.install_owned_theme_v1(uuid,uuid,text,jsonb,jsonb,uuid,integer,text)';
+    const installedState=()=>owned.psql(`SELECT jsonb_build_object('events',(SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM outbox_events e),'instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d),'installer',(SELECT md5(prosrc)||'|'||proacl::text FROM pg_proc WHERE oid='${signature}'::regprocedure));`);
+    const conserved=installedState();
+    for(const sql of [migration377,migration377,down377,migration378,migration378,down378]) owned.script(sql);
+    assert.equal(installedState(),conserved,'forward replay and paired rollback conserve data and valid event producer');
+    const runtime=JSON.parse(owned.psql(`SELECT jsonb_build_object('theme_package_id',theme_package_id,'theme_package_version_id',theme_package_version_id) FROM theme_instances WHERE store_id='${a.siteId}' AND theme_slug='letbuyy-forge' AND deleted_at IS NULL;`));
+    runtime.theme_package_version_id=randomUUID();
+    assert.match(owned.psqlExpectError(`SELECT ${signature.split('(')[0]}('${actor}','${a.siteId}','letbuyy-forge','{}','${JSON.stringify(runtime)}','${a.siteId}',NULL,NULL);`),/Theme runtime version unavailable/);
+    assert.equal(installedState(),conserved,'an unbound version is refused before any effect');
+    owned.script(`ALTER FUNCTION ${signature} COST 101;`);
+    try { assert.match(owned.psqlScriptExpectError(migration377),/refuses changed installer/); }
+    finally { owned.script(`ALTER FUNCTION ${signature} COST 100;`); }
+    assert.equal(installedState(),conserved,'unknown function profile refusal is atomic');
+    for(const role of ['anon','authenticated','app_tenant','service_role'])
+        assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.read_published_storefront_site_v1('${a.subdomain}',true);`),/permission denied/);
+    assert.equal(owned.psql(`SET ROLE authenticator;SELECT public.read_published_storefront_site_v1('${a.subdomain}',true)->>'id';`),a.siteId,'the dedicated backend reader retains its exact capability');
     for (const role of ['anon', 'authenticated', 'app_tenant'])
         assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.install_owned_theme_v1(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`), /permission denied/);
 });

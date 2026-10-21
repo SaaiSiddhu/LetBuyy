@@ -144,6 +144,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "subscription-checkout-rollback-writer.postgres.test.ts",
         "subscription-payment-ownership.postgres.test.ts",
         "subscription-single-activation.postgres.test.ts",
+        "theme-catalog-install.postgres.test.ts",
         "theme-draft-browser.postgres.test.ts",
         "theme-draft-cas.postgres.test.ts",
         "theme-upload-ownership.postgres.test.ts",

@@ -40,7 +40,8 @@ test('installed Liquid themes publish immutable release artifacts the storefront
   const executionSource = read(THEME_EXECUTION_ADAPTER_SOURCE);
   const storeServiceSource = read(STOREFRONT_STORE_SERVICE_SOURCE);
 
-  assert.match(executionSource, /LiquidThemePackageBundleSchema\.safeParse\(candidate\)/);
+  assert.match(executionSource, /resolveLiquidBundleArtifact\(input\.releaseConfig\)/);
+  assert.match(read('services/api-gateway/src/lib/theme-release-bundle.ts'),/LiquidThemePackageBundleSchema\.safeParse/);
   assert.match(executionSource, /renderer_engine: rendererEngine/);
   assert.match(executionSource, /liquid_ready: Boolean\(liquidBundle\)/);
   assert.match(executionSource, /liquidBundle,/);

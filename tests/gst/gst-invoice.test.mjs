@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { createRequire } from 'node:module';
+const { z } = createRequire(new URL('../../packages/checkout-core/package.json',import.meta.url))('zod');
 
 const CHECKOUT_CORE_SOURCE = 'packages/checkout-core/src/index.ts';
 
@@ -79,7 +81,7 @@ function loadCheckoutCore() {
     module,
     exports: module.exports,
     require(specifier) {
-      if (specifier === 'zod') return createZodStub();
+      if (specifier === 'zod') return { z };
       if (specifier === '@letbuyy/shared-types') {
         return {
           calculateGstAmounts: amounts.exports.calculateGstAmounts,

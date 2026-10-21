@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 const gatewaySelect = read('services/api-gateway/src/routes/storefront.ts');
+const presentation = read('packages/theme-engine/src/index.ts');
 const storeService = read('apps/commerce/web/src/lib/store-service.ts');
 
 test('LB-9: storefront site selects include site_settings', () => {
@@ -19,13 +20,14 @@ test('LB-9: storefront site selects include site_settings', () => {
 
 test('LB-9: store-service maps snake_case appearance settings into camelCase theme tokens', () => {
   assert.match(storeService, /appearanceSettings = asRecord\(data\.site_settings\)/);
-  assert.match(storeService, /primary_color[\s\S]{0,80}primaryColor/);
-  assert.match(storeService, /font_family[\s\S]{0,80}fontFamily/);
-  assert.match(storeService, /border_radius[\s\S]{0,120}borderRadius/);
+  assert.match(storeService, /resolveStorefrontThemePresentation\(rawTemplateConfig, appearanceSettings, themeId, storeLocale\)/);
+  assert.match(presentation, /primary_color[\s\S]{0,80}primaryColor/);
+  assert.match(presentation, /font_family[\s\S]{0,80}fontFamily/);
+  assert.match(presentation, /border_radius[\s\S]{0,120}borderRadius/);
 });
 
 test('LB-9: merchant appearance overrides the theme bundle (wins the merge) + logo override', () => {
   // appearanceOverrides spread LAST into themeSettingsRecord
-  assert.match(storeService, /\.\.\.asRecord\(templateConfig\.themeSettings\),\s*\n\s*\.\.\.appearanceOverrides,/);
-  assert.match(storeService, /appearanceSettings\.logo_url[\s\S]{0,80}data\.logo_url/);
+  assert.match(presentation, /\.\.\.themeAppearanceRecord\(templateConfig\.themeSettings\),\s*\n\s*\.\.\.appearanceOverrides,/);
+  assert.match(storeService, /appearanceSettings\.logo_url[\s\S]{0,160}data\.logo_url/);
 });

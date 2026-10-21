@@ -8,7 +8,7 @@ const rateLimitSource = readFileSync('services/api-gateway/src/middleware/rateLi
 function blockAfter(source, marker) {
   const start = source.indexOf(marker);
   assert.notEqual(start, -1, `${marker} exists`);
-  return source.slice(start, start + 2600);
+  return source.slice(start, start + 6500);
 }
 
 test('gateway uses one general query-cost limiter and skips dedicated limiter paths', () => {
@@ -42,35 +42,37 @@ test('Redis query-cost limiter uses a single atomic script instead of read-then-
   assert.doesNotMatch(redisQueryBlock, /writeResponse/);
 });
 
-test('production rate limiting prefers Redis, then explicit KV, then fails closed', () => {
+test('production rate limiting prefers Redis then atomic coordinator and fails closed without either', () => {
   const fixedWindowBlock = blockAfter(rateLimitSource, 'async function checkRateLimitKeys');
   const queryCostBlock = blockAfter(rateLimitSource, 'export async function checkQueryCostRateLimitKey');
   const fixedWindowRedisIndex = fixedWindowBlock.indexOf('if (useRedis)');
-  const fixedWindowKvFallbackIndex = fixedWindowBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && (isProduction || kvRateLimitFallbackEnabled(env))');
+  const fixedWindowKvFallbackIndex = fixedWindowBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && !isProduction && kvRateLimitFallbackEnabled(env)');
   const fixedWindowFailClosedIndex = fixedWindowBlock.indexOf("warnRateLimitFailClosed('no_backend')");
   const queryCostRedisIndex = queryCostBlock.indexOf('if (useRedis)');
-  const queryCostKvFallbackIndex = queryCostBlock.indexOf('const useKvFallback = Boolean(env.CACHE) && kvRateLimitFallbackEnabled(env)');
+  const queryCostKvFallbackIndex = queryCostBlock.indexOf('if (env.RUNTIME_COORDINATOR)');
   const queryCostFailClosedIndex = queryCostBlock.indexOf('return unavailableQueryCostResult(cost, pointsPerSecond, capacity)');
 
   assert.notEqual(fixedWindowRedisIndex, -1, 'fixed-window limits must check Redis first');
+  assert.ok(fixedWindowBlock.indexOf('if (env.RUNTIME_COORDINATOR)') > fixedWindowRedisIndex);
+  assert.doesNotMatch(queryCostBlock,/checkKvRateLimit|kvRateLimitFallbackEnabled/);
   assert.notEqual(fixedWindowKvFallbackIndex, -1, 'fixed-window KV fallback must stay explicitly guarded');
   assert.ok(
     fixedWindowRedisIndex < fixedWindowKvFallbackIndex,
-    'fixed-window limits should prefer Redis before KV fallback',
+    'fixed-window limits should prefer Redis before the next backend',
   );
   assert.ok(
     fixedWindowKvFallbackIndex < fixedWindowFailClosedIndex,
-    'fixed-window limits should fail closed after Redis and KV are unavailable',
+    'fixed-window limits should fail closed after atomic backends are unavailable',
   );
   assert.notEqual(queryCostRedisIndex, -1, 'query-cost limits must check Redis first');
-  assert.notEqual(queryCostKvFallbackIndex, -1, 'query-cost KV fallback must stay explicitly guarded');
+  assert.notEqual(queryCostKvFallbackIndex, -1, 'query-cost atomic coordinator must stay available');
   assert.ok(
     queryCostRedisIndex < queryCostKvFallbackIndex,
-    'query-cost limits should prefer Redis before KV fallback',
+    'query-cost limits should prefer Redis before the next backend',
   );
   assert.ok(
     queryCostKvFallbackIndex < queryCostFailClosedIndex,
-    'query-cost limits should fail closed after Redis and explicit KV are unavailable',
+    'query-cost limits should fail closed after atomic backends are unavailable',
   );
   assert.equal(
     queryCostBlock.indexOf("warnRateLimitFailClosed('query_cost_no_backend')") > -1,

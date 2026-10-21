@@ -92,7 +92,7 @@ test('web and mobile editors can save Liquid bundles and canary state through dr
   assert.match(editorRouteSource, /body\.liquidRenderingCanary/);
   assert.match(editorRouteSource, /template_config: templateConfig/);
   assert.match(editorPageSource, /const draftConfig = buildDraftConfig\(baseConfig, themeId, snapshot, selectedTemplateKey\)/);
-  assert.match(editorPageSource, /client\.save\(draftConfig, reviewedVersion\)/);
+  assert.match(editorPageSource, /client\.save\(draftConfig, reviewedVersion, ensurePreviewDraft\)/);
   assert.match(editorPageSource, /client\.publish\(async \(intent\) =>/);
   assert.match(editorPageSource, /body: JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent, actorId: client\.actorId, storeId: client\.storeId \}\)/);
   assert.match(executionSource, /const templateConfig = asRecord\(state\.template_config\)/);
@@ -131,6 +131,6 @@ test('merchant editor exposes a real template selector and saves the selected te
   assert.match(source, /function buildDraftConfig\(baseConfig: JsonRecord, themeId: string, state: EditorState, templateKey = 'index'\)/);
   assert.match(source, /buildDraftConfig\(baseConfig, themeId, snapshot, selectedTemplateKey\)/);
   assert.match(source, /handleTemplateChange/);
-  assert.match(source, /<select[\s\S]*value=\{selectedTemplateKey\}[\s\S]*templateOptions\.map/);
+  assert.match(source, /<Select[\s\S]*value=\{selectedTemplateKey\}[\s\S]*templateOptions\.map/);
   assert.doesNotMatch(source, /<span>Home page<\/span>/);
 });
