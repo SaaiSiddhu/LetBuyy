@@ -29,11 +29,16 @@ for(const mode of ['public','password','preview_only','offline'])test(`${lane}: 
  const paths=[`/${t.subdomain}`,`/${t.subdomain}?projection=render-v1`,`/store/${t.siteId}`,`/store/${t.siteId}/products`,`/${t.subdomain}/products`,`/${t.subdomain}/products/${id}`,`/${t.subdomain}/collections`,`/${t.subdomain}/navigation`,`/${t.subdomain}/policies`,`/${t.subdomain}/pages`,`/${t.subdomain}/categories`,`/reviews?store_id=${t.siteId}&product_id=${id}`];
  const expected=mode==='public'?200:mode==='offline'?503:401;
  const results=[];
- for(const path of paths){const result=await gateway.request('/v1/storefront'+path);results.push({path:path.replace(t.subdomain,':store').replace(t.siteId,':site').replace(id,':product'),status:result.status,expected,markerReturned:result.text.includes(marker)});}
+ for(const path of paths){
+  const before=tap.calls.length,result=await gateway.request('/v1/storefront'+path);
+  const reads=tap.calls.slice(before).filter(call=>call.resource==='sites');
+  assert.ok(reads.length>=1&&reads.length<=2,'each catalogue request must use bounded current site authority before content');
+  assert.ok(reads.every(call=>call.search.get('subdomain')==='eq.'+t.subdomain||call.search.get('id')==='eq.'+t.siteId),'authority reads stay on the exact requested handle or resolved site');
+  results.push({path:path.replace(t.subdomain,':store').replace(t.siteId,':site').replace(id,':product'),status:result.status,expected,markerReturned:result.text.includes(marker)});
+ }
  console.info('OWNED_STOREFRONT_ACCESS_MATRIX '+JSON.stringify({lane,mode,results,siteRestReads:tap.calls.slice(start).filter(c=>c.resource==='sites').length}));
  assert.deepEqual(results.filter(r=>r.status!==r.expected),[],'every catalogue path must honor current visitor policy');
  if(mode!=='public')assert.equal(results.some(r=>r.markerReturned),false);
- if(lane==='sql')assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0,'actual SQL metadata succeeds without a sites REST substitute');
  const status=await gateway.request(`/v1/storefront/${t.subdomain}/status`);assert.equal(status.status,200);assert.equal('template_config'in status.json!.data,false);
 });
 

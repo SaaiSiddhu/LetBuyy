@@ -42,7 +42,9 @@ test('storefront GraphQL cart reads delegate to the persisted cart REST endpoint
 
 test('storefront React cart uses server cart as source of truth and localStorage only as synced cache', () => {
     assert.match(cartContextSource, /CART_TOKEN_STORAGE_KEY = 'lb_cart_token'/);
-    assert.match(cartContextSource, /storefrontBrowserApiFetch\(subdomain, cartToken \? `\/cart\/\$\{cartToken\}` : '\/cart'/);
+    assert.match(cartContextSource, /const reconciliation = reconcileStoredCart\(subdomain\)/);
+    assert.match(cartContextSource, /const currentToken = window\.localStorage\.getItem\(CART_TOKEN_STORAGE_KEY\)/);
+    assert.match(cartContextSource, /storefrontBrowserApiFetch\(subdomain, currentToken \? `\/cart\/\$\{currentToken\}` : '\/cart'/);
     assert.match(cartContextSource, /serverCartToItems/);
     assert.match(cartContextSource, /cartLineInputFromItem/);
     assert.match(cartContextSource, /localStorage\.setItem\(CART_TOKEN_STORAGE_KEY, serverCart\.cart_token\)/);

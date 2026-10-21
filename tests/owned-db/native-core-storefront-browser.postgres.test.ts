@@ -165,7 +165,12 @@ test('fresh merchant builds and publishes Core Liquid then a customer orders a r
   await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/zones')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add zone',exact:true}).last().click()]);
   await page.getByRole('button',{name:'Add rate',exact:true}).click();await page.getByLabel('Rate name',{exact:true}).fill('Synthetic native delivery');await page.getByLabel('Price (₹, 0 for free)',{exact:true}).fill('20');
   const [rateSaved]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/shipping/rates')&&r.request().method()==='POST'),page.getByRole('button',{name:'Add rate',exact:true}).last().click()]);assert.equal(rateSaved.status(),201);
-  stage='core-editor-publish';console.info('OWNED_NATIVE_STAGE core-editor-publish');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes/letbuyy-core/editor`);await expect(page.getByRole('tree',{name:'Template sections',exact:true})).toBeVisible();
+  stage='merged-theme-workspace';console.info('OWNED_NATIVE_STAGE merged-theme-workspace');await page.goto(`${merchantOrigin}/${subdomain}/online-store/themes`);
+  await expect(page.getByRole('region',{name:'Discover themes',exact:true})).toBeVisible();
+  await expect(page.locator('article[aria-label$="catalog theme"]')).toHaveCount(10);
+  await page.getByRole('link',{name:'Edit theme',exact:true}).click();
+  await page.waitForURL(u=>u.pathname===`/${subdomain}/online-store/themes/letbuyy-core/editor`);
+  stage='core-editor-publish';console.info('OWNED_NATIVE_STAGE core-editor-publish');await expect(page.getByRole('tree',{name:'Template sections',exact:true})).toBeVisible();
   await page.getByRole('tree',{name:'Template sections',exact:true}).getByRole('treeitem').filter({hasText:/Hero/}).first().click();const marker='Synthetic Native Core Ready';
   const draftReply=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/editor/draft')&&r.request().method()==='POST'&&Boolean(r.request().postData()?.includes(marker)));await page.getByLabel('Heading',{exact:true}).fill(marker);assert.equal((await draftReply).status(),200);
   await expect(page.frameLocator('iframe.te-preview-iframe').locator('[data-letbuyy-preview-route="true"]')).toBeVisible({timeout:90_000});

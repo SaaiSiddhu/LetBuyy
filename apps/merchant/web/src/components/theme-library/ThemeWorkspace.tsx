@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import { MerchantNavigationLink as Link } from '@/components/MerchantNavigationLink';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useReadRequest } from '@/lib/api/use-read-request';
