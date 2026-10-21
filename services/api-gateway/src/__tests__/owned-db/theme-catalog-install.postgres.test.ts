@@ -135,7 +135,7 @@ test('ten catalog themes install independently, atomically and without publishin
     const down377=readFileSync(new URL('../../../../../database/supabase/rollback/377_theme_install_event_contract.rollback.sql',import.meta.url),'utf8');
     const down378=readFileSync(new URL('../../../../../database/supabase/rollback/378_storefront_metadata_role_closure.rollback.sql',import.meta.url),'utf8');
     const signature='public.install_owned_theme_v1(uuid,uuid,text,jsonb,jsonb,uuid,integer,text)';
-    const installedState=()=>owned.psql(`SELECT jsonb_build_object('events',(SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM outbox_events e),'instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d),'installer',(SELECT md5(prosrc)||'|'||proacl::text FROM pg_proc WHERE oid='${signature}'::regprocedure));`);
+    const installedState=()=>owned.psql(`SELECT md5(jsonb_build_object('events',(SELECT jsonb_agg(to_jsonb(e) ORDER BY id) FROM outbox_events e),'instances',(SELECT jsonb_agg(to_jsonb(i) ORDER BY id) FROM theme_instances i),'drafts',(SELECT jsonb_agg(to_jsonb(d) ORDER BY id) FROM theme_editor_drafts d),'installer',(SELECT md5(prosrc)||'|'||proacl::text FROM pg_proc WHERE oid='${signature}'::regprocedure))::text);`);
     const conserved=installedState();
     for(const sql of [migration377,migration377,down377,migration378,migration378,down378]) owned.script(sql);
     assert.equal(installedState(),conserved,'forward replay and paired rollback conserve data and valid event producer');
