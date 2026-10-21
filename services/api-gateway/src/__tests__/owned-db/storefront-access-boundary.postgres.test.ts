@@ -2,7 +2,7 @@
 // independent buyer-history/marketplace channel authority is not substituted.
 import assert from 'node:assert/strict';
 import test,{before,after} from 'node:test';
-import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest,type RestTap} from './gateway-harness';
+import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest,restJson,signedIdentityHeaders,type RestTap} from './gateway-harness';
 import {createStorefrontGateToken,createStorefrontPreviewToken} from '@letbuyy/auth-core';
 import {hashStoreAccessPassword} from '../../lib/store-access-password';
 import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
@@ -11,10 +11,11 @@ import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
 const owned=requireOwnedDatabase();let gateways:Record<'sql'|'rest',Gateway>,proxy:OwnedPooledSqlProxy,tap:RestTap;
 const q=(s:string)=>"'"+s.replaceAll("'","''")+"'";
 const key='synthetic-visitor-shared-key-fixture';
+let faultResource='',faultCode='';
 before(async()=>{
  proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();const env={NEXT_PUBLIC_STORE_ROOT_DOMAIN:'letbuyy.store',FEATURE_GRAPHQL:'true',STORE_ACCESS_SIGNING_KEY:key,PREVIEW_SIGNING_KEY:key};
  gateways={rest:new Gateway(gatewayEnv(owned,keys,env)),sql:new Gateway(gatewayEnv(owned,keys,{...env,...proxy.env()}))};
- tap=tapRest(owned.restUrl,(_call,forward)=>forward());
+ tap=tapRest(owned.restUrl,(call,forward)=>call.method==='GET'&&call.resource===faultResource?restJson(faultCode?404:503,{code:faultCode||'SYNTHETIC_DEPENDENCY',message:'Synthetic private host resolution failure'}):forward());
 });
 after(async()=>{await Promise.all(Object.values(gateways??{}).map(g=>g.settle()));tap?.restore();await closePooledSqlClients();await proxy?.stop();});
 for(const lane of ['sql','rest'] as const){
@@ -29,6 +30,8 @@ for(const mode of ['public','password','preview_only','offline'])test(`${lane}: 
  for(const path of paths){const result=await gateway.request('/v1/storefront'+path);results.push({path:path.replace(t.subdomain,':store').replace(t.siteId,':site').replace(id,':product'),status:result.status,expected,markerReturned:result.text.includes(marker)});}
  console.info('OWNED_STOREFRONT_ACCESS_MATRIX '+JSON.stringify({lane,mode,results,siteRestReads:tap.calls.slice(start).filter(c=>c.resource==='sites').length}));
  assert.deepEqual(results.filter(r=>r.status!==r.expected),[],'every catalogue path must honor current visitor policy');
+ if(mode!=='public')assert.equal(results.some(r=>r.markerReturned),false);
+ if(lane==='sql')assert.equal(tap.calls.slice(start).filter(c=>c.resource==='sites').length,0,'actual SQL metadata succeeds without a sites REST substitute');
  const status=await gateway.request(`/v1/storefront/${t.subdomain}/status`);assert.equal(status.status,200);assert.equal('template_config'in status.json!.data,false);
 });
 
@@ -65,3 +68,41 @@ test(`${lane}: preview reads require a current matching link and stop immediatel
 });
 
 }
+
+
+test('canonical host resolution reports dependency failures as unavailable and recovers instead of false store absence',async()=>{
+ const gateway=gateways.rest,t=newSyntheticTenant('host-fault');seedSyntheticTenant(owned.psql,t);
+ const read=(host:string)=>gateway.request('/v1/internal/store-access/resolve?host='+encodeURIComponent(host),{headers:{'X-Internal-API-Secret':INTERNAL_SECRET}});
+ try {
+  for(const [resource,host] of [['sites',t.subdomain+'.letbuyy.store'],['site_domains','unknown-synthetic.example.invalid']]){
+   faultResource=resource;faultCode='';const failed=await read(host);assert.equal(failed.status,503,resource+': '+failed.text);assert.doesNotMatch(failed.text,/Synthetic private|SQLSTATE|PostgREST/);
+   faultResource='';assert.equal((await read(host)).status,resource==='sites'?200:404);
+  }
+  faultResource='site_domains';faultCode='PGRST205';assert.equal((await read('missing-table.example.invalid')).status,404,'only recognized legacy missing-alias-table compatibility is absence');
+ }finally{faultResource='';faultCode='';}
+});
+
+test('normal owner preview issuance binds the current host; revoke stops data and foreign hosts never create links',async()=>{
+ const gateway=gateways.rest,t=newSyntheticTenant('preview-issuer'),foreign=newSyntheticTenant('preview-foreign');seedSyntheticTenant(owned.psql,t);seedSyntheticTenant(owned.psql,foreign);
+ const actor=crypto.randomUUID(),email='synthetic-preview-'+actor+'@example.invalid';
+ owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name)VALUES(${q(actor)},${q(email)},true,'Synthetic preview owner');UPDATE sites SET custom_user_id=${q(actor)},access_mode='preview_only',status='draft',published=false WHERE id=${q(t.siteId)};`);
+ const issue=async(host:string)=>gateway.request('/v1/store-access/preview-links',{method:'POST',headers:{...await signedIdentityHeaders(actor,email,t.siteId),'X-Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({site_id:t.siteId,scope:'share-link',host})});
+ const good=await issue(t.subdomain+'.letbuyy.store');assert.equal(good.status,200,good.text);const {token,jti}=good.json!.data;
+ const read=()=>gateway.request('/v1/storefront/'+t.subdomain,{headers:{'X-LetBuyy-Storefront-Preview':token}});assert.equal((await read()).status,200);
+ const before=owned.psql(`SELECT count(*) FROM site_preview_links WHERE site_id=${q(t.siteId)};`);
+ const wrong=await issue(foreign.subdomain+'.letbuyy.store');assert.equal(wrong.status,400);assert.equal(owned.psql(`SELECT count(*) FROM site_preview_links WHERE site_id=${q(t.siteId)};`),before);
+ const revoked=await gateway.request('/v1/store-access/preview-links/'+jti+'?site_id='+t.siteId,{method:'DELETE',headers:{...await signedIdentityHeaders(actor,email,t.siteId),'X-Idempotency-Key':crypto.randomUUID()}});assert.equal(revoked.status,200);assert.equal((await read()).status,404,'unpublished store stays absent once its normal share link is revoked');
+});
+
+for(const lane of ['sql','rest'] as const)test(`${lane}: both GraphQL aliases honor catalogue gates and forwarded proof`,async()=>{
+ const gateway=gateways[lane],t=newSyntheticTenant(lane+'-graphql-access');seedSyntheticTenant(owned.psql,t);const marker='Synthetic GraphQL visitor product',id=crypto.randomUUID();
+ const hash=await hashStoreAccessPassword('Synthetic-GraphQL-password-42!');owned.psql(`UPDATE sites SET access_mode='password',access_password_hash=${q(hash)} WHERE id=${q(t.siteId)};INSERT INTO products(id,site_id,store_id,name,slug,price,stock,is_active,status)VALUES(${q(id)},${q(t.siteId)},${q(t.siteId)},${q(marker)},'graphql-access-product',100,5,true,'active');`);
+ const revision=owned.psql(`SELECT encode(sha256(convert_to(${q(hash)},'UTF8')),'hex');`);
+ const token=await createStorefrontGateToken({sid:t.siteId,host:t.subdomain+'.letbuyy.store',exp:Math.floor(Date.now()/1000)+600,revision},key);
+ for(const path of ['/v1/storefront/graphql','/v1/graphql/storefront']){
+  const request=(proof?:string)=>gateway.request(path,{method:'POST',headers:{'Content-Type':'application/json',...(proof?{'X-LetBuyy-Storefront-Gate':proof}:{})},body:JSON.stringify({query:'query { products { edges { node { id name } } } }',variables:{storeHandle:t.subdomain,first:5}})});
+  const denied=await request();assert.equal(denied.status,200);assert.ok(denied.json!.errors);assert.equal(denied.text.includes(marker),false);assert.equal(denied.json!.data,undefined);
+  const allowed=await request(token);assert.equal(allowed.status,200);assert.equal(allowed.json!.errors,undefined,allowed.text);assert.equal(allowed.text.includes(marker),true);
+  owned.psql(`UPDATE sites SET access_mode='offline' WHERE id=${q(t.siteId)};`);const closed=await request(token);assert.ok(closed.json!.errors);assert.equal(closed.text.includes(marker),false);owned.psql(`UPDATE sites SET access_mode='password' WHERE id=${q(t.siteId)};`);
+ }
+});
