@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Table,
@@ -101,15 +103,18 @@ export default function LeadsPage() {
     const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const beginRead = useReadRequest(store)
     const loadLeads = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=lead&limit=100`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load leads'))
@@ -117,6 +122,7 @@ export default function LeadsPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load leads'
             setItems([])
             setLoadError(message)
@@ -126,9 +132,9 @@ export default function LeadsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadLeads()

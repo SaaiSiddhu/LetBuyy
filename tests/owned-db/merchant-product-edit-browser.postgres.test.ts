@@ -24,6 +24,8 @@ let identityOrigin='',merchantOrigin='',loseReplyFor='';
 let ownerA:BrowserContext,ownerB:BrowserContext,staff:BrowserContext;
 const calls:{path:string;method:string;status:number;lost:boolean;key:string|null;productBody?:string}[]=[];
 const checkpoints:string[]=[];
+const readProfiles:{route:string;sample:number;usefulMilliseconds:number;gatewayReads:number;gatewayBytes:number}[]=[];
+let profileReads:{bytes:number}[]|null=null;
 const originalFetch=globalThis.fetch;
 let refusedGatewayExternalRequests=0;
 
@@ -71,6 +73,7 @@ before(async()=>{
         try{
             const path=(req.url??'/').split('?')[0],method=req.method??'GET';
             const result=await gateway!.request(req.url??'/',{method,headers,...(body?{body}:{})});
+            if(method==='GET' && profileReads)profileReads.push({bytes:Buffer.byteLength(result.text)});
             const productPatch=method==='PATCH'&&/^\/v1\/products\/[0-9a-f-]+$/.test(path);
             const lost=productPatch&&path.endsWith('/'+loseReplyFor)&&result.status===200;
             calls.push({path,method,status:result.status,lost,key:productPatch?headers.get('X-Idempotency-Key'):null,...(productPatch?{productBody:body}:{})});
@@ -81,12 +84,12 @@ before(async()=>{
     await new Promise<void>(r=>bridge!.listen(0,'127.0.0.1',r));
     const apiOrigin=`http://127.0.0.1:${(bridge.address() as {port:number}).port}`;
     const shared={INTERNAL_API_SECRET:INTERNAL_SECRET,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin};
-    identity=startOwnedClientRuntime(owned,'identity-next',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
+    identity=startOwnedClientRuntime(owned,'identity-next-production',{port:identityPort,env:{...shared,LETBUYY_API_URL:apiOrigin+'/v1',LETBUYY_IDENTITY_ISSUER:identityOrigin,
         LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
         ACCOUNTS_COOKIE_SECRET:crypto.randomUUID()+crypto.randomUUID(),COOKIE_DOMAIN:'',
         NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
         LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
-    merchant=startOwnedClientRuntime(owned,'merchant-next',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
+    merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
     await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
     browser=await chromium.launch({headless:true});ownerA=await browser.newContext();ownerB=await browser.newContext();staff=await browser.newContext();
     for(const context of [ownerA,ownerB,staff]){context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);}
@@ -95,7 +98,7 @@ before(async()=>{
 },{timeout:660000});
 after(async()=>{
     console.info('OWNED_PRODUCT_BROWSER '+JSON.stringify({runId:owned.runId,checkpoints,normalSignIns:checkpoints.includes('three_normal_identity_sign_ins')?3:0,
-        positiveCredentialInjection:false,fixtureKind:'local Next development runtimes + actual Gateway/PostgREST/owned PostgreSQL',
+        positiveCredentialInjection:false,readProfiles,fixtureKind:'local Next production builds + actual Gateway/PostgREST/owned PostgreSQL',
         calls:calls.filter(c=>c.productBody!==undefined).map(({path,method,status,lost,key})=>({path,method,status,lost,key})),
         gatewayExternalRequestsRefused:refusedGatewayExternalRequests,
         challengeMode:'Existing official Turnstile test-key transport; production anti-bot unverified',
@@ -118,6 +121,32 @@ const version=(id:string)=>Number(owned.psql(`SELECT version FROM products WHERE
 const receiptCount=(id:string)=>Number(owned.psql(`SELECT count(*) FROM product_edit_receipts WHERE product_id='${id}';`));
 async function editor(context:BrowserContext,id:string){const page=await context.newPage();await page.goto(`${merchantOrigin}/${site.subdomain}/products/${id}`);await expect(page.getByLabel('Title',{exact:true})).toHaveValue('Synthetic browser product');return page;}
 async function save(page:Page,id:string,label='Save product'){const[reply]=await Promise.all([page.waitForResponse(r=>r.url()===endpoint(id)&&r.request().method()==='PATCH'),page.getByRole('button',{name:label,exact:true}).first().click()]);return reply;}
+
+test('production navigation preserves the shell and settles useful nonzero catalog data',{timeout:150000},async()=>{
+    const fixture=product();
+    owned.psql(`UPDATE products SET name='Synthetic performance notebook' WHERE id='${fixture.id}';`);
+    const page=await ownerA.newPage();
+    try{
+        for(const route of ['products','orders'])for(let sample=1;sample<=3;sample++){
+            const reads:{bytes:number}[]=[];profileReads=reads;const started=performance.now();
+            await page.goto(`${merchantOrigin}/${site.subdomain}/${route}`);
+            if(route==='products')await expect(page.locator('table').getByText('Synthetic performance notebook',{exact:true})).toBeVisible();
+            else await expect(page.getByRole('heading',{name:'No orders yet',exact:true})).toBeVisible();
+            readProfiles.push({route,sample,usefulMilliseconds:Math.round((performance.now()-started)*10)/10,gatewayReads:reads.length,gatewayBytes:reads.reduce((total,read)=>total+read.bytes,0)});
+            profileReads=null;
+        }
+        await page.goto(`${merchantOrigin}/${site.subdomain}/products`);
+        await expect(page.locator('table').getByText('Synthetic performance notebook',{exact:true})).toBeVisible();
+        const marker=await page.evaluate(()=>{const value=crypto.randomUUID();(window as unknown as Record<string,unknown>).merchantNavigationSentinel=value;return value;});
+        await page.getByRole('link',{name:'Orders',exact:true}).first().click();
+        await expect(page.getByRole('heading',{name:'No orders yet',exact:true})).toBeVisible();
+        assert.equal(await page.evaluate(()=>(window as unknown as Record<string,unknown>).merchantNavigationSentinel),marker,'sidebar navigation must retain the document and shared shell');
+        await page.locator('header').getByRole('link',{name:'Products',exact:true}).click();
+        await expect(page.locator('table').getByText('Synthetic performance notebook',{exact:true})).toBeVisible();
+        assert.equal(await page.evaluate(()=>(window as unknown as Record<string,unknown>).merchantNavigationSentinel),marker,'page-header navigation must retain the document and shared shell');
+        checkpoints.push('production_nonzero_catalog_empty_orders_three_samples_retained_client_navigation');
+    }finally{profileReads=null;await page.close();}
+});
 
 test('normal product read and edit use actual positive version, stable variant ID and canonical stock',{timeout:150000},async()=>{
     const {id,variantId}=product(),expected=version(id),level=owned.psql(`SELECT id FROM inventory_levels WHERE variant_id='${variantId}';`);

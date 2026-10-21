@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -144,16 +146,20 @@ export default function CheckoutSettingsPage() {
     const hasUnsavedChanges = useMemo(() => !settingsEqual(settings, initialSettings), [settings, initialSettings])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
+    const beginLoad = useReadRequest(store)
     const loadData = useCallback(async (signal?: AbortSignal) => {
+        const request = beginLoad()
+        const readSignal = signal ? AbortSignal.any([signal, request.signal]) : request.signal
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 cache: 'no-store',
-                signal,
+                signal: readSignal,
             })
             const payload = (await response.json().catch(() => null)) as SettingsPayload | null
+            if (signal?.aborted || !request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load checkout settings'))
@@ -172,7 +178,7 @@ export default function CheckoutSettingsPage() {
             setInitialSettings(nextSettings)
             setSaveState('saved')
         } catch (error) {
-            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+            if (signal?.aborted || !request.isCurrent()) return
 
             const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
             setLoadError(message)
@@ -182,9 +188,9 @@ export default function CheckoutSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            if (!signal?.aborted) setLoading(false)
+            if (!signal?.aborted && request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginLoad, notify, store])
 
     useEffect(() => {
         const controller = new AbortController()

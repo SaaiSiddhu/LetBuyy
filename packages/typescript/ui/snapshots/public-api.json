@@ -254,6 +254,8 @@
     "MousePointerClick",
     "Navigation",
     "NavigationItem",
+    "NavigationLinkProvider",
+    "NavigationLinkProviderProps",
     "NavigationProps",
     "Newspaper",
     "normalizeProviderMode",

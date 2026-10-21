@@ -25,6 +25,9 @@ export async function POST() {
                     Origin: getAdminUrl(),
                 },
                 cache: 'no-store',
+                // Revocation is already best effort on network failure. Bound
+                // this wait so clearing the local cookie cannot hang forever.
+                signal: AbortSignal.timeout(5_000),
             }).catch(() => null)
         }
 

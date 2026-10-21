@@ -141,3 +141,25 @@ The main coordinator reviewed and granted these scoped registry edits on 18 Octo
 ### Private reel intake proxies — 2026-10-18 complete local integration
 
 The three merchant routes under `stores/[store]/reels/uploads` (collection, `[intentId]`, and `[intentId]/content`) are reviewed `gateway-proxy` transports, increasing the inventory and lint baseline from 219 to 222. They resolve the current merchant and owned store, bind the captured actor, enforce mutation origin and stable request keys, bound metadata and streamed bytes, and forward through the shared API client. Gateway359 owns reservation, current authority, retry/version checks and custody receipts; the infrastructure adapter owns private provider bytes. The app does not issue credentials, write a database, grant readiness, expose a public object URL or perform live provider activation.
+
+
+### Merchant performance export connection — 2026-10-21
+
+The reviewed route inventory and matching lint baseline advance from 222 to 225 for
+merchant `stores/[store]/exports`, `exports/[jobId]` and
+`exports/[jobId]/download`. These are thin `gateway-proxy` transports under the
+existing route ownership rule: they resolve the signed-in merchant's owned store,
+validate a finite export choice, reject cross-origin creation, forward caller
+cancellation and finite read budgets, and stream the canonical gateway result.
+The download adapter takes only the opaque signature from the returned URL and
+constructs a known gateway path; it never fetches an arbitrary URL. Successful
+metadata and CSV responses are private/no-store. Gateway owns job creation,
+current actor/store scope, expiry, stable paginated source reads and R2 writes.
+No application database writer, generation workflow, issuer or provider SDK is added.
+
+Actual-function transport checks cover all three export types, store substitution,
+blocked ownership, polling scope, arbitrary URL refusal, unfinished/import jobs,
+stream preservation and unsuccessful-body cancellation. Actual native Worker,
+owned PostgreSQL/PostgREST and local R2 verify a 1,103-product, 7,412,460-byte export,
+CSV content and ownership revocation. Extended order/customer/expiry acceptance also passes (1,103 live rows per dataset);
+final browser acceptance remains tracked in the merchant performance audit evidence.

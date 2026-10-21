@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button, MaterialIcon } from '@letbuyy/ui'
+import { MerchantNavigationLink } from './MerchantNavigationLink'
 
 interface TrialBannerProps {
     storeSlug: string
@@ -61,12 +62,12 @@ export default function TrialBanner({ storeSlug, trialEndsAt, trialStatus }: Tri
                     <p>
                         Choose a plan before your current trial ends to keep your store running.
                     </p>
-                    <a
+                    <MerchantNavigationLink
                         href={`/${encodeURIComponent(storeSlug)}/access_account/checkout/select-plan`}
                         className="admin-trial-toast-btn"
                     >
                         Select a plan
-                    </a>
+                    </MerchantNavigationLink>
                 </div>
             )}
         </div>

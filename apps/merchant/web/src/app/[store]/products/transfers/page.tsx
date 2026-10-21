@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { useProductPicker } from '@/lib/api/use-product-picker'
+import { useInventoryLocations } from '@/lib/api/use-inventory-locations'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import {
     Badge,
@@ -105,6 +108,10 @@ interface CreateTransferModalProps {
     store: string
     locations: InventoryLocation[]
     products: TransferProductItem[]
+    hasMoreProducts: boolean
+    loadingProducts: boolean
+    loadMoreProducts: () => void
+    productLoadError: boolean
     onClose: () => void
     onCreated: () => void
 }
@@ -114,6 +121,10 @@ function CreateTransferModal({
     store,
     locations,
     products,
+    hasMoreProducts,
+    loadingProducts,
+    loadMoreProducts,
+    productLoadError,
     onClose,
     onCreated,
 }: CreateTransferModalProps) {
@@ -241,6 +252,9 @@ function CreateTransferModal({
                         {error}
                     </Banner>
                 )}
+
+                {productLoadError && <Banner variant="warning" title="More products could not be loaded">Try loading the next products again.</Banner>}
+                {hasMoreProducts && <Button variant="secondary" onClick={loadMoreProducts} disabled={loadingProducts}>{loadingProducts ? 'Loading products…' : 'Load more products'}</Button>}
 
                 <div className="grid grid-cols-1 gap-[var(--lb-space-3)] sm:grid-cols-2">
                     <Select
@@ -589,8 +603,10 @@ export default function TransfersPage() {
     const { notify } = useToast()
 
     const [transfers, setTransfers] = useState<TransferWithLines[]>([])
-    const [locations, setLocations] = useState<InventoryLocation[]>([])
-    const [products, setProducts] = useState<TransferProductItem[]>([])
+    const locationRead = useInventoryLocations(store)
+    const locations = locationRead.items
+    const productPicker = useProductPicker<TransferProductItem>(store)
+    const beginRead = useReadRequest(store)
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -600,20 +616,13 @@ export default function TransfersPage() {
 
     const loadAll = useCallback(async () => {
         if (!store) return
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
         try {
-            const [transferRes, locationRes, productRes] = await Promise.all([
-                fetch(`/api/stores/${encodeURIComponent(store)}/transfers`),
-                fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`),
-                fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=200`),
-            ])
-
-            const [transferBody, locationBody, productBody] = await Promise.all([
-                transferRes.json() as Promise<{ data?: TransferWithLines[]; error?: unknown }>,
-                locationRes.json() as Promise<{ data?: InventoryLocation[]; error?: unknown }>,
-                productRes.json() as Promise<{ data?: TransferProductItem[]; error?: unknown }>,
-            ])
+            const transferRes = await fetch(`/api/stores/${encodeURIComponent(store)}/transfers`, { cache: 'no-store', signal: request.signal })
+            const transferBody = await transferRes.json() as { data?: TransferWithLines[]; error?: unknown }
+            if (!request.isCurrent()) return
 
             if (!transferRes.ok) {
                 const msg =
@@ -625,16 +634,19 @@ export default function TransfersPage() {
             }
 
             setTransfers(transferBody.data ?? [])
-            setLocations(locationBody.data ?? [])
-            setProducts(productBody.data ?? [])
         } catch {
-            setLoadError('Unable to load transfers — check your connection.')
+            if (request.isCurrent()) setLoadError('Unable to load transfers — check your connection.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [store, beginRead])
 
     useEffect(() => { void loadAll() }, [loadAll])
+
+    async function openCreate() {
+        if (productPicker.loading) return
+        if (await productPicker.load()) setShowCreate(true)
+    }
 
     function openShip(transfer: TransferWithLines) {
         if (transfer.status !== 'pending') {
@@ -678,10 +690,10 @@ export default function TransfersPage() {
                 description="Move stock between inventory locations — reserve, ship, and receive."
                 breadcrumbs={[{ label: 'Purchasing' }, { label: 'Transfers' }]}
                 primaryAction={{
-                    label: 'Create transfer',
+                    label: productPicker.loading && !showCreate ? 'Loading transfer form…' : 'Create transfer',
                     icon: <MaterialIcon name="add" />,
-                    onClick: () => setShowCreate(true),
-                    disabled: loading || locations.length < 2,
+                    onClick: () => void openCreate(),
+                    disabled: loading || productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2,
                 }}
             />
 
@@ -691,12 +703,16 @@ export default function TransfersPage() {
                 </Banner>
             )}
 
-            {!loading && !loadError && locations.length < 2 && (
+            {productPicker.error && !showCreate && <Banner variant="warning" title="The transfer form could not be loaded">Try opening the transfer form again.</Banner>}
+
+            {!locationRead.loading && !locationRead.error && !loadError && locations.length < 2 && (
                 <Banner variant="warning" title="Not enough inventory locations">
                     You need at least two inventory locations to create a transfer. Locations can be
                     added from Inventory settings.
                 </Banner>
             )}
+
+            {locationRead.error && <Banner variant="warning" title="Inventory locations could not be loaded" action={<Button variant="secondary" onClick={() => { void locationRead.load() }}>Retry locations</Button>}>Existing records remain available. Reload locations before creating a new record.</Banner>}
 
             <Card>
                 <Section
@@ -724,8 +740,8 @@ export default function TransfersPage() {
                             body="Create a transfer to move stock between locations. Transferred inventory is reserved at the source until received at the destination."
                             primaryAction={
                                 <Button
-                                    onClick={() => setShowCreate(true)}
-                                    disabled={locations.length < 2}
+                                    onClick={() => void openCreate()}
+                                    disabled={productPicker.loading || locationRead.loading || locationRead.error || locations.length < 2}
                                 >
                                     Create transfer
                                 </Button>
@@ -834,7 +850,11 @@ export default function TransfersPage() {
                 open={showCreate}
                 store={store}
                 locations={locations}
-                products={products}
+                products={productPicker.items}
+                hasMoreProducts={productPicker.hasMore}
+                loadingProducts={productPicker.loading}
+                loadMoreProducts={() => { void productPicker.load(false) }}
+                productLoadError={productPicker.error}
                 onClose={() => setShowCreate(false)}
                 onCreated={() => void loadAll()}
             />

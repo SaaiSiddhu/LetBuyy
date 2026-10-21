@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -177,22 +179,26 @@ export default function BillingSettingsPage() {
     const [billFilter, setBillFilter] = useState<BillFilter>('all')
     const [addOpen, setAddOpen] = useState(false)
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, { cache: 'no-store', signal: request.signal })
             const payload = (await response.json().catch(() => null)) as BillingPayload | null
+            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load billing settings'))
             setData(normalizeBilling(payload?.data))
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load billing settings'
             setLoadError(message)
             notify({ title: 'Billing could not load', description: message, variant: 'critical' })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 

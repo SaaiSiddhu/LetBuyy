@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -154,24 +156,28 @@ export default function UsersSettingsPage() {
     const [employeeToRemove, setEmployeeToRemove] = useState<Employee | null>(null)
     const [removingId, setRemovingId] = useState<string | null>(null)
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, { cache: 'no-store', signal: request.signal })
             const payload = (await response.json().catch(() => null)) as StaffPayload | null
+            if (!request.isCurrent()) return
             if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load staff members'))
             const data = isRecord(payload?.data) ? payload.data : {}
             setEmployees(normalizeEmployees(data.employees))
             setLimit(normalizeLimit(data.limit))
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load staff members'
             setLoadError(message)
             notify({ title: 'Staff could not load', description: message, variant: 'critical' })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => { void loadData() }, [loadData])
 

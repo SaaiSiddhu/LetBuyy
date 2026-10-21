@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
-import { getAccountsUrl } from '@/lib/public-urls'
+import { getAccountsUrl, getAdminUrl } from '@/lib/public-urls'
 
 /**
  * Admin proxy:
@@ -27,7 +27,12 @@ export function proxy(request: NextRequest) {
     }
 
     if (!session.accepted) {
-        const returnUrl = encodeURIComponent(request.url)
+        // The configured app origin survives NextURL's loopback normalization
+        // and cannot be replaced by an untrusted Host/Forwarded header.
+        const destination = new URL(getAdminUrl())
+        destination.pathname = pathname
+        destination.search = request.nextUrl.search
+        const returnUrl = encodeURIComponent(destination.toString())
 
         return NextResponse.redirect(
             `${getAccountsUrl('/lookup')}?return_to=${returnUrl}`

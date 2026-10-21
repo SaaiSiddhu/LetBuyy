@@ -17,7 +17,7 @@ const searchChips = ['Apps', 'Customers', 'Orders', 'Products', 'Sales channels'
 export default function CommandPalette({ store, storeName, siteType, onClose }: CommandPaletteProps) {
     const [query, setQuery] = useState('')
     const [highlighted, setHighlighted] = useState(0)
-    const [entityCommands, setEntityCommands] = useState<MerchantCommandItem[]>([])
+    const [entityResult, setEntityResult] = useState<{ scope: string; commands: MerchantCommandItem[] } | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
 
@@ -40,6 +40,8 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
 
     // Filter
     const normalizedQuery = query.trim().toLowerCase()
+    const searchScope = JSON.stringify([store, normalizedSiteType, normalizedQuery])
+    const entityCommands = entityResult?.scope === searchScope ? entityResult.commands : []
     const routeCommands = normalizedQuery
         ? allCommands.filter((command) => command.keywords.some((keyword) => keyword.includes(normalizedQuery)))
         : []
@@ -72,14 +74,15 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
         async function loadEntityCommands() {
             const commands = await searchStoreEntities(store, normalizedQuery, controller.signal)
             if (!controller.signal.aborted) {
-                setEntityCommands(commands)
+                setEntityResult({ scope: searchScope, commands })
             }
         }
 
-        loadEntityCommands()
+        // One bounded search after typing pauses, rather than three requests per keystroke.
+        const timer = setTimeout(() => { void loadEntityCommands() }, 250)
 
-        return () => controller.abort()
-    }, [normalizedQuery, normalizedSiteType, store])
+        return () => { clearTimeout(timer); controller.abort() }
+    }, [normalizedQuery, normalizedSiteType, store, searchScope])
 
     // Keyboard navigation
     useEffect(() => {
@@ -119,7 +122,7 @@ export default function CommandPalette({ store, storeName, siteType, onClose }: 
                                 setQuery(nextQuery)
                                 setHighlighted(0)
                                 if (nextQuery.trim().length < 2) {
-                                    setEntityCommands([])
+                                    setEntityResult(null)
                                 }
                             }}
                             autoComplete="off"

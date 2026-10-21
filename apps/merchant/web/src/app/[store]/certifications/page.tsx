@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -129,15 +131,18 @@ export default function CertificationsPage() {
     const [certificationToDelete, setCertificationToDelete] = useState<Certification | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const beginRead = useReadRequest(store)
     const loadCertifications = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/certifications`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load certifications'))
@@ -145,6 +150,7 @@ export default function CertificationsPage() {
 
             setItems(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load certifications'
             setItems([])
             setLoadError(message)
@@ -154,9 +160,9 @@ export default function CertificationsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadCertifications()

@@ -10,7 +10,8 @@ import type {
     AnalyticsDashboard,
     AnalyticsOrdersBreakdown,
     Order,
-    Product,
+    PaginatedResponse,
+    ProductListSummary,
 } from '@letbuyy/api-client'
 
 /* ——————————————————————————————————————
@@ -104,8 +105,15 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     }).configured
 
     const apiClient = createMerchantApiClient()
-    const setupStatus = await loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured)
-    const homeData = await loadDashboardHomeData(apiClient, storeData.id, storeData.site_type === 'store')
+    // Setup only needs to know whether the all-status catalogue has any rows.
+    // Share the bounded recent-products read and start independent sections now.
+    const recentProducts = storeData.site_type === 'store'
+        ? apiClient.products.listSummary({ store_id: storeData.id, status: 'all', limit: 4, sort: 'created_at', order: 'desc' }).catch(() => null)
+        : Promise.resolve(null)
+    const [setupStatus, homeData] = await Promise.all([
+        loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured, recentProducts),
+        loadDashboardHomeData(apiClient, storeData.id, storeData.site_type === 'store', recentProducts),
+    ])
 
     return (
         <DashboardClient
@@ -123,10 +131,11 @@ async function loadSetupStatus(
     siteType: string,
     themeCustomized: boolean,
     domainConfigured: boolean,
+    recentProductsRead: Promise<PaginatedResponse<ProductListSummary> | null>,
 ): Promise<SetupStatus> {
     if (siteType === 'store') {
         const [productsPayload, shippingZonesPayload, paymentConfigPayload] = await Promise.all([
-            apiClient.products.list({ store_id: storeId, limit: 1 }).catch(() => null),
+            recentProductsRead,
             apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => null),
             apiClient.stores.paymentConfig.get(storeId).catch(() => null),
         ])
@@ -152,6 +161,7 @@ async function loadDashboardHomeData(
     apiClient: ReturnType<typeof createMerchantApiClient>,
     storeId: string,
     isStore: boolean,
+    recentProductsRead: Promise<PaginatedResponse<ProductListSummary> | null>,
 ): Promise<DashboardHomeData> {
     if (!isStore) {
         return emptyDashboardHomeData()
@@ -169,13 +179,7 @@ async function loadDashboardHomeData(
                 sort: 'created_at',
                 order: 'desc',
             }).catch(() => null),
-            apiClient.products.list({
-                store_id: storeId,
-                status: 'all',
-                limit: 4,
-                sort: 'created_at',
-                order: 'desc',
-            }).catch(() => null),
+            recentProductsRead,
         ])
 
         const summary = analyticsPayload?.summary
@@ -237,7 +241,7 @@ function orderActivity(order: Order): DashboardActivity {
     }
 }
 
-function productActivity(product: Product): DashboardActivity {
+function productActivity(product: ProductListSummary): DashboardActivity {
     const status = product.status || (product.is_active ? 'active' : 'draft')
     const productId = product.id || crypto.randomUUID()
 

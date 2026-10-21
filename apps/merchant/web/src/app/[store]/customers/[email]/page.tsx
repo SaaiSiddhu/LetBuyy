@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -517,16 +519,19 @@ export default function CustomerDetailPage() {
     const [loadingNotes, setLoadingNotes] = useState(true)
     const [notesError, setNotesError] = useState<string | null>(null)
 
+    const beginLoadCustomer = useReadRequest(JSON.stringify([store, email]))
     const loadCustomer = useCallback(async () => {
+        const request = beginLoadCustomer()
         setLoading(true)
         setError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/${encodeURIComponent(email)}`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null) as { data?: Record<string, unknown>; error?: unknown } | null
 
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 if (response.status === 404) {
                     setError('Customer not found.')
@@ -545,22 +550,26 @@ export default function CustomerDetailPage() {
                 setError('Unexpected response from server.')
             }
         } catch {
+            if (!request.isCurrent()) return
             setError('Unable to load customer.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [email, store])
+    }, [beginLoadCustomer, email, store])
 
+    const beginLoadNotes = useReadRequest(JSON.stringify([store, email]))
     const loadNotes = useCallback(async () => {
+        const request = beginLoadNotes()
         setLoadingNotes(true)
         setNotesError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/${encodeURIComponent(email)}/notes`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null) as { data?: unknown[] } | null
 
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 setNotesError('Unable to load notes.')
                 return
@@ -571,11 +580,12 @@ export default function CustomerDetailPage() {
                 : []
             setNotes(rows)
         } catch {
+            if (!request.isCurrent()) return
             setNotesError('Unable to load notes.')
         } finally {
-            setLoadingNotes(false)
+            if (request.isCurrent()) setLoadingNotes(false)
         }
-    }, [email, store])
+    }, [beginLoadNotes, email, store])
 
     useEffect(() => {
         void loadCustomer()

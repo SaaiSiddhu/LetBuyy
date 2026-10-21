@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { getStorefrontRootDomain } from '@/lib/public-urls'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -94,15 +96,18 @@ export default function PreferencesPage() {
     const [form, setForm] = useState<PreferencesFormState>(emptyForm)
     const [initialForm, setInitialForm] = useState<PreferencesFormState>(emptyForm)
 
+    const beginRead = useReadRequest(store)
     const loadPreferences = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load storefront preferences'))
@@ -112,6 +117,7 @@ export default function PreferencesPage() {
             setForm(nextForm)
             setInitialForm(nextForm)
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load storefront preferences'
             setForm(emptyForm)
             setInitialForm(emptyForm)
@@ -122,9 +128,9 @@ export default function PreferencesPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadPreferences()

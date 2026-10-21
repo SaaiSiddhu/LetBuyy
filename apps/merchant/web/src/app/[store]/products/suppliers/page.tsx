@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
@@ -223,13 +225,16 @@ export default function SuppliersPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
 
+    const beginLoadSuppliers = useReadRequest(store)
     const loadSuppliers = useCallback(async () => {
+        const request = beginLoadSuppliers()
         if (!store) return
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`)
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/suppliers`, { cache: 'no-store', signal: request.signal })
             const body = await res.json() as { data?: Supplier[]; error?: unknown }
+            if (!request.isCurrent()) return
             if (!res.ok) {
                 const msg = typeof body.error === 'string' ? body.error : 'Failed to load suppliers'
                 setLoadError(msg)
@@ -237,11 +242,12 @@ export default function SuppliersPage() {
             }
             setSuppliers(body.data ?? [])
         } catch {
+            if (!request.isCurrent()) return
             setLoadError('Unable to load suppliers — check your connection.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [beginLoadSuppliers, store])
 
     useEffect(() => { void loadSuppliers() }, [loadSuppliers])
 

@@ -1,5 +1,8 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { useRouter } from 'next/navigation'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
     Banner,
@@ -109,10 +112,11 @@ function friendlyGatewayError(payload: unknown, fallback: string): string {
  * Dates use en-IN locale; commerce amounts use INR (not applicable here).
  */
 export function ThemeLibraryWorkspace({ store, storeId }: ThemeLibraryWorkspaceProps) {
+    const router = useRouter()
     const { notify } = useToast()
 
     // ── Library data ──────────────────────────────────────────────────────────
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [themes, setThemes] = useState<SiteThemeRecord[]>([])
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [busySlug, setBusySlug] = useState<string | null>(null)
@@ -133,13 +137,16 @@ export function ThemeLibraryWorkspace({ store, storeId }: ThemeLibraryWorkspaceP
     const createInputRef = useRef<HTMLInputElement>(null)
 
     // ── Fetch ─────────────────────────────────────────────────────────────────
+    const beginRead = useReadRequest(store)
     const fetchLibrary = useCallback(async () => {
         if (!store) return
+        const request = beginRead()
         setLoading(true)
         setFetchError(null)
         try {
-            const res = await fetch(`/api/themes/library?store_name=${encodeURIComponent(store)}`)
+            const res = await fetch(`/api/themes/library?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal })
             const payload = await res.json().catch(() => null) as LibraryApiResponse | null
+            if (!request.isCurrent()) return
             if (!res.ok || !payload) {
                 const msg = friendlyGatewayError(payload, 'Could not load your theme library. Try refreshing.')
                 setFetchError(msg)
@@ -147,15 +154,16 @@ export function ThemeLibraryWorkspace({ store, storeId }: ThemeLibraryWorkspaceP
             }
             setThemes(sortThemes(readThemeList(payload)))
         } catch {
+            if (!request.isCurrent()) return
             setFetchError('Could not load your theme library. Check your connection and try again.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [store, beginRead])
 
     useEffect(() => {
-        if (storeId) void fetchLibrary()
-    }, [fetchLibrary, storeId])
+        void fetchLibrary()
+    }, [fetchLibrary])
 
     // ── Publish ───────────────────────────────────────────────────────────────
     const handlePublish = useCallback(async (slug: string) => {
@@ -331,8 +339,8 @@ export function ThemeLibraryWorkspace({ store, storeId }: ThemeLibraryWorkspaceP
 
     // ── Rollback navigation ───────────────────────────────────────────────────
     const handleRollback = useCallback((slug: string) => {
-        window.location.href = `/${store}/online-store/themes/${slug}/editor?tab=releases`
-    }, [store])
+        router.push(`/${store}/online-store/themes/${slug}/editor?tab=releases`)
+    }, [router, store])
 
     // ── Render ────────────────────────────────────────────────────────────────
     const confirmTitle = confirmAction.action === 'archive'

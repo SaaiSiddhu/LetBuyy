@@ -72,7 +72,7 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
             const payload = await response.json().catch(() => null) as {
                 data?: { payouts?: unknown }
                 payouts?: unknown

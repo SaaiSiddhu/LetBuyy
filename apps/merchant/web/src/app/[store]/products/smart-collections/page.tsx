@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -442,20 +444,25 @@ export default function SmartCollectionsPage() {
     const [modalOpen, setModalOpen] = useState(false)
     const [editing, setEditing] = useState<SmartCollection | null>(null)
 
+    const beginLoad = useReadRequest(store)
     const load = useCallback(async () => {
+        const request = beginLoad()
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/smart-collections`)
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/smart-collections`, { cache: 'no-store', signal: request.signal })
+            if (!request.isCurrent()) return
             if (!res.ok) throw new Error('Failed to load')
             const json = await res.json() as { data: SmartCollection[] }
+            if (!request.isCurrent()) return
             setCollections(json.data ?? [])
         } catch {
+            if (!request.isCurrent()) return
             setLoadError('Unable to load smart collections. Please refresh the page.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [beginLoad, store])
 
     useEffect(() => { void load() }, [load])
 

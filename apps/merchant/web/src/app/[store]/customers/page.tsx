@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
+import { useDebouncedValue, useReadRequest } from '@/lib/api/use-read-request'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
 import { formatIndiaDate as formatDate, formatInrCurrency } from '@letbuyy/ui/formatting'
 import { Button, Input, Table, Avatar, Badge, Banner, Card, EmptyState, MaterialIcon, Page, PageHeader, Search, Section, Skeleton, useToast, type TableColumn, type TableBulkAction } from '@letbuyy/ui'
@@ -165,23 +166,28 @@ export default function CustomersPage() {
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
+    const appliedSearch = useDebouncedValue(searchQuery.trim())
+    const beginRead = useReadRequest(JSON.stringify([store, appliedSearch]))
     const [error, setError] = useState<string | null>(null)
     const [activeView, setActiveView] = useState<CustomerView>('all')
     const [sortKey, setSortKey] = useState<CustomerSortKey>('last_order_at')
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
     const loadCustomers = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setError(null)
 
         try {
             const query = new URLSearchParams({ limit: '100' })
-            if (searchQuery.trim()) query.set('search', searchQuery.trim())
+            if (appliedSearch) query.set('search', appliedSearch)
 
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?${query.toString()}`, {
                 cache: 'no-store',
+                signal: request.signal,
             })
             const payload = await response.json().catch(() => null) as CustomersPayload | null
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 setCustomers([])
@@ -192,12 +198,13 @@ export default function CustomersPage() {
             const rows = (Array.isArray(payload?.data) ? payload.data : []).map(mapCustomer)
             setCustomers(rows)
         } catch {
+            if (!request.isCurrent()) return
             setCustomers([])
             setError('Unable to load customers')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store, searchQuery])
+    }, [store, appliedSearch, beginRead])
 
     useEffect(() => { loadCustomers() }, [loadCustomers])
 
@@ -211,7 +218,7 @@ export default function CustomersPage() {
 
     const activeFilters = [
         activeView !== 'all' ? { label: `View: ${customerViews.find(view => view.value === activeView)?.label || activeView}`, onRemove: () => setActiveView('all') } : null,
-        searchQuery.trim() ? { label: `Search: ${searchQuery.trim()}`, onRemove: () => setSearchQuery('') } : null,
+        appliedSearch ? { label: `Search: ${appliedSearch}`, onRemove: () => setSearchQuery('') } : null,
     ].filter(Boolean) as Array<{ label: string; onRemove: () => void }>
 
     const handleSort = useCallback((key: string) => {

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Button, Input,
@@ -139,15 +141,18 @@ export default function TaxesSettingsPage() {
         ? (formSaveState === 'saving' ? 'saving' : 'unsaved')
         : settingsSaveState
 
+    const beginRead = useReadRequest(store)
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/taxes`, {
-                cache: 'no-store',
+                cache: 'no-store', signal: request.signal,
             })
             const payload = (await response.json().catch(() => null)) as TaxesPayload | null
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load tax settings'))
@@ -160,6 +165,7 @@ export default function TaxesSettingsPage() {
             setTaxRates(normalizeTaxRates(data.rates))
             setSettingsSaveState('saved')
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load tax settings'
             setLoadError(message)
             notify({
@@ -168,9 +174,9 @@ export default function TaxesSettingsPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void loadData()

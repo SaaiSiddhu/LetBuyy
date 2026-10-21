@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
@@ -482,16 +484,19 @@ export default function CustomerSegmentsPage() {
     // Load segments
     // -----------------------------------------------------------------------
 
+    const beginLoadSegments = useReadRequest(store)
     const loadSegments = useCallback(async () => {
+        const request = beginLoadSegments()
         setLoading(true)
         setListError(null)
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/customers/segments`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null) as { data?: unknown[]; error?: unknown } | null
 
+            if (!request.isCurrent()) return
             if (!response.ok) {
                 const msg = payload?.error
                     ? (typeof payload.error === 'string' ? payload.error : JSON.stringify(payload.error))
@@ -505,11 +510,12 @@ export default function CustomerSegmentsPage() {
                 : []
             setSegments(rows)
         } catch {
+            if (!request.isCurrent()) return
             setListError('Unable to load customer segments.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [beginLoadSegments, store])
 
     useEffect(() => {
         void loadSegments()
@@ -519,7 +525,10 @@ export default function CustomerSegmentsPage() {
     // Preview
     // -----------------------------------------------------------------------
 
+    const previewIdentity = JSON.stringify([store, drawerOpen, formStateToRules(form)])
+    const beginPreview = useReadRequest(previewIdentity)
     const runPreview = useCallback(async (currentForm: SegmentFormState) => {
+        const request = beginPreview()
         setPreviewLoading(true)
         setPreview(null)
         try {
@@ -528,20 +537,22 @@ export default function CustomerSegmentsPage() {
                 `/api/stores/${encodeURIComponent(store)}/customers/segments/preview`,
                 {
                     method: 'POST',
+                    signal: request.signal,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rules }),
                 },
             )
             const payload = await response.json().catch(() => null) as { data?: Record<string, unknown> } | null
+            if (!request.isCurrent()) return
             if (response.ok && payload?.data) {
                 setPreview(mapPreview(payload.data as Record<string, unknown>))
             }
         } catch {
             // preview failure is non-fatal; just leave preview null
         } finally {
-            setPreviewLoading(false)
+            if (request.isCurrent()) setPreviewLoading(false)
         }
-    }, [store])
+    }, [beginPreview, store])
 
     const handlePreview = useCallback(() => {
         void runPreview(form)
@@ -549,6 +560,8 @@ export default function CustomerSegmentsPage() {
 
     // Auto-preview on form changes with debounce
     useEffect(() => {
+        setPreview(null)
+        setPreviewLoading(false)
         if (!drawerOpen) return
         if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current)
         previewTimeoutRef.current = setTimeout(() => {
@@ -557,8 +570,7 @@ export default function CustomerSegmentsPage() {
         return () => {
             if (previewTimeoutRef.current) clearTimeout(previewTimeoutRef.current)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [form, drawerOpen])
+    }, [form, drawerOpen, runPreview])
 
     // -----------------------------------------------------------------------
     // Open drawer

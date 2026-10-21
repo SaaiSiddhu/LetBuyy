@@ -121,6 +121,7 @@ export const UpdateProductSchema = z.object({
 
 export const ListProductsQuery = z.object({
   store_id: UuidSchema.optional(),
+  view: z.enum(['full', 'summary']).default('full'),
   status: z.enum(['active', 'draft', 'archived', 'inactive', 'all']).default('all'),
   category: z.string().max(100).optional(),
   search: z.string().max(200).optional(),
@@ -226,7 +227,7 @@ export const ListCustomersQuery = PaginationQuery.extend({
   store_id: UuidSchema.optional(),
   search: z.string().max(200).optional(),
   tag: z.string().max(50).optional(),
-  has_orders: z.coerce.boolean().optional(),
+  has_orders: QueryBooleanSchema.removeDefault().optional(),
 });
 
 export const StoreScopedQuerySchema = z.object({

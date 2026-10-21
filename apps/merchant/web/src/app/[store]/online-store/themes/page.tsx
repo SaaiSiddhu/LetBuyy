@@ -1,5 +1,8 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { MerchantNavigationLink } from '@/components/MerchantNavigationLink'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, CSSProperties } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -127,6 +130,7 @@ export default function ThemesPage() {
     const [libraryTab, setLibraryTab] = useState<'library' | 'discover'>('library')
 
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [themes, setThemes] = useState<ThemeRecord[]>([])
     const [currentTheme, setCurrentTheme] = useState<ThemeRecord | null>(null)
     const [storeStatus, setStoreStatus] = useState<string | null>(null)
@@ -139,19 +143,25 @@ export default function ThemesPage() {
     const [confirmUnpublishOpen, setConfirmUnpublishOpen] = useState(false)
     const bundleInputRef = useRef<HTMLInputElement>(null)
 
+    const beginRead = useReadRequest(store)
     const fetchData = useCallback(async () => {
+        const request = beginRead()
+        setLoadError(null)
         try {
             setLoading(true)
 
-            const res = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}`)
+            const res = await fetch(`/api/themes?store_name=${encodeURIComponent(store)}`, { cache: 'no-store', signal: request.signal })
             if (!res.ok) throw new Error('Failed to fetch themes')
             const data = await res.json()
+            if (!request.isCurrent()) return
 
             if (data.themes) setThemes(data.themes)
-            if (data.currentTheme) setCurrentTheme(data.currentTheme)
-            if (data.storeStatus) setStoreStatus(data.storeStatus)
-            if (data.storeId) setStoreId(data.storeId)
+            setCurrentTheme(data.currentTheme || null)
+            setStoreStatus(data.storeStatus || null)
+            setStoreId(data.storeId || null)
         } catch (err) {
+            if (!request.isCurrent()) return
+            setLoadError('The theme workspace could not be loaded. Try again.')
             console.error('Failed to fetch themes:', err)
             notify({
                 title: 'Theme library could not load',
@@ -159,9 +169,9 @@ export default function ThemesPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [notify, store])
+    }, [beginRead, notify, store])
 
     useEffect(() => {
         void fetchData()
@@ -354,6 +364,8 @@ export default function ThemesPage() {
                 onChange={handleBundleUpload}
             />
 
+            {loadError && <Banner variant="critical" title="Theme workspace could not load" action={<Button variant="secondary" onClick={() => { void fetchData() }}>Retry</Button>}>{loadError}</Banner>}
+
             {uploadMessage && (
                 <Banner variant={uploadIsSuccess ? 'success' : 'warning'}>
                     {uploadMessage}
@@ -362,7 +374,7 @@ export default function ThemesPage() {
 
             {loading ? (
                 <Skeleton variant="card" className="themes-current-skeleton" />
-            ) : (
+            ) : loadError ? null : (
                 <section className="themes-current-card" aria-label="Current theme">
                     <div className="themes-preview-stage">
                         <ThemeDevicePreview
@@ -382,9 +394,9 @@ export default function ThemesPage() {
                                 <Button unstyled type="button" className="themes-text-button">
                                     Edit password
                                 </Button>
-                                <a className="themes-button themes-button-secondary" href={`/${store}/settings/plan`}>
+                                <MerchantNavigationLink className="themes-button themes-button-secondary" href={`/${store}/settings/plan`}>
                                     Pick a plan
-                                </a>
+                                </MerchantNavigationLink>
                             </div>
                         </div>
                     )}
@@ -501,7 +513,7 @@ export default function ThemesPage() {
                 aria-labelledby="themes-library-tab"
                 hidden={libraryTab !== 'library'}
             >
-                <ThemeLibraryWorkspace store={store} storeId={storeId} />
+                {!loadError && <ThemeLibraryWorkspace key={store} store={store} storeId={storeId} />}
             </div>
 
             <section

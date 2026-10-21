@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useReadRequest } from '@/lib/api/use-read-request'
 import { useParams } from 'next/navigation'
 import { Badge, Card } from '@letbuyy/ui'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
@@ -31,17 +32,18 @@ function storeParam(value: string | string[] | undefined): string {
 export function FoundingMerchantCard() {
     const params = useParams<{ store: string }>()
     const store = storeParam(params?.store)
-    const [status, setStatus] = useState<FoundingStatus | null>(null)
+    const [loadedStatus, setLoadedStatus] = useState<{ store: string; value: FoundingStatus | null } | null>(null)
+    const status = loadedStatus?.store === store ? loadedStatus.value : null
 
+    const beginStatus = useReadRequest(store)
     useEffect(() => {
         if (!store) return
-        let active = true
-        fetch(`/api/stores/${encodeURIComponent(store)}/founding`)
+        const request = beginStatus()
+        fetch(`/api/stores/${encodeURIComponent(store)}/founding`, { cache: 'no-store', signal: request.signal })
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error('failed'))))
-            .then((j) => { if (active) setStatus((j?.data ?? null) as FoundingStatus | null) })
-            .catch(() => { if (active) setStatus(null) })
-        return () => { active = false }
-    }, [store])
+            .then((j) => { if (request.isCurrent()) setLoadedStatus({ store, value: (j?.data ?? null) as FoundingStatus | null }) })
+            .catch(() => { if (request.isCurrent()) setLoadedStatus({ store, value: null }) })
+    }, [beginStatus, store])
 
     if (!status || !status.is_founding_merchant) return null
 

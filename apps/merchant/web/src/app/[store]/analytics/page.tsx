@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'next/navigation'
+import { useReadRequest } from '@/lib/api/use-read-request'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import { Button,
     Badge,
@@ -51,16 +52,20 @@ export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [period, setPeriod] = useState<AnalyticsPeriod>('30d')
+    const beginRead = useReadRequest(JSON.stringify([store, period]))
 
     const loadAnalytics = useCallback(async () => {
+        const request = beginRead()
         setLoading(true)
         setError(null)
 
         try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/analytics?period=${period}`, {
                 cache: 'no-store',
+                signal: request.signal,
             })
             const payload = await response.json()
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 const message = typeof payload?.error === 'string'
@@ -71,12 +76,13 @@ export default function AnalyticsPage() {
 
             setData(payload.data)
         } catch (err) {
+            if (!request.isCurrent()) return
             setData(null)
             setError(err instanceof Error ? err.message : 'Unable to load analytics')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [period, store])
+    }, [period, store, beginRead])
 
     useEffect(() => {
         void loadAnalytics()
@@ -178,8 +184,8 @@ export default function AnalyticsPage() {
                             icon={<BarChart3 className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
                             title="Analytics will appear after your first activity"
                             body="Add products, receive orders, and LetBuyy will summarize the performance signals here."
-                            primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
-                            secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/online-store/themes` }}>Customize storefront</Button>}
+                            primaryAction={<Button as="a" href={`/${store}/products/new`}>Add product</Button>}
+                            secondaryAction={<Button as="a" variant="secondary" href={`/${store}/online-store/themes`}>Customize storefront</Button>}
                         />
                     )}
 

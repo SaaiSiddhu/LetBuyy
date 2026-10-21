@@ -50,6 +50,7 @@ export const ROOT_GATEWAY_DB_SUITES = [
     'tests/owned-db/merchant-collection-membership-browser.postgres.test.ts',
     'tests/owned-db/merchant-dashboard-access.postgres.test.ts',
     'tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts',
+    'tests/owned-db/merchant-export.postgres.test.ts',
     'tests/owned-db/merchant-free-subscription-browser.postgres.test.ts',
     'tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts',
     'tests/owned-db/merchant-loyalty-browser.postgres.test.ts',

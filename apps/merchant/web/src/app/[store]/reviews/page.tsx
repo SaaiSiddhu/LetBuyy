@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
@@ -74,7 +76,9 @@ export default function ReviewsPage() {
     const [actionError, setActionError] = useState<string | null>(null)
     const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
 
+    const beginRead = useReadRequest(JSON.stringify([store, filter]))
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        const request = beginRead()
         if (!options?.quiet) setLoading(true)
         setLoadError(null)
         setActionError(null)
@@ -82,9 +86,10 @@ export default function ReviewsPage() {
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/reviews?status=${encodeURIComponent(filter)}&limit=100`,
-                { cache: 'no-store' },
+                { cache: 'no-store', signal: request.signal },
             )
             const payload = await response.json().catch(() => null)
+            if (!request.isCurrent()) return
 
             if (!response.ok) {
                 throw new Error(getErrorMessage(payload, 'Unable to load reviews'))
@@ -92,14 +97,15 @@ export default function ReviewsPage() {
 
             setReviews(Array.isArray(payload?.data) ? payload.data : [])
         } catch (error) {
+            if (!request.isCurrent()) return
             const message = error instanceof Error ? error.message : 'Unable to load reviews'
             setReviews([])
             setLoadError(message)
             notify({ title: 'Reviews could not load', description: message, variant: 'critical' })
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [filter, notify, store])
+    }, [beginRead, filter, notify, store])
 
     useEffect(() => {
         void loadData()

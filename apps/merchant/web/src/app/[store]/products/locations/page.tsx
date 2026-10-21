@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -225,13 +227,16 @@ export default function LocationsPage() {
     const [loadError, setLoadError] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
 
+    const beginLoadLocations = useReadRequest(store)
     const loadLocations = useCallback(async () => {
+        const request = beginLoadLocations()
         if (!store) return
         setLoading(true)
         setLoadError(null)
         try {
-            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`)
+            const res = await fetch(`/api/stores/${encodeURIComponent(store)}/inventory-locations`, { cache: 'no-store', signal: request.signal })
             const body = await res.json() as { data?: InventoryLocation[]; error?: unknown }
+            if (!request.isCurrent()) return
             if (!res.ok) {
                 const msg = typeof body.error === 'string' ? body.error : 'Failed to load locations'
                 setLoadError(msg)
@@ -239,11 +244,12 @@ export default function LocationsPage() {
             }
             setLocations(body.data ?? [])
         } catch {
+            if (!request.isCurrent()) return
             setLoadError('Unable to load locations — check your connection.')
         } finally {
-            setLoading(false)
+            if (request.isCurrent()) setLoading(false)
         }
-    }, [store])
+    }, [beginLoadLocations, store])
 
     useEffect(() => { void loadLocations() }, [loadLocations])
 

@@ -1,8 +1,8 @@
 /**
  * /[store]/online-store/themes/update — Phase AB: Theme safe-update page.
  *
- * Server component wrapper. Reads [store] from params, fetches available
- * version information from the same-origin /api/stores/[store] proxy, and
+ * Server component wrapper. Reads [store] from params, reuses the authenticated
+ * store resolution from the layout and
  * passes the result to UpdatePageClient for rendering.
  *
  * This file is NOT a client component ("use client" is absent at the top
@@ -17,7 +17,7 @@
  *   - settings/localization/page.tsx (foreign WIP)
  */
 
-import { cookies } from 'next/headers'
+import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import UpdatePageClient from './UpdatePageClient'
 
 interface UpdatePageProps {
@@ -30,28 +30,15 @@ export default async function ThemeUpdatePage({ params, searchParams }: UpdatePa
     const resolvedSearchParams = searchParams ? await searchParams : {}
     const themeSlug = resolvedSearchParams.themeSlug || ''
 
-    // Fetch store resolution from the same-origin proxy (server-side)
-    // This reads the session cookie automatically via Next.js server component context.
+    // Reuse the authenticated request's layout reads; avoid an HTTP round trip
+    // through the full theme catalog merely to recover the store ID.
     let storeId: string | null = null
     let fetchError: string | null = null
-
     try {
-        const cookieStore = await cookies()
-        const cookieHeader = cookieStore.getAll()
-            .map((c) => `${c.name}=${c.value}`)
-            .join('; ')
-
-        const apiBase = process.env.NEXT_PUBLIC_APP_URL || ''
-        const url = `${apiBase}/api/themes?store_name=${encodeURIComponent(store)}`
-
-        const res = await fetch(url, {
-            headers: { Cookie: cookieHeader },
-            cache: 'no-store',
-        })
-        if (res.ok) {
-            const data = await res.json().catch(() => null)
-            if (data?.storeId) storeId = String(data.storeId)
-        }
+        const user = await getSessionUser()
+        const owned = user ? await getStoreForUser(store, user.id) : null
+        storeId = owned?.id || null
+        if (!storeId) fetchError = 'Could not load store information.'
     } catch {
         fetchError = 'Could not load store information.'
     }

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReadRequest } from '@/lib/api/use-read-request'
+
 /**
  * ResourcePickerControl.tsx — Phase W: Searchable resource combobox.
  *
@@ -192,8 +194,11 @@ function ResourcePickerCombobox({
     const activeDescendant =
         isOpen && activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined
 
+    const beginRead = useReadRequest(JSON.stringify([storeName, field.type, query]))
+
     // ── Debounced search ────────────────────────────────────────────────
     useEffect(() => {
+        const request = beginRead()
         if (!query.trim()) {
             setItems([])
             setState('idle')
@@ -213,8 +218,9 @@ function ResourcePickerCombobox({
                     `&q=${encodeURIComponent(query.trim())}` +
                     `&limit=20`
 
-                const res = await fetch(url)
+                const res = await fetch(url, { cache: 'no-store', signal: request.signal })
                 const json = await res.json().catch(() => ({ data: [] }))
+                if (!request.isCurrent()) return
 
                 if (!res.ok) {
                     const msg = (
@@ -231,6 +237,7 @@ function ResourcePickerCombobox({
                 setIsOpen(true)
                 setActiveIndex(-1)
             } catch (err) {
+                if (!request.isCurrent()) return
                 const msg = err instanceof Error ? err.message : 'Search failed'
                 setSearchError(msg)
                 setState('error')
@@ -240,7 +247,7 @@ function ResourcePickerCombobox({
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [query, storeName, field.type])
+    }, [query, storeName, field.type, beginRead])
 
     // ── Select ──────────────────────────────────────────────────────────
     const handleSelect = useCallback(

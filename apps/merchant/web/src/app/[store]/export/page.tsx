@@ -1,8 +1,11 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
+import type { ExportJobSummary } from '@letbuyy/api-client'
+import { useReadRequest } from '@/lib/api/use-read-request'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 import { Button, Input,
     Badge,
     Banner,
@@ -51,7 +54,7 @@ const exportCards: ExportCard[] = [
     {
         type: 'customers',
         title: 'Customers',
-        description: 'Export customer contact records for support and lifecycle work.',
+        description: 'Export saved customer profiles, contact details, and marketing preferences.',
         icon: Users,
     },
 ]
@@ -78,26 +81,6 @@ function getErrorMessage(payload: unknown, fallback: string) {
     }
 
     return fallback
-}
-
-function downloadCsv(csv: string, filename: string) {
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = filename
-    anchor.click()
-    URL.revokeObjectURL(url)
-}
-
-function toCsvRow(values: (string | number | boolean | null | undefined)[]) {
-    return values.map((value) => {
-        if (value == null) return ''
-        const stringValue = String(value)
-        return stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')
-            ? `"${stringValue.replace(/"/g, '""')}"`
-            : stringValue
-    }).join(',')
 }
 
 function parseCsvRow(line: string) {
@@ -132,6 +115,11 @@ function parseCsvRow(line: string) {
 
 export default function ExportPage() {
     const { store } = useParams<{ store: string }>()
+    const { actorId } = useMerchantSecurityContext(store)
+    return <ExportWorkspace key={`${actorId}:${store}`} store={store} />
+}
+
+function ExportWorkspace({ store }: { store: string }) {
     const { notify } = useToast()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [exporting, setExporting] = useState<ExportType | null>(null)
@@ -140,135 +128,64 @@ export default function ExportPage() {
     const [importResult, setImportResult] = useState<ImportResult | null>(null)
     const [statusFilter, setStatusFilter] = useState('')
 
-    const today = useMemo(() => new Date().toISOString().slice(0, 10), [])
+    const [job, setJob] = useState<ExportJobSummary | null>(null)
+    const [pollError, setPollError] = useState<string | null>(null)
+    const [pollAttempt, setPollAttempt] = useState(0)
+    const beginRead = useReadRequest(store)
+    const jobId = job?.id
+    const preparing = job?.status === 'queued' || job?.status === 'running'
+
+    useEffect(() => {
+        if (!jobId || !preparing) return
+        let active = true
+        let timer: ReturnType<typeof setTimeout> | undefined
+        let delay = 1_000
+        const started = Date.now()
+        setPollError(null)
+        const poll = async () => {
+            const request = beginRead()
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/exports/${encodeURIComponent(jobId)}`, { cache: 'no-store', signal: request.signal })
+                const payload = await response.json()
+                if (!active || !request.isCurrent()) return
+                if (!response.ok || payload?.data?.job?.id !== jobId) throw new Error('Unable to check export. Check again to resume.')
+                const next = payload.data.job as ExportJobSummary
+                setJob(next)
+                if (next.status === 'queued' || next.status === 'running') {
+                    if (Date.now() - started >= 120_000) setPollError('Your export is still preparing. Check again in a moment.')
+                    else {
+                        timer = setTimeout(() => void poll(), delay)
+                        delay = Math.min(5_000, delay * 2)
+                    }
+                }
+            } catch {
+                if (active && request.isCurrent()) setPollError('Unable to check export. Check again to resume.')
+            }
+        }
+        void poll()
+        return () => { active = false; clearTimeout(timer) }
+    }, [beginRead, store, jobId, preparing, pollAttempt])
 
     const handleExport = async (type: ExportType) => {
-        if (exporting) return
+        if (exporting || preparing) return
         setExporting(type)
-
+        setJob(null)
+        setPollError(null)
+        const request = beginRead()
         try {
-            if (type === 'products') {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100`, { cache: 'no-store' })
-                const payload = await response.json().catch(() => null)
-                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export products'))
-
-                const data = Array.isArray(payload?.data) ? payload.data : []
-                if (data.length === 0) {
-                    notify({
-                        title: 'No products to export',
-                        description: 'Add products before downloading a product CSV.',
-                        variant: 'warning',
-                    })
-                    return
-                }
-
-                const headers = ['id', 'name', 'description', 'price', 'compare_price', 'category', 'stock', 'is_active', 'tags', 'images', 'created_at']
-                const rows = [
-                    toCsvRow(headers),
-                    ...data.map((product: Record<string, unknown>) => toCsvRow([
-                        product.id as string,
-                        product.name as string,
-                        product.description as string,
-                        Number(product.price || 0),
-                        Number(product.compare_price || 0),
-                        product.category as string,
-                        Number(product.stock || 0),
-                        Boolean(product.is_active),
-                        ((product.tags as string[]) || []).join(';'),
-                        ((product.images as string[]) || []).join(';'),
-                        product.created_at as string,
-                    ])),
-                ]
-                downloadCsv(rows.join('\n'), `products-${today}.csv`)
-                notify({
-                    title: 'Products exported',
-                    description: `${data.length.toLocaleString('en-IN')} products were downloaded as CSV.`,
-                    variant: 'success',
-                })
-            } else if (type === 'orders') {
-                const query = new URLSearchParams({ limit: '100' })
-                if (statusFilter) query.set('status', statusFilter)
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders?${query.toString()}`, { cache: 'no-store' })
-                const payload = await response.json().catch(() => null)
-                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export orders'))
-
-                const data = Array.isArray(payload?.data) ? payload.data : []
-                if (data.length === 0) {
-                    notify({
-                        title: 'No orders to export',
-                        description: 'Try another status filter or wait for orders to arrive.',
-                        variant: 'warning',
-                    })
-                    return
-                }
-
-                const headers = ['order_number', 'status', 'customer_name', 'customer_email', 'customer_phone', 'subtotal', 'shipping_cost', 'discount', 'total', 'payment_method', 'payment_status', 'tracking_number', 'carrier', 'created_at']
-                const rows = [
-                    toCsvRow(headers),
-                    ...data.map((order: Record<string, unknown>) => toCsvRow([
-                        order.order_number as string,
-                        order.status as string,
-                        order.customer_name as string,
-                        order.customer_email as string,
-                        order.customer_phone as string,
-                        Number(order.subtotal || 0),
-                        Number(order.shipping_cost || 0),
-                        Number(order.discount || 0),
-                        Number(order.total || 0),
-                        order.payment_method as string,
-                        order.payment_status as string,
-                        order.tracking_number as string,
-                        order.carrier as string,
-                        order.created_at as string,
-                    ])),
-                ]
-                downloadCsv(rows.join('\n'), `orders-${today}.csv`)
-                notify({
-                    title: 'Orders exported',
-                    description: `${data.length.toLocaleString('en-IN')} orders were downloaded as CSV.`,
-                    variant: 'success',
-                })
-            } else {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?limit=100`, { cache: 'no-store' })
-                const payload = await response.json().catch(() => null)
-                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export customers'))
-
-                const data = Array.isArray(payload?.data) ? payload.data : []
-                if (data.length === 0) {
-                    notify({
-                        title: 'No customers to export',
-                        description: 'Customer records will be available after checkout or account activity.',
-                        variant: 'warning',
-                    })
-                    return
-                }
-
-                const headers = ['email', 'name', 'phone', 'created_at']
-                const rows = [
-                    toCsvRow(headers),
-                    ...data.map((customer: Record<string, unknown>) => toCsvRow([
-                        customer.customer_email as string,
-                        customer.customer_name as string,
-                        customer.customer_phone as string,
-                        customer.created_at as string,
-                    ])),
-                ]
-                downloadCsv(rows.join('\n'), `customers-${today}.csv`)
-                notify({
-                    title: 'Customers exported',
-                    description: `${data.length.toLocaleString('en-IN')} customers were downloaded as CSV.`,
-                    variant: 'success',
-                })
-            }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Export failed. Please try again.'
-            notify({
-                title: 'Export failed',
-                description: message,
-                variant: 'critical',
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/exports`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type, ...(type === 'orders' && statusFilter ? { status: statusFilter } : {}) }),
+                signal: request.signal,
             })
+            const payload = await response.json()
+            if (!request.isCurrent()) return
+            if (!response.ok || !payload?.data?.job?.id) throw new Error(getErrorMessage(payload, 'Unable to prepare export'))
+            setJob(payload.data.job)
+        } catch {
+            if (request.isCurrent()) notify({ title: 'Export could not be confirmed', description: 'It may still be preparing. You can request a new export.', variant: 'critical' })
         } finally {
-            setExporting(null)
+            if (request.isCurrent()) setExporting(null)
         }
     }
 
@@ -364,6 +281,22 @@ export default function ExportPage() {
                     description="Download operational data in CSV format for audits, support, and external workflows."
                     action={<Badge label="CSV" variant="info" />}
                 >
+                    {job && (
+                        <Banner variant={job.status === 'failed' ? 'critical' : job.status === 'completed' ? 'success' : 'info'}
+                            title={job.status === 'completed' ? 'Export ready' : job.status === 'failed' ? 'Export needs attention' : 'Preparing export'}>
+                            {job.status === 'completed' ? (
+                                <>
+                                    <p>{job.row_count.toLocaleString('en-IN')} records are ready to download.</p>
+                                    <Button asChild><a href={`/api/stores/${encodeURIComponent(store)}/exports/${encodeURIComponent(job.id)}/download`} download={`${job.type}.csv`}>Download CSV</a></Button>
+                                </>
+                            ) : job.status === 'failed' ? 'The file could not be prepared. Request a new export to try again.' : (
+                                <>
+                                    <p>{pollError || 'Keep this page open while your complete export is prepared.'}</p>
+                                    {pollError && <Button type="button" variant="secondary" onClick={() => setPollAttempt(value => value + 1)}>Check again</Button>}
+                                </>
+                            )}
+                        </Banner>
+                    )}
                     <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-3">
                         {exportCards.map((card) => {
                             const Icon = card.icon
@@ -398,7 +331,7 @@ export default function ExportPage() {
                                         className="mt-auto w-full"
                                         onClick={() => void handleExport(card.type)}
                                         loading={exporting === card.type}
-                                        disabled={Boolean(exporting)}
+                                        disabled={Boolean(exporting) || preparing}
                                     >
                                         <Download className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                         {exporting === card.type ? 'Exporting...' : `Export ${card.title}`}
@@ -419,7 +352,7 @@ export default function ExportPage() {
                     {importResult && (
                         <Banner
                             variant={importResult.tone === 'success' ? 'success' : 'critical'}
-                            title={importResult.tone === 'success' ? 'Import complete' : 'Import needs attention'}
+                            title={importResult.tone === 'success' ? 'Import queued' : 'Import needs attention'}
                         >
                             {importResult.message}
                         </Banner>
