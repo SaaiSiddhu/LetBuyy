@@ -24,5 +24,21 @@
     "No real provider effects",
     "No mobile UI changes"
   ],
-  "collision": "Prior Core/catalog candidates frozen for review; primary unchanged. New stacked isolated worktree; existing preview remains in prior checkout. Managed worktree tool returned Not a git repository; native fallback used."
+  "collision": "Prior Core/catalog candidates frozen for review; primary unchanged. New stacked isolated worktree; existing preview remains in prior checkout. Managed worktree tool returned Not a git repository; native fallback used.",
+  "necessaryPreviewIntegration": {
+    "finding": "A new merchant store is draft during editor preview. A public-only collection read would404 and break this accepted private journey.",
+    "scope": [
+      "Existing theme-preview resource branch after current store/token/expiry/draft verification; add collections resource, not a second preview authority",
+      "Typed SDK themePreviewCollections",
+      "apps/commerce/web/src/app/preview/page.tsx server-only capability read and data passed into existing composition",
+      "tests/theme-engine/storefront-liquid-runtime.test.mjs obsolete synthetic collection source assertion"
+    ],
+    "contracts": [
+      "Preserve canonical preview token/store/draft/expiry verification and private,no-store headers.",
+      "Preview summaries use identical tenant/active/deleted/bounded query; no public access to draftstore collections.",
+      "Capability is never exposed in rendered drop or logs.",
+      "Demo preview uses explicit empty synthetic collection population; real private preview consumes verified data.",
+      "Real published public rendering does not inherit a preview capability."
+    ]
+  }
 }
