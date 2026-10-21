@@ -6,16 +6,18 @@
     "apps/commerce/web/src/lib/store-service.ts canonical public StoreService/mapping/navigation readers",
     "tests/owned-db/native-core-storefront-browser.postgres.test.ts existing production browser fixture with normal signup/store/catalog/publish/COD and fault controls",
     "Affected existing cache/runtime source-contract tests only when their concrete interface changes",
-    "Phase/evidence/programme and branch ledger"
+    "Phase/evidence/programme and branch ledger",
+    "apps/commerce/web/src/app/store/[subdomain]/layout.tsx: move existing render-plan resolution before optional legacy React header catalog preload and omit unused preload for Liquid plans",
+    "apps/commerce/web/src/lib/product-service.ts getProductById: same public SKU/subdomain request-scoped deduplication when metadata/page duplicate it"
   ],
   "readContract": {
     "population": "Anonymous published tenant home, product and collection index; normal synthetic store26 collections/product2variants; existing private preview remains capability-gated",
     "representation": "Same StoreModel, three navigation locations and existing Liquid render; no additional fields or business authority",
     "reuse": "React cache request-lifetime only, primitive subdomain keys; no module Map, unstable_cache, use cache directive or session-wide private reuse",
     "freshness": "Each new server request repeats current status/published reader; ten consecutive normal preset publications must render updated values. No public fallback to a status-only snapshot after published reader says absent. Private preview token/expiry/draft verification unchanged.",
-    "budget": "Measure baseline first; target <=3 navigation reads (one per main/footer/policies) per isolated full document instead of repeated identical reads; mandatory store errors retain retry boundary, never false404/empty success. No hard millisecond SLA invented.",
+    "budget": "Measure baseline first; target <=3 navigation reads (one per main/footer/policies) per isolated full document instead of repeated identical reads; mandatory store errors retain retry boundary, never false404/empty success. No hard millisecond SLA invented. Product detail <=1 identical SKU read per document; Liquid product and collection-index documents need no full catalog preload solely for a hidden React header. Actual body section/catalog/search demand remains supported.",
     "metric": "Three measured samples each of home/product/collection full document after code already loaded, same production fixture/resources/labels. Record document bytes, useful DOM readiness, scoped upstream counts/bytes/wall durations and errors; do not sum parallel durations or claim percentile population from few samples.",
-    "negative": "Injected bootstrap read503 must show unavailable UI and recover next request; published preset changes prove no cross-request mapped-store retention. Existing tenant, preview, image, variant, COD and buyer lifecycle controls retained."
+    "negative": "Injected bootstrap read503 must show unavailable UI and recover next request; published preset changes prove no cross-request mapped-store retention. Existing tenant, preview, image, variant, COD and buyer lifecycle controls retained. Inject product-detail503 too; next-request recovery and normal search/variant/COD journey must remain real."
   },
   "sources": [
     {
