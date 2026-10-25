@@ -13,6 +13,7 @@ import {
   isHostedCheckoutHost,
   RESERVED_SUBDOMAINS,
   SubdomainSchema,
+  CreateStoreSchema,
   isReservedStorefrontLabel,
   isReservedSubdomain,
   resolveStorefrontHost,
@@ -119,4 +120,14 @@ test('render-v1 preserves manifest-only and legacy fallback precedence without d
   assert.deepEqual(mapPublicStoreRenderPayload(store,null).template_config,{legacy:true});
   const noConfig = mapPublicStoreRenderPayload(store,{...release,template_snapshot:{},release_manifest:{}});
   assert.deepEqual(noConfig.template_config,{legacy:true});
+});
+
+
+test('platform aliases build tenant links without affecting local path routing or accepting untrusted hosts',()=>{
+ assert.equal(buildTenantStorefrontUrl('syn-new',{rootDomain:'stores.example.test',baseUrl:'https://storefront.stores.example.test:8443',rootDomainAliases:'storefront.stores.example.test'}),'https://syn-new.stores.example.test:8443');
+ assert.equal(buildTenantStorefrontUrl('syn-new',{rootDomain:'localhost',baseUrl:'http://127.0.0.1:3003',rootDomainAliases:'127.0.0.1'}),'http://127.0.0.1:3003/store/syn-new');
+ assert.equal(buildTenantStorefrontUrl('syn-new',{rootDomain:'stores.example.test',baseUrl:'https://untrusted.example.test',rootDomainAliases:'storefront.stores.example.test'}),'https://untrusted.example.test/store/syn-new');
+ assert.equal(resolveStorefrontHost('storefront.stores.example.test','stores.example.test').kind,'reserved');
+ assert.equal(SubdomainSchema.safeParse('storefront').success,false);
+ assert.equal(CreateStoreSchema.parse({name:'Synthetic',subdomain:'syn-new'}).theme_id,'letbuyy-forge');
 });

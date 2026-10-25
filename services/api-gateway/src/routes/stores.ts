@@ -4,7 +4,7 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
-import { resolveExperienceForIndustry, applyExperienceToTemplateConfig, LETBUYY_CORE_THEME_SLUG } from '@letbuyy/theme-engine';
+import { resolveExperienceForIndustry, applyExperienceToTemplateConfig, firstPartyThemeListings, LETBUYY_CORE_THEME_SLUG } from '@letbuyy/theme-engine';
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
@@ -850,14 +850,13 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json({ error: { code: 'CONFLICT', message: 'Subdomain already taken' } }, 409);
     }
 
-    // Phase-2.5 Stream C — server-authoritative Experience auto-apply. When onboarding captured an
-    // industry (template_config.survey.industry) or an explicit experienceId, resolve the recommended
-    // Experience and merge its tokens into template_config so the new store opens already styled. The
-    // merchant can re-pick later in the editor's Experiences tab. Additive: no industry => unchanged
-    // template_config (no behaviour change for other callers). Unknown industry => Summit fallback.
+    // Resolve a first-party store from its validated persisted catalog document.
+    // Keep survey metadata; authored niche designs keep their own appearance.
+    // Only the existing Core/legacy path applies an industry Experience overlay.
     let templateConfig = (body.template_config ?? {}) as Record<string, unknown>;
-    if (body.theme_id === LETBUYY_CORE_THEME_SLUG) {
-        templateConfig = await new ThemeExecutionAdapter(db).prepareCoreStoreTemplate(templateConfig);
+    const firstPartyDesign = firstPartyThemeListings().some(theme => theme.slug === body.theme_id);
+    if (body.theme_id === LETBUYY_CORE_THEME_SLUG || firstPartyDesign) {
+        templateConfig = await new ThemeExecutionAdapter(db).prepareCatalogStoreTemplate(body.theme_id, templateConfig);
     }
     const surveyRecord = templateConfig.survey && typeof templateConfig.survey === 'object'
         ? (templateConfig.survey as Record<string, unknown>)
@@ -866,7 +865,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         || (surveyRecord && typeof surveyRecord.industry === 'string' ? surveyRecord.industry : '')
         || '';
     const experienceOverride = typeof templateConfig.experienceId === 'string' ? templateConfig.experienceId : undefined;
-    if (industryHint || experienceOverride) {
+    if (!firstPartyDesign && (industryHint || experienceOverride)) {
         const { experience } = resolveExperienceForIndustry(industryHint || null, experienceOverride);
         templateConfig = applyExperienceToTemplateConfig(templateConfig, experience);
     }

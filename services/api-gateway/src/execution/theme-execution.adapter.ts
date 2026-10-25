@@ -343,25 +343,26 @@ export class ThemeExecutionAdapter {
     }
 
     /** Prepare the canonical first-party document before a new web store is inserted. */
-    async prepareCoreStoreTemplate(input: DbRecord): Promise<DbRecord> {
+    async prepareCatalogStoreTemplate(themeSlug: string, input: DbRecord): Promise<DbRecord> {
         try {
-            const theme = await this.getTheme(LETBUYY_CORE_THEME_SLUG);
+            const theme = await this.getTheme(themeSlug);
             if (theme.is_site_private || theme.owned_by_site_id || theme.is_premium
                 || (theme.letbuyy_pricing_type && theme.letbuyy_pricing_type !== 'free')) {
-                throw new Error('Core catalog is not a public free theme');
+                throw new Error('Starter catalog is not a public free theme');
             }
             // Creation uses the catalog document. Imported/custom files enter via the
             // existing owner-scoped upload/editor paths, never an initial JSON override.
             const canonical = resolveRenderableThemeTemplateConfig({}, theme);
             const bundle = LiquidThemePackageBundleSchema.safeParse(canonical.liquidBundle);
-            if (!bundle.success || bundle.data.package.slug !== LETBUYY_CORE_BUNDLE_SLUG) {
-                throw new Error('Core Liquid package is unavailable');
+            const expectedBundleSlug = themeSlug === LETBUYY_CORE_THEME_SLUG ? LETBUYY_CORE_BUNDLE_SLUG : themeSlug;
+            if (!bundle.success || bundle.data.package.slug !== expectedBundleSlug) {
+                throw new Error('Starter Liquid package is unavailable');
             }
             const template = { ...input, ...canonical };
             await this.validateTemplateConfig(template, theme);
             return template;
         } catch {
-            throw new AppError('The Core theme is temporarily unavailable. Please retry store creation.', 503, 'CORE_THEME_UNAVAILABLE');
+            throw new AppError('The starting theme is temporarily unavailable. Please retry store creation.', 503, 'STARTER_THEME_UNAVAILABLE');
         }
     }
 

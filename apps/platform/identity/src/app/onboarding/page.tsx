@@ -493,7 +493,6 @@ export default function OnboardingPage() {
                     siteType,
                     storeName: name,
                     subdomain,
-                    templateId: 'letbuyy-core',
                     survey: { industry },
                     attemptId: savedAttemptId || draftAttemptId,
                 }),

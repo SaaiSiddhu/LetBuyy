@@ -58,7 +58,8 @@ export function getEditorPreviewBaseUrl(): string {
     }
     // Keep a loopback listener's port/protocol. A configured buyer subdomain must
     // not make the commerce proxy resolve every editor preview as that buyer.
-    if (!['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)) {
+    if (!['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)
+        && resolveStorefrontHost(base.hostname, getStorefrontRootDomain(), process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES).kind !== 'root') {
         base.hostname = getStorefrontRootDomain()
     }
     return base.origin
@@ -78,6 +79,7 @@ export function getStorefrontStoreUrl(subdomain: string): string {
     }
     return buildTenantStorefrontUrl(subdomain, {
         rootDomain: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+        rootDomainAliases: process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES,
         baseUrl,
     })
 }

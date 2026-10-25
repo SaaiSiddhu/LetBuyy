@@ -4,7 +4,7 @@ import urls from '../src/lib/public-urls.ts';
 import { resolveStorefrontHost } from '@letbuyy/tenant-core';
 
 function withConfig(config, check) {
-    const keys = ['NEXT_PUBLIC_STORE_ROOT_DOMAIN', 'NEXT_PUBLIC_STOREFRONT_URL', 'NODE_ENV'];
+    const keys = ['NEXT_PUBLIC_STORE_ROOT_DOMAIN', 'NEXT_PUBLIC_STOREFRONT_URL', 'NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES', 'NODE_ENV'];
     const before = Object.fromEntries(keys.map(key => [key, process.env[key]]));
     try {
         for (const key of keys) config[key] === undefined ? delete process.env[key] : process.env[key] = config[key];
@@ -73,4 +73,13 @@ test('View store retains existing bare-listener, custom-base and default product
         withConfig({ NEXT_PUBLIC_STOREFRONT_URL: configured, NODE_ENV: 'development' }, () => assert.equal(urls.getStorefrontStoreUrl('syn-editor-new'), `${configured}/store/syn-editor-new`));
     }
     withConfig({ NODE_ENV: 'production', NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'store.example' }, () => assert.equal(urls.getStorefrontStoreUrl('syn-editor-new'), 'https://syn-editor-new.store.example'));
+});
+
+
+test('a configured platform alias hosts signed previews while View store stays on the requested tenant',()=>{
+ withConfig({NEXT_PUBLIC_STORE_ROOT_DOMAIN:'stores.example.test',NEXT_PUBLIC_STOREFRONT_URL:'https://storefront.stores.example.test',NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES:'storefront.stores.example.test',NODE_ENV:'production'},()=>{
+  assert.equal(urls.getEditorPreviewBaseUrl(),'https://storefront.stores.example.test');
+  assert.equal(urls.getStorefrontStoreUrl('syn-new'),'https://syn-new.stores.example.test');
+  assert.equal(resolveStorefrontHost(new URL(urls.getEditorPreviewBaseUrl()).hostname,'stores.example.test','storefront.stores.example.test').kind,'root');
+ });
 });

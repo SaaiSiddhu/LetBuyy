@@ -5,6 +5,7 @@ import {
   GstinSchema,
   IndianStateCodeSchema,
   DEFAULT_STOREFRONT_DOMAIN,
+  DEFAULT_STOREFRONT_THEME_SLUG,
   DEFAULT_PLATFORM_DOMAIN,
   SeoSchema,
   StoreAccessModeSchema,
@@ -49,6 +50,9 @@ export const RESERVED_STOREFRONT_LABELS = [
   // preview/staging CHECKOUT_ORIGIN host, reserved for the same reason.
   'checkout',
   'checkout-staging',
+  // Existing platform preview hosts cannot be claimed as merchant handles.
+  'storefront',
+  'storefront-staging',
 ] as const;
 
 export const RESERVED_SUBDOMAINS = [
@@ -103,6 +107,7 @@ export function normalizeRequestHost(host: string | null | undefined): string | 
 export function buildTenantStorefrontUrl(subdomain: string, options: {
   rootDomain?: string | null;
   baseUrl?: string | null;
+  rootDomainAliases?: readonly string[] | string | null;
 } = {}): string {
   const root = normalizeStoreRootDomain(options.rootDomain);
   if (!validateSubdomainFormat(subdomain).valid) throw new Error('Invalid storefront subdomain');
@@ -111,7 +116,8 @@ export function buildTenantStorefrontUrl(subdomain: string, options: {
     if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password || base.search || base.hash) {
       throw new Error('Invalid storefront base URL');
     }
-    if (base.hostname === root && base.pathname === '/' && root !== 'localhost') {
+    if (base.pathname === '/' && root !== 'localhost'
+        && (base.hostname === root || normalizeRootDomainAliases(options.rootDomainAliases).includes(base.hostname))) {
       base.hostname = `${subdomain}.${root}`;
       return base.origin;
     }
@@ -268,7 +274,7 @@ export const CreateStoreSchema = z.object({
   site_type: SiteTypeSchema.default('store'),
   tagline: z.string().max(200).optional(),
   locale: z.string().min(2).max(16).default('en-IN'),
-  theme_id: z.string().max(50).default('modern'),
+  theme_id: z.string().max(50).default(DEFAULT_STOREFRONT_THEME_SLUG),
   template_config: z.record(z.string(), z.unknown()).default({}),
   ...SeoSchema.shape,
 });

@@ -11,7 +11,7 @@ import {
     normalizeRequestHost,
     normalizeStoreRootDomain,
 } from '@letbuyy/tenant-core';
-import { StoreAccessModeSchema } from '@letbuyy/shared-types';
+import { DEFAULT_PLATFORM_DOMAIN, StoreAccessModeSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
@@ -84,7 +84,8 @@ function getOwnZones(env: Env): string[] {
     return [
         normalizeStoreRootDomain(env.NEXT_PUBLIC_STORE_ROOT_DOMAIN),
         normalizeStoreRootDomain(env.STOREFRONT_ROOT_DOMAIN),
-        normalizeStoreRootDomain(env.PLATFORM_ROOT_DOMAIN),
+        normalizeStoreRootDomain(DEFAULT_PLATFORM_DOMAIN),
+        ...(env.PLATFORM_ROOT_DOMAIN?.trim() ? [normalizeStoreRootDomain(env.PLATFORM_ROOT_DOMAIN)] : []),
     ].filter((value, index, values) => value && values.indexOf(value) === index);
 }
 

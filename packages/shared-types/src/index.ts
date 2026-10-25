@@ -811,6 +811,9 @@ export const ResumeContentSectionSchema = z.enum([
   'testimonials',
   'projects',
 ]);
+/** Default for newly created stores; saved merchant selections are never inferred from this. */
+export const DEFAULT_STOREFRONT_THEME_SLUG = 'letbuyy-forge';
+
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 export const ShippingRateTypeSchema = z.enum(['flat', 'weight_based', 'price_based', 'free']);
