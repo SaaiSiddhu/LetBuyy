@@ -14,11 +14,14 @@ const translations: Record<Lang, Record<string, string>> = {
     en: {
         verified: 'Email verified!',
         title: 'Create your password',
-        subtitle: 'Choose a strong password for',
+        subtitle: 'Choose a strong password for your LetBuyy account.',
         password: 'Password',
         confirmPassword: 'Confirm password',
         create: 'Create password',
-        skip: 'Or skip and use magic links →',
+        skip: 'Back to login',
+        retryContext: 'Try again',
+        contextFailed: 'Unable to check your email verification. Please try again.',
+        rateLimited: 'Too many attempts. Please wait before trying again.',
         minLength: 'At least 8 characters',
         hasUppercase: 'One uppercase letter',
         hasNumber: 'One number',
@@ -37,7 +40,10 @@ const translations: Record<Lang, Record<string, string>> = {
         password: 'पासवर्ड',
         confirmPassword: 'पासवर्ड की पुष्टि करें',
         create: 'पासवर्ड बनाएं',
-        skip: 'या मैजिक लिंक का उपयोग करें →',
+        skip: 'लॉगिन पर वापस जाएं',
+        retryContext: 'फिर कोशिश करें',
+        contextFailed: 'ईमेल सत्यापन की जाँच नहीं हो सकी। फिर कोशिश करें।',
+        rateLimited: 'बहुत अधिक प्रयास। थोड़ी देर बाद फिर कोशिश करें।',
         minLength: 'कम से कम 8 अक्षर',
         hasUppercase: 'एक बड़ा अक्षर',
         hasNumber: 'एक संख्या',
@@ -56,7 +62,10 @@ const translations: Record<Lang, Record<string, string>> = {
         password: 'கடவுச்சொல்',
         confirmPassword: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
         create: 'கடவுச்சொல்லை உருவாக்கவும்',
-        skip: 'அல்லது மேஜிக் இணைப்புகளைப் பயன்படுத்தவும் →',
+        skip: 'உள்நுழைவுக்குத் திரும்பு',
+        retryContext: 'மீண்டும் முயற்சி',
+        contextFailed: 'மின்னஞ்சல் சரிபார்ப்பைச் சரிபார்க்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',
+        rateLimited: 'மிக அதிக முயற்சிகள். சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.',
         minLength: 'குறைந்தது 8 எழுத்துகள்',
         hasUppercase: 'ஒரு பெரிய எழுத்து',
         hasNumber: 'ஒரு எண்',
@@ -79,40 +88,42 @@ function SetPasswordContent() {
     const [showConfirm, setShowConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [userEmail, setUserEmail] = useState('')
-    const [userId, setUserId] = useState('')
+    const [contextReady, setContextReady] = useState(false)
+    const [checkingContext, setCheckingContext] = useState(true)
+    const [contextError, setContextError] = useState<'expired' | 'unavailable' | null>(null)
+    const [contextAttempt, setContextAttempt] = useState(0)
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
 
     useEffect(() => {
         const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
-        setLang(savedLang)
+        setLang(['en', 'hi', 'ta'].includes(savedLang) ? savedLang : 'en')
+        let retired = false
+        setCheckingContext(true)
+        setContextReady(false)
+        setContextError(null)
 
-        // Read userId and email from URL search params (passed from signup OTP step)
-        const paramUserId = searchParams.get('userId')
-        const paramEmail = searchParams.get('email')
-
-        if (paramUserId && paramEmail) {
-            setUserId(paramUserId)
-            setUserEmail(paramEmail)
-        } else {
-            // Fallback: try session (for edge cases like direct navigation)
-            fetch('/api/auth/session')
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.authenticated) {
-                        setUserEmail(data.user.email)
-                        setUserId(data.user.id)
-                    } else {
-                        window.location.href = authPathWithReturnTo('/lookup', returnTo)
-                    }
-                })
-                .catch(() => {
-                    window.location.href = authPathWithReturnTo('/lookup', returnTo)
-                })
-        }
-    }, [searchParams])
+        // This is an advisory check of the HTTP-only verified intent cookie.
+        // The POST still atomically consumes the database intent as authority.
+        fetch('/api/auth/set-password', { cache: 'no-store' })
+            .then(async (res) => {
+                const data = await res.json()
+                if (retired) return
+                if (res.ok && data.canSetPassword === true) {
+                    setContextReady(true)
+                } else {
+                    setContextError(res.status === 403 ? 'expired' : 'unavailable')
+                }
+            })
+            .catch(() => {
+                if (!retired) setContextError('unavailable')
+            })
+            .finally(() => {
+                if (!retired) setCheckingContext(false)
+            })
+        return () => { retired = true }
+    }, [contextAttempt])
 
 
     const cycleLang = () => {
@@ -135,33 +146,33 @@ function SetPasswordContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!isValid || !passwordsMatch) return
+        if (!contextReady || !isValid || !passwordsMatch || loading) return
 
         setLoading(true)
         setError(null)
 
         try {
-            if (!userId || !userEmail) {
-                setError(t.sessionExpired)
-                return
-            }
-
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
                 headers: getAuthHeaders(),
-                body: JSON.stringify({ password, userId, email: userEmail }),
+                body: JSON.stringify({ password }),
             })
 
             const data = await res.json()
 
             if (!res.ok) {
-                if (res.status === 401) setError(t.sessionExpired)
-                else setError(data.error || 'Failed to set password')
+                if (res.status === 401 || res.status === 403) {
+                    setContextReady(false)
+                    setContextError('expired')
+                } else if (res.status === 429) setError(t.rateLimited)
+                else setError(t.genericError)
                 return
             }
 
             if (data.success) {
                 window.location.href = returnTo || data.redirectTo
+            } else {
+                setError(t.genericError)
             }
         } catch {
             setError(t.genericError)
@@ -171,7 +182,7 @@ function SetPasswordContent() {
     }
 
     const handleSkip = () => {
-        window.location.href = returnTo || '/onboarding'
+        window.location.href = authPathWithReturnTo('/lookup', returnTo)
     }
 
     return (
@@ -187,16 +198,22 @@ function SetPasswordContent() {
                     <BrandLogo />
                 </div>
 
-                <div className="flex justify-center">
+                {contextReady && <div className="flex justify-center">
                     <Badge label={t.verified} variant="success" />
-                </div>
+                </div>}
 
                 <h1 className="auth-title">{t.title}</h1>
                 <p className="auth-subtitle">
-                    {t.subtitle} <strong>{userEmail}</strong>
+                    {t.secureHint}
                 </p>
 
-                <form onSubmit={handleSubmit} className="auth-form">
+                {contextError && <Banner variant="critical">
+                    {contextError === 'expired' ? t.sessionExpired : t.contextFailed}
+                </Banner>}
+                {contextError === 'unavailable' && <Button type="button" fullWidth
+                    onClick={() => setContextAttempt(value => value + 1)}>{t.retryContext}</Button>}
+
+                <form onSubmit={handleSubmit} className="auth-form" aria-busy={checkingContext}>
                     <Input
                         id="newPassword"
                         type={showPassword ? 'text' : 'password'}
@@ -206,6 +223,7 @@ function SetPasswordContent() {
                         helperText={t.secureHint}
                         autoComplete="new-password"
                         autoFocus
+                        disabled={!contextReady || checkingContext}
                         required
                         rightIcon={
                             <Button unstyled
@@ -236,6 +254,7 @@ function SetPasswordContent() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         autoComplete="new-password"
                         error={confirmPassword && !passwordsMatch ? t.mismatch : undefined}
+                        disabled={!contextReady || checkingContext}
                         required
                         rightIcon={
                             <Button unstyled
@@ -259,7 +278,7 @@ function SetPasswordContent() {
                         type="submit"
                         fullWidth
                         loading={loading}
-                        disabled={loading || !isValid || !passwordsMatch}
+                        disabled={checkingContext || !contextReady || loading || !isValid || !passwordsMatch}
                     >
                         {t.create}
                     </Button>
