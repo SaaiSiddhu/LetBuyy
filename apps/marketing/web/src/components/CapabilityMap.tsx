@@ -1,13 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { useCopy } from '@/components/i18n/useCopy'
+
+import Copy from '@/components/i18n/Copy'
+
+import { useState, useRef, useEffect, forwardRef, type PointerEvent, type KeyboardEvent } from 'react'
+import Image from 'next/image'
+import { motion, AnimatePresence, useInView, useReducedMotion, useIsPresent } from 'framer-motion'
 import {
     BarChart3,
+    Bot,
     Button,
     ChevronDown,
     CreditCard,
-    MaterialIcon,
+    Sparkles,
     Package,
     ShoppingBag,
     Store,
@@ -15,9 +21,10 @@ import {
     Users,
     type LucideIcon,
 } from '@letbuyy/ui'
+import { fitCapabilityPreview } from '@/lib/capability-preview-layout'
 import { revealAccordionItem } from '@/lib/reveal-accordion-item'
-
-type CapabilityId = 'storefronts' | 'orders' | 'inventory' | 'payments' | 'customers' | 'analytics' | 'ai' | 'b2b'
+import CapabilityArtwork from './CapabilityArtwork'
+import { TOUR_STEP_MS, TOUR_READING_PAUSE_MS, nextCapability, previousCapability, capabilitySwipeDirection, capabilityTourIsDue, type CapabilityId } from '@/lib/capability-tour'
 
 interface Capability {
     id: CapabilityId
@@ -46,7 +53,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['orders', 'inventory', 'analytics', 'ai'],
         badge: 'Live',
         icon: Store,
-        accentColor: 'rgb(20 184 166)',
+        accentColor: 'var(--lb-primitive-color-teal-500)',
     },
     {
         id: 'orders',
@@ -57,7 +64,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['storefronts', 'inventory', 'payments', 'customers'],
         badge: 'Live',
         icon: ShoppingBag,
-        accentColor: 'rgb(59 130 246)',
+        accentColor: 'var(--lb-primitive-color-blue-500)',
     },
     {
         id: 'inventory',
@@ -68,7 +75,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['orders', 'storefronts', 'b2b', 'ai'],
         badge: 'Live',
         icon: Package,
-        accentColor: 'rgb(245 158 11)',
+        accentColor: 'var(--lb-primitive-color-amber-500)',
     },
     {
         id: 'payments',
@@ -79,7 +86,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['orders', 'customers', 'analytics'],
         badge: 'Live',
         icon: CreditCard,
-        accentColor: 'rgb(16 185 129)',
+        accentColor: 'var(--lb-primitive-color-emerald-500)',
     },
     {
         id: 'customers',
@@ -90,7 +97,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['orders', 'payments', 'analytics', 'ai'],
         badge: 'Live',
         icon: Users,
-        accentColor: 'rgb(236 72 153)',
+        accentColor: 'var(--lb-primitive-color-pink-500)',
     },
     {
         id: 'analytics',
@@ -101,7 +108,7 @@ const CAPABILITIES: Capability[] = [
         connections: ['storefronts', 'orders', 'payments', 'customers'],
         badge: 'Live',
         icon: BarChart3,
-        accentColor: 'rgb(139 92 246)',
+        accentColor: 'var(--lb-primitive-color-purple-500)',
     },
     {
         id: 'ai',
@@ -116,9 +123,9 @@ const CAPABILITIES: Capability[] = [
             'Dynamic discount recommendation based on inventory velocity',
         ],
         connections: ['inventory', 'orders', 'customers', 'storefronts'],
-        accentColor: 'rgb(167 139 250)',
+        accentColor: 'var(--lb-primitive-color-purple-400)',
         badge: 'Intelligence',
-        materialName: 'auto_awesome',
+        icon: Bot,
     },
     {
         id: 'b2b',
@@ -133,7 +140,7 @@ const CAPABILITIES: Capability[] = [
             'Dedicated B2B buyer portal with approval workflows',
         ],
         connections: ['inventory', 'payments', 'customers', 'orders'],
-        accentColor: 'rgb(24 24 27)',
+        accentColor: 'var(--lb-color-primary)',
         badge: 'B2B',
         icon: Truck,
     },
@@ -147,35 +154,35 @@ function StorefrontMock() {
         { name: 'Retro High',     price: '₹4,180' },
     ]
     return (
-        <div className="cmap-mock cmap-mock-storefront" aria-hidden="true">
+        <div className="cmap-mock cmap-mock-storefront cmap-sf-browser" aria-hidden="true">
             {/* Browser chrome */}
-            <div className="cmap-sf-browser-bar">
+            <div className="cmap-sf-bar">
                 <div className="cmap-sf-dots">
-                    <span className="cmap-sf-dot" />
-                    <span className="cmap-sf-dot" />
-                    <span className="cmap-sf-dot" />
+                    <span className="cmap-mock-dot" />
+                    <span className="cmap-mock-dot" />
+                    <span className="cmap-mock-dot" />
                 </div>
-                <div className="cmap-sf-url-bar">
+                <div className="cmap-sf-url">
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
                     <span>urbankicks.store</span>
                 </div>
-                <span className="cmap-sf-badge">LIVE</span>
+                <span className="cmap-sf-live">PREVIEW</span>
             </div>
 
             {/* Storefront content */}
-            <div className="cmap-sf-viewport">
+            <div className="cmap-sf-content">
                 <div className="cmap-sf-page">
                     {/* Header */}
-                    <header className="cmap-sf-header">
-                        <span className="cmap-sf-logo">Urban Kicks</span>
+                    <header className="cmap-sf-nav">
+                        <span className="cmap-sf-nav-name">Urban Kicks</span>
                         <div className="cmap-sf-nav-links">
-                            <span className="cmap-sf-link-active">Home</span>
+                            <span className="cmap-sf-link-active"><Copy text={"Home"} /></span>
                             <span>Shop</span>
                             <span>Drops</span>
                         </div>
-                        <div className="cmap-sf-cart-icon">
+                        <div className="cmap-sf-nav-actions">
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
                             </svg>
@@ -189,12 +196,17 @@ function StorefrontMock() {
                             <span className="cmap-sf-hero-tag">New Drop</span>
                             <h3 className="cmap-sf-hero-title">Step Into<br />Your Style</h3>
                             <p className="cmap-sf-hero-sub">Latest sneakers &amp; streetwear, all sizes</p>
-                            <Button unstyled className="cmap-sf-hero-cta" type="button">
+                            <span className="cmap-sf-hero-cta">
                                 Shop Now
                                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M5 12h14M12 5l7 7-7 7"/>
                                 </svg>
-                            </Button>
+                            </span>
+                        </div>
+                        <div className="cmap-sf-hero-art">
+                            <span className="cmap-sf-art-word">URBAN</span>
+                            <Image src="/illustrations/storefront/urban-kicks-hero-v1.webp" alt="" width={1000} height={667} sizes="(max-width: 640px) 50vw, 360px" loading="lazy" unoptimized />
+                            <span className="cmap-sf-art-caption">The everyday collection · 01</span>
                         </div>
                     </div>
 
@@ -210,9 +222,11 @@ function StorefrontMock() {
 
                     {/* Product grid */}
                     <div className="cmap-sf-products">
-                        {products.map(p => (
+                        {products.map((p, index) => (
                             <div key={p.name} className="cmap-sf-product-card">
-                                <div className="cmap-sf-product-img" />
+                                <div className="cmap-sf-product-img">
+                                    <Image className={`cmap-sf-product-art cmap-sf-product-art--${index}`} src="/illustrations/storefront/urban-kicks-products-v1.webp" alt="" width={1000} height={1000} sizes="(max-width: 640px) 60vw, 320px" loading="lazy" unoptimized />
+                                </div>
                                 <div className="cmap-sf-product-info">
                                     <span className="cmap-sf-product-name">{p.name}</span>
                                     <span className="cmap-sf-product-price">{p.price}</span>
@@ -238,7 +252,7 @@ function StorefrontMock() {
             <div className="cmap-mock-perf-strip">
                 <span className="cmap-mock-perf-item">
                     <span className="cmap-mock-perf-dot" />
-                    0ms edge latency
+                    Illustrative storefront
                 </span>
                 <span className="cmap-mock-perf-divider" />
                 <span className="cmap-mock-perf-item">Custom domain connected</span>
@@ -246,6 +260,16 @@ function StorefrontMock() {
                 <span className="cmap-mock-perf-item">SSL active</span>
             </div>
         </div>
+    )
+}
+
+/** Shared catalog cutouts keep the same sample products recognizable across previews. */
+function CatalogThumbnail({ index }: { index: number }) {
+    const products = ['sneaker', 'hoodie', 'tee', 'cap', 'jogger'] as const
+    return (
+        <span className="cmap-catalog-thumb">
+            <Image src={`/illustrations/capabilities/product-${products[index]}-v1.webp`} alt="" width={160} height={192} sizes="32px" loading="lazy" unoptimized />
+        </span>
     )
 }
 
@@ -260,7 +284,7 @@ function OrdersMock() {
     return (
         <div className="cmap-mock cmap-mock-orders" aria-hidden="true">
             <div className="cmap-order-header">
-                <span className="cmap-order-title">Orders</span>
+                <span className="cmap-order-title"><Copy text={"Orders"} /></span>
                 <span className="cmap-order-count">24 today</span>
             </div>
             <div className="cmap-order-thead">
@@ -273,7 +297,7 @@ function OrdersMock() {
             </div>
             {orders.map(o => (
                 <div key={o.id} className="cmap-order-row">
-                    <div className={`cmap-order-thumb cmap-order-thumb-${o.img}`} />
+                    <div className="cmap-order-thumb"><CatalogThumbnail index={o.img} /></div>
                     <span className="cmap-order-id">{o.id}</span>
                     <span className="cmap-order-product">{o.product}</span>
                     <span className="cmap-order-qty">×{o.qty}</span>
@@ -286,6 +310,7 @@ function OrdersMock() {
 }
 
 function InventoryMock() {
+    const { t } = useCopy()
     const items = [
         { name: 'Air Classic',     sku: 'SKU-001', stock: 42, max: 50, warn: false, status: 'In Stock',  badge: 'success', img: 0 },
         { name: 'Everyday Hoodie', sku: 'SKU-002', stock: 7,  max: 50, warn: true,  status: 'Low Stock', badge: 'warning', img: 1 },
@@ -296,7 +321,7 @@ function InventoryMock() {
     return (
         <div className="cmap-mock cmap-mock-inventory" aria-hidden="true">
             <div className="cmap-inv-header">
-                <span className="cmap-inv-title">Inventory</span>
+                <span className="cmap-inv-title"><Copy text={"Inventory"} /></span>
                 <span className="cmap-inv-alert">3 low</span>
             </div>
             <div className="cmap-inv-thead">
@@ -309,7 +334,7 @@ function InventoryMock() {
             </div>
             {items.map(item => (
                 <div key={item.name} className="cmap-inv-row">
-                    <div className={`cmap-inv-thumb cmap-inv-thumb-${item.img}`} />
+                    <div className="cmap-inv-thumb"><CatalogThumbnail index={item.img} /></div>
                     <div className="cmap-inv-meta">
                         <span className="cmap-inv-name">{item.name}</span>
                         <span className="cmap-inv-sku">{item.sku}</span>
@@ -325,8 +350,8 @@ function InventoryMock() {
                     <span className={`cmap-inv-qty${item.warn ? ' cmap-inv-qty-warn' : ''}`}>{item.stock}</span>
                     <span className={`cmap-inv-badge cmap-inv-badge-${item.badge}`}>{item.status}</span>
                     <div className="cmap-inv-actions">
-                        <Button unstyled type="button" className="cmap-inv-btn" aria-label="Decrease stock">−</Button>
-                        <Button unstyled type="button" className="cmap-inv-btn" aria-label="Increase stock">+</Button>
+                        <Button unstyled type="button" className="cmap-inv-btn" aria-label={t("Decrease stock")}>−</Button>
+                        <Button unstyled type="button" className="cmap-inv-btn" aria-label={t("Increase stock")}>+</Button>
                     </div>
                 </div>
             ))}
@@ -359,7 +384,7 @@ function PaymentsMock() {
                     { label: 'COD',   pct: 10 },
                 ].map(m => (
                     <div key={m.label} className="cmap-mock-pay-method">
-                        <span>{m.label}</span>
+                        <span><Copy text={m.label} /></span>
                         <div className="cmap-mock-pay-bar">
                             <div className="cmap-mock-pay-fill" style={{ width: `${m.pct}%` }} />
                         </div>
@@ -382,13 +407,13 @@ function CustomersMock() {
     return (
         <div className="cmap-mock cmap-mock-customers" aria-hidden="true">
             <div className="cmap-cust-header">
-                <span className="cmap-cust-title">Customers</span>
+                <span className="cmap-cust-title"><Copy text={"Customers"} /></span>
                 <span className="cmap-cust-count">142 total</span>
             </div>
             <div className="cmap-cust-thead">
                 <span />
                 <span>Customer</span>
-                <span>Orders</span>
+                <span><Copy text={"Orders"} /></span>
                 <span>Lifetime</span>
                 <span>Tier</span>
             </div>
@@ -442,8 +467,8 @@ function AIMock() {
     return (
         <div className="cmap-mock cmap-mock-ai" aria-hidden="true">
             <div className="cmap-mock-ai-header">
-                <MaterialIcon name="assistant" size={15} />
-                <span>AI Copilot</span>
+                <Sparkles width={15} height={15} aria-hidden="true" />
+                <span><Copy text={"AI Copilot"} /></span>
             </div>
             {[
                 { type: 'alert', text: 'Restock "Everyday Hoodie" — 7 units left, 12 orders expected this week.' },
@@ -487,7 +512,7 @@ function B2BMock() {
             </div>
             {items.map(item => (
                 <div key={item.product} className="cmap-b2b-row">
-                    <div className={`cmap-b2b-thumb cmap-b2b-thumb-${item.img}`} />
+                    <div className="cmap-b2b-thumb"><CatalogThumbnail index={item.img} /></div>
                     <div className="cmap-b2b-meta">
                         <span className="cmap-b2b-name">{item.product}</span>
                         <span className="cmap-b2b-sku">{item.sku}</span>
@@ -534,6 +559,7 @@ function ConnectedModules({
     connections: CapabilityId[]
     onNavigate: (id: CapabilityId) => void
 }) {
+    const { t } = useCopy()
     return (
         <div className="cmap-connected">
             <span className="cmap-connected-label">Connected modules</span>
@@ -549,15 +575,15 @@ function ConnectedModules({
                             className="cmap-connected-chip"
                             style={{ '--cmap-accent': cap.accentColor } as CmapVars}
                             onClick={() => onNavigate(id)}
-                            aria-label={`Explore ${cap.label}`}
+                            aria-label={t("Explore {label}", { label: t(cap.label) })}
                         >
                             <span style={{ color: cap.accentColor }} aria-hidden="true">
                                 {cap.materialName
-                                    ? <MaterialIcon name={cap.materialName} size={12} />
+                                    ? <Sparkles width={12} height={12} aria-hidden="true" />
                                     : Icon ? <Icon width={12} height={12} strokeWidth={2} /> : null
                                 }
                             </span>
-                            {cap.label}
+                            <Copy text={cap.label} />
                         </Button>
                     )
                 })}
@@ -566,86 +592,91 @@ function ConnectedModules({
     )
 }
 
-function CapabilityContent({
-    cap,
-    onNavigate,
-}: {
-    cap: Capability
-    onNavigate: (id: CapabilityId) => void
-}) {
+function CapabilityInfo({ cap, artwork = true }: { cap: Capability; artwork?: boolean }) {
+    const { t } = useCopy()
     return (
-        <div className="cmap-panel-body">
-            <div className="cmap-panel-info">
-                <p className="cmap-panel-desc">{cap.description}</p>
-                <ul className="cmap-panel-features" aria-label={`${cap.label} features`}>
-                    {cap.features.map(f => <li key={f}>{f}</li>)}
+        <div className={`cmap-panel-info${cap.id !== 'storefronts' ? ' cmap-panel-info--illustrated' : ''}`}>
+            <div className="cmap-panel-copy">
+                <p className="cmap-panel-desc"><Copy text={cap.description} /></p>
+                <ul className="cmap-panel-features" aria-label={t("{label} features", { label: t(cap.label) })}>
+                    {cap.features.map(f => <li key={f}><Copy text={f} /></li>)}
                 </ul>
             </div>
-            <div
-                className="cmap-panel-visual"
-                style={{ '--cmap-accent': cap.accentColor } as CmapVars}
-                aria-label={`${cap.label} dashboard preview`}
-            >
-                <CapabilityMock id={cap.id} />
+            {cap.id !== 'storefronts' && (
+                <div className={`cmap-capability-scene cmap-capability-scene--${cap.id}`} aria-hidden="true">
+                    {artwork && <Image
+                        src={`/illustrations/capabilities/${cap.id}-scene-v1.webp`}
+                        alt=""
+                        width={640}
+                        height={600}
+                        sizes="(max-width: 767px) 112px, 150px"
+                        loading="lazy"
+                        unoptimized
+                    />}
+                </div>
+            )}
+        </div>
+    )
+}
+
+/** The mock is decorative; fit it as a complete snapshot instead of adding nested scroll areas. */
+function FittedCapabilityPreview({ id }: { id: CapabilityId }) {
+    const frame = useRef<HTMLDivElement>(null)
+    const source = useRef<HTMLDivElement>(null)
+    const [scale, setScale] = useState(0)
+
+    useEffect(() => {
+        const viewport = frame.current
+        const content = source.current
+        if (!viewport || !content) return
+        const update = () => setScale(fitCapabilityPreview(viewport.clientWidth, viewport.clientHeight, content.offsetWidth, content.offsetHeight))
+        const observer = new ResizeObserver(update)
+        observer.observe(viewport)
+        observer.observe(content)
+        update()
+        return () => observer.disconnect()
+    }, [id])
+
+    return (
+        <div className="cmap-preview-frame" ref={frame} aria-hidden="true" inert>
+            <div className={`cmap-preview-source${id === 'storefronts' ? ' cmap-preview-source--storefront' : ''}`} ref={source} style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+                <CapabilityMock id={id} />
             </div>
         </div>
     )
 }
 
-function PanelHeader({ cap }: { cap: Capability }) {
-    const Icon = cap.icon
+function CapabilityContent({ cap, fitted = false, scrollable = false }: {
+    cap: Capability
+    onNavigate: (id: CapabilityId) => void
+    fitted?: boolean
+    scrollable?: boolean
+}) {
+    const { t } = useCopy()
+    return (
+        <div className="cmap-panel-body" tabIndex={scrollable ? 0 : undefined} role={scrollable ? 'region' : undefined} aria-label={scrollable ? t("{label} details", { label: t(cap.label) }) : undefined}>
+            <CapabilityInfo cap={cap} />
+            <div className="cmap-panel-visual" style={{ '--cmap-accent': cap.accentColor } as CmapVars}>
+                {fitted ? <FittedCapabilityPreview id={cap.id} /> : <CapabilityMock id={cap.id} />}
+            </div>
+        </div>
+    )
+}
+
+function PanelHeader({ cap, artwork = true }: { cap: Capability; artwork?: boolean }) {
     return (
         <div className="cmap-panel-header" style={{ '--cmap-accent': cap.accentColor } as CmapVars}>
             <span className="cmap-panel-icon" aria-hidden="true" style={{ color: cap.accentColor }}>
-                {cap.materialName
-                    ? <MaterialIcon name={cap.materialName} size={20} />
-                    : Icon ? <Icon width={20} height={20} strokeWidth={1.5} /> : null
-                }
+                {artwork && <CapabilityArtwork module={cap.id} />}
             </span>
             <div className="cmap-panel-header-meta">
-                <span className="cmap-panel-module-name">{cap.label}</span>
-                <span className="cmap-panel-tagline-text">{cap.tagline}</span>
+                <span className="cmap-panel-module-name"><Copy text={cap.label} /></span>
+                <span className="cmap-panel-tagline-text"><Copy text={cap.tagline} /></span>
             </div>
             <span className={`cmap-panel-badge cmap-panel-badge-${cap.badge.toLowerCase()}`}>
-                {cap.badge}
+                <Copy text={cap.badge} />
             </span>
         </div>
-    )
-}
-
-function NavItem({
-    cap,
-    isActive,
-    onClick,
-}: {
-    cap: Capability
-    isActive: boolean
-    onClick: (id: CapabilityId) => void
-}) {
-    const Icon = cap.icon
-    return (
-        <Button
-            unstyled
-            type="button"
-            className={`cmap-nav-item${isActive ? ' is-active' : ''}`}
-            style={isActive ? { '--cmap-accent': cap.accentColor } as CmapVars : undefined}
-            onClick={() => onClick(cap.id)}
-            aria-pressed={isActive}
-        >
-            <span className="cmap-nav-icon" style={{ color: cap.accentColor }} aria-hidden="true">
-                {cap.materialName
-                    ? <MaterialIcon name={cap.materialName} size={16} />
-                    : Icon ? <Icon width={16} height={16} strokeWidth={1.8} /> : null
-                }
-            </span>
-            <span className="cmap-nav-text">
-                <span className="cmap-nav-label">{cap.label}</span>
-                <span className="cmap-nav-tagline">{cap.tagline}</span>
-            </span>
-            <span className={`cmap-nav-badge cmap-nav-badge-${cap.badge.toLowerCase()}`} aria-hidden="true">
-                {cap.badge}
-            </span>
-        </Button>
     )
 }
 
@@ -663,7 +694,6 @@ function AccordionItem({
     isReduced: boolean
 }) {
     const itemRef = useRef<HTMLDivElement>(null)
-    const Icon = cap.icon
     // 'storefronts' is open on first render, so without this guard the effect
     // scrolls the page down to this section on every load/refresh. Only scroll
     // when the user actually opens an item.
@@ -704,17 +734,14 @@ function AccordionItem({
                 style={isOpen ? { '--cmap-accent': cap.accentColor } as CmapVars : undefined}
             >
                 <span className="cmap-acc-icon" style={{ color: cap.accentColor }} aria-hidden="true">
-                    {cap.materialName
-                        ? <MaterialIcon name={cap.materialName} size={16} />
-                        : Icon ? <Icon width={16} height={16} strokeWidth={1.8} /> : null
-                    }
+                    <CapabilityArtwork module={cap.id} />
                 </span>
                 <span className="cmap-acc-info">
-                    <span className="cmap-acc-label">{cap.label}</span>
-                    <span className="cmap-acc-tagline">{cap.tagline}</span>
+                    <span className="cmap-acc-label"><Copy text={cap.label} /></span>
+                    <span className="cmap-acc-tagline"><Copy text={cap.tagline} /></span>
                 </span>
                 <span className={`cmap-acc-badge cmap-acc-badge-${cap.badge.toLowerCase()}`} aria-hidden="true">
-                    {cap.badge}
+                    <Copy text={cap.badge} />
                 </span>
                 <motion.span
                     className="cmap-acc-chevron"
@@ -757,11 +784,11 @@ function CommerceOSGraph({
     activeId: CapabilityId
     onSelect: (id: CapabilityId) => void
 }) {
+    const { t } = useCopy()
     const reduced = useReducedMotion()
-    const W = 680, H = 570
     const CX = 340, CY = 285
     const R = 175
-    const NODE_R = 30
+    const NODE_R = 36
 
     const ANGLES: Record<CapabilityId, number> = {
         storefronts: -90,
@@ -815,11 +842,11 @@ function CommerceOSGraph({
 
     return (
         <div className="cmap-graph-wrap">
-            <svg viewBox={`0 0 ${W} ${H}`} className="cmap-graph-svg" aria-hidden="true">
+            <svg viewBox="40 20 610 530" className="cmap-graph-svg" role="group" aria-label={t("Commerce OS module map")}>
                 <defs>
                     <radialGradient id="cmap-hub-grad" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="rgb(40 32 60)" />
-                        <stop offset="100%" stopColor="rgb(12 10 20)" />
+                        <stop offset="0%" stopColor="var(--lb-color-surface-raised)" />
+                        <stop offset="100%" stopColor="var(--lb-color-surface-subdued)" />
                     </radialGradient>
                     <filter id="cmap-ball-glow" x="-80%" y="-80%" width="260%" height="260%">
                         <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
@@ -832,7 +859,7 @@ function CommerceOSGraph({
 
                 {/* Orbit ring */}
                 <circle cx={CX} cy={CY} r={R}
-                    fill="none" stroke="rgba(55,49,72,0.45)"
+                    fill="none" stroke="color-mix(in srgb, var(--lb-color-surface-subdued) 45%, transparent)"
                     strokeWidth="1" strokeDasharray="2 9"
                 />
 
@@ -865,17 +892,17 @@ function CommerceOSGraph({
 
                 {/* Center hub */}
                 <circle cx={CX} cy={CY} r={68}
-                    fill="none" stroke="rgba(139,92,246,0.16)" strokeWidth="1"
+                    fill="none" stroke="color-mix(in srgb, var(--lb-primitive-color-purple-500) 16%, transparent)" strokeWidth="1"
                 />
                 <circle cx={CX} cy={CY} r={57}
-                    fill="url(#cmap-hub-grad)" stroke="rgb(139 92 246)" strokeWidth="1.5"
+                    fill="url(#cmap-hub-grad)" stroke="var(--lb-primitive-color-purple-500)" strokeWidth="1.5"
                 />
                 <text x={CX} y={CY - 7} textAnchor="middle"
-                    fill="rgb(228 224 242)" fontSize="10" fontWeight="700" letterSpacing="0.13em">
+                    fill="var(--lb-color-text)" fontSize="10" fontWeight="700" letterSpacing="0.13em">
                     COMMERCE
                 </text>
                 <text x={CX} y={CY + 9} textAnchor="middle"
-                    fill="rgb(228 224 242)" fontSize="10" fontWeight="700" letterSpacing="0.13em">
+                    fill="var(--lb-color-text)" fontSize="10" fontWeight="700" letterSpacing="0.13em">
                     OS
                 </text>
 
@@ -885,8 +912,7 @@ function CommerceOSGraph({
                     const [lx, ly] = lpos(cap.id)
                     const isActive = cap.id === activeId
                     const isConn = !isActive && connSet.has(cap.id)
-                    const op = isActive ? 1 : isConn ? 0.65 : 0.3
-                    const Icon = cap.icon
+                    const op = isActive ? 1 : isConn ? 0.85 : 0.7
 
                     return (
                         <g
@@ -903,8 +929,9 @@ function CommerceOSGraph({
                             tabIndex={0}
                             role="button"
                             aria-pressed={isActive}
-                            aria-label={cap.label}
+                            aria-label={t(cap.label)}
                         >
+                            <circle cx={nx} cy={ny} r={42} fill="transparent" />
                             {isActive && (
                                 <circle cx={nx} cy={ny} r={44}
                                     fill={`color-mix(in srgb, ${cap.accentColor} 10%, transparent)`}
@@ -912,34 +939,26 @@ function CommerceOSGraph({
                                     strokeWidth="1" opacity="0.35"
                                 />
                             )}
-                            <circle cx={nx} cy={ny} r={NODE_R}
-                                fill={`color-mix(in srgb, ${cap.accentColor} ${isActive ? 17 : 9}%, rgb(12 10 20))`}
+                            <circle className="cmap-node-disc" cx={nx} cy={ny} r={NODE_R}
+                                fill={`color-mix(in srgb, ${cap.accentColor} ${isActive ? 17 : 9}%, var(--lb-color-surface-subdued))`}
                                 stroke={cap.accentColor}
                                 strokeWidth={isActive ? 2 : 1.2}
                             />
-                            <foreignObject x={nx - 9} y={ny - 9} width="18" height="18">
-                                <div style={{
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    width: '18px', height: '18px', color: cap.accentColor,
-                                }}>
-                                    {cap.materialName
-                                        ? <MaterialIcon name={cap.materialName} size={13} />
-                                        : Icon
-                                            ? <Icon width={13} height={13} strokeWidth={1.8} />
-                                            : null
-                                    }
+                            <foreignObject x={nx - 30} y={ny - 30} width="60" height="60" pointerEvents="none">
+                                <div className="cmap-node-artwork" aria-hidden="true" style={{ color: cap.accentColor }}>
+                                    <CapabilityArtwork module={cap.id} />
                                 </div>
                             </foreignObject>
                             <text
                                 x={lx} y={ly}
                                 textAnchor={anchor(cap.id)}
                                 dominantBaseline={domBaseline(cap.id)}
-                                fill={isActive ? cap.accentColor : 'rgb(118 110 138)'}
-                                fontSize="11.5"
+                                fill={isActive ? cap.accentColor : 'var(--text-secondary)'}
+                                fontSize="16"
                                 fontWeight={isActive ? '600' : '500'}
-                                opacity={isActive ? 1 : isConn ? 0.7 : 0.5}
+                                opacity={isActive ? 1 : isConn ? 0.95 : 0.85}
                             >
-                                {SHORT[cap.id]}
+                                <Copy text={SHORT[cap.id]} />
                             </text>
                         </g>
                     )
@@ -949,24 +968,153 @@ function CommerceOSGraph({
     )
 }
 
+const SLIDE_VARIANTS = {
+    enter: (step: number) => ({ opacity: 0, x: step > 0 ? '100%' : '-100%' }),
+    center: { opacity: 1, x: 0 },
+    exit: (step: number) => ({ opacity: 0, x: step > 0 ? '-100%' : '100%' }),
+}
+
+// Exiting previews are inert while the next card slides in, so duplicate controls cannot take focus.
+const CapabilitySlide = forwardRef<HTMLDivElement, {
+    cap: Capability
+    direction: -1 | 1
+    reduced: boolean
+    onNavigate: (id: CapabilityId) => void
+}>(function CapabilitySlide({ cap, direction, reduced, onNavigate }, ref) {
+    const present = useIsPresent()
+    return (
+        <motion.div
+            ref={ref}
+            className="cmap-panel"
+            custom={direction}
+            variants={SLIDE_VARIANTS}
+            initial={reduced ? false : 'enter'}
+            animate="center"
+            exit={reduced ? undefined : 'exit'}
+            transition={{ duration: reduced ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+            inert={!present}
+            aria-hidden={!present}
+        >
+            <PanelHeader cap={cap} />
+            <CapabilityContent cap={cap} onNavigate={onNavigate} fitted />
+        </motion.div>
+    )
+})
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function CapabilityMap() {
+    const { t } = useCopy()
     const [activeId, setActiveId] = useState<CapabilityId>('storefronts')
+    const [playing, setPlaying] = useState(true)
+    const [direction, setDirection] = useState<-1 | 1>(1)
+    const touchRef = useRef({ down: false, pausedUntil: 0 })
+    const nextAdvanceAt = useRef(0)
+    const swipeRef = useRef<{ id: number; x: number; y: number; vertical: boolean } | null>(null)
+    const suppressClickUntil = useRef(0)
+    const bodyRef = useRef<HTMLDivElement>(null)
+    const inView = useInView(bodyRef, { amount: 0.25 })
     const isReduced = useReducedMotion()
     const active = CAPABILITIES.find(c => c.id === activeId)!
 
-    const panelAnim = isReduced
-        ? { initial: { opacity: 1 }, animate: { opacity: 1 }, exit: { opacity: 1 }, transition: { duration: 0 } }
-        : {
-            initial: { opacity: 0, y: 8 },
-            animate: { opacity: 1, y: 0 },
-            exit:    { opacity: 0, y: 8 },
-            transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] as const },
-          }
+    function pauseForReading() {
+        const until = performance.now() + TOUR_READING_PAUSE_MS
+        touchRef.current.pausedUntil = until
+        nextAdvanceAt.current = until
+    }
+
+    function selectCapability(id: CapabilityId) {
+        pauseForReading()
+        setDirection(1)
+        setActiveId(id)
+    }
+
+    function moveCard(step: -1 | 1) {
+        pauseForReading()
+        setDirection(step)
+        setActiveId(step === 1 ? nextCapability : previousCapability)
+    }
+
+    function beginSwipe(event: PointerEvent<HTMLDivElement>) {
+        if (!event.isPrimary || event.button !== 0) return
+        const target = event.target as Element
+        if (target.closest('button, a, input, textarea, select, [role="button"], [data-no-swipe]')) return
+        swipeRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY, vertical: false }
+    }
+
+    function trackSwipe(event: PointerEvent<HTMLDivElement>) {
+        const start = swipeRef.current
+        if (!start || start.id !== event.pointerId || start.vertical) return
+        const dx = event.clientX - start.x
+        const dy = event.clientY - start.y
+        if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) {
+            start.vertical = true
+        } else if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+            event.currentTarget.setPointerCapture(event.pointerId)
+        }
+    }
+
+    function finishSwipe(event: PointerEvent<HTMLDivElement>) {
+        const start = swipeRef.current
+        swipeRef.current = null
+        if (!start || start.id !== event.pointerId || start.vertical) return
+        const step = capabilitySwipeDirection(event.clientX - start.x, event.clientY - start.y, event.currentTarget.clientWidth)
+        if (step) {
+            suppressClickUntil.current = performance.now() + 400
+            moveCard(step)
+        }
+    }
+
+    function carouselKeys(event: KeyboardEvent<HTMLDivElement>) {
+        const target = event.target as Element
+        if (target.closest('button, a, input, textarea, select, [role="button"]')) return
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+        event.preventDefault()
+        // Keep keyboard focus on the stable carousel when its current panel unmounts.
+        event.currentTarget.focus({ preventScroll: true })
+        moveCard(event.key === 'ArrowRight' ? 1 : -1)
+    }
+
+    useEffect(() => {
+        // Release even when the finger/mouse finishes outside the card or a native scroll cancels it.
+        const release = (event: globalThis.PointerEvent) => {
+            if (!event.isPrimary || !touchRef.current.down) return
+            touchRef.current.down = false
+            const until = performance.now() + TOUR_READING_PAUSE_MS
+            touchRef.current.pausedUntil = until
+            nextAdvanceAt.current = until
+        }
+        window.addEventListener('pointerup', release)
+        window.addEventListener('pointercancel', release)
+        return () => {
+            window.removeEventListener('pointerup', release)
+            window.removeEventListener('pointercancel', release)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!playing || isReduced || !inView) return
+        nextAdvanceAt.current = performance.now() + TOUR_STEP_MS
+        const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+        const timer = window.setInterval(() => {
+            const now = performance.now()
+            const body = bodyRef.current
+            if (!body || document.hidden || (finePointer.matches && body.matches(':hover')) || body.querySelector(':focus-visible')) {
+                nextAdvanceAt.current = now + TOUR_STEP_MS
+                return
+            }
+            const touch = touchRef.current
+            if (!capabilityTourIsDue(now, nextAdvanceAt.current, touch.down, touch.pausedUntil)) return
+            setDirection(1)
+            setActiveId(nextCapability)
+            nextAdvanceAt.current = now + TOUR_STEP_MS
+        }, 150)
+        return () => window.clearInterval(timer)
+    }, [playing, isReduced, inView])
+
 
     return (
-        <section className="cmap" id="capabilities">
+        <section className="cmap cmap-viewport" id="capabilities">
 
             {/* ── TOP-CENTER: section header ── */}
             <div className="container">
@@ -977,54 +1125,70 @@ export default function CapabilityMap() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <span className="cmap-kicker">COMMERCE OS CAPABILITY MAP</span>
+                    <p className="section-label"><Copy text={"Commerce OS Capability Map"} /></p>
                     <h2 className="cmap-headline">
-                        Everything your business needs.{' '}
-                        <span className="cmap-headline-accent">One operating system.</span>
+                        <Copy text={"Everything your business needs."} />{' '}
+                        <span className="cmap-headline-accent"><Copy text={"One operating system."} /></span>
                     </h2>
                     <p className="cmap-lead">
-                        Run storefronts, orders, inventory, payments, analytics, AI, B2B and operations from one unified platform.
-                    </p>
+                        <Copy text={"Run storefronts, orders, inventory, payments, analytics, AI, B2B and operations from one unified platform."} /></p>
                 </motion.div>
             </div>
 
-            {/* ── GRAPH: hub-spoke visualization (desktop only) ── */}
-            <div className="container cmap-graph-container">
-                <CommerceOSGraph activeId={activeId} onSelect={setActiveId} />
-            </div>
-
-            {/* ── TWO-COLUMN: sticky nav left + panel right ── */}
-            <div className="container cmap-body">
+            {/* Desktop: illustrated graph beside the synchronized preview. */}
+            <div
+                className="container cmap-body"
+                ref={bodyRef}
+                onPointerDownCapture={event => { if (event.isPrimary && event.button === 0) touchRef.current.down = true }}
+            >
 
                 <aside className="cmap-left">
-                    <motion.nav
-                        className="cmap-nav"
-                        aria-label="Capability navigation"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.15 }}
-                    >
-                        {CAPABILITIES.map(cap => (
-                            <NavItem
-                                key={cap.id}
-                                cap={cap}
-                                isActive={cap.id === activeId}
-                                onClick={setActiveId}
-                            />
-                        ))}
-                    </motion.nav>
+                    <div className="cmap-graph-container">
+                        <CommerceOSGraph activeId={activeId} onSelect={selectCapability} />
+                        {!isReduced && (
+                            <Button unstyled type="button" className="cmap-motion-control" onClick={() => setPlaying(value => !value)}>
+                                <Copy text={playing ? "Pause automatic module tour" : "Resume automatic module tour"} />
+                            </Button>
+                        )}
+                    </div>
                 </aside>
 
                 <div className="cmap-right">
 
                     {/* Desktop: animated capability panel */}
-                    <div className="cmap-desktop-panel" aria-live="polite" aria-atomic="true">
-                        <AnimatePresence mode="wait">
-                            <motion.div key={activeId} className="cmap-panel" {...panelAnim}>
-                                <PanelHeader cap={active} />
-                                <CapabilityContent cap={active} onNavigate={setActiveId} />
-                            </motion.div>
+                    <div
+                        className="cmap-desktop-panel cmap-carousel"
+                        role="region"
+                        aria-roledescription="carousel"
+                        aria-label={t("Commerce capability cards")}
+                        aria-describedby="cmap-carousel-help"
+                        aria-live={playing ? 'off' : 'polite'}
+                        aria-atomic="true"
+                        tabIndex={0}
+                        onPointerDown={beginSwipe}
+                        onPointerMove={trackSwipe}
+                        onPointerUp={finishSwipe}
+                        onPointerCancel={() => { swipeRef.current = null }}
+                        onKeyDown={carouselKeys}
+                        onClickCapture={event => {
+                            if (performance.now() < suppressClickUntil.current) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                        }}
+                    >
+                        <span id="cmap-carousel-help" className="cmap-carousel-help"><Copy text={"Swipe left or right, use the arrow keys, or choose a module in the map. Touch pauses automatic switching."} /></span>
+                        <div className="cmap-card-probes" aria-hidden="true" inert>
+                            {CAPABILITIES.map(cap => (
+                                <div key={cap.id} className="cmap-size-probe">
+                                    <PanelHeader cap={cap} artwork={false} />
+                                    <CapabilityInfo cap={cap} artwork={false} />
+                                </div>
+                            ))}
+                            <div className="cmap-preview-spacer" />
+                        </div>
+                        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                            <CapabilitySlide key={activeId} cap={active} direction={direction} reduced={!!isReduced} onNavigate={selectCapability} />
                         </AnimatePresence>
                     </div>
 
@@ -1035,8 +1199,8 @@ export default function CapabilityMap() {
                                 key={cap.id}
                                 cap={cap}
                                 isOpen={cap.id === activeId}
-                                onToggle={() => setActiveId(cap.id)}
-                                onNavigate={setActiveId}
+                                onToggle={() => selectCapability(cap.id)}
+                                onNavigate={selectCapability}
                                 isReduced={!!isReduced}
                             />
                         ))}

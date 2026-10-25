@@ -87,7 +87,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
 
             widgetIdRef.current = window.turnstile.render(containerRef.current, {
                 sitekey: siteKey,
-                size: 'invisible',
+                // Invisible is the configured widget type, not a supported size value.
                 callback: (token: string) => onVerifyRef.current(token),
                 'expired-callback': () => {
                     onVerifyRef.current('')

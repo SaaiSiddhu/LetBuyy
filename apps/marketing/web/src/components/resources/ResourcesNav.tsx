@@ -1,7 +1,12 @@
 'use client'
 
+
+import { useCopy } from '@/components/i18n/useCopy'
+import Copy from '@/components/i18n/Copy'
+
 import Link from '@/components/i18n/LocaleLink'
 import { usePathname } from 'next/navigation'
+import { stripLocale } from '@/lib/i18n/routing'
 import { useEffect, useRef } from 'react'
 import { SubscribeButton } from './NewsletterModal'
 
@@ -17,13 +22,14 @@ const NAV_LINKS = [
 ]
 
 export default function ResourcesNav() {
-  const pathname = usePathname()
+  const { t } = useCopy()
+  const pathname = stripLocale(usePathname())
   const railRef = useRef<HTMLDivElement>(null)
   const barRef = useRef<HTMLDivElement>(null)
 
   const isActive = (href: string) => {
     if (href === '/resources') return pathname === '/resources'
-    return pathname.startsWith(href)
+    return pathname === href || pathname.startsWith(`${href}/`)
   }
 
   // Bring the current category into view on the mobile rail. Setting
@@ -60,13 +66,12 @@ export default function ResourcesNav() {
   }, [])
 
   return (
-    <div className="res-nav-bar" ref={barRef} role="navigation" aria-label="Resources navigation">
+    <div className="res-nav-bar" ref={barRef} role="navigation" aria-label={t("Resources navigation")}>
       <div className="container res-nav-inner">
         {/* Left: label */}
         <Link href="/resources" className="res-nav-label">
           <span className="res-nav-label-dot" aria-hidden="true" />
-          Resources
-        </Link>
+          <Copy text={"Resources"} /></Link>
 
         {/* Center: category rail — wrapper carries the edge fade */}
         <div className="res-nav-rail">
@@ -80,23 +85,16 @@ export default function ResourcesNav() {
                   className={`res-nav-link${active ? ' active' : ''}`}
                   aria-current={active ? 'page' : undefined}
                 >
-                  {link.label}
+                  {t(link.label)}
                 </Link>
               )
             })}
           </div>
         </div>
 
-        {/* Right: search + subscribe */}
+        {/* Right: commerce updates */}
         <div className="res-nav-actions">
-          <Link href="/resources/search" className="res-nav-search" aria-label="Search resources">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <span>Search</span>
-          </Link>
-          <SubscribeButton className="res-nav-subscribe">Subscribe</SubscribeButton>
+          <SubscribeButton className="res-nav-subscribe"><Copy text={"Commerce updates"} /></SubscribeButton>
         </div>
       </div>
     </div>

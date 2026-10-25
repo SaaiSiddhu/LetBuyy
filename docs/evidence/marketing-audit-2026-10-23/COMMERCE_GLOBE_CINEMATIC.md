@@ -1,0 +1,69 @@
+# Hero globe refinement — 24 October 2026
+
+## Final accepted direction
+
+- Retain the original 6,363-point Natural Earth world geography. No solid continent texture.
+- Dark glass sphere with restrained blue/silver lighting; pale surface and darker dots in light mode. Theme observers watch both theme attributes and inline token updates.
+- One 9.6-second sequence: detailed Tamil Nadu outline and first store, expand to India's 36 state/union territory outlines, fade into the dotted sphere, then Pakistan, China, Japan and other continents. Return to Tamil Nadu without a camera jump. The new outline asset retains 552 Tamil Nadu vertices and is 126,489 bytes. Source/derivation recorded in globe-geography-provenance.json.
+- Desktop visual column receives 70% of the available column fraction. The sphere is intentionally enlarged within its clipped visual area. The hero stays one viewport high at the exercised sizes; enlarged text can grow it naturally instead of being clipped.
+- Remove the former activity/details panel, coordinates, destination chips, visible illustrative-animation label and Pause button. Preserve a screen-reader description of the synthetic activity. Hover or keyboard focus pauses motion; reduced-motion, hidden-tab and offscreen conditions suppress animation.
+- Keep hero text, CTAs and the rest of the website. Commerce OS diagrams and all protected components remain byte-identical to the start-of-turn snapshot (globe-preservation-check.json). No backend, money, identity or deployment changes.
+
+## Verification
+
+- Marketing package tests: 4 federation + 16 marketing tests pass. Coverage includes route projection, bounded clock deltas, camera loop continuity, progressive reveals, map-to-sphere crossfades and regional geometry integrity.
+- Final production build passes: 494 generated pages.
+- TypeScript passes. ESLint and strict CSS lint pass with 19 pre-existing warnings in unrelated components/pages; no new errors.
+- Browser: native Canvas2D rendering, store markers, map opening, globe rotation, removed controls, and light/dark changes exercised. No new console errors observed in the preview checks.
+- Exact iframe viewport checks against the actual /in route: 320×568, 375×667, 390×844, 768×1024, 1280×720 and 844×390. Hero height equals viewport height in each; both CTA bounds remain inside the first viewport; no horizontal document overflow. Raw evidence: globe-viewport-checks.json. Temporary same-origin sizing fixture removed before final build. Browser viewport capability timed out, so this is same-engine embedded viewport evidence, not physical-device testing.
+- Reduced-motion behavior and hidden-tab/offscreen cleanup are implemented; OS-level reduced-motion emulation and physical-device GPU/performance tests were not exercised in this pass. No universal device performance claim.
+
+## Local preview
+
+http://localhost:9006/in (LAN proxy retained at http://192.168.1.18:9006/in). Local work only; nothing pushed or deployed.
+
+## One-shot ending and closing title — 24 October 2026, 19:49 request
+
+The owner explicitly required the existing globe appearance/journey to remain intact, but asked to stop repeating from Tamil Nadu and finish with centered text. They confirmed the wording “LetBuyy — Sell worldwide” and then clarified that the globe should vanish and the text be large/bold, rather than remain over the worldwide globe.
+
+Added a presentation clock clamp at 9000ms, immediately before the existing geography reference begins its return-to-origin transition. Every earlier call still uses the identical globeFrameAt result. Existing map geometry, projections, colors, light/dark materials, dot cloud, radius, store/route sequence and camera keys are untouched. The underlying geographic reference remains as-is; only the visible playback is clamped, so its old looping reference is never revisited. At the clamp, animation frames stop and hover/focus, visibility changes, resize, theme repaint and retry cannot reset the mounted clock. Reloading/remounting the page still starts a fresh visit. Two regression tests cover preserving earlier frames, the terminal worldwide layer, repeated later times, and preventing overshoot.
+
+At completion a dedicated absolutely positioned wrapper fades out the canvases and store markers over 900ms. It does not change their pre-completion coordinates or styling. A centered title reveals over 900ms with a 300ms offset, in the existing professional body font, bold weight, semantic theme text color and fluid h1-to-2.5h1 sizing. Visible text is split into LetBuyy / Sell worldwide, with the full confirmed phrase supplied as its accessible name. There is no background tile or globe artwork alteration. A polite live region announces the final text once. Reduced-motion visits show the final title immediately; globe loading failure retains its existing recovery message instead.
+
+Focused ESLint, CSS lint, whitespace validation and production build (494 pages, including TypeScript) pass. All 38 current marketing/federation tests pass. The earlier geographic-reference loop tests remain useful for the untouched reference function; the new one-shot presentation tests prove the visible player never reaches that loop. Browser access still reports disabled in Work settings, so actual end transition, centering, font size on devices, theme appearance and assistive announcement remain browser-unverified. No screenshot is claimed. Preview remains running on port 9006. No deployment performed.
+
+## Particle finale and oversized wordmark — 24 October 2026
+
+This supersedes only the simple ending described above. The owner requested the globe's dots to scatter as a much larger, bold “LetBuyy — Sell worldwide” title arrives, with a premium flicker/reveal. The exact wording was already explicitly confirmed by the owner. No changes were made to the geography, camera keys, material palettes, store/route choreography, radius or hero layout before 9000ms.
+
+The existing geographic playback remains clamped at 9000ms. A separate 2600ms finale uses that same mounted animation clock: the sphere and markers disappear over 540ms while the actual front-facing land points move outward along deterministic, varied paths. A few short direction trails support the movement. The particles use the existing globe palette, a bounded DPR (maximum 2), six depth bands and the existing Canvas2D renderer, without adding an animation library or bitmap download. They can travel across the illustration bounds without the globe's radial mask, and are fully gone by the end. Their normalized paths are stable on pause/resume, resize and theme changes. The burst stays inside the hero illustration; it never covers page navigation or CTAs.
+
+The closing wordmark uses the existing local Inter variable font at weight 900, container-relative sizing (22cqi with token-based limits), tight tracking and a staggered bold subtitle. There is no small card or background plate. Blur/position/scale resolve once, two short dimming notches provide the requested lettering flicker, and a soft single light pass crosses the brand. The whole composition then holds still, with no return to Tamil Nadu and no recurring flicker. The globe exit, particles and typography all freeze together for hover/focus, hidden-tab and offscreen pauses. Reduced-motion visits show the settled title directly, with no particles, flicker, sweep or entry transform. Decorative lettering is hidden from assistive technology; a polite status announces the confirmed phrase once when settled. Semantic text colors and original globe theme colors handle light/dark modes; forced-color mode suppresses decorative overlays.
+
+Validation: marketing TypeScript, focused ESLint, strict CSS lint, git diff whitespace check and the production build all pass (494 generated pages). All 43 marketing/federation tests pass, including five added tests covering unchanged pre-finale frames, terminal state/no restart, bounded one-time flicker, deterministic particles starting at actual projected positions, outward travel and clock pause/resume behavior. The old pure geographic reference loop tests remain valid for the unchanged reference; the mounted presentation still cannot reach its return-to-origin phase.
+
+Browser inspection was attempted through the supported local browser tool, which returned “Local browser use is disabled in Work settings.” No browser workaround, screenshot, physical-device validation or measured frame-rate claim is made. Real-device appearance, flicker feel, font fit and assistive announcement therefore remain visually unverified. The local preview server continues to listen on port 9006. No commit, push or deployment performed.
+
+## Living gradient lettering — 24 October 2026, 20:15 feedback
+
+The owner supplied a screenshot of the plain white ending and requested continuous text animation and gradients on both LetBuyy and Sell worldwide. Added coordinated violet/blue/teal text gradients using the existing primitive colors: light tints in dark mode and deeper 700 shades in light mode. Once the shatter/reveal finishes, the two lines drift through their gradients at different slow rates, with a periodic soft shimmer on the wordmark. The globe/camera/particle burst still plays only once; no canvas animation loop was added after completion. CSS animation play state follows the existing moving/visibility/hover/focus contract. Reduced-motion disables live movement while preserving the static gradient; forced-color mode restores solid semantic text. Browser text-clipping support has a solid-color fallback.
+
+Loosened the wordmark tracking from -.065em to -.035em and reduced its variable-font weight from 900 to 800 to address the visibly colliding lettering in the supplied screenshot. Subtitle tracking is -.025em. Existing huge fluid sizing, center alignment, exact wording and hero layout remain.
+
+Strict CSS lint, focused ESLint, production build/TypeScript (494 pages), whitespace check and all 43 current tests pass. Browser inspection was attempted again and still reports disabled local browser access; no screenshot, real-device fit or perceived-motion verification is claimed. Local server remains on port 9006. No push/deploy.
+
+## Sequential brand reveal — 24 October 2026
+
+The owner requested LetBuyy to appear one letter at a time, with Sell worldwide following only after the brand completes. The seven decorative letter spans now reveal left to right with 135ms stagger and 180ms individual fade/lift/sharpen, all driven by the existing pauseable finale clock. The final letter finishes at 1370ms into the finale; the subtitle begins at 1500ms and completes at 2200ms. Full word width is reserved throughout so the centered text does not jump as letters appear. The shimmer overlay stays hidden until the entire ending completes to avoid revealing unreached letters. Per-letter gradient sampling retains the violet/blue/teal treatment and continuing gradient motion after completion. Reduced-motion still skips to the complete title; screen readers receive the whole phrase once rather than individual letter announcements.
+
+Added a regression test verifying left-to-right reveal order and that the subtitle stays hidden until the complete brand has appeared. All 44 current tests, focused ESLint, CSS lint, production build/TypeScript and whitespace validation pass. Browser output remains unverified because local browser access is unavailable. No globe journey, particle choreography, hero layout or deployment changes.
+
+## Custom Lottie ending — 24 October 2026
+
+The owner explicitly requested Lottie for the ending. Added pinned `lottie-web@5.13.0`, with its SVG-only light player imported lazily, and a locally authored 32,115-byte Lottie JSON. The seven LetBuyy letters and Sell worldwide are real Inter outline shape layers, derived from the site's existing licensed font rather than remote fonts, GIFs or raster screenshots. The authoring Python source and asset README are retained beside the app; temporary fonttools/brotli authoring dependencies are not runtime dependencies. Existing package changes were preserved; the lockfile contains only the Lottie addition, with incidental unrelated peer re-resolution removed.
+
+The existing globe finale clock seeks the Lottie intro using goToAndStop, so hover/focus/hidden-tab/offscreen pauses remain aligned with the globe and particle burst. On completion, only the settled 8-second gradient segment loops via playSegments; the lettering introduction and globe never restart. The existing light/dark gradient variables color the SVG stops. Pausing stops that ambient player; unmounting destroys it and aborts pending asset fetches. Repeated origin-frame draws are skipped. Existing HTML lettering remains as a nonblank failure/loading fallback and is used directly for reduced motion. Forced-color mode retains solid accessible HTML text. The existing status announces the complete phrase once.
+
+Validation: focused ESLint, strict CSS lint, TypeScript, production build (494 pages), whitespace check and all 46 current tests pass. Two new asset tests cover vector-only self-contained data, finite Bezier contours, sequential brand timing, subtitle gating and the ambient-only loop bounds. A static SVG proof rendered directly from the JSON vector contours was inspected to check the font outlines, counters and composition; it is an asset proof, not a browser screenshot or Lottie runtime capture. The supported browser tool was attempted and again returned disabled local browser access, so in-browser SVG playback, timing feel and physical-device behavior remain unverified. Port 9006 remains running. Nothing committed, pushed or deployed.
+
+Official player API used: https://github.com/airbnb/lottie-web/wiki/Usage (SVG renderer, goToAndStop, playSegments, pause/play, destroy).

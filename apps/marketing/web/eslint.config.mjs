@@ -15,9 +15,9 @@ const eslintConfig = defineConfig([
     rules: {
       "@letbuyy/ui/no-raw-elements": "error",
       "@letbuyy/ui/no-hardcoded-hex": "error",
-      "@letbuyy/ui/no-raw-form-controls": "warn",
-      "@letbuyy/ui/no-raw-color-functions": "warn",
-      "@letbuyy/ui/no-tailwind-default-color": "warn",
+      "@letbuyy/ui/no-raw-form-controls": "error",
+      "@letbuyy/ui/no-raw-color-functions": "error",
+      "@letbuyy/ui/no-tailwind-default-color": "error",
       "react-hooks/purity": "warn",
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/immutability": "warn",

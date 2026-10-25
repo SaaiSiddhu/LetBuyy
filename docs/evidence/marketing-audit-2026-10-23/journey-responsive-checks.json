@@ -1,0 +1,88 @@
+[
+  {
+    "expanded": "true",
+    "mock": {
+      "client": 230,
+      "scroll": 230
+    },
+    "overflow": false,
+    "photo": {
+      "height": 153,
+      "loaded": true,
+      "src": "/illustrations/journey/launch-story-v1.webp",
+      "width": 230
+    },
+    "stage": "Launch Store",
+    "width": 320
+  },
+  {
+    "expanded": "true",
+    "mock": {
+      "client": 230,
+      "scroll": 230
+    },
+    "overflow": false,
+    "photo": {
+      "height": 153,
+      "loaded": true,
+      "src": "/illustrations/journey/first-order-story-v1.webp",
+      "width": 230
+    },
+    "stage": "First Order",
+    "width": 320
+  },
+  {
+    "expanded": "true",
+    "mock": {
+      "client": 230,
+      "scroll": 230
+    },
+    "overflow": false,
+    "photo": {
+      "height": 153,
+      "loaded": true,
+      "src": "/illustrations/journey/scale-story-v1.webp",
+      "width": 230
+    },
+    "stage": "Scale Operations",
+    "width": 320
+  },
+  {
+    "expanded": "true",
+    "mock": {
+      "client": 230,
+      "scroll": 230
+    },
+    "overflow": false,
+    "photo": {
+      "height": 153,
+      "loaded": true,
+      "src": "/illustrations/journey/brand-story-v1.webp",
+      "width": 230
+    },
+    "stage": "Build Brand",
+    "width": 320
+  },
+  {
+    "expanded": "true",
+    "mock": {
+      "client": 230,
+      "scroll": 230
+    },
+    "overflow": false,
+    "photo": {
+      "height": 153,
+      "loaded": true,
+      "src": "/illustrations/journey/enterprise-story-v1.webp",
+      "width": 230
+    },
+    "stage": "Enterprise",
+    "width": 320
+  },
+  {
+    "overflow": false,
+    "photoWidth": 418,
+    "stage": "Scale Operations",
+    "width": 768
+  }
+]

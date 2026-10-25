@@ -29,6 +29,15 @@ export function localeFromPathname(pathname: string): Locale {
     return getLocale(first)
 }
 
+/** A reader's filters, ticket reference and clause anchor survive a language switch. */
+export function switchLocaleHref(locale: Locale, pathname: string, search = '', hash = ''): string {
+    const query = new URLSearchParams(search)
+    if (query.has('country')) query.set('country', locale.country.code)
+    if (query.has('lang')) query.set('lang', locale.language.code)
+    const suffix = query.toString()
+    return `${localePath(locale, stripLocale(pathname))}${suffix ? `?${suffix}` : ''}${hash}`
+}
+
 /**
  * Prefix a path with a locale. Accepts already-prefixed paths so callers can
  * pass through values of unknown provenance without double-prefixing.
@@ -42,8 +51,11 @@ export function localePath(locale: Locale, path = '/'): string {
     // Fragments and query-only links stay relative to the current page.
     if (path.startsWith('#') || path.startsWith('?')) return path
 
-    const bare = stripLocale(path.startsWith('/') ? path : `/${path}`)
-    return bare === '/' ? `/${locale.segment}` : `/${locale.segment}${bare}`
+    const [, pathname, suffix] = path.match(/^([^?#]*)(.*)$/) ?? ['', path, '']
+    const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`
+    if (LOCALE_EXEMPT_PREFIXES.some(prefix => normalized === prefix || normalized.startsWith(`${prefix}/`))) return `${normalized}${suffix}`
+    const bare = stripLocale(normalized)
+    return (bare === '/' ? `/${locale.segment}` : `/${locale.segment}${bare}`) + suffix
 }
 
 /** True when a path points inside this app (so it should carry the locale). */

@@ -59,7 +59,7 @@ export default async function LocaleLayout({
             {/* The <html> element is owned by the root layout, which cannot see
                 the locale param. This syncs lang/dir from inside the segment. */}
             <LocaleHtmlLang lang={locale.language.bcp47} dir={locale.language.dir} />
-            {children}
+            <div lang={locale.language.bcp47} dir={locale.language.dir}>{children}</div>
         </>
     )
 }

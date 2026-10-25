@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { Button } from '@letbuyy/ui'
 import type { LegalClause } from '@/lib/legal/types'
 import { clauseNumber } from '@/lib/legal/format'
+import { usePathname } from 'next/navigation'
+import { getDictionaryForSegment, localeFromPathname } from '@/lib/i18n'
 
 /**
  * Clause index. A sticky rail on desktop; a collapsible panel on mobile, where
@@ -15,6 +17,7 @@ import { clauseNumber } from '@/lib/legal/format'
  * next to a thirteen-item list), which defeats any threshold based on offset.
  */
 export default function LegalContents({ clauses }: { clauses: LegalClause[] }) {
+    const dict = getDictionaryForSegment(localeFromPathname(usePathname()).segment)
     const [activeId, setActiveId] = useState<string>(clauses[0]?.id ?? '')
     const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -48,7 +51,7 @@ export default function LegalContents({ clauses }: { clauses: LegalClause[] }) {
     }, [clauses])
 
     return (
-        <aside className="lgl-toc" aria-label="Clause index">
+        <aside className="lgl-toc" aria-label={dict.legal.clauseIndex}>
             <div className="lgl-toc-inner">
                 <Button
                     unstyled
@@ -57,7 +60,7 @@ export default function LegalContents({ clauses }: { clauses: LegalClause[] }) {
                     aria-expanded={mobileOpen}
                     onClick={() => setMobileOpen(open => !open)}
                 >
-                    <span className="lgl-toc-trigger-label">Contents</span>
+                    <span className="lgl-toc-trigger-label">{dict.legal.contents}</span>
                     <span className="lgl-toc-trigger-count">{clauses.length}</span>
                     <span className="lgl-toc-trigger-chev" aria-hidden="true">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -67,7 +70,7 @@ export default function LegalContents({ clauses }: { clauses: LegalClause[] }) {
                 </Button>
 
                 <p className="lgl-toc-label" aria-hidden="true">
-                    Contents
+                    {dict.legal.contents}
                 </p>
 
                 <ol className={`lgl-toc-list${mobileOpen ? ' is-open' : ''}`}>

@@ -4,6 +4,7 @@ import {
     isEntityPublished,
     isGrievanceOfficerPublished,
 } from '@/lib/legal/entity'
+import { en, type Dictionary } from '@/lib/i18n/dictionaries/en'
 
 /**
  * The published officer details required by Rule 4(5) of the Consumer
@@ -15,7 +16,8 @@ import {
  * officer would satisfy neither rule and would be worse than an admitted
  * omission, because it reads as compliance.
  */
-export default function GrievanceOfficerCard() {
+export default function GrievanceOfficerCard({ dict = en }: { dict?: Dictionary }) {
+    const copy = dict.legal.officer
     const officerPublished = isGrievanceOfficerPublished()
     const entityPublished = isEntityPublished()
 
@@ -23,48 +25,47 @@ export default function GrievanceOfficerCard() {
         <section className="lgl-officer" aria-labelledby="lgl-officer-title">
             <header className="lgl-officer-head">
                 <h2 id="lgl-officer-title" className="lgl-officer-title">
-                    Grievance Officer
+                    {copy.title}
                 </h2>
                 <p className="lgl-officer-req">
-                    Published under Rule 4(5), Consumer Protection (E-Commerce) Rules 2020 and Rule 3(2),
-                    IT (Intermediary Guidelines) Rules 2021.
+                    {copy.requirement}
                 </p>
             </header>
 
             <dl className="lgl-officer-grid">
                 <div className="lgl-officer-cell">
-                    <dt>Name</dt>
+                    <dt>{copy.name}</dt>
                     <dd className={officerPublished ? undefined : 'is-pending'}>
-                        {officerPublished ? GRIEVANCE_OFFICER.name : 'To be published at launch'}
+                        {officerPublished ? GRIEVANCE_OFFICER.name : copy.pending}
                     </dd>
                 </div>
                 <div className="lgl-officer-cell">
-                    <dt>Designation</dt>
+                    <dt>{copy.designation}</dt>
                     <dd className={officerPublished ? undefined : 'is-pending'}>
-                        {officerPublished ? GRIEVANCE_OFFICER.designation : 'To be published at launch'}
+                        {officerPublished ? GRIEVANCE_OFFICER.designation : copy.pending}
                     </dd>
                 </div>
                 <div className="lgl-officer-cell">
-                    <dt>Email</dt>
+                    <dt>{copy.email}</dt>
                     <dd>
                         <a href={`mailto:${GRIEVANCE_OFFICER.email}`}>{GRIEVANCE_OFFICER.email}</a>
                     </dd>
                 </div>
                 <div className="lgl-officer-cell">
-                    <dt>Phone</dt>
+                    <dt>{copy.phone}</dt>
                     <dd className={GRIEVANCE_OFFICER.phone ? undefined : 'is-pending'}>
-                        {GRIEVANCE_OFFICER.phone || 'To be published at launch'}
+                        {GRIEVANCE_OFFICER.phone || copy.pending}
                     </dd>
                 </div>
                 <div className="lgl-officer-cell lgl-officer-cell-wide">
-                    <dt>Registered entity</dt>
+                    <dt>{copy.entity}</dt>
                     <dd className={entityPublished ? undefined : 'is-pending'}>
-                        {entityPublished ? LEGAL_ENTITY.registeredName : 'To be published at launch'}
+                        {entityPublished ? LEGAL_ENTITY.registeredName : copy.pending}
                     </dd>
                 </div>
                 {entityPublished && (
                     <div className="lgl-officer-cell lgl-officer-cell-wide">
-                        <dt>Registered address</dt>
+                        <dt>{copy.address}</dt>
                         <dd>
                             {LEGAL_ENTITY.registeredAddress.map(line => (
                                 <span key={line} className="lgl-officer-addr">
@@ -78,20 +79,18 @@ export default function GrievanceOfficerCard() {
 
             {!officerPublished && (
                 <p className="lgl-officer-gap">
-                    LetBuyy has not opened to merchants, so no officer has been appointed yet. Until one is,
-                    complaints sent to the address above reach the team directly and are handled on the same
-                    timelines.
+                    {copy.gap}
                 </p>
             )}
 
             <ul className="lgl-officer-slas">
                 <li>
-                    <strong>48 hours</strong>
-                    <span>to acknowledge your complaint</span>
+                    <strong>{copy.acknowledgeTime}</strong>
+                    <span>{copy.acknowledge}</span>
                 </li>
                 <li>
-                    <strong>1 month</strong>
-                    <span>to resolve it, or explain the delay</span>
+                    <strong>{copy.resolveTime}</strong>
+                    <span>{copy.resolve}</span>
                 </li>
             </ul>
         </section>

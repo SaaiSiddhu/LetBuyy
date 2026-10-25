@@ -1,5 +1,9 @@
 'use client'
 
+import Copy from '@/components/i18n/Copy'
+
+import { useCopy } from '@/components/i18n/useCopy'
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Input, Textarea, Check, ChevronLeft, ChevronRight, Loader2 } from '@letbuyy/ui'
 import {
@@ -95,8 +99,9 @@ const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const PHONE_SHAPE = /^(\+?91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}$/
 
 export default function DemoRequestForm({ locale }: { locale: string }) {
+    const { t, locale: selectedLocale } = useCopy()
     const [step, setStep] = useState<Step>(0)
-    const [form, setForm] = useState<FormState>(INITIAL)
+    const [form, setForm] = useState<FormState>(() => ({ ...INITIAL, preferredLanguage: selectedLocale.language.code }))
     const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({})
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState<{ id: string } | null>(null)
@@ -228,14 +233,11 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                     <Check width={26} height={26} />
                 </span>
                 <h2 className="drf-done-title" tabIndex={-1} ref={headingRef}>
-                    Your demo request is in.
-                </h2>
+                    <Copy text={"Your demo request is in."} /></h2>
                 <p className="drf-done-body">
-                    We have emailed a confirmation to <strong>{form.email}</strong>. A member of the
-                    team will confirm your slot within one working day.
-                </p>
+                    <Copy text={"We have emailed a confirmation to"} />{' '}<strong>{form.email}</strong><Copy text={". A member of the team will confirm your slot within one working day."} /></p>
                 <p className="drf-done-ref">
-                    Reference <code>{submitted.id}</code>
+                    <Copy text={"Reference"} />{' '}<code>{submitted.id}</code>
                 </p>
             </section>
         )
@@ -243,7 +245,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
 
     return (
         <div className="drf">
-            <ol className="drf-steps" aria-label="Progress">
+            <ol className="drf-steps" aria-label={t("Progress")}>
                 {STEPS.map((entry, index) => (
                     <li
                         key={entry.title}
@@ -253,7 +255,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                         <span className="drf-step-dot" aria-hidden="true">
                             {index < step ? <Check width={12} height={12} /> : index + 1}
                         </span>
-                        <span className="drf-step-label">{entry.title}</span>
+                        <span className="drf-step-label"><Copy text={entry.title} /></span>
                     </li>
                 ))}
             </ol>
@@ -261,9 +263,9 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
             <div className="drf-panel">
                 <header className="drf-panel-head">
                     <h2 className="drf-panel-title" tabIndex={-1} ref={headingRef}>
-                        {STEPS[step].title}
+                        <Copy text={STEPS[step].title} />
                     </h2>
-                    <p className="drf-panel-blurb">{STEPS[step].blurb}</p>
+                    <p className="drf-panel-blurb"><Copy text={STEPS[step].blurb} /></p>
                 </header>
 
                 {step === 0 && (
@@ -397,7 +399,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                                 value={form.whyLetbuyy}
                                 maxLength={2000}
                                 onChange={e => update('whyLetbuyy', e.target.value)}
-                                placeholder="Even one line helps us prepare."
+                                placeholder={t("Even one line helps us prepare.")}
                             />
                         </Field>
                         <Field label="How did you hear about us?" wide>
@@ -414,7 +416,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                                     className="drf-input"
                                     value={form.heardAboutDetail}
                                     onChange={e => update('heardAboutDetail', e.target.value)}
-                                    placeholder="A name or a link is plenty"
+                                    placeholder={t("A name or a link is plenty")}
                                 />
                             </Field>
                         )}
@@ -434,8 +436,8 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                                         aria-pressed={form.slotDate === day.date}
                                         onClick={() => update('slotDate', day.date)}
                                     >
-                                        <span className="drf-day-weekday">{day.weekday}</span>
-                                        <span className="drf-day-date">{day.label}</span>
+                                        <span className="drf-day-weekday">{new Date(day.date+'T12:00:00+05:30').toLocaleDateString(selectedLocale.hreflang, { weekday: 'short' })}</span>
+                                        <span className="drf-day-date">{new Date(day.date+'T12:00:00+05:30').toLocaleDateString(selectedLocale.hreflang, { day: 'numeric', month: 'short' })}</span>
                                     </Button>
                                 ))}
                             </div>
@@ -461,8 +463,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                         )}
 
                         <p className="drf-slot-note">
-                            No time that works? Submit anyway — we will email you options.
-                        </p>
+                            <Copy text={"No time that works? Submit anyway — we will email you options."} /></p>
                     </div>
                 )}
 
@@ -470,7 +471,7 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
 
                 {submitError && (
                     <p className="drf-error" role="alert">
-                        {submitError}
+                        <Copy text={submitError} />
                     </p>
                 )}
 
@@ -483,16 +484,14 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                             onClick={() => setStep(prev => Math.max(0, prev - 1) as Step)}
                         >
                             <ChevronLeft width={16} height={16} aria-hidden="true" />
-                            Back
-                        </Button>
+                            <Copy text={"Back"} /></Button>
                     ) : (
                         <span />
                     )}
 
                     {step < 3 ? (
                         <Button unstyled type="button" className="drf-next" onClick={goNext}>
-                            Continue
-                            <ChevronRight width={16} height={16} aria-hidden="true" />
+                            <Copy text={"Continue"} /><ChevronRight width={16} height={16} aria-hidden="true" />
                         </Button>
                     ) : (
                         <Button
@@ -505,10 +504,9 @@ export default function DemoRequestForm({ locale }: { locale: string }) {
                             {submitting ? (
                                 <>
                                     <Loader2 width={16} height={16} className="drf-spin" aria-hidden="true" />
-                                    Sending
-                                </>
+                                    <Copy text={"Sending"} /></>
                             ) : (
-                                'Request my demo'
+                                <Copy text="Request my demo" />
                             )}
                         </Button>
                     )}
@@ -543,12 +541,12 @@ function Field({
     return (
         <label className={`drf-field${wide ? ' is-wide' : ''}${error ? ' has-error' : ''}`}>
             <span className="drf-label">
-                {label}
+                <Copy text={label} />
                 {required && <span className="drf-required" aria-hidden="true">*</span>}
             </span>
             {children}
-            {hint && !error && <span className="drf-hint">{hint}</span>}
-            {error && <span className="drf-field-error">{error}</span>}
+            {hint && !error && <span className="drf-hint"><Copy text={hint} /></span>}
+            {error && <span className="drf-field-error"><Copy text={error} /></span>}
         </label>
     )
 }
@@ -582,8 +580,8 @@ function ChoiceRow({
                         aria-checked={active}
                         onClick={() => onSelect(option.value)}
                     >
-                        <span className="drf-choice-label">{option.label}</span>
-                        {option.hint && <span className="drf-choice-hint">{option.hint}</span>}
+                        <span className="drf-choice-label"><Copy text={option.label} /></span>
+                        {option.hint && <span className="drf-choice-hint"><Copy text={option.hint} /></span>}
                     </Button>
                 )
             })}

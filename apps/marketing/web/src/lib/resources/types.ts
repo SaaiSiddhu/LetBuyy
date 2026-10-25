@@ -1,7 +1,7 @@
 export type ContentBlock =
   | { type: 'p'; text: string }
-  | { type: 'h2'; text: string }
-  | { type: 'h3'; text: string }
+  | { type: 'h2'; text: string; id?: string }
+  | { type: 'h3'; text: string; id?: string }
   | { type: 'ul'; items: string[] }
   | { type: 'ol'; items: string[] }
   | { type: 'callout'; variant: 'tip' | 'warning' | 'info' | 'success'; title: string; text: string }

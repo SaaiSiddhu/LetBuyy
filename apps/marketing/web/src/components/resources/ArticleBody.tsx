@@ -1,11 +1,12 @@
-import type { ReactElement } from 'react'
+
+import Copy from '@/components/i18n/Copy'
+import { Fragment, type ReactElement } from 'react'
 import type { ContentBlock } from '@/lib/resources/types'
 import { Table } from '@letbuyy/ui'
 import { HeadingAnchor } from './HeadingAnchor'
-
-function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-}
+import ArticleSectionVisual from './ArticleSectionVisual'
+import type { SectionVisual } from '@/lib/resources/section-visuals'
+import { resourceHeadingId } from '@/lib/resources/headings'
 
 const CALLOUT_ICONS: Record<string, ReactElement> = {
   tip: (
@@ -42,11 +43,11 @@ const CHECK_ICON = (
   </svg>
 )
 
-export default function ArticleBody({ body }: { body: ContentBlock[] }) {
+export default function ArticleBody({ body, id = 'article-body', visuals = {} }: { body: ContentBlock[]; id?: string; visuals?: Record<string, SectionVisual> }) {
   const firstPIndex = body.findIndex((b) => b.type === 'p')
 
   return (
-    <div className="arc-body" id="article-body">
+    <div className="arc-body" id={id}>
       {body.map((block, i) => {
         switch (block.type) {
 
@@ -56,17 +57,17 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
           }
 
           case 'h2': {
-            const id = slugify(block.text)
+            const id = block.id ?? resourceHeadingId(block.text)
             return (
-              <h2 key={i} id={id} className="arc-body-h2">
+              <Fragment key={i}><h2 id={id} className="arc-body-h2">
                 {block.text}
                 <HeadingAnchor id={id} />
-              </h2>
+              </h2>{visuals[id] && <ArticleSectionVisual visual={visuals[id]} />}</Fragment>
             )
           }
 
           case 'h3': {
-            const id = slugify(block.text)
+            const id = block.id ?? resourceHeadingId(block.text)
             return (
               <h3 key={i} id={id} className="arc-body-h3">
                 {block.text}
@@ -145,8 +146,7 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
               <div key={i} className="arc-insight-block" role="note">
                 <div className="arc-insight-eyebrow">
                   <span className="arc-insight-line" aria-hidden="true" />
-                  Key Insight
-                </div>
+                  <Copy text={"Key Insight"} /></div>
                 <p className="arc-insight-title">{block.title}</p>
                 <p className="arc-insight-text">{block.text}</p>
               </div>
@@ -205,7 +205,7 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
           case 'commerce-example':
             return (
               <div key={i} className="arc-commerce-block" role="note">
-                <p className="arc-commerce-eyebrow">Commerce Example</p>
+                <p className="arc-commerce-eyebrow"><Copy text={"Commerce Example"} /></p>
                 <p className="arc-commerce-scenario">{block.scenario}</p>
                 <p className="arc-commerce-result">{block.result}</p>
                 {block.metric && (
@@ -219,8 +219,7 @@ export default function ArticleBody({ body }: { body: ContentBlock[] }) {
               <div key={i} className="arc-ai-block" role="note">
                 <div className="arc-ai-eyebrow">
                   {AI_ICON}
-                  AI Recommendation
-                </div>
+                  <Copy text={"AI Recommendation"} /></div>
                 <p className="arc-ai-title">{block.title}</p>
                 <div className="arc-ai-items">
                   {block.items.map((item, j) => (

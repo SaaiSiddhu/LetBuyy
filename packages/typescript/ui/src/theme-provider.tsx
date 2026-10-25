@@ -118,12 +118,10 @@ export function LetbuyyThemeProvider({
     );
     const [resolvedTheme, setResolvedTheme] = React.useState<LetbuyyResolvedTheme>(() => {
         if (forcedTheme) return forcedTheme;
-        if (typeof window !== 'undefined') {
-            const cached = (window as unknown as GlobalWithResolvedTheme).__letbuyyResolvedTheme;
-            if (cached === 'light' || cached === 'dark') return cached;
-            return resolveChoice(readStoredChoice(storageKey, defaultTheme));
-        }
-        // Server render: "system" cannot be resolved without an OS; assume light.
+        // Match the server on the first client render. The effect below then
+        // applies the saved preference as a real React update. Reading storage
+        // here left the root's server theme attribute unpatched on hydration,
+        // mixing light status backgrounds with dark surface/text tokens.
         return defaultTheme === 'dark' ? 'dark' : 'light';
     });
 

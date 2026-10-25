@@ -1,0 +1,50 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-10-24",
+  "role": "Growth CTA card decoration",
+  "assets": [
+    {
+      "file": "growth-background-v1.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-19d647a7-70b2-4545-8d90-d20a1f96bc6f.png",
+      "prompt": "Use case: stylized-concept. Asset type: understated full-card editorial background texture for LetBuyy commerce software. Wide landscape 2.5:1 composition. An architectural still life of softly folded ivory paper and fine woven linen, with shallow curved layers and one restrained muted lavender edge on the rightmost third. Left two thirds extremely quiet uniform ivory negative space for separately rendered text. Very low contrast, soft natural studio daylight, tactile material grain, calm premium stationery finish. No products, no people, no letters, no text, no symbols, no charts, no UI, no logos, no glow, no busy geometric pattern. Opaque light neutral image intended to be composited very faintly over both light and dark semantic website surfaces. Entire composition gentle and subtle, no dark hard edges.",
+      "transparent": false,
+      "width": 1440,
+      "height": 576,
+      "bytes": 43212,
+      "alpha": null,
+      "use": "src/components/MerchantJourney.tsx: MerchantBanner",
+      "semantics": "Decorative; visible heading, CTAs and highlights provide the information. Not a real merchant photograph or product UI."
+    },
+    {
+      "file": "growth-commerce-v1.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-258f8e7d-b683-4c6b-ac79-62629a696f4c.png",
+      "prompt": "Use case: stylized-concept. Asset type: standalone supporting illustration for LetBuyy merchant growth call-to-action card. Create one refined tactile miniature boutique storefront with an ivory facade, midnight-navy and muted violet striped fabric awning, a tiny open doorway and clearly recognizable product display. Place one cobalt shopping bag and one warm kraft shipping parcel in front, plus a small emerald payment terminal alongside the counter. One coherent three-quarter isometric composition showing a real store ready for online orders, not floating disparate UI elements. Crafted matte ceramic and paper materials, brushed silver accents, realistic fabric texture, soft upper-left studio light. Restrained LetBuyy palette of ivory, navy, violet with small blue/emerald accents. Sophisticated precise object design, clean silhouette readable at 280px. Square canvas with 10 percent transparent margins, fully contain all subjects. Genuine transparent background, no ground plane, no enclosing tile, no badges, no backdrop, no text or letters, no logo, no numbers, no neon or glow, no plastic gloss, no exaggerated cartoon features.",
+      "transparent": true,
+      "width": 640,
+      "height": 640,
+      "bytes": 100166,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "Superseded by growth-commerce-v2.webp; retained historical asset",
+      "semantics": "Decorative; visible heading, CTAs and highlights provide the information. Not a real merchant photograph or product UI."
+    },
+    {
+      "file": "growth-commerce-v2.webp",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-2865027b-10a7-4cdb-9f2d-f84e954a4300.png",
+      "prompt": "Edit only the blank front ivory shop fascia/sign panel immediately above the striped awning in this storefront illustration. Add the exact shop name \"LetBuyy\" (capital L, capital B, lowercase et and uyy) centered professionally on the front fascia. Use refined dark midnight-navy dimensional sign lettering, a clean modern semibold sans-serif, restrained raised-letter depth and subtle realistic shadow. Make the lettering large enough to read at the website's 360px illustration size, with generous inset margins. Align its baseline and letter planes with the existing three-quarter perspective of the fascia; it must look physically mounted on that ivory sign, not like a flat overlay or floating banner. Preserve everything else exactly: boutique proportions, roof and fascia geometry, navy/violet fabric awning, products, plants, bag, parcel, payment terminal, textures, colors, lighting, framing and transparent background. No additional words or logos, no extra panel, no background, no decorative glow. Retain actual transparency.",
+      "editTarget": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-258f8e7d-b683-4c6b-ac79-62629a696f4c.png",
+      "transparent": true,
+      "width": 640,
+      "height": 640,
+      "bytes": 88460,
+      "alpha": [
+        0,
+        255
+      ],
+      "use": "src/components/MerchantJourney.tsx: MerchantBanner",
+      "semantics": "Decorative illustration with LetBuyy branding on physical shop fascia; adjacent HTML conveys CTA information."
+    }
+  ]
+}

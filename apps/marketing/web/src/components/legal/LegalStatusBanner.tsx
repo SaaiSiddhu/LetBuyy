@@ -1,5 +1,6 @@
 import { LEGAL_STATUS, LEGAL_REVISION_DATE } from '@/lib/legal/entity'
 import { formatLegalDate } from '@/lib/legal/format'
+import { en, type Dictionary } from '@/lib/i18n/dictionaries/en'
 
 /**
  * Says out loud whether these policies actually bind anyone yet.
@@ -9,7 +10,7 @@ import { formatLegalDate } from '@/lib/legal/format'
  * states the position plainly; flipping the constant removes the banner
  * everywhere at once.
  */
-export default function LegalStatusBanner() {
+export default function LegalStatusBanner({ dict = en, locale = 'en-IN' }: { dict?: Dictionary; locale?: string }) {
     if (LEGAL_STATUS === 'in-force') return null
 
     return (
@@ -20,10 +21,8 @@ export default function LegalStatusBanner() {
                 <div className="lgl-status-panel">
                     <span className="lgl-status-dot" aria-hidden="true" />
                     <p className="lgl-status-text">
-                        <strong>These policies are published for review and are not yet in force.</strong>{' '}
-                        LetBuyy has not opened to merchants, so no agreement has been formed with anyone.
-                        They take effect on the day the platform launches, and the effective date will be
-                        stated here. Last revised {formatLegalDate(LEGAL_REVISION_DATE)}.
+                        <strong>{dict.legal.statusTitle}</strong>{' '}
+                        {dict.legal.statusBody.replace('{date}', formatLegalDate(LEGAL_REVISION_DATE, locale))}
                     </p>
                 </div>
             </div>

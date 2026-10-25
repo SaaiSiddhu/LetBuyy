@@ -1,0 +1,9 @@
+/* Indic glyphs need natural spacing and more vertical room than Latin display type. */
+:is([lang='hi'], [lang='ta']) :is(h1, h2, h3, h4) {
+  letter-spacing: normal;
+  line-height: 1.45;
+}
+
+:is([lang='hi'], [lang='ta']) :is(button, label, summary) {
+  letter-spacing: normal;
+}

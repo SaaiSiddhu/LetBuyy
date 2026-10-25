@@ -1,3 +1,5 @@
+
+import Copy from '@/components/i18n/Copy'
 import Link from '@/components/i18n/LocaleLink'
 import type { Article } from '@/lib/resources/types'
 
@@ -16,14 +18,14 @@ export default function ArticleCompletionBanner({ next }: Props) {
           </svg>
         </div>
         <div>
-          <p className="arc-completion-badge">Article complete</p>
+          <p className="arc-completion-badge"><Copy text={"Article complete"} /></p>
           <p className="arc-completion-title">
-            {next ? `Up next: ${next.title}` : 'Keep exploring'}
+            <Copy text={next ? "Up next: {title}" : "Keep exploring"} values={{ title: next?.title ?? "" }} />
           </p>
           <p className="arc-completion-sub">
             {next
-              ? `${next.readingTime} min read`
-              : 'Browse more resources on the LetBuyy platform'}
+              ? <>{next.readingTime} <Copy text="min read" /></>
+              : <Copy text="Browse more resources on the LetBuyy platform" />}
           </p>
         </div>
       </div>
@@ -33,15 +35,13 @@ export default function ArticleCompletionBanner({ next }: Props) {
           href={`/resources/${next.category}/${next.slug}`}
           className="arc-completion-cta"
         >
-          Continue learning
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <Copy text={"Continue learning"} /><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
         </Link>
       ) : (
         <Link href="/resources" className="arc-completion-cta">
-          Browse resources
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <Copy text={"Browse resources"} /><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
         </Link>

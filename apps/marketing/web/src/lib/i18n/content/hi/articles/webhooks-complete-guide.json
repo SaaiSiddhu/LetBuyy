@@ -1,0 +1,27 @@
+{
+  "sourceHash": "ffc90a0011dd84ac8e4ae8b9f48924a2729a108d9ce83b5c497fe39e0900af99",
+  "values": [
+    "वेबहुक: वाणिज्य घटनाओं की तुरंत सूचना",
+    "ऑर्डर, भुगतान पुष्टि और स्टॉक बदलाव पर तुरंत प्रतिक्रिया दें।",
+    "LetBuyy वेबहुक की पूरी डेवलपर मार्गदर्शिका—सेटअप, हस्ताक्षर सत्यापन, घटना प्रकार और विश्वसनीयता।",
+    "वेबहुक वास्तविक एकीकरण की रीढ़ हैं। नए ऑर्डर के लिए हर 30 सेकंड API पूछने के बजाय URL पंजीकृत करें; घटना होते ही LetBuyy आपको भेजता है।",
+    "उपलब्ध घटना प्रकार",
+    "order.created, order.updated, order.fulfilled, order.cancelled",
+    "payment.captured, payment.failed, payment.refunded",
+    "product.created, product.updated, product.deleted",
+    "inventory.low_stock, inventory.out_of_stock",
+    "customer.created, customer.updated",
+    "checkout.abandoned, checkout.completed",
+    "वेबहुक पंजीकरण",
+    "हस्ताक्षर सत्यापन—अत्यंत जरूरी",
+    "हर वेबहुक में X-LetBuyy-Signature हेडर है। संसाधित करने से पहले जाँचें। LetBuyy आपके वेबहुक गोपनीय मान और HMAC-SHA256 से मूल अनुरोध बॉडी पर हस्ताक्षर करता है।",
+    "timingSafeEqual इस्तेमाल करें",
+    "HMAC हस्ताक्षर जाँचने के लिए कभी string equality (===) न लें; इससे समय-आधारित हमला हो सकता है। ऊपर की तरह crypto.timingSafeEqual लें।",
+    "विश्वसनीयता के तरीके",
+    "5 सेकंड में HTTP 200 दें—भारी काम असिंक्रोनस करें",
+    "विफल डिलीवरी पर LetBuyy फिर प्रयास करता है: 1 मिनट, 5 मिनट, 30 मिनट, 2 घंटे, 24 घंटे",
+    "X-LetBuyy-Webhook-ID हेडर की ID से इडेम्पोटेंसी बनाएँ",
+    "संसाधन से पहले मूल वेबहुक डेटा रखें—त्रुटि पर फिर चलाने में मदद होगी",
+    "निगरानी के लिए /webhooks/health एंडपॉइंट दें"
+  ]
+}

@@ -1,5 +1,9 @@
 'use client'
 
+
+import { useCopy } from '@/components/i18n/useCopy'
+import Copy from '@/components/i18n/Copy'
+
 import Link from '@/components/i18n/LocaleLink'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@letbuyy/ui'
@@ -28,6 +32,7 @@ export default function ArticleDock({
   headings: Heading[]
   next?: DockNext | null
 }) {
+  const { t } = useCopy()
   const [progress, setProgress] = useState(0)
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -102,8 +107,8 @@ export default function ArticleDock({
   return (
     <div className={`adock${visible ? ' is-visible' : ''}`} ref={sheetRef}>
       {open && headings.length > 0 && (
-        <div className="adock-sheet" role="dialog" aria-label="Table of contents">
-          <p className="adock-sheet-title">On this page</p>
+        <div className="adock-sheet" role="dialog" aria-label={t("Table of contents")}>
+          <p className="adock-sheet-title"><Copy text={"On this page"} /></p>
           <ol className="adock-sheet-list">
             {headings.map((h, i) => (
               <li key={h.id} className={h.level === 3 ? 'is-sub' : undefined}>
@@ -141,13 +146,13 @@ export default function ArticleDock({
               </svg>
               <span className="adock-ring-pct">{Math.round(progress)}</span>
             </span>
-            <span className="adock-contents-label">Contents</span>
+            <span className="adock-contents-label"><Copy text={"Contents"} /></span>
           </Button>
         )}
 
         <span className="adock-divider" aria-hidden="true" />
 
-        <Button unstyled type="button" className="adock-icon" onClick={copyLink} aria-label="Copy link">
+        <Button unstyled type="button" className="adock-icon" onClick={copyLink} aria-label={t("Copy link")}>
           {copied ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <polyline points="20 6 9 17 4 12" />
@@ -165,7 +170,7 @@ export default function ArticleDock({
           type="button"
           className="adock-icon"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Back to top"
+          aria-label={t("Back to top")}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M12 19V5M5 12l7-7 7 7" />
@@ -174,7 +179,7 @@ export default function ArticleDock({
 
         {next && (
           <Link href={`/resources/${next.category}/${next.slug}`} className="adock-next">
-            <span className="adock-next-label">Next</span>
+            <span className="adock-next-label"><Copy text={"Next"} /></span>
             <span className="adock-next-title">{next.title}</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7" />

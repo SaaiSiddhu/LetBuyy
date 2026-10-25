@@ -1,0 +1,41 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "key": "ai-commerce-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for a professional AI commerce guide. Primary request: a carefully art-directed still-life of a large smoked-glass optical lens standing behind three ivory product cards displaying an exquisite small ceramic vessel, folded sage fabric and an elegant sculptural bottle; one fine violet glass light path passes through the lens and connects the cards, expressing AI helping a merchant understand a catalog. Refined premium product photography meets precise 3D editorial design. Materials: brushed graphite, clear optical glass, tactile ivory paper and natural ceramic; restrained lilac/violet and muted teal accents. Soft large studio light, realistic fine shadows, high detail and calm restrained composition. Actual transparent background. Landscape 3:2, every object comfortably inside the canvas with generous transparent margins, readable in a 350px card. No floor plane, platform, background rectangle, ornamental backplate, gold trim, crystals, robot, glowing orb, floating dashboard tiles, celebratory confetti, logos, watermark, charts, readable words or numbers. Concept illustration, not a screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-9e10bbe8-1bcd-4a4c-aeac-02d76a0195e7.png",
+      "asset": "/illustrations/resources/ai-commerce-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/ai-commerce-studio-v1.webp"
+    },
+    {
+      "key": "ai-operations-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for a store operations automation guide. Primary request: an exquisitely organized packing-work still-life: three tactile ivory task sheets with simple graphite lines, a graphite precision barcode scanner, one compact kraft parcel with a restrained violet tab, and a thin curved clear-glass connector passing from the task sheets to the parcel. One small understated brushed-metal clock suggests time spent on routine work. Professional high-end studio product photography meets precise 3D editorial design. Beautiful paper grain, matte graphite, subtle glass refraction and a small muted teal accent. Soft light, realistic shadows, understated and credible. Actual transparent background, landscape 3:2, every object fully within clear generous margins, readable at 350px width. No floor plane, platform, enclosing frame, robot, orb, golden trim, crystal cube, decorative confetti, charts, logos, watermark, readable text or numbers. Concept illustration, no real software screenshots or invented metrics.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-ae9945c4-d020-43ab-9293-b7ac269010c6.png",
+      "asset": "/illustrations/resources/ai-operations-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/ai-operations-studio-v1.webp"
+    },
+    {
+      "key": "ai-copilot-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for an AI commerce copilot reading guide. Primary request: an elegant graphite tablet on a low-angle fold support, screen showing two simple ivory conversation shapes without words and one muted violet reply shape; beside it a tactile ivory merchant notebook with abstract lines and a beautiful small kraft product parcel. A single slim clear-glass bridge connects the notebook to the conversation, communicating an assistant using business context. Refined high-end studio product photography meets precise editorial 3D design. Matte graphite, anti-reflective glass, textured paper, natural kraft, restrained violet and sage accents. Soft professional lighting, gentle realistic shadows, calm compact composition. Actual transparent background, landscape 3:2, all objects fully visible inside generous margins, easy to understand at 350px width. No floor plane, platform, enclosing background, gold embellishment, robot, glowing orb, crystal cube, floating dashboards, charts, logos, watermark, readable words, numbers or product claims. Concept illustration only.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-6f405ac2-efee-436d-ad73-7e7f0d66d514.png",
+      "asset": "/illustrations/resources/ai-copilot-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/ai-copilot-studio-v1.webp"
+    },
+    {
+      "key": "ai-recommendations-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for an ecommerce product recommendation guide. Primary request: three beautifully composed ivory product cards at a subtle angle showing complementary everyday objects: a speckled ceramic cup, a folded sage linen napkin and a small sculptural glass carafe. The central cup card is gently emphasized by a precise graphite frame; delicate violet glass connectors lead to the complementary napkin and carafe cards to suggest related products chosen together. Sophisticated high-end product photography meets precise 3D editorial design, tactile paper, realistic ceramic, linen fibers and soft glass refraction. Neutral ivory and graphite with restrained violet and muted teal details; soft studio light and realistic fine shadows. Actual transparent background. Landscape 3:2, all objects fully inside generous clear margins, readable at 350px. No platform, floor plane, enclosing background panel, gold trim, crystal cube, robot, orb, charts, sale badges, prices, guarantees, confetti, logos, watermark, readable words or numbers. Concept illustration, not real products for sale.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-e1c5cba8-d82c-4be3-8176-cda518408653.png",
+      "asset": "/illustrations/resources/ai-recommendations-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/ai-recommendations-studio-v1.webp"
+    },
+    {
+      "key": "ai-workflow-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for a merchant workflow automation reading guide. Primary request: a single clear three-part sequence made of tactile ivory cards in brushed graphite stands. The first card shows a small kraft order parcel, the second a precise branching connector with two small violet endpoints, and the third an ivory envelope. Fine clear-glass connectors link the three stands left to right, visibly communicating event, decision and action without relying on words. Sophisticated high-end studio product photography meets precise 3D editorial design, restrained matte graphite, paper grain, delicate glass refraction, violet and muted teal details. Calm soft lighting and realistic gentle shadows. Actual transparent background, landscape 3:2, generous clear margins around fully visible objects, readable at 350px width. No floor plane, platform, enclosing background rectangle, gold embellishment, crystal cube, robot, orb, radial or solar-system composition, confetti, logos, watermark, numbers or readable text. No fake live notifications or metrics. Concept illustration only.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-544f32de-c26c-49bf-93f3-36f0f921ec50.png",
+      "asset": "/illustrations/resources/ai-workflow-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/ai-workflow-studio-v1.webp"
+    }
+  ]
+}

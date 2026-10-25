@@ -1,0 +1,24 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "key": "learning-journey",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground editorial illustration for a commerce resource reading plan. Primary request: a beautifully crafted ivory open field guide book whose pages unfold into a gentle S-shaped ribbon path connecting three tactile miniature objects: a graphite storefront laptop with abstract storefront blocks, a carefully wrapped kraft parcel, and a brass magnifying glass over an ivory checklist. One violet bookmark trails through the composition to suggest progressing through useful guides. No space or orbital motif. Photoreal polished 3D editorial still-life with natural paper grain, graphite metal, satin violet and restrained teal details, soft studio light. Actual transparent background, isolated foreground with no floor plane, enclosing panel or platform. Landscape 3:2, compact elegant composition, all objects fully visible with clear margins and readable at 350px width. No readable text, letters, numbers, logos, watermarks or confetti. This is a concept illustration of learning, not a product screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-88f37def-d8a9-4512-a90e-eb74b03597f4.png",
+      "asset": "/illustrations/resources/reading-learning-journey-v1.webp"
+    },
+    {
+      "key": "customer-lifecycle",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for ecommerce email, customer retention and relationship reading guides. Primary request: a refined tactile still-life of an ivory envelope with a small plum ribbon and thank-you note, two elegant cream customer profile cards with abstract portrait circles, a small kraft parcel and a delicate teal glass return-loop motif linking envelope and parcel. Convey thoughtful follow-up and a continuing customer relationship, no financial promises. Photoreal polished 3D illustration, natural paper grain and realistic fibers, brushed brass paperclip, satin plum/violet details, restrained teal glass, soft editorial studio light and realistic gentle shadows. Actual transparent background; no floor plane, platform, rectangular backdrop or outer frame. Landscape 3:2 balanced composition, all objects fully visible with clean transparent margins; strong silhouette readable at 350px width. No readable text, letters, numbers, logos, watermark, confetti, charts or notifications implying real messages.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-8a613dc2-f0e5-4ace-ae1b-7358dd7502da.png",
+      "asset": "/illustrations/resources/reading-customer-lifecycle-v1.webp"
+    },
+    {
+      "key": "returns-care",
+      "prompt": "Use case: stylized-concept. Asset type: premium editorial foreground illustration for ecommerce returns, customer care and order recovery reading guides. Primary request: a beautifully composed open kraft return parcel with a neatly folded indigo shirt and ivory tissue, a small blank return label with abstract barcode lines, a polished graphite handheld scanner and a single curved satin-violet arrow looping back toward the parcel. A cream conversation card with three tiny dots rests beside the box, suggesting communication. Photoreal polished 3D editorial illustration, rich paper and fabric textures, restrained violet and teal accents, soft studio light with realistic gentle shadows. Actual transparent background, no floor, platform, enclosing panel or frame. Landscape 3:2 compact elegant composition, every object fully visible with transparent margins, legible at 350px wide. No readable words, letters, numbers, logos, guarantees, watermark or confetti. Concept illustration only, not a real interface.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-049a4711-39d5-4771-9fed-bcb6d65cc3b1.png",
+      "asset": "/illustrations/resources/reading-returns-care-v1.webp"
+    }
+  ]
+}

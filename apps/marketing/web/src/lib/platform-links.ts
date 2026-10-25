@@ -23,26 +23,26 @@ export function getPlatformNavigationLinks(): PlatformNavigationLink[] {
         },
         {
             label: 'Pricing',
-            href: getMarketingSiteUrl('/pricing'),
+            href: '/pricing',
             description: 'Plans for stores, creators, and growing merchant teams.',
         },
         {
             label: 'Themes',
-            href: getThemeMarketplaceUrl('/themes'),
+            href: '/resources/platform/how-themes-work',
             sitemapHref: getThemeMarketplaceUrl('/sitemap.xml'),
-            description: 'Theme marketplace for stores, portfolios, resumes, blogs, and landing pages.',
+            description: 'Read how LetBuyy storefront themes work.',
         },
         {
             label: 'Apps',
-            href: getAppMarketplaceUrl('/'),
+            href: '/resources/platform/introduction-to-apps',
             sitemapHref: getAppMarketplaceUrl('/sitemap.xml'),
-            description: 'App marketplace for payments, shipping, marketing, analytics, and extensions.',
+            description: 'Learn about planned app integrations and platform capabilities.',
         },
         {
             label: 'Developers',
-            href: getDeveloperPortalUrl('/docs'),
+            href: '/resources/developers',
             sitemapHref: getDeveloperPortalUrl('/sitemap.xml'),
-            description: 'API docs, SDKs, OAuth, webhooks, and app extension guidance.',
+            description: 'Public guides for APIs, webhooks and integrations.',
         },
         {
             label: 'Log in',

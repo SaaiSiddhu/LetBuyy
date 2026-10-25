@@ -356,6 +356,26 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         await expectAxeClean(container);
     });
 
+    it('restores the explicit opener when a Modal input takes autofocus', async () => {
+        function FinderHarness() {
+            const [open, setOpen] = React.useState(false);
+            const opener = React.useRef<HTMLButtonElement>(null);
+            const input = React.useRef<HTMLInputElement>(null);
+            return <>
+                <button ref={opener} onClick={() => setOpen(true)}>Find workspace</button>
+                <Modal open={open} title="Workspace finder" onClose={() => setOpen(false)} initialFocusRef={input} returnFocusRef={opener}>
+                    <Input label="Search workspaces" ref={input} autoFocus />
+                </Modal>
+            </>;
+        }
+        renderInSystem(<FinderHarness />);
+        const opener = screen.getByRole('button', { name: 'Find workspace' });
+        opener.focus(); fireEvent.click(opener);
+        await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Search workspaces')));
+        fireEvent.keyDown(document, { key: 'Escape' });
+        await waitFor(() => expect(document.activeElement).toBe(opener));
+    });
+
     it('traps focus and supports arrow-key roving in CommandPalette', async () => {
         const onClose = vi.fn();
         const onFirst = vi.fn();

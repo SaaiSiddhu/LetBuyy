@@ -1,8 +1,13 @@
 'use client'
 
+import { useCopy } from '@/components/i18n/useCopy'
+
+import Copy from '@/components/i18n/Copy'
+
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion'
-import { Button, ChevronDown } from '@letbuyy/ui'
+import MarketingIllustration from './MarketingIllustration'
+import { Button, Check, Minus, Plus } from '@letbuyy/ui'
 
 const TRUST_ITEMS = [
   'No transaction commissions',
@@ -94,12 +99,22 @@ const FAQS: { q: string; a: string[] }[] = [
 ]
 
 export default function FAQ() {
-  const [open, setOpen] = useState<number | null>(0)
+    const { t } = useCopy()
+  const [openItems, setOpenItems] = useState<Set<number>>(() => new Set([0]))
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
   const isReduced = useReducedMotion()
 
   const dur = (n: number) => isReduced ? 0 : n
+
+  function toggleItem(index: number) {
+    setOpenItems(previous => {
+      const next = new Set(previous)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
+  }
 
   return (
     <section className="faq" id="faq" aria-labelledby="faq-heading">
@@ -113,13 +128,11 @@ export default function FAQ() {
           viewport={{ once: true }}
           transition={{ duration: dur(0.6) }}
         >
-          <p className="section-label">Frequently Asked Questions</p>
+          <p className="section-label"><Copy text={"Frequently Asked Questions"} /></p>
           <h2 id="faq-heading" className="section-title">
-            Everything you need to know before launching
-          </h2>
+            <Copy text={"Everything you need to know before launching"} /></h2>
           <p className="section-subtitle" style={{ maxWidth: 640, margin: '16px auto 0' }}>
-            Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms.
-          </p>
+            <Copy text={"Answers to the most common questions about pricing, migration, payments, data ownership, and how LetBuyy compares to traditional commerce platforms."} /></p>
         </motion.div>
 
         {/* Two-column body */}
@@ -128,31 +141,36 @@ export default function FAQ() {
           {/* Left — trust panel */}
           <motion.aside
             className="faq-trust"
-            aria-label="Platform guarantees"
+            aria-labelledby="faq-trust-heading"
             initial={{ opacity: 0, x: -16 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: dur(0.5), delay: dur(0.1) }}
           >
-            <div className="faq-trust-card">
-              <p className="faq-trust-title">Built for modern commerce</p>
+            <div className="faq-trust-card" id="faq-benefits">
+              <div className="faq-trust-content">
+                <div className="faq-trust-header">
+                  <MarketingIllustration artwork="support" className="marketing-illustration--faq" sizes="128px" />
+                  <h3 className="faq-trust-title" id="faq-trust-heading"><Copy text={"Built for modern commerce"} /></h3>
+                </div>
 
-              <ul className="faq-trust-list">
-                {TRUST_ITEMS.map(item => (
-                  <li key={item} className="faq-trust-item">
-                    <span className="faq-trust-check" aria-hidden="true">✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+                <ul className="faq-trust-list">
+                  {TRUST_ITEMS.map(item => (
+                    <li key={item} className="faq-trust-item">
+                      <span className="faq-trust-check" aria-hidden="true"><Check width={16} height={16} strokeWidth={1.8} /></span>
+                      <Copy text={item} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              <div className="faq-metrics">
+              <dl className="faq-metrics" aria-label={t("Platform highlights")}>
                 {METRICS.map(m => (
                   <div key={m.label} className="faq-metric">
-                    <span className="faq-metric-val">{m.val}</span>
-                    <span className="faq-metric-lbl">{m.label}</span>
+                    <dt className="faq-metric-lbl"><Copy text={m.label} /></dt>
+                    <dd className="faq-metric-val">{m.val}</dd>
                   </div>
                 ))}
-              </div>
+              </dl>
             </div>
           </motion.aside>
 
@@ -164,28 +182,28 @@ export default function FAQ() {
             transition={{ duration: dur(0.5), delay: dur(0.18) }}
           >
             {FAQS.map((faq, i) => {
-              const isOpen = open === i
+              const isOpen = openItems.has(i)
               return (
                 <div
                   key={i}
                   className={`faq-item${isOpen ? ' faq-item-open' : ''}`}
                 >
-                  <Button
-                    unstyled
-                    className="faq-question"
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-answer-${i}`}
-                    id={`faq-btn-${i}`}
-                    onClick={() => setOpen(isOpen ? null : i)}
-                  >
-                    <span className="faq-q-text">{faq.q}</span>
-                    <ChevronDown
-                      className="faq-chevron"
-                      width={18}
-                      height={18}
-                      aria-hidden="true"
-                    />
-                  </Button>
+                  <h3 className="faq-question-heading">
+                    <Button
+                      unstyled
+                      type="button"
+                      className="faq-question"
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${i}`}
+                      id={`faq-btn-${i}`}
+                      onClick={() => toggleItem(i)}
+                    >
+                      <span className="faq-q-text"><Copy text={faq.q} /></span>
+                      <span className="faq-toggle-icon" aria-hidden="true">
+                        {isOpen ? <Minus width={20} height={20} strokeWidth={1.5} /> : <Plus width={20} height={20} strokeWidth={1.5} />}
+                      </span>
+                    </Button>
+                  </h3>
 
                   <AnimatePresence initial={false}>
                     {isOpen && (
@@ -201,7 +219,7 @@ export default function FAQ() {
                       >
                         <div className="faq-answer-inner">
                           {faq.a.map((para, pi) => (
-                            <p key={pi}>{para}</p>
+                            <p key={pi}><Copy text={para} /></p>
                           ))}
                         </div>
                       </motion.div>

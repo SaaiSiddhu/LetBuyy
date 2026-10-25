@@ -1,0 +1,12 @@
+{
+  "Hero": true,
+  "Header": true,
+  "FinalCTA": true,
+  "CommerceNetwork": true,
+  "CapabilityMap": true,
+  "Features": true,
+  "MerchantJourney": true,
+  "EcosystemMap": true,
+  "Pricing": true,
+  "FAQ": true
+}

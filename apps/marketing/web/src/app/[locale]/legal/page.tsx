@@ -1,37 +1,46 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import type { Metadata } from 'next'
 import Link from '@/components/i18n/LocaleLink'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import LegalStatusBanner from '@/components/legal/LegalStatusBanner'
 import { GROUP_ORDER, LEGAL_DOCUMENTS, getDocumentsByGroup, readingMinutes } from '@/lib/legal/documents'
-import { AUDIENCE_LABEL, GROUP_META } from '@/lib/legal/types'
 import { LEGAL_REVISION_DATE } from '@/lib/legal/entity'
 import { formatLegalDate } from '@/lib/legal/format'
 import { getSupportEmail } from '@/lib/public-urls'
+import legalStyles from '@/components/legal/legal-layout.module.css'
+import { getDictionaryForSegment, getLocale } from '@/lib/i18n'
+import { localizeLegalContent } from '@/lib/i18n/legal-content'
 
-export const metadata: Metadata = {
+const sourceMetadata: Metadata = {
     title: 'Legal',
     description:
         'LetBuyy legal library — terms of service, privacy, refunds, shipping, payouts, data processing, sub-processors, security, and grievance redressal for Indian merchants and shoppers.',
     alternates: { canonical: '/legal' },
 }
 
-export default function LegalHubPage() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    return localizeMetadata(sourceMetadata, (await params).locale, "/legal")
+}
+
+
+export default async function LegalHubPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale: segment } = await params
+    const locale = getLocale(segment)
+    const dict = getDictionaryForSegment(segment)
     const supportEmail = getSupportEmail()
 
     return (
         <>
             <Header />
-            <main className="lgl-hub">
+            <main className={`lgl-hub ${legalStyles.hub}`}>
                 <section className="lgl-masthead">
                     <div className="container">
                         <div className="lgl-masthead-grid">
                             <div className="lgl-masthead-lead">
-                                <h1 className="lgl-masthead-title">Legal</h1>
+                                <h1 className="lgl-masthead-title">{dict.legal.title}</h1>
                                 <p className="lgl-masthead-intro">
-                                    Every agreement, policy and disclosure that governs LetBuyy — written to be
-                                    read, not to be survived. One page per subject, plain language at the top of
-                                    each, and the exact clause underneath.
+                                    {dict.legal.intro}
                                 </p>
                             </div>
 
@@ -39,29 +48,28 @@ export default function LegalHubPage() {
                                 label over value, held apart by space. */}
                             <dl className="lgl-facts">
                                 <div>
-                                    <dt>Documents</dt>
+                                    <dt>{dict.legal.documents}</dt>
                                     <dd>{LEGAL_DOCUMENTS.length}</dd>
                                 </div>
                                 <div>
-                                    <dt>Revised</dt>
-                                    <dd>{formatLegalDate(LEGAL_REVISION_DATE)}</dd>
+                                    <dt>{dict.legal.revised}</dt>
+                                    <dd>{formatLegalDate(LEGAL_REVISION_DATE, locale.hreflang)}</dd>
                                 </div>
                                 <div>
-                                    <dt>Jurisdiction</dt>
-                                    <dd>India</dd>
+                                    <dt>{dict.legal.jurisdiction}</dt>
+                                    <dd>{dict.legal.india}</dd>
                                 </div>
                             </dl>
                         </div>
                     </div>
                 </section>
 
-                <LegalStatusBanner />
+                <LegalStatusBanner dict={dict} locale={locale.hreflang} />
 
                 <section className="lgl-shelves">
                     <div className="container">
                         {GROUP_ORDER.map((group, groupIndex) => {
-                            const documents = getDocumentsByGroup(group)
-                            const meta = GROUP_META[group]
+                            const documents = getDocumentsByGroup(group).map(source => ({ ...localizeLegalContent(source, locale.language.code).document, minutes: readingMinutes(source) }))
 
                             return (
                                 <section key={group} className="lgl-shelf" aria-labelledby={`shelf-${group}`}>
@@ -71,11 +79,11 @@ export default function LegalHubPage() {
                                         </span>
                                         <div className="lgl-shelf-titles">
                                             <h2 id={`shelf-${group}`} className="lgl-shelf-title">
-                                                {meta.label}
+                                                {dict.legal[group]}
                                             </h2>
-                                            <p className="lgl-shelf-blurb">{meta.blurb}</p>
+                                            <p className="lgl-shelf-blurb">{dict.legal.groupBlurbs[group]}</p>
                                         </div>
-                                        <span className="lgl-shelf-count">{documents.length}</span>
+                                        <span className="lgl-shelf-count">{documents.length} {dict.legal.documents}</span>
                                     </header>
 
                                     <ul className="lgl-rows">
@@ -89,13 +97,13 @@ export default function LegalHubPage() {
                                                         and a badge made it look like a status. */}
                                                     <span className="lgl-row-meta">
                                                         <span className="lgl-row-stat is-audience">
-                                                            {AUDIENCE_LABEL[doc.audience]}
+                                                            {dict.legal[doc.audience]}
                                                         </span>
                                                         <span className="lgl-row-stat">
-                                                            {doc.clauses.length} clauses
+                                                            {doc.clauses.length} {dict.legal.clauses}
                                                         </span>
                                                         <span className="lgl-row-stat">
-                                                            {readingMinutes(doc)} min
+                                                            {doc.minutes} {dict.legal.minutes}
                                                         </span>
                                                     </span>
                                                     <span className="lgl-row-arrow" aria-hidden="true">
@@ -119,10 +127,9 @@ export default function LegalHubPage() {
                             band relied on a rule to separate itself from the list. */}
                         <div className="lgl-ask-inner">
                             <div className="lgl-ask-copy">
-                                <h2 className="lgl-ask-title">Can&rsquo;t find what you need?</h2>
+                                <h2 className="lgl-ask-title">{dict.legal.cannotFind}</h2>
                                 <p className="lgl-ask-note">
-                                    If a policy does not answer your question, ask us rather than guessing. We
-                                    would rather write a clearer clause than argue about an unclear one.
+                                    {dict.legal.cannotFindNote}
                                 </p>
                             </div>
                             <div className="lgl-ask-actions">
@@ -130,7 +137,7 @@ export default function LegalHubPage() {
                                     {supportEmail}
                                 </a>
                                 <Link href="/legal/grievance" className="lgl-ask-secondary">
-                                    File a grievance
+                                    {dict.legal.fileGrievance}
                                 </Link>
                             </div>
                         </div>

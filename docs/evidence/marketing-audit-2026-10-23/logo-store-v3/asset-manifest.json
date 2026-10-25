@@ -1,0 +1,34 @@
+{
+  "source": "Repo-native SVG refinement inspired by the owner-provided storefront shopping-bag logo.",
+  "palette": "Existing blue-violet LetBuyy identity; dark navy/light wordmark variants.",
+  "wordmark": "Inter Variable, wght 760 / opsz 32; outlined paths. Existing public/fonts/Inter-OFL.txt license retained.",
+  "transparent": true,
+  "assets": [
+    {
+      "file": "apps/marketing/web/public/icons/letbuyy-store-logo-dark-v3.svg",
+      "bytes": 7411,
+      "viewBox": "0 0 636 180",
+      "paths": 24,
+      "allReferencesResolve": true,
+      "vectorOnly": true
+    },
+    {
+      "file": "apps/marketing/web/public/icons/letbuyy-store-logo-light-v3.svg",
+      "bytes": 7412,
+      "viewBox": "0 0 636 180",
+      "paths": 24,
+      "allReferencesResolve": true,
+      "vectorOnly": true
+    },
+    {
+      "file": "apps/marketing/web/public/icons/letbuyy-store-mark-v3.svg",
+      "bytes": 3668,
+      "viewBox": "0 0 176 180",
+      "paths": 17,
+      "allReferencesResolve": true,
+      "vectorOnly": true
+    }
+  ],
+  "usedBy": "BrandLogo: header, mobile menu and footer.",
+  "validation": "XML, unique IDs, resolved gradients, no raster/text/font dependencies; rasterized vector previews inspected at 152px and 210px. Live browser preview unavailable: browser access disabled in Work settings."
+}

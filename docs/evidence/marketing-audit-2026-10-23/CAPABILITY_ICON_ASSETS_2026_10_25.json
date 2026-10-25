@@ -1,0 +1,85 @@
+{
+  "generator": "built-in image_gen for AI and Customers; existing project art reused for the other six",
+  "assets": [
+    {
+      "key": "ai",
+      "prompt": "Use case: stylized-concept. Asset type: a single premium illustrative shortcut icon for a commerce capability map, displayed at 48–56 pixels. Refined tactile 3D product-object rendering, soft rounded bevels, polished but restrained materials, clean simple silhouette, front three-quarter view, soft studio lighting, coordinated violet/ivory/brushed-silver accents. Square composition, single compact subject filling 80 percent with generous fully transparent edges. Actual transparent background, no floor, backplate, text, labels, letters, numbers or watermark. No surrounding decorative objects. Must remain recognizable at 48 pixels. Subject: a lavender and graphite AI processor tile with an inset ivory speech bubble and two subtle circuit terminals on each side. Professional AI assistance concept. Avoid stars, sparkle symbols, orbital rings, planets, faces, robots, humanoids and neon.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-9f330a87-f1da-4869-bcf1-d8bb894a3dbb.png",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/ai-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "customers",
+      "prompt": "Use case: stylized-concept. Asset type: a single premium illustrative shortcut icon for a commerce capability map, displayed at 48–56 pixels. Refined tactile 3D product-object rendering, soft rounded bevels, polished but restrained materials, clean simple silhouette, front three-quarter view, soft studio lighting, coordinated violet/ivory/brushed-silver accents. Square composition, single compact subject filling 80 percent with generous fully transparent edges. Actual transparent background, no floor, backplate, text, labels, letters, numbers or watermark. No surrounding decorative objects. Must remain recognizable at 48 pixels. Subject: two overlapping customer profile cards, one muted rose and one lavender, each with a simple embossed profile silhouette and two short inset lines, backed by a slim brushed silver rim. Professional customer relationship directory concept. Avoid freestanding people figurines, mannequins, toy characters, faces, orbital rings and neon.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-1fc3890a-f1b1-4eb4-a9b3-3de87d30dc81.png",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/customers-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "storefronts",
+      "source": "apps/marketing/web/public/illustrations/capabilities/storefronts-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/storefronts-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "orders",
+      "source": "apps/marketing/web/public/illustrations/capabilities/orders-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/orders-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "inventory",
+      "source": "apps/marketing/web/public/illustrations/capabilities/inventory-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/inventory-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "payments",
+      "source": "apps/marketing/web/public/illustrations/capabilities/payments-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/payments-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "analytics",
+      "source": "apps/marketing/web/public/illustrations/capabilities/analytics-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/analytics-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    },
+    {
+      "key": "b2b",
+      "source": "apps/marketing/web/public/illustrations/capabilities/b2b-v1.png",
+      "mode": "reuse",
+      "asset": "apps/marketing/web/public/illustrations/capabilities/icons/b2b-v2.webp",
+      "width": 256,
+      "height": 256,
+      "transparent": true,
+      "role": "Decorative shortcut in labeled interactive graph nodes, panel headers and accordion controls"
+    }
+  ]
+}

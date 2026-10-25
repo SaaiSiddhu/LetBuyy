@@ -1,0 +1,19 @@
+{
+  "role": "Marketing header, mobile menu and footer brand signature",
+  "source": "Repo-native vector refinement of the existing storefront-in-phone/orbit brand motif. Original logo assets retained.",
+  "wordmark": "Outlined from the existing Inter Variable, weight 650 / optical size 32. SIL Open Font License retained in public/fonts/Inter-OFL.txt.",
+  "dimensions": [
+    620,
+    180
+  ],
+  "transparent": true,
+  "variants": [
+    "letbuyy-signature-light-v2.svg",
+    "letbuyy-signature-dark-v2.svg"
+  ],
+  "asset_bytes": {
+    "light": 10360,
+    "dark": 10360
+  },
+  "scope": "Marketing website only. No mobile app, installed identity, globe, content, navigation or feature changes."
+}

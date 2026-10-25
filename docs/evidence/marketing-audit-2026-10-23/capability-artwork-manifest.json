@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-24",
+  "mode": "built-in image_gen",
+  "purpose": "Capability preview artwork and catalog thumbnails",
+  "assets": [
+    {
+      "id": "orders",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. An open ivory shipping carton with a folded navy hoodie and a cream sneaker neatly packed, a narrow cobalt parcel tape ribbon and a small glass delivery-check token. Show the physical order being prepared, not an app screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-f0e47934-6156-4162-a9ad-ae2455d405f3.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/orders-scene-v1.webp",
+      "width": 640,
+      "height": 427,
+      "alpha": true,
+      "bytes": 35356
+    },
+    {
+      "id": "inventory",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. A refined small warehouse shelf with two levels, orderly ivory and sand cartons, a folded navy garment, a small handheld barcode scanner and an amber stock marker. Compact physical inventory vignette with realistic detail.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-32fc4726-530d-4efb-b1c5-60f119d0f7b7.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/inventory-scene-v1.webp",
+      "width": 640,
+      "height": 585,
+      "alpha": true,
+      "bytes": 70158
+    },
+    {
+      "id": "payments",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. A deep indigo payment terminal and a brushed-silver blank bank card partly inserted, a translucent secure shield and a small warm ivory coin stack. No currency symbols or digits; trustworthy payment processing vignette.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-dc13511c-28ca-45b5-9557-adf0cafbe32c.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/payments-scene-v1.webp",
+      "width": 640,
+      "height": 585,
+      "alpha": true,
+      "bytes": 58868
+    },
+    {
+      "id": "customers",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. Three elegant abstract human portrait busts made from warm ivory ceramic, different hair silhouettes, on subtly overlapping indigo and translucent glass profile discs, with one tiny silver heart token. No facial realism, no lettering. Customer relationships, dignified and professional.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-2a8d2b1f-c737-49a7-a49a-0b4db7f49351.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/customers-scene-v1.webp",
+      "width": 640,
+      "height": 585,
+      "alpha": true,
+      "bytes": 57730
+    },
+    {
+      "id": "analytics",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. A sculptural analytics instrument: four rising indigo and lavender glass columns on a fine silver baseline, an ivory trend ribbon curving upward, and one small magnifying lens. Controlled glass reflections, a precise physical editorial still life, no labels or screen.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-6ca24f14-7bed-44cf-8676-cbb6e3648dce.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/analytics-scene-v1.webp",
+      "width": 640,
+      "height": 427,
+      "alpha": true,
+      "bytes": 32534
+    },
+    {
+      "id": "ai",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. An elegant open ivory notebook beside a small indigo faceted intelligence core surrounded by three connected glass task tiles, a silver pen and one subtle four-point sparkle etched on the core. Workflow intelligence, no robot face, no magic wand, no letters.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-c64021ce-cc42-4e21-9ef0-7d8355ec7c32.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/ai-scene-v1.webp",
+      "width": 640,
+      "height": 427,
+      "alpha": true,
+      "bytes": 49832
+    },
+    {
+      "id": "b2b",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. An ivory and indigo delivery van next to a neatly strapped stack of sand shipping cartons, with a small glass handshake-shaped token. Wholesale fulfillment vignette, sophisticated automotive miniature, no logos or words.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-3b05ee05-c878-4d75-93e7-dee2c16dee66.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/b2b-scene-v1.webp",
+      "width": 640,
+      "height": 427,
+      "alpha": true,
+      "bytes": 43494
+    },
+    {
+      "id": "catalog",
+      "prompt": "Use case: stylized-concept. Asset type: decorative illustration for LetBuyy commerce capability dashboard. Premium miniature 3D product editorial render, precise geometry, polished ceramic, brushed silver edges and restrained translucent glass, deep indigo with warm ivory, subtle accent colors, soft studio lighting. Single coherent compact composition, three-quarter isometric camera, centered with generous transparent margin. Truly transparent background, no backdrop, no floor slab, no surrounding box, no text, letters, numbers, logos or watermark. Crisp real materials, elegant not toy-like, no neon bloom. Asset type instead: product photography contact sheet for commerce thumbnails. EXACTLY 5 individual unbranded apparel items in an evenly spaced single horizontal row with equal width slots, no overlap: from LEFT to RIGHT 1 cream low-top sneaker with navy detail, 2 navy pullover hoodie, 3 ivory short-sleeve tee, 4 beige baseball cap, 5 charcoal jogger pants. All items front three-quarter or front view, same scale to fill each slot, fully visible, generous clear separation, transparent background, crisp premium catalog cutouts with natural fabric stitching, no labels/text/no props. Landscape 5:1 contact sheet if possible.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a16757-933b-7083-88ba-6eaea561d585/exec-88d507fa-3a8e-4743-9c0e-81f823ec0e4e.png",
+      "output": "apps/marketing/web/public/illustrations/capabilities/catalog-scene-v1.webp",
+      "width": 1200,
+      "height": 400,
+      "alpha": true,
+      "bytes": 55352
+    }
+  ],
+  "thumbnails": [
+    {
+      "product": "sneaker",
+      "output": "apps/marketing/web/public/illustrations/capabilities/product-sneaker-v1.webp",
+      "bytes": 6784,
+      "preparation": "Separate existing alpha-connected product from original generated catalog; preserve alpha, resize without distortion. No neighboring items."
+    },
+    {
+      "product": "hoodie",
+      "output": "apps/marketing/web/public/illustrations/capabilities/product-hoodie-v1.webp",
+      "bytes": 8378,
+      "preparation": "Separate existing alpha-connected product from original generated catalog; preserve alpha, resize without distortion. No neighboring items."
+    },
+    {
+      "product": "tee",
+      "output": "apps/marketing/web/public/illustrations/capabilities/product-tee-v1.webp",
+      "bytes": 6332,
+      "preparation": "Separate existing alpha-connected product from original generated catalog; preserve alpha, resize without distortion. No neighboring items."
+    },
+    {
+      "product": "cap",
+      "output": "apps/marketing/web/public/illustrations/capabilities/product-cap-v1.webp",
+      "bytes": 6054,
+      "preparation": "Separate existing alpha-connected product from original generated catalog; preserve alpha, resize without distortion. No neighboring items."
+    },
+    {
+      "product": "jogger",
+      "output": "apps/marketing/web/public/illustrations/capabilities/product-jogger-v1.webp",
+      "bytes": 5906,
+      "preparation": "Separate existing alpha-connected product from original generated catalog; preserve alpha, resize without distortion. No neighboring items."
+    }
+  ]
+}

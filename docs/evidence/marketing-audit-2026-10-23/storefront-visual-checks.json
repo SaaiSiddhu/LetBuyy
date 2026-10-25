@@ -1,0 +1,22 @@
+{
+  "layouts": [
+    {
+      "columns": "112.5px 112.5px",
+      "focusable": 0,
+      "heroOverflow": true,
+      "overflow": true,
+      "products": 4,
+      "viewport": 320
+    },
+    {
+      "columns": "195.75px 195.75px 195.75px 195.75px",
+      "focusable": 0,
+      "overflow": false,
+      "products": 4,
+      "viewport": 1280
+    }
+  ],
+  "phoneDocumentOverflow": false,
+  "capabilitySelection": "Orders opened; Storefronts reopened",
+  "theme": "Light and dark checked"
+}

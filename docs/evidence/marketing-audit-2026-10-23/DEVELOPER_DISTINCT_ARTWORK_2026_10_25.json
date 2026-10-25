@@ -1,0 +1,27 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "assets": [
+    {
+      "key": "developer-api-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground editorial illustration for a commerce API getting-started guide. Primary request: a compact elegant composition of a graphite request card with a simple pair of curly braces, a beautifully machined silver access key passing through a clear optical glass gate, and two tactile ivory product-record cards on the other side showing a small ceramic vase and folded sage fabric. One thin violet connector traces a single left-to-right request and response path. Focus the subject on authorized access to structured product data. Sophisticated high-end studio product photography meets precise editorial 3D design; brushed graphite, optical glass, textured ivory paper, restrained violet and muted teal details. Soft studio light and realistic gentle shadows. Actual transparent background, no floor plane, platform or enclosing rectangle. Landscape 3:2, all objects fully visible within generous margins, strong clean silhouette readable at 350px. No laptop, parcels, gold trim, crystal cubes, radial solar-system composition, charts, metrics, logos, watermark, confetti, readable words or numbers. Concept illustration only.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-3c0429e2-cceb-4def-aec7-7a55415c2fbf.png",
+      "asset": "/illustrations/resources/developer-api-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/developer-api-studio-v1.webp"
+    },
+    {
+      "key": "developer-webhooks-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground editorial illustration for a commerce webhooks guide. Primary request: a clear event-delivery sequence, with a tactile ivory card showing a small order receipt and subtle teal event pulse at the left, a sealed violet-and-ivory envelope with a small embossed signature mark at the center, and an upright graphite receiver tray holding two ivory event cards at the right. Fine clear glass connectors carry a small violet bead from the event card through the signed envelope toward the receiver. Communicate event, signed delivery and receiving without a laptop or repeated code workspace. Sophisticated high-end studio product photography meets precise editorial 3D design. Natural paper grain, matte graphite, delicate glass refraction, restrained violet and muted teal. Soft studio lighting and realistic shadows. Actual transparent background, no floor, platform, enclosing rectangle or frame. Landscape 3:2, fully visible subjects with generous clear margins, legible at 350px. No readable words, numbers, fake live notifications, guarantees, charts, logos, gold embellishment, watermark or confetti. Concept illustration only.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-b3145cee-2cb8-44cb-87c6-6522f1f61dda.png",
+      "asset": "/illustrations/resources/developer-webhooks-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/developer-webhooks-studio-v1.webp"
+    },
+    {
+      "key": "developer-integrations-studio",
+      "prompt": "Use case: stylized-concept. Asset type: premium foreground editorial illustration for a custom commerce integrations guide. Primary request: three distinct but coordinated business record groups, a graphite-bound inventory ledger with abstract ruled rows on the left, an ivory product catalog card displaying a sculptural ceramic vessel at the center, and a slim graphite folio holding an ivory invoice sheet on the right. Two precise clear-glass bridge connectors with small muted violet junctions link these record groups. The bridges suggest mapping and syncing information between business tools. Sophisticated restrained high-end studio product photography meets precise editorial 3D design, tactile paper, brushed graphite, natural ceramic, optical glass, subtle violet and sage accents. Soft studio light with realistic gentle shadows. Actual transparent background. Landscape 3:2, every object fully visible within generous transparent margins, strong silhouette readable in a 350px article card. No laptop, large keys, shipping parcel, generic glowing cube, gold trim, robot, orb, radial network, floor plane, platform, enclosing background, charts, logos, watermark, readable words or numbers. Concept illustration, not a software screenshot.",
+      "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-addc7040-fb8c-4dc6-b3f6-f0695c42e233.png",
+      "asset": "/illustrations/resources/developer-integrations-studio-v1.webp",
+      "thumbnail": "/illustrations/resources/thumbnails/developer-integrations-studio-v1.webp"
+    }
+  ]
+}

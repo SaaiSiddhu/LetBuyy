@@ -20,12 +20,12 @@ export default function UntranslatedNotice({
 }: {
     locale: Locale
     dict: Dictionary
-    variant: 'legal' | 'article'
+    variant: 'legal' | 'article' | 'page'
 }) {
     if (locale.language.code === 'en') return null
 
-    const title = variant === 'legal' ? dict.contentFallback.legalTitle : dict.contentFallback.articleTitle
-    const body = variant === 'legal' ? dict.contentFallback.legalBody : dict.contentFallback.articleBody
+    const title = variant === 'legal' ? dict.contentFallback.legalTitle : variant === 'page' ? dict.contentFallback.pageTitle : dict.contentFallback.articleTitle
+    const body = variant === 'legal' ? dict.contentFallback.legalBody : variant === 'page' ? dict.contentFallback.pageBody : dict.contentFallback.articleBody
 
     return (
         <aside className="i18n-notice" role="note">

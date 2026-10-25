@@ -1,0 +1,4096 @@
+[
+  {
+    "path": "/in",
+    "status": 200,
+    "url": "http://localhost:9006/in",
+    "title": [
+      "LetBuyy \u2014 India-first commerce operating system | LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-hi",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi",
+    "title": [
+      "LetBuyy \u2014 \u092d\u093e\u0930\u0924 \u0915\u0947 \u0932\u093f\u090f \u092c\u0928\u093e \u0915\u0949\u092e\u0930\u094d\u0938 \u0911\u092a\u0930\u0947\u091f\u093f\u0902\u0917 \u0938\u093f\u0938\u094d\u091f\u092e | LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-ta",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta",
+    "title": [
+      "LetBuyy \u2014 \u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe\u0bb5\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0bb5\u0ba3\u0bbf\u0b95 \u0b87\u0baf\u0b99\u0bcd\u0b95\u0bc1\u0ba4\u0bb3\u0bae\u0bcd | LetBuyy"
+    ]
+  },
+  {
+    "path": "/sitemap.xml",
+    "status": 200,
+    "url": "http://localhost:9006/sitemap.xml",
+    "title": []
+  },
+  {
+    "path": "/robots.txt",
+    "status": 200,
+    "url": "http://localhost:9006/robots.txt",
+    "title": []
+  },
+  {
+    "path": "/api/founding-pricing",
+    "status": 200,
+    "url": "http://localhost:9006/api/founding-pricing",
+    "title": []
+  },
+  {
+    "path": "/in/resources/platform/how-themes-work",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform/how-themes-work",
+    "title": [
+      "How Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/platform/introduction-to-apps",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform/introduction-to-apps",
+    "title": [
+      "Introduction to the LetBuyy App Marketplace | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers",
+    "title": [
+      "Developers \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/pricing",
+    "status": 200,
+    "url": "http://localhost:9006/in/pricing",
+    "title": [
+      "Pricing"
+    ]
+  },
+  {
+    "path": "/pricing",
+    "status": 200,
+    "url": "http://localhost:9006/in/pricing",
+    "title": [
+      "Pricing"
+    ]
+  },
+  {
+    "path": "/in/demo",
+    "status": 200,
+    "url": "http://localhost:9006/in/demo",
+    "title": [
+      "Request a demo"
+    ]
+  },
+  {
+    "path": "/in/create",
+    "status": 200,
+    "url": "http://localhost:9006/in/create",
+    "title": [
+      "LetBuyy \u2014 India-first commerce operating system | LetBuyy"
+    ]
+  },
+  {
+    "path": "/in/sitemap",
+    "status": 200,
+    "url": "http://localhost:9006/in/sitemap",
+    "title": [
+      "LetBuyy Sitemap"
+    ]
+  },
+  {
+    "path": "/in/resources",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce",
+    "title": [
+      "Ecommerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/changelog",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/changelog",
+    "title": [
+      "Changelog \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/contact",
+    "status": 200,
+    "url": "http://localhost:9006/in/contact",
+    "title": [
+      "Contact LetBuyy"
+    ]
+  },
+  {
+    "path": "/in/legal/grievance",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/grievance",
+    "title": [
+      "Grievance Redressal"
+    ]
+  },
+  {
+    "path": "/in/legal/security",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/security",
+    "title": [
+      "Security Practices"
+    ]
+  },
+  {
+    "path": "/in/legal",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal",
+    "title": [
+      "Legal"
+    ]
+  },
+  {
+    "path": "/in/legal/terms",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/terms",
+    "title": [
+      "Terms of Service"
+    ]
+  },
+  {
+    "path": "/in/legal/privacy",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/privacy",
+    "title": [
+      "Privacy Policy"
+    ]
+  },
+  {
+    "path": "/in/legal/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/refunds",
+    "title": [
+      "Refunds &amp; Cancellations"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform/how-themes-work",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform/how-themes-work",
+    "title": [
+      "How Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform/introduction-to-apps",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform/introduction-to-apps",
+    "title": [
+      "Introduction to the LetBuyy App Marketplace | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers",
+    "title": [
+      "Developers \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/pricing",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/pricing",
+    "title": [
+      "Pricing"
+    ]
+  },
+  {
+    "path": "/in-hi/demo",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/demo",
+    "title": [
+      "Request a demo"
+    ]
+  },
+  {
+    "path": "/in-hi/create",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/create",
+    "title": [
+      "LetBuyy \u2014 \u092d\u093e\u0930\u0924 \u0915\u0947 \u0932\u093f\u090f \u092c\u0928\u093e \u0915\u0949\u092e\u0930\u094d\u0938 \u0911\u092a\u0930\u0947\u091f\u093f\u0902\u0917 \u0938\u093f\u0938\u094d\u091f\u092e | LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-hi/sitemap",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/sitemap",
+    "title": [
+      "LetBuyy Sitemap"
+    ]
+  },
+  {
+    "path": "/in-hi/resources",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce",
+    "title": [
+      "Ecommerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/changelog",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/changelog",
+    "title": [
+      "Changelog \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/contact",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/contact",
+    "title": [
+      "Contact LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/grievance",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/grievance",
+    "title": [
+      "Grievance Redressal"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/security",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/security",
+    "title": [
+      "Security Practices"
+    ]
+  },
+  {
+    "path": "/in-hi/legal",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal",
+    "title": [
+      "Legal"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/terms",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/terms",
+    "title": [
+      "Terms of Service"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/privacy",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/privacy",
+    "title": [
+      "Privacy Policy"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/refunds",
+    "title": [
+      "Refunds &amp; Cancellations"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform/how-themes-work",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform/how-themes-work",
+    "title": [
+      "How Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform/introduction-to-apps",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform/introduction-to-apps",
+    "title": [
+      "Introduction to the LetBuyy App Marketplace | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers",
+    "title": [
+      "Developers \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/pricing",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/pricing",
+    "title": [
+      "Pricing"
+    ]
+  },
+  {
+    "path": "/in-ta/demo",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/demo",
+    "title": [
+      "Request a demo"
+    ]
+  },
+  {
+    "path": "/in-ta/create",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/create",
+    "title": [
+      "LetBuyy \u2014 \u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe\u0bb5\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0bb5\u0ba3\u0bbf\u0b95 \u0b87\u0baf\u0b99\u0bcd\u0b95\u0bc1\u0ba4\u0bb3\u0bae\u0bcd | LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-ta/sitemap",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/sitemap",
+    "title": [
+      "LetBuyy Sitemap"
+    ]
+  },
+  {
+    "path": "/in-ta/resources",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce",
+    "title": [
+      "Ecommerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/changelog",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/changelog",
+    "title": [
+      "Changelog \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/contact",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/contact",
+    "title": [
+      "Contact LetBuyy"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/grievance",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/grievance",
+    "title": [
+      "Grievance Redressal"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/security",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/security",
+    "title": [
+      "Security Practices"
+    ]
+  },
+  {
+    "path": "/in-ta/legal",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal",
+    "title": [
+      "Legal"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/terms",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/terms",
+    "title": [
+      "Terms of Service"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/privacy",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/privacy",
+    "title": [
+      "Privacy Policy"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/refunds",
+    "title": [
+      "Refunds &amp; Cancellations"
+    ]
+  },
+  {
+    "path": "/in/resources/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth",
+    "title": [
+      "Growth \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments",
+    "title": [
+      "Payments \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations",
+    "title": [
+      "Operations \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce",
+    "title": [
+      "AI Commerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/search",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/search",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in/resources/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform",
+    "title": [
+      "Platform \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/themes",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/themes",
+    "title": [
+      "#themes \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/storefront",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/storefront",
+    "title": [
+      "#storefront \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/customization",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/customization",
+    "title": [
+      "#customization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/platform",
+    "title": [
+      "#platform \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/platform/letbuyy-platform-overview",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform/letbuyy-platform-overview",
+    "title": [
+      "LetBuyy Platform Overview: Everything in One Place | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/authors/letbuyy-team",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/authors/letbuyy-team",
+    "title": [
+      "LetBuyy Team \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/rss.xml",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/rss.xml",
+    "title": [
+      "LetBuyy Resources",
+      "LetBuyy Resources",
+      "The Merchant Control Plane: Your Commerce OS Dashboard",
+      "The LetBuyy AI Copilot Guide",
+      "LetBuyy Platform Overview: Everything in One Place",
+      "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "AI Commerce Explained: What It Means for Your Store",
+      "Building Your First LetBuyy App",
+      "Multi-Warehouse Inventory Management",
+      "Getting Started with the LetBuyy API",
+      "How to Get Your First 100 Orders",
+      "Automating Store Operations with AI",
+      "Product Page Optimization: The Complete Guide",
+      "Workflow Automation for Indian Merchants",
+      "Customer Retention Strategies That Work for Indian Brands",
+      "How To Start an Online Store in India (2026 Guide)",
+      "AI Product Recommendations That Actually Convert",
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers",
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD",
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores",
+      "How Themes Work on LetBuyy",
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond",
+      "Webhooks: Real-Time Commerce Event Streaming",
+      "Inventory Management: From Chaos to Control",
+      "How To Launch a D2C Brand in India (Step by Step)",
+      "How Liquid Themes Work on LetBuyy",
+      "UPI vs COD: Which Payment Method Wins for Indian Stores",
+      "How Product Reviews Increase Conversion by 270%",
+      "Email Marketing for Ecommerce: Building Your List in India",
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently",
+      "Introduction to the LetBuyy App Marketplace",
+      "Building a Customer-Friendly Returns Policy for India",
+      "Creating Custom Integrations with LetBuyy",
+      "The Complete Store SEO Checklist for Indian Merchants",
+      "Understanding Ecommerce Fulfillment in India",
+      "GST for Ecommerce in India: The Complete 2026 Guide",
+      "GST Invoices for Indian Ecommerce: What Must Be Included"
+    ]
+  },
+  {
+    "path": "/in/resources/developers/liquid-theming-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers/liquid-theming-guide",
+    "title": [
+      "How Liquid Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/platform/building-first-letbuyy-store",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform/building-first-letbuyy-store",
+    "title": [
+      "Building Your First LetBuyy Store: A Complete Walkthrough | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/apps",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/apps",
+    "title": [
+      "#apps \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/marketplace",
+    "title": [
+      "#marketplace \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/integrations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/integrations",
+    "title": [
+      "#integrations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/api",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/api",
+    "title": [
+      "#api \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/developers",
+    "title": [
+      "#developers \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/integration",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/integration",
+    "title": [
+      "#integration \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/authentication",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/authentication",
+    "title": [
+      "#authentication \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/webhooks",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/webhooks",
+    "title": [
+      "#webhooks \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/events",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/events",
+    "title": [
+      "#events \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/oauth",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/oauth",
+    "title": [
+      "#oauth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/developers/letbuyy-api-getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers/letbuyy-api-getting-started",
+    "title": [
+      "Getting Started with the LetBuyy API | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/developers/webhooks-complete-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers/webhooks-complete-guide",
+    "title": [
+      "Webhooks: Real-Time Commerce Event Streaming | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/developers/building-first-letbuyy-app",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers/building-first-letbuyy-app",
+    "title": [
+      "Building Your First LetBuyy App | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/developers/custom-integrations-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/developers/custom-integrations-guide",
+    "title": [
+      "Creating Custom Integrations with LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/signup",
+    "status": 200,
+    "url": "http://localhost:9002/signup",
+    "title": [
+      "LetBuyy - Create Your Online Store"
+    ]
+  },
+  {
+    "path": "/in/resources/releases",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/releases",
+    "title": [
+      "Platform Releases \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/legal/acceptable-use",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/acceptable-use",
+    "title": [
+      "Acceptable Use Policy"
+    ]
+  },
+  {
+    "path": "/in/legal/api-terms",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/api-terms",
+    "title": [
+      "Developer &amp; API Terms"
+    ]
+  },
+  {
+    "path": "/in/legal/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/marketplace",
+    "title": [
+      "Marketplace Partner Terms"
+    ]
+  },
+  {
+    "path": "/in/legal/billing",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/billing",
+    "title": [
+      "Billing, Plans &amp; Taxes"
+    ]
+  },
+  {
+    "path": "/in/legal/payouts",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/payouts",
+    "title": [
+      "Payouts &amp; Settlements"
+    ]
+  },
+  {
+    "path": "/in/legal/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/shipping",
+    "title": [
+      "Shipping &amp; Delivery"
+    ]
+  },
+  {
+    "path": "/in/legal/cookies",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/cookies",
+    "title": [
+      "Cookie Policy"
+    ]
+  },
+  {
+    "path": "/in/legal/data-processing",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/data-processing",
+    "title": [
+      "Data Processing Addendum"
+    ]
+  },
+  {
+    "path": "/in/legal/subprocessors",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/subprocessors",
+    "title": [
+      "Sub-processor Register"
+    ]
+  },
+  {
+    "path": "/in/legal/intellectual-property",
+    "status": 200,
+    "url": "http://localhost:9006/in/legal/intellectual-property",
+    "title": [
+      "Intellectual Property &amp; Takedown"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/upi",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/upi",
+    "title": [
+      "#upi \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/gst",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/gst",
+    "title": [
+      "#gst \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/cod",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/cod",
+    "title": [
+      "#cod \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/d2c",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/d2c",
+    "title": [
+      "#d2c \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/inventory",
+    "title": [
+      "#inventory \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/shopify",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/shopify",
+    "title": [
+      "#shopify \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce/how-to-start-an-online-store-india",
+    "title": [
+      "How To Start an Online Store in India (2026 Guide) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce/product-page-optimization",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce/product-page-optimization",
+    "title": [
+      "Product Page Optimization: The Complete Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce/store-seo-checklist",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce/store-seo-checklist",
+    "title": [
+      "The Complete Store SEO Checklist for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments/upi-vs-cod-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments/upi-vs-cod-india",
+    "title": [
+      "UPI vs COD: Which Payment Method Wins for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce/reducing-cart-abandonment",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce/reducing-cart-abandonment",
+    "title": [
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ecommerce/how-product-reviews-increase-conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ecommerce/how-product-reviews-increase-conversion",
+    "title": [
+      "How Product Reviews Increase Conversion by 270% | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/growth/first-100-orders-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth/first-100-orders-guide",
+    "title": [
+      "How to Get Your First 100 Orders | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/growth/d2c-brand-launch-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth/d2c-brand-launch-guide",
+    "title": [
+      "How To Launch a D2C Brand in India (Step by Step) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments/gst-for-ecommerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments/gst-for-ecommerce-india",
+    "title": [
+      "GST for Ecommerce in India: The Complete 2026 Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments/invoicing-india-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments/invoicing-india-merchants",
+    "title": [
+      "GST Invoices for Indian Ecommerce: What Must Be Included | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments/refunds-returns-policy-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments/refunds-returns-policy-india",
+    "title": [
+      "Building a Customer-Friendly Returns Policy for India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations/inventory-management-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations/inventory-management-guide",
+    "title": [
+      "Inventory Management: From Chaos to Control | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations/order-fulfillment-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations/order-fulfillment-guide",
+    "title": [
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations/shipping-india-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations/shipping-india-guide",
+    "title": [
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations/multi-warehouse-inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations/multi-warehouse-inventory",
+    "title": [
+      "Multi-Warehouse Inventory Management | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/growth/email-marketing-ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth/email-marketing-ecommerce",
+    "title": [
+      "Email Marketing for Ecommerce: Building Your List in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/platform/merchant-web-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/platform/merchant-web-guide",
+    "title": [
+      "The Merchant Control Plane: Your Commerce OS Dashboard | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce/commerce-copilot-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce/commerce-copilot-guide",
+    "title": [
+      "The LetBuyy AI Copilot Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce/ai-commerce-explained",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce/ai-commerce-explained",
+    "title": [
+      "AI Commerce Explained: What It Means for Your Store | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/store-setup",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/store-setup",
+    "title": [
+      "#store-setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/india",
+    "title": [
+      "#india \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/beginners",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/beginners",
+    "title": [
+      "#beginners \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/conversion",
+    "title": [
+      "#conversion \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/product-pages",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/product-pages",
+    "title": [
+      "#product-pages \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/ux",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/ux",
+    "title": [
+      "#ux \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/copywriting",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/copywriting",
+    "title": [
+      "#copywriting \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth",
+    "title": [
+      "Growth \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments",
+    "title": [
+      "Payments \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations",
+    "title": [
+      "Operations \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce",
+    "title": [
+      "AI Commerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/search",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/search",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform",
+    "title": [
+      "Platform \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/themes",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/themes",
+    "title": [
+      "#themes \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/storefront",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/storefront",
+    "title": [
+      "#storefront \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/customization",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/customization",
+    "title": [
+      "#customization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/platform",
+    "title": [
+      "#platform \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform/letbuyy-platform-overview",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform/letbuyy-platform-overview",
+    "title": [
+      "LetBuyy Platform Overview: Everything in One Place | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/authors/letbuyy-team",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/authors/letbuyy-team",
+    "title": [
+      "LetBuyy Team \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/rss.xml",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/rss.xml",
+    "title": [
+      "LetBuyy Resources",
+      "LetBuyy Resources",
+      "The Merchant Control Plane: Your Commerce OS Dashboard",
+      "The LetBuyy AI Copilot Guide",
+      "LetBuyy Platform Overview: Everything in One Place",
+      "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "AI Commerce Explained: What It Means for Your Store",
+      "Building Your First LetBuyy App",
+      "Multi-Warehouse Inventory Management",
+      "Getting Started with the LetBuyy API",
+      "How to Get Your First 100 Orders",
+      "Automating Store Operations with AI",
+      "Product Page Optimization: The Complete Guide",
+      "Workflow Automation for Indian Merchants",
+      "Customer Retention Strategies That Work for Indian Brands",
+      "How To Start an Online Store in India (2026 Guide)",
+      "AI Product Recommendations That Actually Convert",
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers",
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD",
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores",
+      "How Themes Work on LetBuyy",
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond",
+      "Webhooks: Real-Time Commerce Event Streaming",
+      "Inventory Management: From Chaos to Control",
+      "How To Launch a D2C Brand in India (Step by Step)",
+      "How Liquid Themes Work on LetBuyy",
+      "UPI vs COD: Which Payment Method Wins for Indian Stores",
+      "How Product Reviews Increase Conversion by 270%",
+      "Email Marketing for Ecommerce: Building Your List in India",
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently",
+      "Introduction to the LetBuyy App Marketplace",
+      "Building a Customer-Friendly Returns Policy for India",
+      "Creating Custom Integrations with LetBuyy",
+      "The Complete Store SEO Checklist for Indian Merchants",
+      "Understanding Ecommerce Fulfillment in India",
+      "GST for Ecommerce in India: The Complete 2026 Guide",
+      "GST Invoices for Indian Ecommerce: What Must Be Included"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers/liquid-theming-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers/liquid-theming-guide",
+    "title": [
+      "How Liquid Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform/building-first-letbuyy-store",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform/building-first-letbuyy-store",
+    "title": [
+      "Building Your First LetBuyy Store: A Complete Walkthrough | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/apps",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/apps",
+    "title": [
+      "#apps \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/marketplace",
+    "title": [
+      "#marketplace \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/integrations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/integrations",
+    "title": [
+      "#integrations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/api",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/api",
+    "title": [
+      "#api \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/developers",
+    "title": [
+      "#developers \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/integration",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/integration",
+    "title": [
+      "#integration \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/authentication",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/authentication",
+    "title": [
+      "#authentication \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/webhooks",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/webhooks",
+    "title": [
+      "#webhooks \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/events",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/events",
+    "title": [
+      "#events \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/oauth",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/oauth",
+    "title": [
+      "#oauth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers/letbuyy-api-getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers/letbuyy-api-getting-started",
+    "title": [
+      "Getting Started with the LetBuyy API | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers/webhooks-complete-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers/webhooks-complete-guide",
+    "title": [
+      "Webhooks: Real-Time Commerce Event Streaming | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers/building-first-letbuyy-app",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers/building-first-letbuyy-app",
+    "title": [
+      "Building Your First LetBuyy App | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/developers/custom-integrations-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/developers/custom-integrations-guide",
+    "title": [
+      "Creating Custom Integrations with LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/signup",
+    "status": 200,
+    "url": "http://localhost:9002/signup",
+    "title": [
+      "LetBuyy - Create Your Online Store"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/releases",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/releases",
+    "title": [
+      "Platform Releases \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/acceptable-use",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/acceptable-use",
+    "title": [
+      "Acceptable Use Policy"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/api-terms",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/api-terms",
+    "title": [
+      "Developer &amp; API Terms"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/marketplace",
+    "title": [
+      "Marketplace Partner Terms"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/billing",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/billing",
+    "title": [
+      "Billing, Plans &amp; Taxes"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/payouts",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/payouts",
+    "title": [
+      "Payouts &amp; Settlements"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/shipping",
+    "title": [
+      "Shipping &amp; Delivery"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/cookies",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/cookies",
+    "title": [
+      "Cookie Policy"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/data-processing",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/data-processing",
+    "title": [
+      "Data Processing Addendum"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/subprocessors",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/subprocessors",
+    "title": [
+      "Sub-processor Register"
+    ]
+  },
+  {
+    "path": "/in-hi/legal/intellectual-property",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/legal/intellectual-property",
+    "title": [
+      "Intellectual Property &amp; Takedown"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/upi",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/upi",
+    "title": [
+      "#upi \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/gst",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/gst",
+    "title": [
+      "#gst \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/cod",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/cod",
+    "title": [
+      "#cod \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/d2c",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/d2c",
+    "title": [
+      "#d2c \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/inventory",
+    "title": [
+      "#inventory \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/shopify",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/shopify",
+    "title": [
+      "#shopify \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce/how-to-start-an-online-store-india",
+    "title": [
+      "How To Start an Online Store in India (2026 Guide) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce/product-page-optimization",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce/product-page-optimization",
+    "title": [
+      "Product Page Optimization: The Complete Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce/store-seo-checklist",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce/store-seo-checklist",
+    "title": [
+      "The Complete Store SEO Checklist for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments/upi-vs-cod-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments/upi-vs-cod-india",
+    "title": [
+      "UPI vs COD: Which Payment Method Wins for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce/reducing-cart-abandonment",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce/reducing-cart-abandonment",
+    "title": [
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ecommerce/how-product-reviews-increase-conversion",
+    "title": [
+      "How Product Reviews Increase Conversion by 270% | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth/first-100-orders-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth/first-100-orders-guide",
+    "title": [
+      "How to Get Your First 100 Orders | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth/d2c-brand-launch-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth/d2c-brand-launch-guide",
+    "title": [
+      "How To Launch a D2C Brand in India (Step by Step) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments/gst-for-ecommerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments/gst-for-ecommerce-india",
+    "title": [
+      "GST for Ecommerce in India: The Complete 2026 Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments/invoicing-india-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments/invoicing-india-merchants",
+    "title": [
+      "GST Invoices for Indian Ecommerce: What Must Be Included | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments/refunds-returns-policy-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments/refunds-returns-policy-india",
+    "title": [
+      "Building a Customer-Friendly Returns Policy for India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations/inventory-management-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations/inventory-management-guide",
+    "title": [
+      "Inventory Management: From Chaos to Control | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations/order-fulfillment-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations/order-fulfillment-guide",
+    "title": [
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations/shipping-india-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations/shipping-india-guide",
+    "title": [
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations/multi-warehouse-inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations/multi-warehouse-inventory",
+    "title": [
+      "Multi-Warehouse Inventory Management | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth/email-marketing-ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth/email-marketing-ecommerce",
+    "title": [
+      "Email Marketing for Ecommerce: Building Your List in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/platform/merchant-web-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/platform/merchant-web-guide",
+    "title": [
+      "The Merchant Control Plane: Your Commerce OS Dashboard | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce/commerce-copilot-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce/commerce-copilot-guide",
+    "title": [
+      "The LetBuyy AI Copilot Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce/ai-commerce-explained",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce/ai-commerce-explained",
+    "title": [
+      "AI Commerce Explained: What It Means for Your Store | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/store-setup",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/store-setup",
+    "title": [
+      "#store-setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/india",
+    "title": [
+      "#india \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/beginners",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/beginners",
+    "title": [
+      "#beginners \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/conversion",
+    "title": [
+      "#conversion \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/product-pages",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/product-pages",
+    "title": [
+      "#product-pages \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/ux",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/ux",
+    "title": [
+      "#ux \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/copywriting",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/copywriting",
+    "title": [
+      "#copywriting \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth",
+    "title": [
+      "Growth \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments",
+    "title": [
+      "Payments \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations",
+    "title": [
+      "Operations \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce",
+    "title": [
+      "AI Commerce \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/search",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/search",
+    "title": [
+      "Resources \u2014 Commerce guides for Indian merchants"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform",
+    "title": [
+      "Platform \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/themes",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/themes",
+    "title": [
+      "#themes \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/storefront",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/storefront",
+    "title": [
+      "#storefront \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/customization",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/customization",
+    "title": [
+      "#customization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/platform",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/platform",
+    "title": [
+      "#platform \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform/letbuyy-platform-overview",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform/letbuyy-platform-overview",
+    "title": [
+      "LetBuyy Platform Overview: Everything in One Place | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/authors/letbuyy-team",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/authors/letbuyy-team",
+    "title": [
+      "LetBuyy Team \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/rss.xml",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/rss.xml",
+    "title": [
+      "LetBuyy Resources",
+      "LetBuyy Resources",
+      "The Merchant Control Plane: Your Commerce OS Dashboard",
+      "The LetBuyy AI Copilot Guide",
+      "LetBuyy Platform Overview: Everything in One Place",
+      "Building Your First LetBuyy Store: A Complete Walkthrough",
+      "AI Commerce Explained: What It Means for Your Store",
+      "Building Your First LetBuyy App",
+      "Multi-Warehouse Inventory Management",
+      "Getting Started with the LetBuyy API",
+      "How to Get Your First 100 Orders",
+      "Automating Store Operations with AI",
+      "Product Page Optimization: The Complete Guide",
+      "Workflow Automation for Indian Merchants",
+      "Customer Retention Strategies That Work for Indian Brands",
+      "How To Start an Online Store in India (2026 Guide)",
+      "AI Product Recommendations That Actually Convert",
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers",
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD",
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores",
+      "How Themes Work on LetBuyy",
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond",
+      "Webhooks: Real-Time Commerce Event Streaming",
+      "Inventory Management: From Chaos to Control",
+      "How To Launch a D2C Brand in India (Step by Step)",
+      "How Liquid Themes Work on LetBuyy",
+      "UPI vs COD: Which Payment Method Wins for Indian Stores",
+      "How Product Reviews Increase Conversion by 270%",
+      "Email Marketing for Ecommerce: Building Your List in India",
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently",
+      "Introduction to the LetBuyy App Marketplace",
+      "Building a Customer-Friendly Returns Policy for India",
+      "Creating Custom Integrations with LetBuyy",
+      "The Complete Store SEO Checklist for Indian Merchants",
+      "Understanding Ecommerce Fulfillment in India",
+      "GST for Ecommerce in India: The Complete 2026 Guide",
+      "GST Invoices for Indian Ecommerce: What Must Be Included"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers/liquid-theming-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers/liquid-theming-guide",
+    "title": [
+      "How Liquid Themes Work on LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform/building-first-letbuyy-store",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform/building-first-letbuyy-store",
+    "title": [
+      "Building Your First LetBuyy Store: A Complete Walkthrough | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/apps",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/apps",
+    "title": [
+      "#apps \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/marketplace",
+    "title": [
+      "#marketplace \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/integrations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/integrations",
+    "title": [
+      "#integrations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/api",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/api",
+    "title": [
+      "#api \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/developers",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/developers",
+    "title": [
+      "#developers \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/integration",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/integration",
+    "title": [
+      "#integration \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/authentication",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/authentication",
+    "title": [
+      "#authentication \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/webhooks",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/webhooks",
+    "title": [
+      "#webhooks \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/events",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/events",
+    "title": [
+      "#events \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/oauth",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/oauth",
+    "title": [
+      "#oauth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers/letbuyy-api-getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers/letbuyy-api-getting-started",
+    "title": [
+      "Getting Started with the LetBuyy API | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers/webhooks-complete-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers/webhooks-complete-guide",
+    "title": [
+      "Webhooks: Real-Time Commerce Event Streaming | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers/building-first-letbuyy-app",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers/building-first-letbuyy-app",
+    "title": [
+      "Building Your First LetBuyy App | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/developers/custom-integrations-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/developers/custom-integrations-guide",
+    "title": [
+      "Creating Custom Integrations with LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/signup",
+    "status": 200,
+    "url": "http://localhost:9002/signup",
+    "title": [
+      "LetBuyy - Create Your Online Store"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/releases",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/releases",
+    "title": [
+      "Platform Releases \u2014 LetBuyy | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/acceptable-use",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/acceptable-use",
+    "title": [
+      "Acceptable Use Policy"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/api-terms",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/api-terms",
+    "title": [
+      "Developer &amp; API Terms"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/marketplace",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/marketplace",
+    "title": [
+      "Marketplace Partner Terms"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/billing",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/billing",
+    "title": [
+      "Billing, Plans &amp; Taxes"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/payouts",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/payouts",
+    "title": [
+      "Payouts &amp; Settlements"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/shipping",
+    "title": [
+      "Shipping &amp; Delivery"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/cookies",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/cookies",
+    "title": [
+      "Cookie Policy"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/data-processing",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/data-processing",
+    "title": [
+      "Data Processing Addendum"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/subprocessors",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/subprocessors",
+    "title": [
+      "Sub-processor Register"
+    ]
+  },
+  {
+    "path": "/in-ta/legal/intellectual-property",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/legal/intellectual-property",
+    "title": [
+      "Intellectual Property &amp; Takedown"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/upi",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/upi",
+    "title": [
+      "#upi \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/gst",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/gst",
+    "title": [
+      "#gst \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/cod",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/cod",
+    "title": [
+      "#cod \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/d2c",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/d2c",
+    "title": [
+      "#d2c \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/inventory",
+    "title": [
+      "#inventory \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/shopify",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/shopify",
+    "title": [
+      "#shopify \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce/how-to-start-an-online-store-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce/how-to-start-an-online-store-india",
+    "title": [
+      "How To Start an Online Store in India (2026 Guide) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce/product-page-optimization",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce/product-page-optimization",
+    "title": [
+      "Product Page Optimization: The Complete Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce/store-seo-checklist",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce/store-seo-checklist",
+    "title": [
+      "The Complete Store SEO Checklist for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments/upi-vs-cod-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments/upi-vs-cod-india",
+    "title": [
+      "UPI vs COD: Which Payment Method Wins for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce/reducing-cart-abandonment",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce/reducing-cart-abandonment",
+    "title": [
+      "Reducing Cart Abandonment: 12 Proven Strategies for Indian Stores | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ecommerce/how-product-reviews-increase-conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ecommerce/how-product-reviews-increase-conversion",
+    "title": [
+      "How Product Reviews Increase Conversion by 270% | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth/first-100-orders-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth/first-100-orders-guide",
+    "title": [
+      "How to Get Your First 100 Orders | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth/d2c-brand-launch-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth/d2c-brand-launch-guide",
+    "title": [
+      "How To Launch a D2C Brand in India (Step by Step) | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments/gst-for-ecommerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments/gst-for-ecommerce-india",
+    "title": [
+      "GST for Ecommerce in India: The Complete 2026 Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments/invoicing-india-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments/invoicing-india-merchants",
+    "title": [
+      "GST Invoices for Indian Ecommerce: What Must Be Included | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments/refunds-returns-policy-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments/refunds-returns-policy-india",
+    "title": [
+      "Building a Customer-Friendly Returns Policy for India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations/inventory-management-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations/inventory-management-guide",
+    "title": [
+      "Inventory Management: From Chaos to Control | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations/order-fulfillment-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations/order-fulfillment-guide",
+    "title": [
+      "Order Fulfillment: Processing 100 Orders Per Day Efficiently | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations/shipping-india-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations/shipping-india-guide",
+    "title": [
+      "Shipping in India: Pincode Coverage, Rates &amp; Couriers | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations/multi-warehouse-inventory",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations/multi-warehouse-inventory",
+    "title": [
+      "Multi-Warehouse Inventory Management | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth/email-marketing-ecommerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth/email-marketing-ecommerce",
+    "title": [
+      "Email Marketing for Ecommerce: Building Your List in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/platform/merchant-web-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/platform/merchant-web-guide",
+    "title": [
+      "The Merchant Control Plane: Your Commerce OS Dashboard | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce/commerce-copilot-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce/commerce-copilot-guide",
+    "title": [
+      "The LetBuyy AI Copilot Guide | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce/ai-commerce-explained",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce/ai-commerce-explained",
+    "title": [
+      "AI Commerce Explained: What It Means for Your Store | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/store-setup",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/store-setup",
+    "title": [
+      "#store-setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/india",
+    "title": [
+      "#india \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/beginners",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/beginners",
+    "title": [
+      "#beginners \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/conversion",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/conversion",
+    "title": [
+      "#conversion \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/product-pages",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/product-pages",
+    "title": [
+      "#product-pages \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/ux",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/ux",
+    "title": [
+      "#ux \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/copywriting",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/copywriting",
+    "title": [
+      "#copywriting \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/growth",
+    "title": [
+      "#growth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/organic",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/organic",
+    "title": [
+      "#organic \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/whatsapp",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/whatsapp",
+    "title": [
+      "#whatsapp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/brand",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/brand",
+    "title": [
+      "#brand \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/launch",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/launch",
+    "title": [
+      "#launch \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/growth/social-commerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth/social-commerce-india",
+    "title": [
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/growth/retention-strategies-india",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/growth/retention-strategies-india",
+    "title": [
+      "Customer Retention Strategies That Work for Indian Brands | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/payments",
+    "title": [
+      "#payments \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/tax",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/tax",
+    "title": [
+      "#tax \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/compliance",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/compliance",
+    "title": [
+      "#compliance \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/invoicing",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/invoicing",
+    "title": [
+      "#invoicing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/payments/razorpay-integration-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/payments/razorpay-integration-guide",
+    "title": [
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/operations",
+    "title": [
+      "#operations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/warehouse",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/warehouse",
+    "title": [
+      "#warehouse \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/stock",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/stock",
+    "title": [
+      "#stock \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/fulfillment",
+    "title": [
+      "#fulfillment \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/orders",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/orders",
+    "title": [
+      "#orders \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/scaling",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/scaling",
+    "title": [
+      "#scaling \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/shipping",
+    "title": [
+      "#shipping \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/operations/understanding-fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/operations/understanding-fulfillment",
+    "title": [
+      "Understanding Ecommerce Fulfillment in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/ai",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/ai",
+    "title": [
+      "#ai \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/automation",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/automation",
+    "title": [
+      "#automation \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/commerce",
+    "title": [
+      "#commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/future",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/future",
+    "title": [
+      "#future \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/efficiency",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/efficiency",
+    "title": [
+      "#efficiency \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/copilot",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/copilot",
+    "title": [
+      "#copilot \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/letbuyy",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/letbuyy",
+    "title": [
+      "#letbuyy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce/automating-operations-ai",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce/automating-operations-ai",
+    "title": [
+      "Automating Store Operations with AI | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce/ai-product-recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce/ai-product-recommendations",
+    "title": [
+      "AI Product Recommendations That Actually Convert | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/ai-commerce/workflow-automation-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/ai-commerce/workflow-automation-merchants",
+    "title": [
+      "Workflow Automation for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/product",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/product",
+    "title": [
+      "#product \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/getting-started",
+    "title": [
+      "#getting-started \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/walkthrough",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/walkthrough",
+    "title": [
+      "#walkthrough \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/overview",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/overview",
+    "title": [
+      "#overview \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/architecture",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/architecture",
+    "title": [
+      "#architecture \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/liquid",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/liquid",
+    "title": [
+      "#liquid \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/authors/arjun-developer",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/authors/arjun-developer",
+    "title": [
+      "Arjun Mehta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/erp",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/erp",
+    "title": [
+      "#erp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/authors/priya-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/authors/priya-commerce",
+    "title": [
+      "Priya Sharma \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/seo",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/seo",
+    "title": [
+      "#seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/technical-seo",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/technical-seo",
+    "title": [
+      "#technical-seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/google",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/google",
+    "title": [
+      "#google \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/authors/neha-payments",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/authors/neha-payments",
+    "title": [
+      "Neha Gupta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/cart",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/cart",
+    "title": [
+      "#cart \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/recovery",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/recovery",
+    "title": [
+      "#recovery \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/reviews",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/reviews",
+    "title": [
+      "#reviews \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/social-proof",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/social-proof",
+    "title": [
+      "#social-proof \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/trust",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/trust",
+    "title": [
+      "#trust \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/b2b",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/b2b",
+    "title": [
+      "#b2b \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/returns",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/returns",
+    "title": [
+      "#returns \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/refunds",
+    "title": [
+      "#refunds \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/policy",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/policy",
+    "title": [
+      "#policy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/customer-service",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/customer-service",
+    "title": [
+      "#customer-service \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/authors/ravi-operations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/authors/ravi-operations",
+    "title": [
+      "Ravi Krishnan \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/logistics",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/logistics",
+    "title": [
+      "#logistics \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/courier",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/courier",
+    "title": [
+      "#courier \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/multi-location",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/multi-location",
+    "title": [
+      "#multi-location \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/email",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/email",
+    "title": [
+      "#email \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/marketing",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/marketing",
+    "title": [
+      "#marketing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/list-building",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/list-building",
+    "title": [
+      "#list-building \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/merchant-dashboard",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/merchant-dashboard",
+    "title": [
+      "#merchant-dashboard \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/growth",
+    "title": [
+      "#growth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/organic",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/organic",
+    "title": [
+      "#organic \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/whatsapp",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/whatsapp",
+    "title": [
+      "#whatsapp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/brand",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/brand",
+    "title": [
+      "#brand \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/launch",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/launch",
+    "title": [
+      "#launch \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth/social-commerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth/social-commerce-india",
+    "title": [
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/growth/retention-strategies-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/growth/retention-strategies-india",
+    "title": [
+      "Customer Retention Strategies That Work for Indian Brands | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/payments",
+    "title": [
+      "#payments \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/tax",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/tax",
+    "title": [
+      "#tax \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/compliance",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/compliance",
+    "title": [
+      "#compliance \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/invoicing",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/invoicing",
+    "title": [
+      "#invoicing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/payments/razorpay-integration-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/payments/razorpay-integration-guide",
+    "title": [
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/operations",
+    "title": [
+      "#operations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/warehouse",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/warehouse",
+    "title": [
+      "#warehouse \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/stock",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/stock",
+    "title": [
+      "#stock \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/fulfillment",
+    "title": [
+      "#fulfillment \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/orders",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/orders",
+    "title": [
+      "#orders \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/scaling",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/scaling",
+    "title": [
+      "#scaling \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/shipping",
+    "title": [
+      "#shipping \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/operations/understanding-fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/operations/understanding-fulfillment",
+    "title": [
+      "Understanding Ecommerce Fulfillment in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/ai",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/ai",
+    "title": [
+      "#ai \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/automation",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/automation",
+    "title": [
+      "#automation \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/commerce",
+    "title": [
+      "#commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/future",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/future",
+    "title": [
+      "#future \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/efficiency",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/efficiency",
+    "title": [
+      "#efficiency \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/copilot",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/copilot",
+    "title": [
+      "#copilot \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/letbuyy",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/letbuyy",
+    "title": [
+      "#letbuyy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce/automating-operations-ai",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce/automating-operations-ai",
+    "title": [
+      "Automating Store Operations with AI | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce/ai-product-recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce/ai-product-recommendations",
+    "title": [
+      "AI Product Recommendations That Actually Convert | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/ai-commerce/workflow-automation-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/ai-commerce/workflow-automation-merchants",
+    "title": [
+      "Workflow Automation for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/product",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/product",
+    "title": [
+      "#product \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/getting-started",
+    "title": [
+      "#getting-started \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/walkthrough",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/walkthrough",
+    "title": [
+      "#walkthrough \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/overview",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/overview",
+    "title": [
+      "#overview \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/architecture",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/architecture",
+    "title": [
+      "#architecture \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/liquid",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/liquid",
+    "title": [
+      "#liquid \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/authors/arjun-developer",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/authors/arjun-developer",
+    "title": [
+      "Arjun Mehta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/erp",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/erp",
+    "title": [
+      "#erp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/authors/priya-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/authors/priya-commerce",
+    "title": [
+      "Priya Sharma \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/seo",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/seo",
+    "title": [
+      "#seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/technical-seo",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/technical-seo",
+    "title": [
+      "#technical-seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/google",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/google",
+    "title": [
+      "#google \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/authors/neha-payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/authors/neha-payments",
+    "title": [
+      "Neha Gupta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/cart",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/cart",
+    "title": [
+      "#cart \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/recovery",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/recovery",
+    "title": [
+      "#recovery \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/reviews",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/reviews",
+    "title": [
+      "#reviews \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/social-proof",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/social-proof",
+    "title": [
+      "#social-proof \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/trust",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/trust",
+    "title": [
+      "#trust \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/b2b",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/b2b",
+    "title": [
+      "#b2b \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/returns",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/returns",
+    "title": [
+      "#returns \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/refunds",
+    "title": [
+      "#refunds \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/policy",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/policy",
+    "title": [
+      "#policy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/customer-service",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/customer-service",
+    "title": [
+      "#customer-service \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/authors/ravi-operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/authors/ravi-operations",
+    "title": [
+      "Ravi Krishnan \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/logistics",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/logistics",
+    "title": [
+      "#logistics \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/courier",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/courier",
+    "title": [
+      "#courier \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/multi-location",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/multi-location",
+    "title": [
+      "#multi-location \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/email",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/email",
+    "title": [
+      "#email \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/marketing",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/marketing",
+    "title": [
+      "#marketing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/list-building",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/list-building",
+    "title": [
+      "#list-building \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/merchant-dashboard",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/merchant-dashboard",
+    "title": [
+      "#merchant-dashboard \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/growth",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/growth",
+    "title": [
+      "#growth \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/organic",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/organic",
+    "title": [
+      "#organic \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/whatsapp",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/whatsapp",
+    "title": [
+      "#whatsapp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/brand",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/brand",
+    "title": [
+      "#brand \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/launch",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/launch",
+    "title": [
+      "#launch \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth/social-commerce-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth/social-commerce-india",
+    "title": [
+      "Social Commerce in India: Instagram, WhatsApp &amp; Beyond | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/growth/retention-strategies-india",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/growth/retention-strategies-india",
+    "title": [
+      "Customer Retention Strategies That Work for Indian Brands | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/payments",
+    "title": [
+      "#payments \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/tax",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/tax",
+    "title": [
+      "#tax \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/compliance",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/compliance",
+    "title": [
+      "#compliance \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/invoicing",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/invoicing",
+    "title": [
+      "#invoicing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/payments/razorpay-integration-guide",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/payments/razorpay-integration-guide",
+    "title": [
+      "Accepting Payments on LetBuyy: UPI, Cards, and COD | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/operations",
+    "title": [
+      "#operations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/warehouse",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/warehouse",
+    "title": [
+      "#warehouse \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/stock",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/stock",
+    "title": [
+      "#stock \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/fulfillment",
+    "title": [
+      "#fulfillment \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/orders",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/orders",
+    "title": [
+      "#orders \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/scaling",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/scaling",
+    "title": [
+      "#scaling \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/shipping",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/shipping",
+    "title": [
+      "#shipping \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/operations/understanding-fulfillment",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/operations/understanding-fulfillment",
+    "title": [
+      "Understanding Ecommerce Fulfillment in India | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/ai",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/ai",
+    "title": [
+      "#ai \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/automation",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/automation",
+    "title": [
+      "#automation \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/commerce",
+    "title": [
+      "#commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/future",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/future",
+    "title": [
+      "#future \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/efficiency",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/efficiency",
+    "title": [
+      "#efficiency \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/copilot",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/copilot",
+    "title": [
+      "#copilot \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/letbuyy",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/letbuyy",
+    "title": [
+      "#letbuyy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce/automating-operations-ai",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce/automating-operations-ai",
+    "title": [
+      "Automating Store Operations with AI | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce/ai-product-recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce/ai-product-recommendations",
+    "title": [
+      "AI Product Recommendations That Actually Convert | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/ai-commerce/workflow-automation-merchants",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/ai-commerce/workflow-automation-merchants",
+    "title": [
+      "Workflow Automation for Indian Merchants | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/product",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/product",
+    "title": [
+      "#product \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/getting-started",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/getting-started",
+    "title": [
+      "#getting-started \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/walkthrough",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/walkthrough",
+    "title": [
+      "#walkthrough \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/overview",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/overview",
+    "title": [
+      "#overview \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/architecture",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/architecture",
+    "title": [
+      "#architecture \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/liquid",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/liquid",
+    "title": [
+      "#liquid \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/authors/arjun-developer",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/authors/arjun-developer",
+    "title": [
+      "Arjun Mehta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/erp",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/erp",
+    "title": [
+      "#erp \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/authors/priya-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/authors/priya-commerce",
+    "title": [
+      "Priya Sharma \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/seo",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/seo",
+    "title": [
+      "#seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/technical-seo",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/technical-seo",
+    "title": [
+      "#technical-seo \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/google",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/google",
+    "title": [
+      "#google \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/authors/neha-payments",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/authors/neha-payments",
+    "title": [
+      "Neha Gupta \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/cart",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/cart",
+    "title": [
+      "#cart \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/recovery",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/recovery",
+    "title": [
+      "#recovery \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/reviews",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/reviews",
+    "title": [
+      "#reviews \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/social-proof",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/social-proof",
+    "title": [
+      "#social-proof \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/trust",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/trust",
+    "title": [
+      "#trust \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/b2b",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/b2b",
+    "title": [
+      "#b2b \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/returns",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/returns",
+    "title": [
+      "#returns \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/refunds",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/refunds",
+    "title": [
+      "#refunds \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/policy",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/policy",
+    "title": [
+      "#policy \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/customer-service",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/customer-service",
+    "title": [
+      "#customer-service \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/authors/ravi-operations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/authors/ravi-operations",
+    "title": [
+      "Ravi Krishnan \u2014 LetBuyy Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/logistics",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/logistics",
+    "title": [
+      "#logistics \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/courier",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/courier",
+    "title": [
+      "#courier \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/multi-location",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/multi-location",
+    "title": [
+      "#multi-location \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/email",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/email",
+    "title": [
+      "#email \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/marketing",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/marketing",
+    "title": [
+      "#marketing \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/list-building",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/list-building",
+    "title": [
+      "#list-building \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/merchant-dashboard",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/merchant-dashboard",
+    "title": [
+      "#merchant-dashboard \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/social-media",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/social-media",
+    "title": [
+      "#social-media \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/instagram",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/instagram",
+    "title": [
+      "#instagram \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/social-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/social-commerce",
+    "title": [
+      "#social-commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/retention",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/retention",
+    "title": [
+      "#retention \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/loyalty",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/loyalty",
+    "title": [
+      "#loyalty \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/ltv",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/ltv",
+    "title": [
+      "#ltv \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/repeat-purchase",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/repeat-purchase",
+    "title": [
+      "#repeat-purchase \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/razorpay",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/razorpay",
+    "title": [
+      "#razorpay \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/setup",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/setup",
+    "title": [
+      "#setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/3pl",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/3pl",
+    "title": [
+      "#3pl \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/recommendations",
+    "title": [
+      "#recommendations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/personalization",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/personalization",
+    "title": [
+      "#personalization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in/resources/tag/workflows",
+    "status": 200,
+    "url": "http://localhost:9006/in/resources/tag/workflows",
+    "title": [
+      "#workflows \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/social-media",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/social-media",
+    "title": [
+      "#social-media \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/instagram",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/instagram",
+    "title": [
+      "#instagram \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/social-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/social-commerce",
+    "title": [
+      "#social-commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/retention",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/retention",
+    "title": [
+      "#retention \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/loyalty",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/loyalty",
+    "title": [
+      "#loyalty \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/ltv",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/ltv",
+    "title": [
+      "#ltv \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/repeat-purchase",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/repeat-purchase",
+    "title": [
+      "#repeat-purchase \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/razorpay",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/razorpay",
+    "title": [
+      "#razorpay \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/setup",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/setup",
+    "title": [
+      "#setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/3pl",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/3pl",
+    "title": [
+      "#3pl \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/recommendations",
+    "title": [
+      "#recommendations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/personalization",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/personalization",
+    "title": [
+      "#personalization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-hi/resources/tag/workflows",
+    "status": 200,
+    "url": "http://localhost:9006/in-hi/resources/tag/workflows",
+    "title": [
+      "#workflows \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/social-media",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/social-media",
+    "title": [
+      "#social-media \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/instagram",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/instagram",
+    "title": [
+      "#instagram \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/social-commerce",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/social-commerce",
+    "title": [
+      "#social-commerce \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/retention",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/retention",
+    "title": [
+      "#retention \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/loyalty",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/loyalty",
+    "title": [
+      "#loyalty \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/ltv",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/ltv",
+    "title": [
+      "#ltv \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/repeat-purchase",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/repeat-purchase",
+    "title": [
+      "#repeat-purchase \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/razorpay",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/razorpay",
+    "title": [
+      "#razorpay \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/setup",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/setup",
+    "title": [
+      "#setup \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/3pl",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/3pl",
+    "title": [
+      "#3pl \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/recommendations",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/recommendations",
+    "title": [
+      "#recommendations \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/personalization",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/personalization",
+    "title": [
+      "#personalization \u2014 Resources | LetBuyy Resources"
+    ]
+  },
+  {
+    "path": "/in-ta/resources/tag/workflows",
+    "status": 200,
+    "url": "http://localhost:9006/in-ta/resources/tag/workflows",
+    "title": [
+      "#workflows \u2014 Resources | LetBuyy Resources"
+    ]
+  }
+]

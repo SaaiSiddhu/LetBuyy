@@ -1,0 +1,8 @@
+{
+  "generator": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset type: premium editorial illustration for LetBuyy's Security Practices page, separate from text. Create a refined studio still-life of an upright frosted glass security shield with a small inset keyhole, backed by three separate graphite and ivory data compartments, with a subtle lavender accent edge and one sage verification tab. Tangible architectural object design, smooth porcelain, brushed metal, soft realistic lighting, elegant restrained proportions, crisp silhouette and generous negative space. Landscape composition centered, all objects fully visible. Real transparent background, no scene backdrop or floor plane, gentle contact shadow only. Palette graphite, warm ivory, muted lavender and sage, matching a professional dark commerce website. No lettering, no fake UI text, no padlock chains, no gold, no neon glow, no orbiting nodes, no solar system, no badges claiming certification. Communicate careful separation and protected data.",
+  "source": "/Users/saai_mithra/.codex/generated_images/01a171a5-f29a-7610-a4b8-00ed1c12d66c/exec-3fe0e4ff-791a-48dc-8469-f90138ab4e58.png",
+  "asset": "/illustrations/support/security-data-studio-v1.webp",
+  "role": "Decorative security hero, separate from policy text",
+  "transparent_background": true
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "answerColor": "rgb(203, 213, 225)",
+    "overflow": false,
+    "questions": [
+      {
+        "heading": "H3",
+        "height": 64,
+        "text": "What is LetBuyy?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "How is LetBuyy different from Shopify?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 64,
+        "text": "Can I use my own custom domain?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "Which payment methods does LetBuyy support?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "Can I migrate from Shopify, WooCommerce, or another platform?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "Is LetBuyy suitable for growing businesses?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "Do you charge transaction commissions?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 82,
+        "text": "What happens after my free trial ends?",
+        "width": 280
+      },
+      {
+        "heading": "H3",
+        "height": 64,
+        "text": "Who owns my store data?",
+        "width": 280
+      }
+    ],
+    "viewport": 320
+  },
+  {
+    "answer": "rgb(203, 213, 225)",
+    "background": "rgb(10, 9, 18)",
+    "text": "rgb(255, 255, 255)",
+    "theme": "dark",
+    "viewport": 1280
+  }
+]

@@ -1,5 +1,7 @@
 'use client'
 
+
+import { useCopy } from '@/components/i18n/useCopy'
 import { useState } from 'react'
 import { Button } from '@letbuyy/ui'
 
@@ -10,6 +12,7 @@ interface Props {
 }
 
 export default function BookmarkButton({ slug, title, category }: Props) {
+  const { t } = useCopy()
   const [saved, setSaved] = useState(() => {
     if (typeof window === 'undefined') return false
     try {
@@ -37,13 +40,13 @@ export default function BookmarkButton({ slug, title, category }: Props) {
       type="button"
       onClick={toggle}
       className={`rc-action-btn${saved ? ' active' : ''}`}
-      aria-label={saved ? 'Remove bookmark' : 'Bookmark this article'}
-      title={saved ? 'Bookmarked' : 'Save for later'}
+      aria-label={t(saved ? 'Remove bookmark' : 'Bookmark this article')}
+      title={t(saved ? 'Bookmarked' : 'Save for later')}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
       </svg>
-      <span>{saved ? 'Saved' : 'Save'}</span>
+      <span>{t(saved ? 'Saved' : 'Save')}</span>
     </Button>
   )
 }

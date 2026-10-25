@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import {
     BarChart3,
     CreditCard,
-    MaterialIcon,
+    Sparkles,
     Package,
     ShoppingBag,
     Store,
@@ -43,14 +43,14 @@ function radialPos(idx: number, total = 8) {
 }
 
 const NODES: CommerceNode[] = [
-    { id: 'storefront', label: 'Storefront', icon: Store,       ...radialPos(0), stroke: 'rgb(20 184 166)',   fill: 'rgba(20,184,166,0.14)',   delay: 0,    particleDur: 2.6, particleBegin: 0 },
-    { id: 'orders',     label: 'Orders',     icon: ShoppingBag, ...radialPos(1), stroke: 'rgb(59 130 246)',   fill: 'rgba(59,130,246,0.14)',   delay: 0.08, particleDur: 2.9, particleBegin: 0.8 },
-    { id: 'payments',   label: 'Payments',   icon: CreditCard,  ...radialPos(2), stroke: 'rgb(16 185 129)',   fill: 'rgba(16,185,129,0.14)',   delay: 0.16, particleDur: 2.4, particleBegin: 1.6 },
-    { id: 'analytics',  label: 'Analytics',  icon: BarChart3,   ...radialPos(3), stroke: 'rgb(139 92 246)',   fill: 'rgba(139,92,246,0.14)',   delay: 0.24, particleDur: 2.7, particleBegin: 0.4 },
-    { id: 'inventory',  label: 'Inventory',  icon: Package,     ...radialPos(4), stroke: 'rgb(245 158 11)',   fill: 'rgba(245,158,11,0.14)',   delay: 0.32, particleDur: 2.5, particleBegin: 1.2 },
-    { id: 'customers',  label: 'Customers',  icon: Users,       ...radialPos(5), stroke: 'rgb(236 72 153)',   fill: 'rgba(236,72,153,0.14)',   delay: 0.40, particleDur: 2.8, particleBegin: 2.0 },
-    { id: 'ai',         label: 'AI',         materialName: 'assistant', ...radialPos(6), stroke: 'rgb(167 139 250)',  fill: 'rgba(167,139,250,0.14)',  delay: 0.48, particleDur: 3.0, particleBegin: 0.2 },
-    { id: 'b2b',        label: 'B2B',        icon: Truck,       ...radialPos(7), stroke: 'rgb(6 182 212)',    fill: 'rgba(6,182,212,0.14)',    delay: 0.56, particleDur: 2.6, particleBegin: 1.4 },
+    { id: 'storefront', label: 'Storefront', icon: Store,       ...radialPos(0), stroke: 'var(--lb-primitive-color-teal-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-teal-500) 14%, transparent)',   delay: 0,    particleDur: 2.6, particleBegin: 0 },
+    { id: 'orders',     label: 'Orders',     icon: ShoppingBag, ...radialPos(1), stroke: 'var(--lb-primitive-color-blue-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-blue-500) 14%, transparent)',   delay: 0.08, particleDur: 2.9, particleBegin: 0.8 },
+    { id: 'payments',   label: 'Payments',   icon: CreditCard,  ...radialPos(2), stroke: 'var(--lb-primitive-color-emerald-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-emerald-500) 14%, transparent)',   delay: 0.16, particleDur: 2.4, particleBegin: 1.6 },
+    { id: 'analytics',  label: 'Analytics',  icon: BarChart3,   ...radialPos(3), stroke: 'var(--lb-primitive-color-purple-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-purple-500) 14%, transparent)',   delay: 0.24, particleDur: 2.7, particleBegin: 0.4 },
+    { id: 'inventory',  label: 'Inventory',  icon: Package,     ...radialPos(4), stroke: 'var(--lb-primitive-color-amber-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-amber-500) 14%, transparent)',   delay: 0.32, particleDur: 2.5, particleBegin: 1.2 },
+    { id: 'customers',  label: 'Customers',  icon: Users,       ...radialPos(5), stroke: 'var(--lb-primitive-color-pink-500)',   fill: 'color-mix(in srgb, var(--lb-primitive-color-pink-500) 14%, transparent)',   delay: 0.40, particleDur: 2.8, particleBegin: 2.0 },
+    { id: 'ai',         label: 'AI',         materialName: 'assistant', ...radialPos(6), stroke: 'var(--lb-primitive-color-purple-400)',  fill: 'color-mix(in srgb, var(--lb-primitive-color-purple-400) 14%, transparent)',  delay: 0.48, particleDur: 3.0, particleBegin: 0.2 },
+    { id: 'b2b',        label: 'B2B',        icon: Truck,       ...radialPos(7), stroke: 'var(--lb-primitive-color-cyan-500)',    fill: 'color-mix(in srgb, var(--lb-primitive-color-cyan-500) 14%, transparent)',    delay: 0.56, particleDur: 2.6, particleBegin: 1.4 },
 ]
 
 
@@ -70,8 +70,8 @@ export default function CommerceNetwork() {
             >
                 <defs>
                     <radialGradient id="cn-hub-glow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="rgba(139,92,246,0.28)" />
-                        <stop offset="100%" stopColor="rgba(139,92,246,0)" />
+                        <stop offset="0%" stopColor="color-mix(in srgb, var(--lb-primitive-color-purple-500) 28%, transparent)" />
+                        <stop offset="100%" stopColor="color-mix(in srgb, var(--lb-primitive-color-purple-500) 0%, transparent)" />
                     </radialGradient>
 
                     {NODES.map(n => (
@@ -81,7 +81,7 @@ export default function CommerceNetwork() {
                             x1={CX} y1={CY} x2={n.x} y2={n.y}
                             gradientUnits="userSpaceOnUse"
                         >
-                            <stop offset="0%" stopColor="rgba(139,92,246,0.6)" />
+                            <stop offset="0%" stopColor="color-mix(in srgb, var(--lb-primitive-color-purple-500) 60%, transparent)" />
                             <stop offset="100%" stopColor={n.stroke} stopOpacity="0.4" />
                         </linearGradient>
                     ))}
@@ -186,23 +186,23 @@ export default function CommerceNetwork() {
                     transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     style={{ transformOrigin: `${CX}px ${CY}px` }}
                 >
-                    <circle cx={CX} cy={CY} r="60" fill="none" stroke="rgba(139,92,246,0.22)" strokeWidth="1">
+                    <circle cx={CX} cy={CY} r="60" fill="none" stroke="color-mix(in srgb, var(--lb-primitive-color-purple-500) 22%, transparent)" strokeWidth="1">
                         {!isReduced && <>
                             <animate attributeName="r" values="60;78;60" dur="3.2s" repeatCount="indefinite" />
                             <animate attributeName="opacity" values="0.22;0;0.22" dur="3.2s" repeatCount="indefinite" />
                         </>}
                     </circle>
-                    <circle cx={CX} cy={CY} r="52" fill="none" stroke="rgba(139,92,246,0.16)" strokeWidth="1">
+                    <circle cx={CX} cy={CY} r="52" fill="none" stroke="color-mix(in srgb, var(--lb-primitive-color-purple-500) 16%, transparent)" strokeWidth="1">
                         {!isReduced && <>
                             <animate attributeName="r" values="52;66;52" dur="3.2s" begin="0.8s" repeatCount="indefinite" />
                             <animate attributeName="opacity" values="0.16;0;0.16" dur="3.2s" begin="0.8s" repeatCount="indefinite" />
                         </>}
                     </circle>
                     {/* Bloom layer for hub glow */}
-                    <circle cx={CX} cy={CY} r="50" fill="rgba(10,9,18,0.96)" stroke="rgba(139,92,246,0.55)" strokeWidth="1.5" filter="url(#cn-hub-bloom)" />
+                    <circle cx={CX} cy={CY} r="50" fill="color-mix(in srgb, var(--lb-color-surface-subdued) 96%, transparent)" stroke="color-mix(in srgb, var(--lb-primitive-color-purple-500) 55%, transparent)" strokeWidth="1.5" filter="url(#cn-hub-bloom)" />
                     {/* Crisp hub on top */}
-                    <circle cx={CX} cy={CY} r="50" fill="rgba(10,9,18,0.96)" stroke="rgba(139,92,246,0.55)" strokeWidth="1.5" />
-                    <circle cx={CX} cy={CY} r="44" fill="rgba(139,92,246,0.12)" />
+                    <circle cx={CX} cy={CY} r="50" fill="color-mix(in srgb, var(--lb-color-surface-subdued) 96%, transparent)" stroke="color-mix(in srgb, var(--lb-primitive-color-purple-500) 55%, transparent)" strokeWidth="1.5" />
+                    <circle cx={CX} cy={CY} r="44" fill="color-mix(in srgb, var(--lb-primitive-color-purple-500) 12%, transparent)" />
                 </motion.g>
 
                 {/* Node labels */}
@@ -215,7 +215,7 @@ export default function CommerceNetwork() {
                             key={n.id}
                             x={labelX} y={labelY}
                             textAnchor={anchor}
-                            fill="rgba(148,163,184,0.85)"
+                            fill="color-mix(in srgb, var(--lb-color-surface-subdued) 85%, transparent)"
                             fontSize="11" fontWeight="640"
                             fontFamily="ui-sans-serif, system-ui, sans-serif"
                             initial={{ opacity: 0 }}
@@ -229,10 +229,10 @@ export default function CommerceNetwork() {
 
                 {/* Hub label — dominantBaseline="central" places glyph midpoint at y, not baseline */}
                 <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>
-                    <text x={CX} y={CY - 8} textAnchor="middle" dominantBaseline="central" fill="rgba(196,181,253,1)" fontSize="10" fontWeight="780" fontFamily="ui-sans-serif, system-ui, sans-serif" letterSpacing="0.08em">
+                    <text x={CX} y={CY - 8} textAnchor="middle" dominantBaseline="central" fill="var(--lb-primitive-color-purple-300)" fontSize="10" fontWeight="780" fontFamily="ui-sans-serif, system-ui, sans-serif" letterSpacing="0.08em">
                         COMMERCE
                     </text>
-                    <text x={CX} y={CY + 8} textAnchor="middle" dominantBaseline="central" fill="rgba(196,181,253,1)" fontSize="10" fontWeight="780" fontFamily="ui-sans-serif, system-ui, sans-serif" letterSpacing="0.08em">
+                    <text x={CX} y={CY + 8} textAnchor="middle" dominantBaseline="central" fill="var(--lb-primitive-color-purple-300)" fontSize="10" fontWeight="780" fontFamily="ui-sans-serif, system-ui, sans-serif" letterSpacing="0.08em">
                         OS
                     </text>
                 </motion.g>
@@ -253,7 +253,7 @@ export default function CommerceNetwork() {
                             transition={{ duration: 0.4, delay: 0.5 + n.delay, ease: [0.34, 1.56, 0.64, 1] }}
                         >
                             {n.materialName
-                                ? <MaterialIcon name={n.materialName} size={ICON_SIZE} />
+                                ? <Sparkles width={ICON_SIZE} height={ICON_SIZE} aria-hidden="true" />
                                 : NodeIcon
                                     ? <NodeIcon width={ICON_SIZE} height={ICON_SIZE} strokeWidth={1.6} />
                                     : null

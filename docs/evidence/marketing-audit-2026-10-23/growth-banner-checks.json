@@ -1,0 +1,56 @@
+[
+  {
+    "actions": [
+      {
+        "height": 48,
+        "href": "http://localhost:9002/signup",
+        "text": "Start free trial"
+      },
+      {
+        "height": 48,
+        "href": "http://localhost:9006/pricing",
+        "text": "View pricing"
+      }
+    ],
+    "card": {
+      "bottom": 4060.7734375,
+      "height": 601.5625,
+      "left": 20,
+      "right": 300,
+      "top": 3459.2109375,
+      "width": 280,
+      "x": 20,
+      "y": 3459.2109375
+    },
+    "overflow": false,
+    "stats": "109px 109px",
+    "viewport": 320
+  },
+  {
+    "actions": [
+      {
+        "height": 48,
+        "href": "http://localhost:9002/signup",
+        "text": "Start free trial"
+      },
+      {
+        "height": 48,
+        "href": "http://localhost:9006/pricing",
+        "text": "View pricing"
+      }
+    ],
+    "card": {
+      "bottom": 6381.15625,
+      "height": 389.703125,
+      "left": 64,
+      "right": 1216,
+      "top": 5991.453125,
+      "width": 1152,
+      "x": 64,
+      "y": 5991.453125
+    },
+    "overflow": false,
+    "stats": "248.5px 248.5px 248.5px 248.5px",
+    "viewport": 1280
+  }
+]

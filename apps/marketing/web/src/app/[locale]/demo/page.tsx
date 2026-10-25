@@ -1,7 +1,10 @@
+
+import Copy from '@/components/i18n/Copy'
 import type { Metadata } from 'next'
 import Link from '@/components/i18n/LocaleLink'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import MarketingIllustration from '@/components/MarketingIllustration'
 import DemoRequestForm from '@/components/demo/DemoRequestForm'
 import { LOCALES, getLocale } from '@/lib/i18n/locales'
 import { buildAlternates } from '@/lib/i18n/routing'
@@ -43,12 +46,10 @@ export default async function DemoPage({ params }: { params: Promise<{ locale: s
             <main className="ctc">
                 <section className="ctc-hero">
                     <div className="container">
-                        <h1 className="ctc-title">See it on your own products</h1>
+                        <h1 className="ctc-title"><Copy text={"See it on your own products"} /></h1>
                         <p className="ctc-intro">
-                            Thirty minutes with someone who builds LetBuyy. We set up a storefront
-                            against your catalogue, take a live UPI and COD order through checkout,
-                            and show the GST invoice it produces — then answer whatever you ask.
-                        </p>
+                            <Copy text={"Thirty minutes with someone who builds LetBuyy. We set up a storefront against your catalogue, take a live UPI and COD order through checkout, and show the GST invoice it produces — then answer whatever you ask."} /></p>
+                        <MarketingIllustration artwork="launch" className="marketing-illustration--demo" />
                     </div>
                 </section>
 
@@ -61,10 +62,10 @@ export default async function DemoPage({ params }: { params: Promise<{ locale: s
                 <section className="ctc-foot">
                     <div className="container">
                         <p className="ctc-foot-note">
-                            Not ready for a call? Read the{' '}
-                            <Link href="/resources">guide library</Link>, check{' '}
-                            <Link href="/pricing">pricing</Link>, or just{' '}
-                            <Link href="/contact">email us</Link>.
+                            <Copy text={"Not ready for a call? Read the"} />{' '}
+                            <Link href="/resources"><Copy text={"guide library"} /></Link><Copy text={", check"} />{' '}
+                            <Link href="/pricing"><Copy text={"pricing"} /></Link><Copy text={", or just"} />{' '}
+                            <Link href="/contact"><Copy text={"email us"} /></Link>.
                         </p>
                     </div>
                 </section>

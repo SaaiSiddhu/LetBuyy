@@ -4,13 +4,13 @@
  * and opposite dates to a reader, and an effective date is exactly the wrong
  * thing to leave ambiguous.
  */
-export function formatLegalDate(iso: string): string {
+export function formatLegalDate(iso: string, locale = 'en-IN'): string {
     if (!iso) return 'Not yet set'
 
     const date = new Date(`${iso}T00:00:00.000Z`)
     if (Number.isNaN(date.getTime())) return 'Not yet set'
 
-    return new Intl.DateTimeFormat('en-IN', {
+    return new Intl.DateTimeFormat(locale, {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

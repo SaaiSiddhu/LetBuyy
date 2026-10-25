@@ -1,0 +1,9 @@
+.figure { margin: var(--lb-space-6) 0; padding-block: var(--lb-space-4); }
+.figure img { display: block; width: 100%; height: auto; max-height: 270px; object-fit: contain; }
+.figure figcaption { display: grid; gap: var(--lb-space-2); max-width: 48ch; margin: var(--lb-space-4) auto 0; text-align: center; color: var(--lb-color-text-subdued); font-size: var(--lb-font-size-secondary); line-height: 1.65; }
+.label { font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-semibold); letter-spacing: .08em; text-transform: uppercase; color: var(--lb-color-primary-text); }
+.figure small { font-size: var(--lb-font-size-caption); }
+@media (max-width: 640px) {
+  .figure { margin-block: var(--lb-space-5); }
+  .figure img { max-height: 210px; }
+}

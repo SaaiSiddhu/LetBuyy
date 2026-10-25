@@ -1,0 +1,214 @@
+{
+  "reference": {
+    "url": "https://vercel.com/",
+    "top": {
+      "header": {
+        "backdrop": "none",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(31, 31, 31)",
+        "box": {
+          "bottom": 64,
+          "height": 64,
+          "left": 0,
+          "right": 1280,
+          "top": 0,
+          "width": 1280,
+          "x": 0,
+          "y": 0
+        },
+        "class": "peer sticky top-0 z-(--header-zindex) h-(--header-height) w-full bg-transparent data-[scrolled]:bg-background-200 data-[scrolled]:shadow-[0_1px_0_0_var(--ds-gray-alpha-400)] data-[nav-open]:!shadow-none data-[nav-open]:bg-background-200 data-[mobile-open]:!bg-background-100 data-[mobile-open]:!shadow-none",
+        "position": "sticky",
+        "tag": "HEADER"
+      },
+      "links": [
+        {
+          "background": "rgb(10, 10, 10)",
+          "border": "rgb(31, 31, 31)",
+          "height": 32,
+          "text": "Get a Demo"
+        },
+        {
+          "background": "rgb(10, 10, 10)",
+          "border": "rgb(31, 31, 31)",
+          "height": 32,
+          "text": "Log In"
+        },
+        {
+          "background": "rgb(237, 237, 237)",
+          "border": "rgb(31, 31, 31)",
+          "height": 32,
+          "text": "Sign Up"
+        },
+        {
+          "background": "rgb(10, 10, 10)",
+          "border": "rgb(31, 31, 31)",
+          "height": 40,
+          "text": "Get a Demo"
+        },
+        {
+          "background": "rgb(10, 10, 10)",
+          "border": "rgb(31, 31, 31)",
+          "height": 40,
+          "text": "Log In"
+        },
+        {
+          "background": "rgb(237, 237, 237)",
+          "border": "rgb(31, 31, 31)",
+          "height": 40,
+          "text": "Sign Up"
+        }
+      ],
+      "scrollY": 0
+    },
+    "scrolled": {
+      "scrollY": 720,
+      "height": 64,
+      "background": "rgb(0, 0, 0)",
+      "divider": "rgb(31, 31, 31)"
+    }
+  },
+  "responsive": [
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 455.2734375,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 568,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "27px",
+      "titleHeight": 58.3125,
+      "viewport": [
+        320,
+        568
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 625.6171875,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 780,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "27px",
+      "titleHeight": 58.3125,
+      "viewport": [
+        320,
+        780
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 701.0546875,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 844,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "27px",
+      "titleHeight": 58.3125,
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 915.7265625,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 1024,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "42px",
+      "titleHeight": 90.71875,
+      "viewport": [
+        768,
+        1024
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 451.5078125,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 768,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "36.864px",
+      "titleHeight": 79.625,
+      "viewport": [
+        1024,
+        768
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 471.234375,
+      "desktopNavigation": "flex",
+      "headerActionsRight": 1096,
+      "headerHeight": 64,
+      "heroBottom": 800,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "40.32px",
+      "titleHeight": 87.078125,
+      "viewport": [
+        1120,
+        800
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 427.0546875,
+      "desktopNavigation": "flex",
+      "headerActionsRight": 1256,
+      "headerHeight": 64,
+      "heroBottom": 720,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "46.08px",
+      "titleHeight": 99.515625,
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    {
+      "copyGlobeOverlap": false,
+      "ctaBottom": 289.9140625,
+      "desktopNavigation": "none",
+      "headerActionsRight": 0,
+      "headerHeight": 64,
+      "heroBottom": 390,
+      "overflow": false,
+      "titleCtaOverlap": false,
+      "titleFont": "24px",
+      "titleHeight": 51.828125,
+      "viewport": [
+        844,
+        390
+      ]
+    }
+  ],
+  "darkGlobeRoles": {
+    "coast": "#3B82F6",
+    "light": "#E2E8F0",
+    "ocean": "#0A0F1A",
+    "route": "#7DD3FC",
+    "surface": "color-mix(in srgb, #7DD3FC 32%, #CBD5E1)"
+  },
+  "darkGlobeRolesAfter": {
+    "coast": "#3B82F6",
+    "light": "#E2E8F0",
+    "ocean": "#0A0F1A",
+    "route": "#7DD3FC",
+    "surface": "color-mix(in srgb, #7DD3FC 32%, #CBD5E1)"
+  }
+}

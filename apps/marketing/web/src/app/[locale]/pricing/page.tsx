@@ -1,3 +1,4 @@
+import { localizeMetadata } from '@/lib/i18n/metadata'
 import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Pricing from '@/components/Pricing'
@@ -5,7 +6,7 @@ import FAQ from '@/components/FAQ'
 import FinalCTA from '@/components/FinalCTA'
 import Footer from '@/components/Footer'
 
-export const metadata: Metadata = {
+const sourceMetadata: Metadata = {
     title: 'Pricing',
     description:
         'LetBuyy Launch plan starts at ₹299/month. 0% commission forever. UPI, COD, and GST-ready payments built in. Review plans before paying.',
@@ -34,6 +35,11 @@ export const metadata: Metadata = {
         images: ['/icons/letbuyy-logo-light.svg'],
     },
 }
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    return localizeMetadata(sourceMetadata, (await params).locale, "/pricing")
+}
+
 
 export default function PricingPage() {
     return (

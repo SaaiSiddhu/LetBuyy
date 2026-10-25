@@ -1,0 +1,21 @@
+{
+  "role": "Decorative product artwork in the Urban Kicks illustrative storefront inside CapabilityMap",
+  "created": "2026-10-24",
+  "source": "OpenAI image generation; original unbranded product illustrations, generated for this marketing preview",
+  "assets": [
+    {
+      "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-hero-v1.webp",
+      "bytes": 107040,
+      "sha256": "c18c09da8f65585d46cb60203a02d37148ff00e7ffea33a859f0367e512c55e4",
+      "alpha": true,
+      "delivery": "Locally served optimized WebP; lazy loaded. Product sheet reused for four native CSS crops."
+    },
+    {
+      "path": "apps/marketing/web/public/illustrations/storefront/urban-kicks-products-v1.webp",
+      "bytes": 142960,
+      "sha256": "2b8c28aa8d2aa1d96efe3d50919ea2bf2ff1335c57eccb1e9f5b124dfd394eae",
+      "alpha": true,
+      "delivery": "Locally served optimized WebP; lazy loaded. Product sheet reused for four native CSS crops."
+    }
+  ]
+}
